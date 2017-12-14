@@ -480,6 +480,10 @@ class finanzarel extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $key => $a) {
                     //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Descargar en csv') {
@@ -594,22 +598,23 @@ class finanzarel extends p2pCompany {
                     }
                         
                 }
-                $url = array_shift($this->urlSequence);
+                $url = urldecode(array_shift($this->urlSequence));
                 echo "The url of last is : ".$url;
                 $url = strtr($url, array(
                             '{$p_instance}' => $this->credentialsGlobal['p_instance'],
                             '{$credentialCashflow}' => $this->credentialCashflow
                         ));
                 echo "now the url is " . $url;
-                $referer = array_shift($this->urlSequence);
+                $referer = urldecode(array_shift($this->urlSequence));
                 $referer = strtr($referer, array(
                             '{$p_flow_step_id}' => 11,
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
-                $headers = array('Expect:');
+                $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url,$referer, false, $headers, $this->fileName);
+                echo "referer: " . $referer;
+                $this->getPFPFileMulticurl($url, $referer, false, $headers, $this->fileName);
                 break;
             case 9:
                 if (!$this->verifyFileIsCorrect()) {
@@ -652,6 +657,10 @@ class finanzarel extends p2pCompany {
 
         //Get credentials to download the file
         $inputs = $dom->getElementsByTagName('input');
+        $this->verifyNodeHasElements($inputs);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($inputs as $input) {
             $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
         }
@@ -659,6 +668,10 @@ class finanzarel extends p2pCompany {
 
         //Get the request to download the file
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $key => $a) {
             //echo $key . " => " . $a->getAttribute('href') . HTML_ENDOFLINE;
             if (trim($a->nodeValue) == 'Descargar en csv') {

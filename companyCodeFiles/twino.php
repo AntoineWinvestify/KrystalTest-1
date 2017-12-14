@@ -460,15 +460,15 @@ class twino extends p2pCompany {
                 $dateInitArray = explode(",", $dateInit);
                 $dateFinishArray = explode(",", $dateFinish);
                 $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","processingDateFrom":[{$year1},{$month1},{$day1}],"processingDateTo":[{$year2},{$month2},{$day2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
-                $credentialsFile = strtr($credentialsFile, array('{$year1}' => (int)$dateInitArray[0])); 
-                $credentialsFile = strtr($credentialsFile, array('{$year2}' => (int)$dateFinishArray[0]));
-                $credentialsFile = strtr($credentialsFile, array('{$month1}' => (int)$dateInitArray[1])); 
-                $credentialsFile = strtr($credentialsFile, array('{$month2}' => (int)$dateFinishArray[1]));
-                $credentialsFile = strtr($credentialsFile, array('{$day1}' => (int)$dateInitArray[2])); 
-                $credentialsFile = strtr($credentialsFile, array('{$day2}' => (int)$dateFinishArray[2]));
-                if(empty($this->tempUrl['transactionDownloadInit'])){
+                $credentialsFile = strtr($credentialsFile, array('{$year1}' => (int) $dateInitArray[0]));
+                $credentialsFile = strtr($credentialsFile, array('{$year2}' => (int) $dateFinishArray[0]));
+                $credentialsFile = strtr($credentialsFile, array('{$month1}' => (int) $dateInitArray[1]));
+                $credentialsFile = strtr($credentialsFile, array('{$month2}' => (int) $dateFinishArray[1]));
+                $credentialsFile = strtr($credentialsFile, array('{$day1}' => (int) $dateInitArray[2]));
+                $credentialsFile = strtr($credentialsFile, array('{$day2}' => (int) $dateFinishArray[2]));
+                if (empty($this->tempUrl['transactionDownloadInit'])) {
                     $this->tempUrl['transactionDownloadInit'] = array_shift($this->urlSequence);
-                    $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence); 
+                    $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);
                 }
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['transactionDownloadInit'], $credentialsFile, true);
@@ -487,10 +487,9 @@ class twino extends p2pCompany {
                     echo 'Status true, downloading';
                     $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
                     $this->numPartFileTransaction++;
-                    if($this->continue){
+                    if ($this->continue) {
                         $this->idForSwitch = 9;
-                    }
-                    else{
+                    } else {
                         $this->idForSwitch = 12;
                     }
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['transactionReferer'], false, false, $this->fileName);
@@ -504,10 +503,9 @@ class twino extends p2pCompany {
                     echo 'Status true, downloading' . SHELL_ENDOFLINE;
                     $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
                     $this->numPartFileTransaction++;
-                    if($this->continue){
+                    if ($this->continue) {
                         $this->idForSwitch = 9;
-                    }
-                    else{
+                    } else {
                         $this->idForSwitch++;
                     }
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['transactionReferer'], false, false, $this->fileName);
@@ -568,9 +566,16 @@ class twino extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $containers = $dom->getElementsByTagName('section');
-                var_dump($containers);
+                $this->verifyNodeHasElements($containers);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($containers as $container) {
                     $divs = $container->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($divs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     foreach ($divs as $key => $div) {
                         echo "Key " . $key . " is " . $div->nodeValue;
                     }

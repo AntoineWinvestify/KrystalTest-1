@@ -593,6 +593,10 @@ class mintos extends p2pCompany {
         $confirm = false;
 
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $a) {
             // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
             if (trim($a->nodeValue) == 'Overview') {
@@ -665,6 +669,10 @@ class mintos extends p2pCompany {
                     echo __FUNCTION__ . " " . __LINE__ . ": Check login \n";
                 }
                 $as = $dom->getElementsByTagName('a');
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $a) {
                     //echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
@@ -811,11 +819,16 @@ class mintos extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 
-                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes'); 
+                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
+
                 foreach($boxes as $keyBox => $box){
                     //echo $box->nodeValue;
                     //echo "BOX NUMBER: =>" . $keyBox;
                     $tds = $box->getElementsByTagName('td');
+                    $this->verifyNodeHasElements($tds);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     foreach($tds as $key => $td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
@@ -825,6 +838,10 @@ class mintos extends p2pCompany {
 
                     }
                     $divs = $box->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($divs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     /*foreach($divs as $key => $div){
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
@@ -832,7 +849,15 @@ class mintos extends p2pCompany {
 
                 }
                 $lis = $boxes[0]->getElementsByTagName('li');
+                $this->verifyNodeHasElements($lis);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $divs = $lis[2]->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $tempArray["global"]["activeInvestment"] = $divs[2]->nodeValue;
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
@@ -860,6 +885,7 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+
                 $csrf = $input[0]->getAttribute('value'); //this is the csrf token
 
                 $this->credentials['_username'] = $this->user;
@@ -887,6 +913,10 @@ class mintos extends p2pCompany {
                 $resultLogin = false;
                 echo 'Check login' . SHELL_ENDOFLINE;
                 $as = $dom->getElementsByTagName('a');
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $a) {
                     echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
@@ -927,6 +957,10 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach($tables as $table) {
                     if ($table->getAttribute('class') == 'loan-table') {
                         $AmortizationTable = new DOMDocument();
@@ -966,6 +1000,10 @@ class mintos extends p2pCompany {
         $dom->loadHTML($str); //Load page with the url
         $dom->preserveWhiteSpace = false;
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $a) { //get logout url
             if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
                 $logoutUrl = $a->getAttribute('href');
@@ -984,6 +1022,10 @@ class mintos extends p2pCompany {
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $a) {
             echo $a->getAttribute('class') . HTML_ENDOFLINE;
             if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {

@@ -1161,12 +1161,11 @@ class loanbook extends p2pCompany {
 
                 $resultMiLoanbook = false; // Could not login, credential error
                 $uls = $dom->getElementsByTagName('ul');
-               /* $this->verifyNodeHasElements($uls);
+                $this->verifyNodeHasElements($uls);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($uls as $ul) {
-
                     $as = $ul->getElementsByTagName('a');
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
@@ -1192,7 +1191,7 @@ class loanbook extends p2pCompany {
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
-                }*/
+                }
 
                 $this->idForSwitch++;
                 if(empty($this->tempUrl['globalVariablespage'])){

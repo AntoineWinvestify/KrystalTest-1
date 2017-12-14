@@ -404,6 +404,10 @@ class finbee extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($inputs as $input) {
                     //echo $input->getAttribute . " " . $input->nodeValue . HTML_ENDOFLINE;
                     $name = $input->getAttribute('name');
@@ -458,7 +462,10 @@ class finbee extends p2pCompany {
 
                 $confirm = false;
                 $as = $dom->getElementsByTagName('a');
-
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $key => $a) {
                     echo $key . " " . $a->nodeValue;
                     if (trim($a->nodeValue) == 'My Lending Account') {
@@ -495,7 +502,7 @@ class finbee extends p2pCompany {
                 $file = $path . DS . $this->fileName;
                 $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->copyFile($file, $newFile);
-                $fileName = $this->nameFileControlVariables . $this->typeFileControlVariables; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileControlVariables . $this->typeFileControlVariables; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
@@ -545,6 +552,10 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
@@ -602,7 +613,10 @@ class finbee extends p2pCompany {
 
                 $confirm = false;
                 $as = $dom->getElementsByTagName('a');
-
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $key => $a) {
                     echo $key . " " . $a->nodeValue;
                     if (trim($a->nodeValue) == 'My Lending Account') {
@@ -645,10 +659,18 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
 
                     if ($table->getAttribute('class') == 'table mb-none table-no-more') {
                         $trs = $dom->getElementsByTagName('tr');
+                        $this->verifyNodeHasElements($trs);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
                         $AmortizationHeaderTable = new DOMDocument();
                         $cloneHeader = $trs[0]->cloneNode(TRUE); //Clone the table header
                     }

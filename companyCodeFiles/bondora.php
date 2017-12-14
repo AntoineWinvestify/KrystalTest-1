@@ -325,7 +325,10 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $inputs = $dom->getElementsByTagName('input');
-
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($inputs as $key => $input) {
                     echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . SHELL_ENDOFLINE;
                     if ($key == 0) {
@@ -355,6 +358,10 @@ class bondora extends p2pCompany {
                 $confirm = false;
 
                 $spans = $dom->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($spans as $span) {
                     echo $span->nodeValue . SHELL_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Dashboard') {
@@ -392,7 +399,6 @@ class bondora extends p2pCompany {
                 $inputs = $dom->getElementsByTagName('input'); //Get all inputs in the page, with this we get the token
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
-                    echo 'error';
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($inputs as $key => $input) {
@@ -457,6 +463,7 @@ class bondora extends p2pCompany {
                 }
 
                 $inputs = $dom->getElementsByTagName('input');  //Get all input, we get the token with this
+                $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
@@ -713,7 +720,9 @@ class bondora extends p2pCompany {
 
                 $trs = $dom->getElementsByTagName('tr');
                 $this->verifyNodeHasElements($trs);
-
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
 
                 $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
@@ -848,7 +857,6 @@ class bondora extends p2pCompany {
                 $inputs = $dom->getElementsByTagName('input');
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
-                    echo 'error';
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($inputs as $key => $input) {
@@ -922,7 +930,10 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 $inputs = $dom->getElementsByTagName('input');
-
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($inputs as $key => $input) {
                     echo $key . "=>" . $input->getAttribute('value') . " " . $input->getAttribute('name') . SHELL_ENDOFLINE;
                     if ($key == 0) {
@@ -954,6 +965,10 @@ class bondora extends p2pCompany {
                 $confirm = false;
 
                 $spans = $dom->getElementsByTagName('span');
+                $this->verifyNodeHasElements($spans);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($spans as $span) {
                     echo $span->nodeValue . SHELL_ENDOFLINE;
                     if (trim($span->nodeValue) == 'Account value') {
@@ -996,7 +1011,10 @@ class bondora extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
-
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
                     if ($table->getAttribute('class') == 'table') {
                         $AmortizationTable = new DOMDocument();

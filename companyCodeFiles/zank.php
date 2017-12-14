@@ -1367,7 +1367,7 @@ class zank extends p2pCompany {
                 break;
             case 2:
                 //This is an error because we don't verify if we have entered
-                if ($str == 200 or $str == 103) {
+                if ($str == 200 or $str == 302) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
                     $this->doCompanyLoginMultiCurl($this->credentials);
@@ -1450,6 +1450,7 @@ class zank extends p2pCompany {
                 }
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
+                echo "investment url: " . $url;
                 $this->idForSwitch++;
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
@@ -1468,9 +1469,9 @@ class zank extends p2pCompany {
 
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
-                $$this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, $$this->fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
@@ -1486,6 +1487,10 @@ class zank extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $divs = $dom->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 /*foreach($divs as $key => $div){
                     if($div->getAttribute('class') == 'panel-body'){
                         echo " " . $key . "=>" . $div->nodeValue . " ";
@@ -1548,7 +1553,7 @@ class zank extends p2pCompany {
                 break;
             case 2:
                 //This is an error because we don't verify if we have entered
-                if ($str == 200 or $str == 103) {
+                if ($str == 200 or $str == 302) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
                     $this->doCompanyLoginMultiCurl($this->credentials);
@@ -1605,7 +1610,6 @@ class zank extends p2pCompany {
 
                 $index = 0;
                 $ps = $dom->getElementsByTagName('p');
-
                 $this->verifyNodeHasElements($ps);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
@@ -1632,6 +1636,10 @@ class zank extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
                     if ($table->getAttribute('id') == 'parte') {
                         $AmortizationTable = new DOMDocument();
