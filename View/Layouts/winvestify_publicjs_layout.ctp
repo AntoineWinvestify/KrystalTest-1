@@ -175,10 +175,13 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
+                            <?php /*
                             <li class="dropdown" style="margin-top:0px; display:inline-block">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
+                             * 
+                             */?>
                         </ul>
                         <button type="button" style="margin-top:12px; margin-left: 20px; float:right;" class="navbar-toggle" data-toggle="collapse" data-target="#principal_navbar" aria-expanded="false">
                             <span class="icon-bar"></span>
