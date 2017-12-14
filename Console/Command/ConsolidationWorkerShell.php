@@ -114,7 +114,39 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
-        $formulasByInvestor = [];
+        $variables = $this->winFormulas->getFormulaParams("formula_A");
+        foreach ($data["companies"] as $linkedaccountId) {
+            $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
+            foreach ($variables as $variableKey => $variable) {
+                $this->getPeriodOfTime($data["date"]);
+                $dateInit = $this->getDateForSum($variable['dateInit']);
+                $dateFinish = $this->getDateForSum($variable['dateFinish']);
+                $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
+                $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
+                //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
+            }
+        }
+        exit;
+    }
+    
+    public function getPeriodOfTime($dateFinish) {
+        if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
+            $dateInit = $this->getFirstInvestmentDate();
+            $resultDate1 = 20170324-20130324;
+            $resultDate2 = 20170000-20130000;
+            if ($resultDate1 <= $resultDate2) {
+                echo $years = 2017-2013 . "<br>";
+            }
+        }
+        else {
+            
+        }
+    }
+    
+    public function getFirstInvestmentDate() {
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+        $dateInit = $this->Userinvestmentdata->find('first',array( 'order' => array('date DESC') )  ); 
+        return $dateInit;
     }
     
     /**
