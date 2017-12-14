@@ -118,7 +118,7 @@ class TestsController extends AppController {
         header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
         header('Cache-Control: max-age=0');*/
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save(APP . 'preuba.xls');
+        $objWriter->save(APP . "files" . DS . 'preuba2.xls');
         exit;
     }
 
