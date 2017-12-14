@@ -29,31 +29,25 @@ class WinFormulas {
     
     protected $variablesFormula_A = [
         "A" => [
-            [
-                "type" => "userinvestmentdata_totalGrossIncome",
-                "table" => "Userinvestmentdata",
-                "dateInit" => "-366",
-                "dateFinish" => "-1",
-                "intervals" => "inclusive"
-            ]
+            "type" => "userinvestmentdata_totalGrossIncome",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
         ],
         "B" => [
-            [
-                "type" => "userinvestmentdata_totalLoansCost",
-                "table" => "Userinvestmentdata",
-                "dateInit" => "-366",
-                "dateFinish" => "-1",
-                "intervals" => "inclusive"
-            ]
+            "type" => "userinvestmentdata_totalLoansCost",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
         ],
         "C" => [
-            [
-                "type" => "userinvestmentdata_outstandingPrincipal",
-                "table" => "userinvestmentdata",
-                "dateInit" => "-366",
-                "dateFinish" => "-1",
-                "intervals" => "inclusive"
-            ]
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
         ]
     ];
     
