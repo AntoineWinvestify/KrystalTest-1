@@ -114,11 +114,11 @@ class TestsController extends AppController {
             ->fromArray($keyArray, NULL, 'A1')
             ->fromArray($array, NULL, 'A2');
 
-        header('Content-Type: application/vnd.ms-excel');
+        /*header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
-        header('Cache-Control: max-age=0');
+        header('Cache-Control: max-age=0');*/
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save('php://output');
+        $objWriter->save(APP . 'preuba.xls');
         exit;
     }
 
