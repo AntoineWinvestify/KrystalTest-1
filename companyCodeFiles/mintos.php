@@ -764,7 +764,6 @@ class mintos extends p2pCompany {
                 if(!$continue){
                     if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
                         $this->idForSwitch++;
-                        echo 'hola';
                     }
                     else {
                         array_shift($this->urlSequence);
@@ -772,7 +771,6 @@ class mintos extends p2pCompany {
                         array_shift($this->urlSequence);
                         array_shift($this->urlSequence);
                         $this->idForSwitch = 9;
-                        echo 'adios';
                     }
                 }
                 else {
