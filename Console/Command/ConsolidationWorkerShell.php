@@ -68,8 +68,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->variablesConfig = Configure::read('internalVariables');
         $formula = $this->winFormulas->getFormula("formula_A");
         $variables = $this->winFormulas->getFormulaParams("formula_A");
-        $dateInit = $this->getDateForSum($variableFormula['dateInit']);
-        $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
         foreach ($data["companies"] as $linkedaccountId) {
             foreach ($variables as $variableKey => $variable) {
                 $dateInit = $this->getDateForSum($variable['dateInit']);
@@ -77,9 +75,10 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
-            $formulaByCompany[$linkedaccountId][$key]['formula']['variables'][$variableKey] = $value;
+            $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
         }
-        
+        print_r($formula);
+        exit;
         
     }
     
