@@ -598,14 +598,14 @@ class finanzarel extends p2pCompany {
                     }
                         
                 }
-                $url = urldecode(array_shift($this->urlSequence));
+                $url = array_shift($this->urlSequence);
                 echo "The url of last is : ".$url;
                 $url = strtr($url, array(
                             '{$p_instance}' => $this->credentialsGlobal['p_instance'],
                             '{$credentialCashflow}' => $this->credentialCashflow
                         ));
                 echo "now the url is " . $url;
-                $referer = urldecode(array_shift($this->urlSequence));
+                $referer = array_shift($this->urlSequence);
                 $referer = strtr($referer, array(
                             '{$p_flow_step_id}' => 11,
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
