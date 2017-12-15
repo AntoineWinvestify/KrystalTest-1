@@ -57,7 +57,9 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel", "insertDummyData","downloadTimePeriod"));
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", 
+            "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel", "insertDummyData","downloadTimePeriod",
+            "testDateDiff"));
     }
 
     var $dateFinish = "20171129";
@@ -268,9 +270,9 @@ class TestsController extends AppController {
         }*/
         
         $model = ClassRegistry::init("Paymenttotal");
-        $model->virtualFields = array('paymenttotal_myInvestment' . '_sum' => 'sum(paymenttotal_myInvestment)');
+        $model->virtualFields = array('paymenttotal_totalCost' . '_sum' => 'sum(paymenttotal_myInvestment + paymenttotal_secondaryMarketInvestment)');
         $sumValue  =  $model->find('list',array(
-                'fields' => array('date', 'paymenttotal_myInvestment' . '_sum'),
+                'fields' => array('date', 'paymenttotal_totalCost' . '_sum'),
                 'group' => array('date')
                 /*'conditions' => array(
                     "date >=" => $dateInit,
@@ -279,7 +281,16 @@ class TestsController extends AppController {
                 )*/
             )
         );
+        print_r($sumValue);
+        exit;
         
+        /*$total = $this->Model->find('all', array(
+            'fields' => array(
+                'SUM(Model.price + OtherModel.price) AS total'
+            ),
+            'group' => 'Model.id'
+        ));*/
+
         /*$model->virtualFields = array('paymenttotal_regularGrossInterestIncome' . '_sum' => 'sum(paymenttotal_regularGrossInterestIncome)');
         $sumValue2  =  $model->find('list',array(
                 'fields' => array('date', 'paymenttotal_regularGrossInterestIncome' . '_sum'),
@@ -334,6 +345,55 @@ class TestsController extends AppController {
                 )
             )
         );*/
+    }
+    
+    public function testDateDiff() {
+        $date1 = new DateTime("2013-03-24");
+        $date2 = new DateTime("2017-06-26");
+        $interval = $date1->diff($date2);
+        echo "difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days "; 
+        echo "<br>";
+        $resultDate1 = 20170626-20130324;
+        $resultDate2 = 20170000-20130000;
+        echo 20170626-20130324 . "<br>";
+        echo 20170000-20130000 . "<br>";
+        if ($resultDate1 <= $resultDate2) {
+            echo $years = 2017-2013;
+        }
+        // shows the total amount of days (not divided into years, months and days like above)
+        echo "difference " . $interval->days . " days ";
+        echo "<br>";
+        
+        $date1 = new DateTime("2013-03-24");
+        $date2 = new DateTime("2017-03-24");
+        $interval = $date1->diff($date2);
+        echo "difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days "; 
+        echo "<br>";
+        $resultDate1 = 20170324-20130324;
+        $resultDate2 = 20170000-20130000;
+        if ($resultDate1 <= $resultDate2) {
+            echo $years = 2017-2013 . "<br>";
+        }
+        // shows the total amount of days (not divided into years, months and days like above)
+        echo "difference " . $interval->days . " days ";
+        echo "<br>";
+        $date1 = new DateTime("2013-03-24");
+        $date2 = new DateTime("2017-01-26");
+        $interval = $date1->diff($date2);
+        echo "difference " . $interval->y . " years, " . $interval->m." months, ".$interval->d." days "; 
+        echo "<br>";
+        $resultDate1 = 20170126-20130324;
+        $resultDate2 = 20170000-20130000;
+        if ($resultDate1 <= $resultDate2) {
+            echo $resultDate1 . "<br>";
+            echo $years = 2017-2013 . "<br>";
+        }
+        // shows the total amount of days (not divided into years, months and days like above)
+        echo "difference " . $interval->days . " days ";
+        echo "<br>";
+        echo 20170326-20130324 . "<br>";
+        echo 20170323-20130324 . "<br>";
+        echo 20170000-20130000 . "<br>";
     }
 
 }
