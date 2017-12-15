@@ -176,8 +176,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     switch ($fileTypeKey) {
                         case WIN_FLOW_INVESTMENT_FILE:
                             $this->callbackInit($tempResult, $companyHandle, $callbacks["investment"]);
-                            print_r($tempResult);
-                            exit;
                             $totalParsingresultInvestments = $tempResult;
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
@@ -188,6 +186,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
+                            $this->callbackInit($tempResult, $companyHandle, $callbacks["expiredLoan"]);
                             $totalParsingresultExpiredInvestments = $tempResult;
                             $i = 0;
                             foreach ($tempResult as $expiredLoankey => $item) {
