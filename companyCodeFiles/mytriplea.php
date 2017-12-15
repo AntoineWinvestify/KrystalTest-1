@@ -718,6 +718,9 @@ class mytriplea extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
+                if (count($tables) == 0) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
                 $tbodys = $this->getElements($tables[0], "tbody");
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
