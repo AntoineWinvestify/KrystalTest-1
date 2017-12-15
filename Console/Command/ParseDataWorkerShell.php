@@ -120,7 +120,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
-            $controlVariableFile = $data['controlVariableFile'];
             $companyHandle = $this->companyClass($data['pfp']);
 
             if (Configure::read('debug')) {
@@ -229,7 +228,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['pfp'] = $platform;  
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-            $returnData[$linkedAccountKey]['controlVariableFile'] = $controlVariableFile;         
+            $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile'];         
             
  // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
             $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
@@ -268,14 +267,26 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         } 
 //print_r($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']);
  //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
- //      print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']['2015-10-29']);
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
  //echo "new loans = ";
  //       print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
+     //   print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'][])
         echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
-        
+ /*$i = 0;
+ foreach  ($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments'] as $key => $dataXX){
+     echo $key . "@@";
+     $i++;
+     if ($i == 150) break;
+ }
+ $i = 0;
+ foreach ($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'] as $key => $dataXX){
+      $i++;
+     if ($i == 150) break;
+     echo $key . "@@";
+ } */
+        echo "The size of data to be sent to the Client = " . strlen(json_encode($data)) . " Bytes\n";
  echo "Done\n";
         return json_encode($data);
     }       
