@@ -383,6 +383,17 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
     }
     
+    public function getSumValuesOrderedByDate() {
+        $model = ClassRegistry::init("Paymenttotal");
+        $model->virtualFields = array('paymenttotal_totalCost' . '_sum' => 'sum(paymenttotal_myInvestment + paymenttotal_secondaryMarketInvestment)');
+        $sumValue  =  $model->find('list',array(
+                'fields' => array('date', 'paymenttotal_totalCost' . '_sum'),
+                'group' => array('date')
+            )
+        );
+        print_r($sumValue);
+    }
+    
     /**
      * Function to initiate the formulas, in the future, this will be a config file
      */
