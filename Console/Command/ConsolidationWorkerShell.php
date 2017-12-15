@@ -118,34 +118,62 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccountId) {
             $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
             foreach ($variables as $variableKey => $variable) {
-                $this->getPeriodOfTime($data["date"]);
-                $dateInit = $this->getDateForSum($variable['dateInit']);
-                $dateFinish = $this->getDateForSum($variable['dateFinish']);
-                $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
-                $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
+                $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+                foreach ($dates as $date) {
+                    $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
+                    $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
+                }
+                
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
         }
         exit;
     }
     
-    public function getPeriodOfTime($dateFinish) {
+    public function getPeriodOfTime($dateFinish, $linkedaccountId) {
         if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
-            $dateInit = $this->getFirstInvestmentDate();
-            $resultDate1 = 20170324-20130324;
-            $resultDate2 = 20170000-20130000;
-            if ($resultDate1 <= $resultDate2) {
-                echo $years = 2017-2013 . "<br>";
-            }
+            $dateInit = $this->getFirstInvestmentDate($linkedaccountId);
+            $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
         }
         else {
-            
+            $dateFinishYear = date("Y",  strtotime($dateFinish));
+            $pastReturnExist = $this->verifyPastReturnThisYearExist($dateFinishYear);
+            $dates = null;
+            if (!$pastReturnExist) {
+                $dates = $dateFinishYear;
+            }
         }
+        return $dates;
     }
     
-    public function getFirstInvestmentDate() {
+    public function getDatesForPastReturn($dateInit, $dateFinish) {
+        $dateInitYear = date("Y",  strtotime($dateInit));
+        //$dateInitTotal = date("Ymd",  strtotime($dateInit));
+        $dateFinishYear = date("Y",  strtotime($dateFinish));
+        //$dateFinishTotal = date("Ymd",  strtotime($dateFinish));
+        $totalYears = $dateFinishYear - $dateInitYear;
+        $dates = [];
+        for ($i = 1; $i <= $totalYears; $i++) {
+            $dates[] = $dateFinishYear - $i;
+        }
+        return $dates;
+        //$resultDate1 = $dateFinishTotal - $dateInitTotal;
+        //$resultDate2 = ($dateFinishYear . "0000") - ($dateInitYear . "0000");
+        /*if ($resultDate1 <= $resultDate2) {
+            
+        }
+        else {
+
+        }*/
+    }
+    
+    public function getFirstInvestmentDateByLinkedaccount($linkedaccountId) {
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-        $dateInit = $this->Userinvestmentdata->find('first',array( 'order' => array('date DESC') )  ); 
+        $dateInit = $this->Userinvestmentdata->find('first',
+            array( 'order' => array('date ASC'),
+                   'conditions' => array('Userinvestmentdata.linkedaccount_id' => $linkedaccountId)
+            )  
+        ); 
         return $dateInit;
     }
     
