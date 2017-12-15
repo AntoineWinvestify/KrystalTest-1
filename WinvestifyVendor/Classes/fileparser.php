@@ -713,9 +713,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             if ($i == $this->config['offsetStart']) {
                 break;
             }
-            echo "unset to happen, value of cell = " . 
-                    print_r($rowDatas[$key][2]);
-            echo "\n";
+
             unset($rowDatas[$key]);
             $i++;
         }
