@@ -20,7 +20,7 @@
 ?>
 
 <?php
-	$supportedLanguages = array("spa" => "Espa&ntilde;ol",
+	$supportedLanguages = array("spa" => "Español",
 								"eng" => "English",
 					//			"fra" => "Francais",
 					//			"nld" => "Nederlands",
