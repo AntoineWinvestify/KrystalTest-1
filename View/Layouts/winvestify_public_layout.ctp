@@ -149,7 +149,7 @@
                                 </a>
                             </li>
                             <li class="dropdown" style="margin-top:0px; display:inline-block">
-                                <?php //echo $this->element('languageWidget') ?>
+                                <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
                         </ul>
@@ -208,7 +208,10 @@
         <div id="footer">
           <?php echo $this->element('publicfooter'); ?>  
         </div>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+        <?php
+            echo $this->element('jsPublicLandingPage');
+            echo $this->element('jsLanguageWidget');
+        ?>
         <script>
             $(function (){
                 //Dropdown menu hover
@@ -223,5 +226,6 @@
                 });
             });
         </script>
+        
     </body>
 </html>
