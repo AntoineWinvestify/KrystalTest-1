@@ -67,6 +67,36 @@ class WinFormulas {
         ]
     ];
     
+    protected $variablesFormula_A_xirr = [
+        "A" => [
+            "type" => [
+                "userinvestmentdata_totalGrossIncome",
+                "userinvestmentdata_interestGrossIncome",
+                //need more data to take values from database
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => "userinvestmentdata_totalLoansCost",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
+        ]
+    ];
+    
     protected $variablesFormula_B = [
         "A" => [
             [
