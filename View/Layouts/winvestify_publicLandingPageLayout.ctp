@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>  
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="description" content="<?php echo __('Winvestify is a platform that integrates the management of all your investments in P2P Lending platforms in one global dashboard')?>">
-        <meta name="keywords" content="<?php echo __('Investor, Peer to Peer Lending, P2P Lending, Yield, Invest, Interest, High return on investment, dashboard, high ROI, personal loan')?>">
         <title>Winvestify</title>
         <!-- Tell the browser to be responsive to screen width -->
-        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <?php 
+            echo $this->element('meta');
+            
+            echo $this->element('csslandingpage');
+        ?>
        
-        <!-- Theme STYLES -->
-        <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/style.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/global.css"/>
-        <link type="text/css" rel="stylesheet" href="/css/compare_styles.css"/>
-        <!-- Ionicons -->
-        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"/>
-        <!-- Web Fonts -->
-        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,400i/Montserrat:400,700"/>
-        <link type="text/css" rel="stylesheet" href='https://fonts.googleapis.com/css?family=Muli:400,300'/>
-        <!-- Plugins -->
-        <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/animate.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/themify/themify.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/scrollbar/scrollbar.min.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/swiper/swiper.min.css"/>
 
         <?php
         $file = APP . "Config" . DS . "googleCode.php";
@@ -34,7 +17,9 @@
         }
         ?>
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
-        <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
+        <?php
+            echo $this->element('favicon');
+        ?>
     </head>
     <body>
         <?php echo $this->Html->script(array('local')); ?>
