@@ -81,7 +81,8 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $data["queue_id"] = $job['Queue']['id'];
                     $data["date"] = $queueInfo['date'];
                     $services = $this->getConsolidationWorkerFunction();
-                    foreach ($services as $serviceFunction) {
+                    foreach ($services as $service) {
+                        $data['service'] = $service;
                         if (Configure::read('debug')) {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
                             print_r($data["companies"]);
@@ -91,7 +92,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                        $this->GearmanClient->addTask($serviceFunction, json_encode($data), null, $data["queue_id"] . ".-;" .  $serviceFunction . ".-;" . $job['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $service['gearmanFunction'] . ".-;" . $job['Queue']['queue_userReference']);
                     }
                 }
                 
@@ -163,10 +164,14 @@ class ConsolidationClientShell extends GearmanClientShell {
         //$formulaByInvestor = $this->getFormulasFromDB();
         ///////////////* THIS IS TEMPORAL
         $services = [];
-        $services[] = "netAnnualReturn";
-        $services[] = "netAnnualTotalFunds";
-        $services[] = "netAnnualPastReturn";
+        
+        $services[0]['service'] = "calculateNetAnnualReturnXirr";
+        $services[0]['gearmanFunction'] = 'getFormulaCalculate';
+        $services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
+        $services[1]['gearmanFunction'] = 'getFormulaCalculate';
+        $services[2]['service'] = "calculateNetAnnualPastReturnXirr";
+        $services[2]['gearmanFunction'] = 'getFormulaCalculate';
         /////////////////////
-        return $service;
+        return $services;
     }
 }
