@@ -52,7 +52,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         while( $this->GearmanWorker->work());
     }
     
-    public function calculateNetAnnualReturn($job) {
+    public function getFormulaCalculate($job) {
         $data = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -63,64 +63,56 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->winFormulas = new WinFormulas();
         //Get investor ID by queue_userReference
         //$investorId = $this->investor->find("userReference");
-        
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
+        $serviceFunction = $data['service'];
+        $result = $this->$serviceFunction($data);
         
+    }
+    
+    
+    public function calculateNetAnnualReturn($data) {
         $variables = $this->winFormulas->getFormulaParams("formula_A");
         foreach ($data["companies"] as $linkedaccountId) {
             $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
             foreach ($variables as $variableKey => $variable) {
                 $dateInit = $this->getDateForSum($variable['dateInit']);
                 $dateFinish = $this->getDateForSum($variable['dateFinish']);
-                $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
+                $value = $this->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
                 $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
         }
         print_r($formula);
         exit;
-        
     }
     
-    public function calculateNetAnnualTotalFunds($job) {
-        $data = json_decode($job->workload(), true);
-        $this->job = $job;
-        $this->Applicationerror = ClassRegistry::init('Applicationerror');
-        print_r($data);
-        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
-        $index = 0;
-        $i = 0;
-        $this->winFormulas = new WinFormulas();
-        //Get investor ID by queue_userReference
-        //$investorId = $this->investor->find("userReference");
-        
-        Configure::load('internalVariablesConfiguration.php', 'default');
-        $this->variablesConfig = Configure::read('internalVariables');
-        $formulasByInvestor = [];
+    public function calculateNetAnnualReturnXirr($data) {
+        $variables = $this->winFormulas->getFormulaParams("formula_A");
+        $values = [];
+        foreach ($data["companies"] as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($variable['dateFinish']);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+            }
+        }
     }
     
-    public function calculateNetAnnualPastReturn($job) {
-        $data = json_decode($job->workload(), true);
-        $this->job = $job;
-        $this->Applicationerror = ClassRegistry::init('Applicationerror');
-        print_r($data);
-        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
-        $index = 0;
-        $i = 0;
-        $this->winFormulas = new WinFormulas();
-        //Get investor ID by queue_userReference
-        //$investorId = $this->investor->find("userReference");
-        
-        Configure::load('internalVariablesConfiguration.php', 'default');
-        $this->variablesConfig = Configure::read('internalVariables');
+    public function calculateNetAnnualTotalFunds($data) {
+    }
+    
+    public function calculateNetAnnualPastReturn($data) {
         $variables = $this->winFormulas->getFormulaParams("formula_A");
         foreach ($data["companies"] as $linkedaccountId) {
             $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
             foreach ($variables as $variableKey => $variable) {
                 $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
                 foreach ($dates as $date) {
-                    $value = $this->winFormulas->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
+                    $value = $this->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
                     $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
                 }
                 
@@ -383,15 +375,21 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
     }
     
-    public function getSumValuesOrderedByDate() {
+    public function getSumValuesOrderedByDate($modelName, $value, $keyValue, $date) {
         $model = ClassRegistry::init("Paymenttotal");
         $model->virtualFields = array('paymenttotal_totalCost' . '_sum' => 'sum(paymenttotal_myInvestment + paymenttotal_secondaryMarketInvestment)');
         $sumValue  =  $model->find('list',array(
                 'fields' => array('date', 'paymenttotal_totalCost' . '_sum'),
-                'group' => array('date')
+                'group' => array('date'),
+                'conditions' => array(
+                    "date >=" => $date['init'],
+                    "date <=" => $date['finish'],
+                    $keyValue['type'] => $keyValue['value']
+                )
             )
         );
         print_r($sumValue);
+        return ($sumValue);
     }
     
     /**
