@@ -88,17 +88,19 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function calculateNetAnnualReturnXirr($data) {
-        $variables = $this->winFormulas->getFormulaParams("formula_A");
+        $variables = $this->winFormulas->getFormulaParams("formula_A_xirr");
         $values = [];
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
-            
+            $variablesName = [];
             foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
             }
+            
+            $dataMergeByDate = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
         }
     }
     
@@ -377,7 +379,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     public function getSumValuesOrderedByDate($modelName, $value, $keyValue, $date) {
         $model = ClassRegistry::init("Paymenttotal");
-        $model->virtualFields = array('paymenttotal_totalCost' . '_sum' => 'sum(paymenttotal_myInvestment + paymenttotal_secondaryMarketInvestment)');
+        $sumValues = $value;
+        if (is_array($value)) {
+            foreach ($value as $string)  {
+                $sumValues = $string . " + ";
+            }
+            $sumValues = rtrim($sumValues,"+ ");
+        }
+        
+        $model->virtualFields = array('paymenttotal_totalCost' . '_sum' => 'sum(' . $sumValues . ')');
         $sumValue  =  $model->find('list',array(
                 'fields' => array('date', 'paymenttotal_totalCost' . '_sum'),
                 'group' => array('date'),
@@ -389,7 +399,26 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             )
         );
         print_r($sumValue);
-        return ($sumValue);
+        return $sumValue;
+    }
+    
+    public function mergeArraysByKey($arrays, $variables) {
+        $dates = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $keyDate => $value) {
+                if (!in_array($keyDate, $dates)) {
+                    $dates[] = $keyDate;
+                }
+            }
+        }
+        sort($dates);
+        foreach ($dates as $date) {
+            $dataFormula = null;
+            foreach ($variables as $variableKey => $variable) {
+                $value = $arrays[$variableKey][$date];
+                $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $variable['operation']);
+            }
+        }
     }
     
     /**
