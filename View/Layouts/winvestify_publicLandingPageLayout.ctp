@@ -136,7 +136,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown" style="margin-top:0px; display:inline-block">
+                            <li class="dropdown" style="margin-top:0px; display:inline-block; cursor:pointer;">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
