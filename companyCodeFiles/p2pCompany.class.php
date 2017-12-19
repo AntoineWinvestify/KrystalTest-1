@@ -2833,13 +2833,20 @@ FRAGMENT
      * @return boolean true if header is different, false if is the same.
      */
     public function compareHeader(){
+        
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
-        if($this->headerComparation !== $data){
-            return true;
-        };             
-        return false;
-    }
-    
+        if($this->headerComparation !== $data){  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            $i = 0;
+            while($i < count($this->headerComparation)){
+                if($this->headerComparation[$i] != $data[$i]){ // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                    return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
+                }
+                $i++;
+            } 
+            return WIN_ERROR_FLOW_NEW_FINAL_HEADER; 
+        }          
+        return false;       
+    } 
 }
 ?>
 

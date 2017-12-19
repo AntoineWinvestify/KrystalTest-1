@@ -242,6 +242,10 @@ class finanzarel extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
+    protected  $investmentHeader = array();
+    protected  $compareHeaderConfigParam = array( 'separatorChar' => ";");
+
+
     /*protected $callbacks = [
         "investment" => [
             "investment_loanType" => "translateLoanType",
@@ -256,6 +260,9 @@ class finanzarel extends p2pCompany {
         $this->typeFileInvestment = "csv";
         //$this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();
 // Do whatever is needed for this subsclass
     }   
 
@@ -521,9 +528,17 @@ class finanzarel extends p2pCompany {
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);
                 break; 
             case 4:
-                                                if (!$this->verifyFileIsCorrect()) {
+                if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $this->headerComparation = $this->investmentHeader;
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                }
+                
                 $this->url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $this->referer = strtr($referer, array(

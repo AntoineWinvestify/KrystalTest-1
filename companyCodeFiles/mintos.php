@@ -731,7 +731,6 @@ class mintos extends p2pCompany {
                     echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
                 }
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
-                $this->headerComparation = $this->investmentHeader;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 //echo 'Downloaded';
@@ -741,10 +740,14 @@ class mintos extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 
+                /*
+                $this->headerComparation = $this->investmentHeader;
                 $headerError = $this->compareHeader();
-                if($headerError){
-                    $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
-                }
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                }*/
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);

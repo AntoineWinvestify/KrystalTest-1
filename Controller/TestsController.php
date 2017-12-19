@@ -66,58 +66,48 @@ class TestsController extends AppController {
     public function xlsxRead() {
         //$file =  APP  . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20171217" . DS . "898" . DS . "bondora" . DS . "investment_1_1.xlsx";
 
-        $file = APP . "transaction_1.xlsx";
+        $file = APP . "investment_1.csv";
 
+        $finfo = finfo_open();
+        $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);
+        finfo_close($finfo);
+        echo "///////////////////////////////////" . $fileinfo;
 
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 
+            //WE MUST CLEAR CSV OF SPECIAL CHARACTERS
+            $csv = fopen($file, "r");
+            $csvString = mb_convert_encoding(fread($csv, filesize($file)), "UTF-8"); //Convert special characters
+            fclose($csv);
+            $csv = fopen($file, "w+");   //Rewrite old csv
+            fwrite($csv,$csvString);
+            fclose($csv);
         
-        $fo = fopen(APP . 'hola.xlsx', "w");
-        $rf = fread($fo, filesize($fo));
-        fwrite($fo, $rf);
-        fclose($fo);
-       // $objPHPExcel = new PHPExcel();
-
         
-        //$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-
-        header('Content-Type: application/vnd.ms-excel; charset=utf-8');
-        header('Content-Disposition: attachment; filename=01simple.xls');
-        header('Cache-Control: max-age=0');
-        /*ob_end_clean();
-        ob_start();*/
-        
-        //$objWriter->save(APP . 'hola.xlsx');
-
-
-
-        /* $za = new ZipArchive;
-          $za->open($file);
-          echo print_r($za); */
-
-
-
-
-        $file2 = APP . "transaction_2.xlsx";
-        $za2 = new ZipArchive;
-        $za2->open($file2);
-        echo print_r($za2);
-
-
-
-        /* $finfo = finfo_open();
-          $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);
-          finfo_close($finfo);
-          echo "///////////////////////////////////" . $fileinfo;
-
-          App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-          App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-
-          $objPHPExcel = PHPExcel_IOFactory::load($file);
-          print_r($objPHPExcel); */
+        $inputFileType = 'CSV';
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $objReader->setDelimiter(';');
+        $objPHPExcel = $objReader->load($file);
+        $worksheet = $objPHPExcel->getActiveSheet();
+        foreach ($worksheet->getRowIterator() as $row) {
+            echo 'Row number: ' . $row->getRowIndex() . "\r\n";
+            $cellIterator = $row->getCellIterator();
+            $cellIterator->setIterateOnlyExistingCells(false); // Loop all cells, even if it is not set
+            foreach ($cellIterator as $cell) {
+                if (!is_null($cell)) {
+                    echo 'Cell: ' . $cell->getCoordinate() . ' - ' . $cell->getValue() . "\r\n";
+                }
+            }
+        }
     }
 
+    function clearCsv($string) {
+        $not_permited= array ("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","À","Ã","Ì","Ò","Ù","Ã™","Ã ","Ã¨","Ã¬","Ã²","Ã¹","ç","Ç","Ã¢","ê","Ã®","Ã´","Ã»","Ã‚","ÃŠ","ÃŽ","Ã”","Ã›","ü","Ã¶","Ã–","Ã¯","Ã¤","«","Ò","Ã","Ã„","Ã‹");
+        $permited= array ("a","e","i","o","u","A","E","I","O","U","n","N","A","E","I","O","U","a","e","i","o","u","c","C","a","e","i","o","u","A","E","I","O","U","u","o","O","i","a","e","U","I","A","E");
+        return str_replace($not_permited, $permited ,$string);
+    }
+    
     public function downloadTimePeriod($dateMin, $datePeriod) {
         $dateMin = "20090101";
         $datePeriod = 120;
