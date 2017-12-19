@@ -48,6 +48,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addFunction('netAnnualReturn', array($this, 'calculateNetAnnualReturn'));
         $this->GearmanWorker->addFunction('netAnnualTotalFunds', array($this, 'calculateNetAnnualTotalFunds'));
         $this->GearmanWorker->addFunction('netAnnualPastReturn', array($this, 'calculateNetAnnualPastReturn'));
+        $this->GearmanWorker->addFunction('getFormulaCalculate', array($this, 'getFormulaCalculate'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
         while( $this->GearmanWorker->work());
     }
@@ -65,7 +66,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //$investorId = $this->investor->find("userReference");
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
-        $serviceFunction = $data['service'];
+        $service = $data['service'];
+        $serviceFunction = $service['service'];
         $result = $this->$serviceFunction($data);
         
     }
@@ -93,15 +95,21 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
-            $variablesName = [];
-            foreach ($variables as $variableKey => $variable) {
+            //$variablesName = [];
+            /*foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
-            }
-            
+            }*/
             $dataMergeByDate = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
         }
+        Configure::load('p2pGestor.php', 'default');
+        $winvestifyBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');    
+        $financialClass = new Financial;
+        $xirr = $financialClass->XIRR($dataMergeByDate['values'], $dataMergeByDate['dates'] , 0.1);
+        echo "this is the xiiiiiiiiiiiiiiir " . $xirr;
+        exit;
     }
     
     public function calculateNetAnnualTotalFunds($data) {
@@ -378,18 +386,23 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function getSumValuesOrderedByDate($modelName, $value, $keyValue, $date) {
-        $model = ClassRegistry::init("Paymenttotal");
+        $model = ClassRegistry::init($modelName);
         $sumValues = $value;
+        $nameSum = $value;
         if (is_array($value)) {
+            $nameSum = null;
             foreach ($value as $string)  {
+                if (empty($nameSum)) {
+                    $nameSum = $string;
+                }
                 $sumValues = $string . " + ";
             }
             $sumValues = rtrim($sumValues,"+ ");
         }
         
-        $model->virtualFields = array('paymenttotal_totalCost' . '_sum' => 'sum(' . $sumValues . ')');
+        $model->virtualFields = array($nameSum . '_sum' => 'sum(' . $sumValues . ')');
         $sumValue  =  $model->find('list',array(
-                'fields' => array('date', 'paymenttotal_totalCost' . '_sum'),
+                'fields' => array('date', $nameSum . '_sum'),
                 'group' => array('date'),
                 'conditions' => array(
                     "date >=" => $date['init'],
@@ -403,7 +416,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function mergeArraysByKey($arrays, $variables) {
-        $dates = [];
+        /*$dates = [];
+        $data = [];
         foreach ($arrays as $array) {
             foreach ($array as $keyDate => $value) {
                 if (!in_array($keyDate, $dates)) {
@@ -412,13 +426,62 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             }
         }
         sort($dates);
+        $i = 0;
         foreach ($dates as $date) {
             $dataFormula = null;
             foreach ($variables as $variableKey => $variable) {
-                $value = $arrays[$variableKey][$date];
-                $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $variable['operation']);
+                if (!empty($arrays[$variableKey][$date])) {
+                    $value = $arrays[$variableKey][$date];
+                    $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $variable['operation']);
+                }
             }
+            $dateParts = explode("-", $date);
+            $data['dates'][$i] = mktime(0,0,0,$dateParts[2],$dateParts[1],$dateParts[0]);
+            $data['values'][$i] = $dataFormula;
+            $i++;
+         * 
+        }*/
+        $data = [];
+        $array = [
+            "2015-11-19" => "-250",
+            "2015-12-17" => "3.99809457497",
+            "2016-01-17" => "4.0925389921887",
+            "2016-02-17" => "0.13543599831408",
+            "2016-02-22" => "4.03804840497028",
+            "2016-03-17" => "4.0925359921887",
+            "2016-04-17" => "0.088349586796929",
+            "2016-04-26" => "4.109468491978",
+            "2016-07-08" => "8.80608016374238",
+            "2016-08-01" => "4.10939773645267",
+            "2016-08-22" => "4.10953924750319",
+            "2016-11-01" => "8.81551003905411",
+            "2016-11-28" => "4.10946849197793",
+            "2017-01-12" => "4.39823618312744",
+            "2017-02-07" => "4.37652967769291",
+            "2017-03-30" => "8.21893698395585",
+            "2017-04-17" => "0.63696138898043",
+            "2017-05-02" => "4.10946849197796",
+            "2017-06-12" => "4.40357384839829",
+            "2017-07-18" => "0.866697620601355",
+            "2017-07-31" => "1.65663337787617",
+            "2017-08-24" => "3.20259916247211",
+            "2017-08-29" => "5.61380048746335",
+            "2017-10-02" => "4.10946849197793",
+            "2017-10-30" => "4.09980247375654",
+            "2017-11-17" => "0.009666018221385",
+            "2017-11-21" => "4.0828729739667",
+            "2017-11-29" => "216.59873618302"
+        ];
+        $i = 0;
+        $data['dates'] = [];
+        $data['values'] = [];
+        foreach ($array as $keyDate => $data) {
+            $dateParts = explode("-", $keyDate);
+            $data['dates'][$i] = mktime(0,0,0,$dateParts[2],$dateParts[1],$dateParts[0]);
+            $data['values'][$i] = $data;
+            $i++;
         }
+        return $data;
     }
     
     /**
