@@ -347,13 +347,10 @@ class UserDataShell extends AppShell {
      */
 
     public function calculateMyInvestment(&$transactionData, &$resultData) {
-
-        echo __FUNCTION__ . " " . __LINE__ . "returning " . $transactionData['amount'] . "\n";
-        echo "existing value = " . $resultData['payment']['payment_myInvestment'] . "\n";
-//       $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
         return $transactionData['amount'];
     }
 
+    
     public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
         echo "----------------->  BBBBBBBBB\n";
         print_r($transactionData);
@@ -493,10 +490,10 @@ class UserDataShell extends AppShell {
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB 
      * @return int         number of active loans
-     * 
+     * $tempMeasurements = $database['Measurements'];
      */
-
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
+        $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
         $tempOutstandingPrincipal = 1;     // Any value other than 0 
 
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
@@ -506,19 +503,76 @@ class UserDataShell extends AppShell {
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }
-
-        if ($tempOutstandingPrincipal == 0) {
-            return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
-        }
+        $resultData['measurements']['stateCounting'] = $resultData['measurements']['stateCounting'] + 1;
+        
+     //   if ($resultData['investment']['technicalState'] == WIN_TECH_STATE_ACTIVE) {
+            $resultData['measurements'][$transactionData['investment_loanId']]['winTechActiveStateCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechActiveStateCounting'] + 1;
+            if ($tempOutstandingPrincipal == 0) {
+      //          $resultData['investment']['technicalState'] = WIN_TECH_STATE_NOT_ACTIVE;
+                $resultData['measurements'][$transactionData['investment_loanId']]['decrements'][]  = 'YES';
+                $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
+                                                $resultData['investment']['technicalState'];
+                return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1);          
+            }
+     //   }
 
         if ($resultData['investment']['investment_new'] == YES) {
-            //           $resultData['investment']['investment_new'] = NO;       // To avoid possible double counting
-            return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);
+            $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] + 1;
+            $resultData['measurements'][$transactionData['investment_loanId']]['increments'][] = 'NO';
+            $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
+                                                $resultData['investment']['technicalState'];           
+            return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);   
         } else {
             return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'];
         }
     }
 
+    
+    
+    
+// ONLY FOR TESTING
+     public function calculateTechnicalState(&$transactionData, &$resultData) {
+//     echo "entering technicalstate\n";
+         $tempOutstandingPrincipal = 1;
+        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
+            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        }
+
+   /*     if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) > 1) {
+            $tempOutstandingPrincipal = 0;
+        }*/
+        if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
+            $tempOutstandingPrincipal = 0;
+        }
+        if ($tempOutstandingPrincipal == 0) {
+//            echo "Writing technicalStateFinished\n";
+            return "FINISHED";
+        }        
+        
+        if ($resultData['investment']['investment_new'] == YES) {
+//            $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+//            echo "writing technicalStateActive\n";
+            return "INITIAL";  
+        }       
+        
+
+        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            return "FINISHED";
+        }
+        return "ACTIVE";
+        
+//        $resultData['investment']['technicalState'] = "UNDEFINED";
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /*
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      *  @param  array       array with the current transaction data
