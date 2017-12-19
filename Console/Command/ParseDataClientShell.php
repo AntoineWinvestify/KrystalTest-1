@@ -605,6 +605,10 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                         $database[$varName[0]][$varName[1]] = $result;
                     }                  
                 }                 
+  
+                echo "printing relevant part of database\n";
+                print_r($database['investment']);
+                print_r($database['payment']);
                 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
                 if ($database['investment']['investment_new'] == YES) {   
@@ -645,12 +649,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
                     }
                 }
-                echo "printing relevant part of database\n";
-                print_r($database['investment']);
-                print_r($database['payment']);
-                        
+     
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
- 
+echo "===> ANTOINE"; 
                 $internalVariablesToHandle = array(10001, 10002);      // TotalOutstandingPrincipal and numberActiveInvestments
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
