@@ -167,10 +167,10 @@ class ConsolidationClientShell extends GearmanClientShell {
         
         $services[0]['service'] = "calculateNetAnnualReturnXirr";
         $services[0]['gearmanFunction'] = 'getFormulaCalculate';
-        $services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
-        $services[1]['gearmanFunction'] = 'getFormulaCalculate';
-        $services[2]['service'] = "calculateNetAnnualPastReturnXirr";
-        $services[2]['gearmanFunction'] = 'getFormulaCalculate';
+        //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
+        //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
+        //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
+        //$services[2]['gearmanFunction'] = 'getFormulaCalculate';
         /////////////////////
         return $services;
     }
