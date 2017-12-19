@@ -210,7 +210,7 @@
         </div>
         <?php
             echo $this->element('jsPublicLandingPage');
-            echo $this->element('jsLanguageWidget');
+            echo $this->element('jsPublicFunctions');
         ?>
         <script>
             $(function (){

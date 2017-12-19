@@ -362,7 +362,7 @@
             echo $this->fetch('content');
             echo $this->element('publicfooter');
             echo $this->element('jsPublicLandingPage');
-            echo $this->element('jsLanguageWidget');
+            echo $this->element('jsPublicFunctions');
         ?>
         <!--========== END JAVASCRIPTS ==========-->
     </body>

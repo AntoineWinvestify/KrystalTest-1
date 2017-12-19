@@ -216,7 +216,7 @@
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
         <?php
             echo $this->element('jsPublicLandingPage');
-            echo $this->element('jsLanguageWidget');
+            echo $this->element('jsPublicFunctions');
         ?>
         <script>
             $(function (){
