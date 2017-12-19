@@ -17,6 +17,7 @@
             if (file_exists($file)) {
                 include_once($file);
             }
+            echo $this->element('favicon');
         ?>
         <style>
         .blue {
