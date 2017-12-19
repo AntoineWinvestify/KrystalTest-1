@@ -1598,7 +1598,17 @@ hr.nomargin {
     }
 }
 
-
+@media (max-width: 768px) {
+    .language-dropdown-menu {
+        position:absolute !important;
+        background-color: #f8f8f8 !important;
+    }
+    
+    #loginDropdown {
+        position:absolute !important;
+        background-color: #f8f8f8 !important;
+    }
+}
 
 
 
