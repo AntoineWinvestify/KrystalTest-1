@@ -57,52 +57,104 @@ class TestsController extends AppController {
 
 
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('arrayToExcel', 'convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview","arrayToExcel", "insertDummyData","downloadTimePeriod"));
+        $this->Auth->allow(array('arrayToExcel', 'convertExcelToArray', "convertPdf", "bondoraTrying", "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod", "xlsxRead"));
     }
 
     var $dateFinish = "20171129";
     var $numberOfFiles = 0;
-   
-     public function downloadTimePeriod($dateMin, $datePeriod){         
+
+    public function xlsxRead() {
+        //$file =  APP  . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20171217" . DS . "898" . DS . "bondora" . DS . "investment_1_1.xlsx";
+
+        $file = APP . "transaction_1.xlsx";
+
+
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+        
+        $fo = fopen(APP . 'hola.xlsx', "w");
+        $rf = fread($fo, filesize($fo));
+        fwrite($fo, $rf);
+        fclose($fo);
+       // $objPHPExcel = new PHPExcel();
+
+        
+        //$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+
+        header('Content-Type: application/vnd.ms-excel; charset=utf-8');
+        header('Content-Disposition: attachment; filename=01simple.xls');
+        header('Cache-Control: max-age=0');
+        /*ob_end_clean();
+        ob_start();*/
+        
+        //$objWriter->save(APP . 'hola.xlsx');
+
+
+
+        /* $za = new ZipArchive;
+          $za->open($file);
+          echo print_r($za); */
+
+
+
+
+        $file2 = APP . "transaction_2.xlsx";
+        $za2 = new ZipArchive;
+        $za2->open($file2);
+        echo print_r($za2);
+
+
+
+        /* $finfo = finfo_open();
+          $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);
+          finfo_close($finfo);
+          echo "///////////////////////////////////" . $fileinfo;
+
+          App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+          App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+          $objPHPExcel = PHPExcel_IOFactory::load($file);
+          print_r($objPHPExcel); */
+    }
+
+    public function downloadTimePeriod($dateMin, $datePeriod) {
         $dateMin = "20090101";
         $datePeriod = 120;
         echo "start" . HTML_ENDOFLINE;
-        do{
-        if( $this->numberOfFiles == 0){
-            $this->dateInit =  date("Ymd", strtotime($this->dateFinish . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
-            echo "Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
-            $this->numberOfFiles++; 
-            echo $this->numberOfFiles . HTML_ENDOFLINE;
-        }
-        else {
-            $this->dateFinish = date("Ymd", strtotime($this->dateInit . " " . -1 . " days"));//Next finish date will we the previous day of the last Init date
-            $this->dateInit = date("Ymd", strtotime($this->dateInit . " " . -$datePeriod . " days"));
-            if(date($this->dateInit) < date($dateMin)){
-                $this->dateInit = date($dateMin); //Condition for dont go a previus date than $dateMin;
+        do {
+            if ($this->numberOfFiles == 0) {
+                $this->dateInit = date("Ymd", strtotime($this->dateFinish . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
+                echo "Empiezo en " . $this->dateInit . " Termino en " . $this->dateFinish . " ";
+                $this->numberOfFiles++;
+                echo $this->numberOfFiles . HTML_ENDOFLINE;
+            } else {
+                $this->dateFinish = date("Ymd", strtotime($this->dateInit . " " . -1 . " days")); //Next finish date will we the previous day of the last Init date
+                $this->dateInit = date("Ymd", strtotime($this->dateInit . " " . -$datePeriod . " days"));
+                if (date($this->dateInit) < date($dateMin)) {
+                    $this->dateInit = date($dateMin); //Condition for dont go a previus date than $dateMin;
+                }
+                echo "Otro Empiezo en " . $this->dateInit . " Termino en " . $this->dateFinish . " ";
+                $this->numberOfFiles++;
+                echo $this->numberOfFiles . HTML_ENDOFLINE;
             }
-            echo "Otro Empiezo en " . $this->dateInit . " Termino en " .  $this->dateFinish . " ";
-            $this->numberOfFiles++;
-            echo $this->numberOfFiles . HTML_ENDOFLINE;
-         }
-        } while( date($this->dateInit) > date($dateMin));
-         
-        
-        /*if($this->dateInit <= date("Ymd", $dateMin)){
-            return false; //End period download
-        }
-            return true; //Continue period download*/
+        } while (date($this->dateInit) > date($dateMin));
+
+
+        /* if($this->dateInit <= date("Ymd", $dateMin)){
+          return false; //End period download
+          }
+          return true; //Continue period download */
     }
-    
-    
-    
-    function arrayToExcel(/*$array, $excelName*/) {
-        $array = array("market" => 1,"q" => 2,"a" => 3,"s" => 4,"d" => 5,"f" => 6,"e" => 7,"r" => 8,"t" => 9,"y" => 11,"u" => 12,"i" => 13,"o" => 14,"p" => 15,"l" => 16);
+
+    function arrayToExcel(/* $array, $excelName */) {
+        $array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
         $excelName = "prueba";
         $keyArray = array();
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 
-        foreach($array as $key => $val){
+        foreach ($array as $key => $val) {
             $keyArray[] = $key;
         }
 
@@ -111,12 +163,12 @@ class TestsController extends AppController {
         $objPHPExcel->getProperties()->setTitle($excelName);
 
         $objPHPExcel->setActiveSheetIndex(0)
-            ->fromArray($keyArray, NULL, 'A1')
-            ->fromArray($array, NULL, 'A2');
+                ->fromArray($keyArray, NULL, 'A1')
+                ->fromArray($array, NULL, 'A2');
 
-        /*header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
-        header('Cache-Control: max-age=0');*/
+        /* header('Content-Type: application/vnd.ms-excel');
+          header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
+          header('Cache-Control: max-age=0'); */
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save(APP . "files" . DS . 'preuba2.xls');
         exit;
@@ -244,96 +296,96 @@ class TestsController extends AppController {
         // get token from 'code' provided after user successful login. Store access_token and refresh_token
         //$token_object = $api->getToken($code);
     }
-    
+
     public function insertDummyData() {
         //$model = ClassRegistry::init("Userinvestmentdata");
-        
-        /*for ($i = 0; $i < 600; $i++) {
-            $random = rand(500, 15000);
-            $random2 = rand(100, 5000);
-            $random3 = rand(300, 5000);
-            $date = date("Y-m-d",strtotime("-$i days"));
-            
-            $data['Userinvestmentdata']['linkedaccount_id'] = 35705;
-            $data['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = "39048098ab409be490A";
-            $data['Userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $random;
-            $data['Userinvestmentdata']['userinvestmentdata_totalLoansCost'] = $random2;
-            $data['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $random3;
-            $data['Userinvestmentdata']['date'] = $date;
-            round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP);
-            //echo $random . "<br>";
-            //echo $date . "<br>";
-            $model->create();
-            $model->save($data);
-        }*/
-        
+
+        /* for ($i = 0; $i < 600; $i++) {
+          $random = rand(500, 15000);
+          $random2 = rand(100, 5000);
+          $random3 = rand(300, 5000);
+          $date = date("Y-m-d",strtotime("-$i days"));
+
+          $data['Userinvestmentdata']['linkedaccount_id'] = 35705;
+          $data['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = "39048098ab409be490A";
+          $data['Userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $random;
+          $data['Userinvestmentdata']['userinvestmentdata_totalLoansCost'] = $random2;
+          $data['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] = $random3;
+          $data['Userinvestmentdata']['date'] = $date;
+          round(bcmul(bcdiv($global['cash'], $global['totalVolume'],16), 100, 16), 2, PHP_ROUND_HALF_UP);
+          //echo $random . "<br>";
+          //echo $date . "<br>";
+          $model->create();
+          $model->save($data);
+          } */
+
         $model = ClassRegistry::init("Paymenttotal");
         $model->virtualFields = array('paymenttotal_myInvestment' . '_sum' => 'sum(paymenttotal_myInvestment)');
-        $sumValue  =  $model->find('list',array(
-                'fields' => array('date', 'paymenttotal_myInvestment' . '_sum'),
-                'group' => array('date')
-                /*'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "linkedaccount_id" => $linkedaccountId
-                )*/
-            )
-        );
-        
-        /*$model->virtualFields = array('paymenttotal_regularGrossInterestIncome' . '_sum' => 'sum(paymenttotal_regularGrossInterestIncome)');
-        $sumValue2  =  $model->find('list',array(
-                'fields' => array('date', 'paymenttotal_regularGrossInterestIncome' . '_sum'),
-                'group' => array('date')
-                /*'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "linkedaccount_id" => $linkedaccountId
-                )*/
-            /*)
-        );*/
-        
-        /*foreach ($sumValue as $key => $value) {
-            $totalSum[$key] = $value + $sumValue2[$key]; 
-        }
-        
-        print_r($totalSum);
-        /*$sumValue  =  $model->find('list',array(
-                'fields' => array('linkedaccount_id', $value . '_sum'),
-                'conditions' => array(
-                    $modelName .  ".created >=" => $dateInit,
-                    $modelName .  ".created <=" => $dateFinish
+        $sumValue = $model->find('list', array(
+            'fields' => array('date', 'paymenttotal_myInvestment' . '_sum'),
+            'group' => array('date')
+                /* 'conditions' => array(
+                  "date >=" => $dateInit,
+                  "date <=" => $dateFinish,
+                  "linkedaccount_id" => $linkedaccountId
+                  ) */
                 )
-            )
-        );*/
-        
-        $model2 = ClassRegistry::init("Userinvestmentdata");
-        
-        $idByDate =  $model2->find('list',array(
-                'fields' => array('date', 'id'),
-                'group' => array('date')
-                /*'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "linkedaccount_id" => $linkedaccountId
-                )*/
-            )
         );
-        
+
+        /* $model->virtualFields = array('paymenttotal_regularGrossInterestIncome' . '_sum' => 'sum(paymenttotal_regularGrossInterestIncome)');
+          $sumValue2  =  $model->find('list',array(
+          'fields' => array('date', 'paymenttotal_regularGrossInterestIncome' . '_sum'),
+          'group' => array('date')
+          /*'conditions' => array(
+          "date >=" => $dateInit,
+          "date <=" => $dateFinish,
+          "linkedaccount_id" => $linkedaccountId
+          ) */
+        /* )
+          ); */
+
+        /* foreach ($sumValue as $key => $value) {
+          $totalSum[$key] = $value + $sumValue2[$key];
+          }
+
+          print_r($totalSum);
+          /*$sumValue  =  $model->find('list',array(
+          'fields' => array('linkedaccount_id', $value . '_sum'),
+          'conditions' => array(
+          $modelName .  ".created >=" => $dateInit,
+          $modelName .  ".created <=" => $dateFinish
+          )
+          )
+          ); */
+
+        $model2 = ClassRegistry::init("Userinvestmentdata");
+
+        $idByDate = $model2->find('list', array(
+            'fields' => array('date', 'id'),
+            'group' => array('date')
+                /* 'conditions' => array(
+                  "date >=" => $dateInit,
+                  "date <=" => $dateFinish,
+                  "linkedaccount_id" => $linkedaccountId
+                  ) */
+                )
+        );
+
 
         foreach ($sumValue as $key => $sum) {
             //$data['Userinvestmentdata']['userinvestmentdata_totalGrossIncome'] = $sum;
             $model2->id = $idByDate[$key];
             $model2->saveField('userinvestmentdata_totalLoansCost', $sum);
         }
-        
-        /*$sumValue  =  $model->find('list',array(
-                'fields' => array('linkedaccount_id', $value . '_sum'),
-                'conditions' => array(
-                    $modelName .  ".created >=" => $dateInit,
-                    $modelName .  ".created <=" => $dateFinish
-                )
-            )
-        );*/
+
+        /* $sumValue  =  $model->find('list',array(
+          'fields' => array('linkedaccount_id', $value . '_sum'),
+          'conditions' => array(
+          $modelName .  ".created >=" => $dateInit,
+          $modelName .  ".created <=" => $dateFinish
+          )
+          )
+          ); */
     }
 
 }

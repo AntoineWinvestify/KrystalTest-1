@@ -224,10 +224,10 @@ class bondora extends p2pCompany {
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
 
-
-
-
-
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();
+        
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
@@ -456,7 +456,7 @@ class bondora extends p2pCompany {
                     $this->dateInitBondora = '01/01/2009';
                 }
 
-                if ($this->investmentNumber === 0) { //Max day in bondora is yesterday
+                if ($this->transactionNumber === 0) { //Max day in bondora is yesterday
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
                 } else {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
@@ -510,6 +510,8 @@ class bondora extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 $this->numberOfFiles = 0;
+                $this->investmentNumber = 0;
+                $this->transactionNumber = 0;
                 $this->timerInvestment = 0;
                 $this->timerTransaction = 0;
                 $this->idForSwitch++;
@@ -549,7 +551,7 @@ class bondora extends p2pCompany {
                 break;
 
             case 3:
-                if ($this->numberOfFiles === 0) {  //Only get globlal variables the first time
+                if ($this->investmentNumber === 0) {  //Only get globlal variables the first time
                     $dom = new DOMDocument;  //Check if works
                     $dom->loadHTML($str);
                     $dom->preserveWhiteSpace = false;
@@ -596,8 +598,11 @@ class bondora extends p2pCompany {
                     if (!$this->verifyFileIsCorrect()) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                     }
+                    /*$headerError = $this->compareHeader();
+                    if($headerError){
+                        $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                    }*/
                 }
-
                 $this->idForSwitch++;
                 if (empty($this->tempUrl['tokenUrl'])) {
                     $this->tempUrl['tokenUrl'] = array_shift($this->urlSequence);  //Page that contain the security token necesary to generate the reports
@@ -627,7 +632,7 @@ class bondora extends p2pCompany {
                     $this->dateInitBondora = '01/01/2009';
                 }
 
-                if ($this->numberOfFiles === 0) { //max date is yesterday
+                if ($this->investmentNumber === 0) { //max date is yesterday
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
                 } else {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
@@ -683,6 +688,7 @@ class bondora extends p2pCompany {
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment']; //Build the report download url
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "_" . $this->numPartFileInvestment . "." . $this->typeFileInvestment;
                 $this->numPartFileInvestment++;
+                $this->investmentNumber = $this->numberOfFiles;
 
                 if ($continue !== false) {
                     $this->idForSwitch--;
@@ -695,15 +701,21 @@ class bondora extends p2pCompany {
                     $this->tempUrl['investmentReferer'] = array_shift($this->urlSequence);
                     $this->tempUrl['investmentHeaders'] = array_shift($this->urlSequence);
                 }
-                //echo  $this->tempUrl['investmentHeaders'];        
-                $headerJsonDecode = json_decode(mb_convert_encoding($this->tempUrl["investmentHeaders"], 'UTF-8'), true);
+                $headerJsonDecode = json_decode(mb_convert_encoding($this->tempUrl["investmentHeaders"], 'UTF-8'), true); //HEADERS FOR CURL
+                $this->headerComparation = array("A" => 'hola');//$this->investmetHeader; //HEADER OF THE FILE
+                header('Content-type: application/xml');
                 $this->getPFPFileMulticurl($url, $this->tempUrl['investmentReferer'], false, $headerJsonDecode, $this->fileName); //Download the report.
                 break;
 
             case 5:
+                
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                /*$headerError = $this->compareHeader();
+                if($headerError){
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }*/
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
@@ -730,7 +742,7 @@ class bondora extends p2pCompany {
                     $this->dateInitBondora = '01/01/2009';
                 }
 
-                if ($this->numberOfFiles === 0) {
+                if ($this->transactionNumber === 0) {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
                 } else {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
@@ -780,10 +792,11 @@ class bondora extends p2pCompany {
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['tokenUrl']);
                     break;
                 }
-
+                $this->transactionNumber = $this->numberOfFiles;
                 if ($continue !== false) {
                     $this->idForSwitch--;
                 } else {
+                    $this->numberOfFiles = 0;
                     $this->idForSwitch++;
                 }
 
@@ -873,11 +886,12 @@ class bondora extends p2pCompany {
                 $credentials["NewReports[0].StartDate"] = $this->dateInitBondora;
                 $credentials["NewReports[0].EndDate"] = $this->dateFinishBondora;
 
-                echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
+                /*echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
-                echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
+                echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;*/
                 $this->idForSwitch = 9;
-                echo "go to: " . $this->tempUrl['generateReport'];
+                //echo "go to: " . $this->tempUrl['generateReport'];
+                $this->genrateReport = true;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
             case 12:
@@ -904,10 +918,11 @@ class bondora extends p2pCompany {
                 $credentials["NewReports[5].StartDate"] = $this->dateInitBondora;
                 $credentials["NewReports[5].EndDate"] = $this->dateFinishBondora;
 
-                echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
+                /*echo "CREDENTIALS VALUE" . SHELL_ENDOFLINE;
                 $this->print_r2($credentials);
-                echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;
+                echo "END CREDENTIALS VALUE" . SHELL_ENDOFLINE;*/
                 $this->idForSwitch = 10;
+                $this->genrateReport = true;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
         }

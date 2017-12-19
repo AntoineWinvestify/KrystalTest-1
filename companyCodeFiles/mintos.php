@@ -514,9 +514,17 @@ class mintos extends p2pCompany {
                                 'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
     
-
+    
+     protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
+            'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 'I' => 'Next Payment',
+            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Term', 'N' => 'Payments Received', 'O' => 'Status', 
+            'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Purchase' , 'S' => 'Received Payments', 
+            'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
+            );
      
-
+    protected $transactionHeader = array('A' => 'Transaction ID', 'B' => 'Date', 'C' => 'Details', 'D' => 'Turnover',
+            'E' => 'Balance', 'F' => 'Currency'
+            );
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -524,6 +532,10 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+       
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
@@ -719,6 +731,7 @@ class mintos extends p2pCompany {
                     echo __FUNCTION__ . " " . __LINE__ . ": headers decode are : " . $headers . "\n";
                 }
                 //$referer = 'https://www.mintos.com/en/my-investments/?currency=978&statuses[]=256&statuses[]=512&statuses[]=1024&statuses[]=2048&statuses[]=8192&statuses[]=16384&sort_order=DESC&max_results=20&page=1';
+                $this->headerComparation = $this->investmentHeader;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
                 //echo 'Downloaded';
@@ -728,6 +741,10 @@ class mintos extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 
+                $headerError = $this->compareHeader();
+                if($headerError){
+                    $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
@@ -761,6 +778,7 @@ class mintos extends p2pCompany {
                 
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
                 $this->numPartFileTransaction++;
+                $this->headerComparation = $this->transactionHeader;
                 if(!$continue){
                     if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
                         $this->idForSwitch++;

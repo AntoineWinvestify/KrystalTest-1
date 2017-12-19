@@ -166,8 +166,13 @@ class p2pCompany {
     protected $callbacks;
     protected $originExecution;
     
+    
+    protected $compareHeaderConfigParam = array( "chunkInit" => 1,
+                                        "chunkSize" => 1,     
+                                        );
+    
     //Number of days for each company download. Only some pfp uses it.
-    protected $period = 365;
+    protected $period = 30;
     /**
      *
      * Prepare all the default data of the class and its subclasses
@@ -2821,6 +2826,18 @@ FRAGMENT
             $created = false;
         }
         return $created;
+    }
+    
+    /**Function to compare header of the downloaded file of the pfps.
+     * 
+     * @return boolean true if header is different, false if is the same.
+     */
+    public function compareHeader(){
+        $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
+        if($this->headerComparation !== $data){
+            return true;
+        };             
+        return false;
     }
     
 }
