@@ -242,8 +242,59 @@ class finanzarel extends p2pCompany {
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
-    protected  $investmentHeader = array();
-    protected  $compareHeaderConfigParam = array( 'separatorChar' => ";");
+            /************************************/
+            /**HEADERS FOR SRUCTURE COMPARATION**/
+            /************************************/
+    protected  $investmentHeader = array (
+                                    "A" => "Subasta",
+                                    "B" => "Deudor/Emisor",
+                                    "C" => "Rating",
+                                    "D" => "T?tulo",
+                                    "E" => "Importenominal",
+                                    "F" => "Vto.(d)",
+                                    "G" => "Fecha finsubasta",
+                                    "H" => "Tasa dto.solicitada",
+                                    "I" => "Tasafinal",
+                                    "J" => "Mi oferta",
+                                    "K" => "Importeasignado",
+                                    "L" => "Mi oferta(precio)",
+                                    "M" => "Plusval?ainicial",
+                                    "N" => "Fecha de vencimiento",
+                                    "O" => "Estado",
+                                    "P" => "Amortizaci?nPendiente",
+                                    "Q" => " ");
+    
+    protected $expiredLoansHeader = array(
+                                    "A" => "Subasta",
+                                    "B" => "Resultado",
+                                    "C" => "Deudor/Emisor",
+                                    "D" => "Rating",
+                                    "E" => "T?tulo",
+                                    "F" => "Importe",
+                                    "G" => "Vto.(d)",
+                                    "H" => "Fecha finsubasta",
+                                    "I" => "Tasasolicicitada",
+                                    "J" => "Tasafinal",
+                                    "K" => "Mi oferta",
+                                    "L" => "ImporteOferta",
+                                    "M" => "Mi oferta(precio)",
+                                    "N" => "Plusval?a",
+                                    "O" => "Fecha de vencimiento");
+    
+    protected $transactionHeader = array(
+                                 "A" => "Id",
+                                 "B" => "A?o",
+                                 "C" => "Trimestre",
+                                 "D" => "Fecha",
+                                 "E" => "Subasta",
+                                 "F" => "Descripci?n",
+                                 "G" => "Importe",
+                                 "H" => "Saldo");
+    
+    
+    protected  $compareHeaderConfigParam = array( 'separatorChar' => ";",
+                                                  'chunkInit' => 1,
+                                                  'chunkSize' => 1 );
 
 
     /*protected $callbacks = [
@@ -524,6 +575,7 @@ class finanzarel extends p2pCompany {
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
                 $headers = array('Expect:');
                 //array_shift($this->urlSequence);
+                $this->headerComparation = $this->investmentHeader;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);
                 break; 
@@ -531,7 +583,7 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $this->headerComparation = $this->investmentHeader;
+                              
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
@@ -553,18 +605,28 @@ class finanzarel extends p2pCompany {
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
                 $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->expiredLoansHeader;
                 $headers = array('Expect:');
+                
                 if (count($this->request) > 2) {
-                    $this->idForSwitch++;
+                    $this->idForSwitch++;                   
                 }
                 else {
+                    $this->from = 4;
                     $this->idForSwitch = 6;
                 }
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
                 break;
             case 5:
-                                                if (!$this->verifyFileIsCorrect()) {
+                if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                      
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
@@ -574,6 +636,7 @@ class finanzarel extends p2pCompany {
                         'p_debug' => '',
                         'p_request' => $this->request[2]);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->numFileInvestment++;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
@@ -582,6 +645,12 @@ class finanzarel extends p2pCompany {
             case 6:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $this->idForSwitch++;
             case 7:
@@ -627,6 +696,7 @@ class finanzarel extends p2pCompany {
                         ));
                 $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
                 $this->idForSwitch++;
                 echo "referer: " . $referer;
                 $this->getPFPFileMulticurl($url, $referer, false, $headers, $this->fileName);
@@ -634,6 +704,12 @@ class finanzarel extends p2pCompany {
             case 9:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 return $this->tempArray;
                 

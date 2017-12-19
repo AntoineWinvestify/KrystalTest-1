@@ -1643,6 +1643,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $extension = $this->getExtensionFile($file);
         $inputType = $this->getInputFileType($extension);
         $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
+        echo "HEADER IS: ";
         print_r($data[1]);
         return $data[1];
     }
@@ -1706,10 +1707,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
     function clearCsv($filePath) {
             //WE MUST CLEAR CSV OF SPECIAL CHARACTERS
-            $csv = fopen($file, "r");
-            $csvString = mb_convert_encoding(fread($csv, filesize($file)), "UTF-8"); //Convert special characters
+            $csv = fopen($filePath, "r");
+            $csvString = mb_convert_encoding(fread($csv, filesize($filePath)), "UTF-8"); //Convert special characters
             fclose($csv);
-            $csv = fopen($file, "w+");   //Rewrite old csv
+            $csv = fopen($filePath, "w+");   //Rewrite old csv
             fwrite($csv,$csvString);
             fclose($csv);
     }

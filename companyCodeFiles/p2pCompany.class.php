@@ -2835,16 +2835,24 @@ FRAGMENT
     public function compareHeader(){
         
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
-        if($this->headerComparation !== $data){  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
-            $i = 0;
-            while($i < count($this->headerComparation)){
-                if($this->headerComparation[$i] != $data[$i]){ // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+        /*echo "Comapare: ";
+        print_r($this->headerComparation);
+        echo SHELL_ENDOFLINE;
+        echo "with: ";
+        print_r($data);
+        echo SHELL_ENDOFLINE;*/
+        print_r(array_diff($this->headerComparation,$data));
+        if(array_diff($this->headerComparation,$data)){  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            foreach($data as $key => $value){
+                if($value !== $this->headerComparation[$key]){ // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                    echo "fatal error";
                     return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
                 }
-                $i++;
-            } 
-            return WIN_ERROR_FLOW_NEW_FINAL_HEADER; 
-        }          
+                echo "Warning";
+                return WIN_ERROR_FLOW_NEW_FINAL_HEADER; 
+            }     
+        }
+        echo "OK";
         return false;       
     } 
 }
