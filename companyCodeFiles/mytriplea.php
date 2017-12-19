@@ -728,7 +728,9 @@ class mytriplea extends p2pCompany {
                 $trs = $this->getElements($tbodys[0], "tr"); // table with all active investments
 //echo __FILE__ . " " . __LINE__ . "<br>";
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    $tempArray = $this->tempArray;
+                    $this->getError(__LINE__, __FILE__);
+                    return $tempArray;
                 }
                 $this->numberOfInvestments = 0;
                 for ($key = 0; $key < count($trs); $key++) { // cycle through all the investments and get the data, including amortization table
