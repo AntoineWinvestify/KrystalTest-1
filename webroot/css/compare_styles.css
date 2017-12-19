@@ -2245,6 +2245,11 @@ hr.specialHr:after {
 .dropdown-menu {
     background-color: #f8f8f8;
 }
+
+.dropdown {
+    cursor: pointer;
+}
+
 .navGreen>li>a, .navGreen>li>a {
     border-bottom: 5px solid #f8f8f8;
 }
