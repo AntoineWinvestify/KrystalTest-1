@@ -1,30 +1,15 @@
 <!DOCTYPE html>
 <html lang="es-ES">
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
-        <meta name="author" content="">
-
         <title>Winvestify</title>
+        <?php
+            echo $this->element('meta');
+            echo $this->element('csspubliclayout');
+        ?>
 
-        <!-- Bootstrap 3.3.6 -->
-        <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
-
-        <!-- Web Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,400i|Montserrat:400,700" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         
-        <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
-        <!-- Vendor Styles -->
-        <link href="/megaKit/vendor/themify/themify.css" rel="stylesheet" type="text/css"/>
+        <script type="text/javascript" src="/modals/assets/js/jquery-3.2.1.min.js"></script>
 
-        <!-- Theme Styles -->
-        <link href="/megaKit/css/style.css" rel="stylesheet" type="text/css"/>
-        <link href="/megaKit/css/global.css" rel="stylesheet" type="text/css"/>
-        <link href="/megaKit/css/custom.css" rel="stylesheet" type="text/css"/>
-        <link href="/css/compare_styles.css" rel="stylesheet" type="text/css"/>
         
         <?php /*
           <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -41,7 +26,10 @@
             if (file_exists($file)) {
                 include_once($file);
             }
+            
+            echo $this->element('favicon');
         ?>
+        
     </head>
 
 
@@ -161,7 +149,7 @@
                                 </a>
                             </li>
                             <li class="dropdown" style="margin-top:0px; display:inline-block">
-                                <?php //echo $this->element('languageWidget') ?>
+                                <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
                         </ul>
@@ -220,7 +208,10 @@
         <div id="footer">
           <?php echo $this->element('publicfooter'); ?>  
         </div>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+        <?php
+            echo $this->element('jsPublicLandingPage');
+            echo $this->element('jsPublicFunctions');
+        ?>
         <script>
             $(function (){
                 //Dropdown menu hover
@@ -235,5 +226,6 @@
                 });
             });
         </script>
+        
     </body>
 </html>

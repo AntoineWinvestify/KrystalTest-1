@@ -1,31 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>  
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="description" content="<?php echo __('Winvestify is a platform that integrates the management of all your investments in P2P Lending platforms in one global dashboard')?>">
-        <meta name="keywords" content="<?php echo __('Investor, Peer to Peer Lending, P2P Lending, Yield, Invest, Interest, High return on investment, dashboard, high ROI, personal loan')?>">
         <title>Winvestify</title>
         <!-- Tell the browser to be responsive to screen width -->
-        <meta content="width=device-width, initial-scale=1" name="viewport">
+        <?php 
+            echo $this->element('meta');
+            
+            echo $this->element('csslandingpage');
+        ?>
        
-        <!-- Theme STYLES -->
-        <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/style.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/global.css"/>
-        <link type="text/css" rel="stylesheet" href="/css/compare_styles.css"/>
-        <!-- Ionicons -->
-        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"/>
-        <!-- Web Fonts -->
-        <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"/>
-        <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,400i/Montserrat:400,700"/>
-        <link type="text/css" rel="stylesheet" href='https://fonts.googleapis.com/css?family=Muli:400,300'/>
-        <!-- Plugins -->
-        <link type="text/css" rel="stylesheet" href="/modals/assets/css/paper-bootstrap-wizard.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/css/animate.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/themify/themify.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/scrollbar/scrollbar.min.css"/>
-        <link type="text/css" rel="stylesheet" href="/megaKit/vendor/swiper/swiper.min.css"/>
 
         <?php
         $file = APP . "Config" . DS . "googleCode.php";
@@ -34,7 +17,9 @@
         }
         ?>
         <script type="text/javascript" src="/modals/assets/js/jquery-2.2.4.min.js"></script>
-        <link rel="icon" href="/img/logo_winvestify/Logo_favicon.png">
+        <?php
+            echo $this->element('favicon');
+        ?>
     </head>
     <body>
         <?php echo $this->Html->script(array('local')); ?>
@@ -151,7 +136,7 @@
                                     <?php echo __('Register')?>
                                 </a>
                             </li>
-                            <li class="dropdown" style="margin-top:0px; display:inline-block">
+                            <li class="dropdown" style="margin-top:0px; display:inline-block; cursor:pointer;">
                                 <?php echo $this->element('languageWidget') ?>
                                 <div class="visible-xs-block clearfix"></div>
                             </li>
@@ -373,108 +358,12 @@
         
         <!--========== END PAGE CONTENT ==========-->
         
-        <?php echo $this->fetch('content'); ?>
-        <?php echo $this->element('publicfooter') ?>
-
-        <!-- Back To Top -->
-        <a href="javascript:void(0);" class="s-back-to-top js__back-to-top"></a>
-
-        <!--========== JAVASCRIPTS (Load javascripts at bottom, this will reduce page load time) ==========-->
-        <!-- Plugins -->
-        <script type="text/javascript" src="/megaKit/vendor/jquery.back-to-top.min.js"></script>
-        <script type="text/javascript" src="/megaKit/vendor/jquery.wow.min.js"></script>
-        <script type="text/javascript" src="/megaKit/js/wow.min.js"></script>
-        <script type="text/javascript" src="/modals/assets/js/jquery.bootstrap.wizard.js"></script>
-        <script type="text/javascript" src="/modals/assets/js/paper-bootstrap-wizard.js"></script>
-        <script type="text/javascript" src="/modals/assets/js/jquery.validate.min.js"></script>
-        <!-- Cookies script -->
-        <script type="text/javascript" id="cookieinfo"
-                src="//cookieinfoscript.com/js/cookieinfo.min.js"
-                data-bg="#000000"
-                data-fg="#FFFFFF"
-                data-link="#87e14b"
-                data-divlinkbg="#87e14b"
-                data-cookie="CookieScript"
-                data-message="<?php echo __('We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies') ?>"
-                data-moreinfo="https://www.winvestify.com/pages/privacyPolicy#cookies"
-                data-height="50"
-                data-close-text="<?php echo __('Got it!') ?>">
-        </script>
-        <!-- General Components and Settings -->
-        <script type="text/javascript" src="/megaKit/js/global.min.js"></script>
-        <script type="text/javascript" src="/js/local.js"></script>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-        <script type="text/javascript">
-            function successLanguage(data) {
-                location.reload(true);
-                var id = $(".flagvalue").attr("id");
-                $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
-            }
-
-            function sendLocationDataSuccess(data) {
-            }
-
-            function sendLocationDataError(data) {
-            }
-            
-            $(document).ready(function () {
-                $.getJSON('https://freegeoip.net/json/?callback=?', function (data) {		// 10.000 /hour, only IP
-                    var link = "/marketplaces/location";
-                    console.log(JSON.stringify(data, null, 2));
-                    getServerData(link, data, sendLocationDataSuccess, sendLocationDataError);
-                    console.log("Send location Data to server");
-                });
-
-                $(".flag-language").on("click", function () {
-                    var id = $(this).attr("id");
-                    var link = $(this).attr("href");
-                    var params = {id: id};
-                    var data = jQuery.param(params);
-                    getServerData(link, data, successLanguage, successLanguage);
-                    return false;
-                });
-
-                $("#loginBtn").bind("click", function (event) {
-                    if (app.visual.checkFormLogin() === true) {				// continue with default action
-                        return true;
-                    }
-                    console.log("Error detected in input parameters of login function");
-                    event.stopPropagation();
-                    event.preventDefault();
-                    return false;
-                });
-                //dismiss popup
-                $(document).on("click", ".closePopUp", function () {
-                    $("#popUp").css("display", "none");
-                });
-                //fadeout popup
-                fadeOutElement("#popUp", 15000);
-
-                //disable clicking on #loginDropdown
-                $("#loginDropdown").on("click", function(event) {
-                    event.preventDefault;
-                    event.stopPropagation();
-                });
-                
-                //navbar collapse on clicking outside navbar
-                $(document).on("click", function(){
-                    $('.navbar-collapse').collapse('hide');
-                    $('#loginDropdown').hide(); //hide loginDropdown
-                });
-
-                if ($(window).width() > 1023) {
-                    //Dropdown menu click
-                    $("ul.nav li.dropdown").on("click", function() {
-                      $(this).find('.dropdown-menu').stop(true, true).fadeToggle(400);
-                    });
-                }
-                
-                //Initial schemaImg
-                var id = $(".flagvalue").attr("id");
-                $(".schemaImg").attr("src", "/img/landingpage/schema_" + id + ".png");
-            });
-
-        </script>
+        <?php 
+            echo $this->fetch('content');
+            echo $this->element('publicfooter');
+            echo $this->element('jsPublicLandingPage');
+            echo $this->element('jsPublicFunctions');
+        ?>
         <!--========== END JAVASCRIPTS ==========-->
     </body>
 </html>
