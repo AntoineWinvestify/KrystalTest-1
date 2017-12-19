@@ -101,14 +101,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $date['finish'] = $this->getDateForSum($variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
             }*/
-            $dataMergeByDate = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+            //$dataMergeByDate = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+            $dataMergeByDate = $this->returnDataPreformat();
         }
         Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');    
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
-        $xirr = $financialClass->XIRR($dataMergeByDate['values'], $dataMergeByDate['dates'] , 0.1);
-        echo "this is the xiiiiiiiiiiiiiiir " . $xirr;
+        $xirr = $financialClass->XIRR($dataMergeByDate['values'], $dataMergeByDate['dates']);
+        echo "this is the xiiiiiiiiiiiiiiir " . $xirr*100 . " \n" ;
         exit;
     }
     
@@ -416,7 +417,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function mergeArraysByKey($arrays, $variables) {
-        /*$dates = [];
+        $dates = [];
         $data = [];
         foreach ($arrays as $array) {
             foreach ($array as $keyDate => $value) {
@@ -439,27 +440,31 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $data['dates'][$i] = mktime(0,0,0,$dateParts[2],$dateParts[1],$dateParts[0]);
             $data['values'][$i] = $dataFormula;
             $i++;
-         * 
-        }*/
-        $data = [];
+
+        }
+        return $data;
+    }
+    
+    public function returnDataPreformat() {
+        $dataArray = [];
         $array = [
             "2015-11-19" => "-250",
             "2015-12-17" => "3.99809457497",
-            "2016-01-17" => "4.0925389921887",
-            "2016-02-17" => "0.13543599831408",
-            "2016-02-22" => "4.03804840497028",
-            "2016-03-17" => "4.0925359921887",
-            "2016-04-17" => "0.088349586796929",
-            "2016-04-26" => "4.109468491978",
-            "2016-07-08" => "8.80608016374238",
-            "2016-08-01" => "4.10939773645267",
-            "2016-08-22" => "4.10953924750319",
-            "2016-11-01" => "8.81551003905411",
-            "2016-11-28" => "4.10946849197793",
-            "2017-01-12" => "4.39823618312744",
-            "2017-02-07" => "4.37652967769291",
-            "2017-03-30" => "8.21893698395585",
-            "2017-04-17" => "0.63696138898043",
+            "2016-01-17" => "4.09253899219",
+            "2016-02-17" => "0.13543599831",
+            "2016-02-22" => "4.03804840497",
+            "2016-03-17" => "4.09253599219",
+            "2016-04-17" => "0.0883495868",
+            "2016-04-26" => "4.10946849198",
+            "2016-07-08" => "8.80608016374",
+            "2016-08-01" => "4.10939773645",
+            "2016-08-22" => "4.1095392475",
+            "2016-11-01" => "8.81551003905",
+            "2016-11-28" => "4.10946849198",
+            "2017-01-12" => "4.39823618313",
+            "2017-02-07" => "4.37652967769",
+            "2017-03-30" => "8.21893698396",
+            "2017-04-17" => "0.63696138898",
             "2017-05-02" => "4.10946849197796",
             "2017-06-12" => "4.40357384839829",
             "2017-07-18" => "0.866697620601355",
@@ -473,15 +478,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             "2017-11-29" => "216.59873618302"
         ];
         $i = 0;
-        $data['dates'] = [];
-        $data['values'] = [];
+        $dataArray['dates'] = [];
+        $dataArray['values'] = [];
         foreach ($array as $keyDate => $data) {
             $dateParts = explode("-", $keyDate);
-            $data['dates'][$i] = mktime(0,0,0,$dateParts[2],$dateParts[1],$dateParts[0]);
-            $data['values'][$i] = $data;
+            $dataArray['dates'][$i] = mktime(0,0,0,$dateParts[1],$dateParts[2],$dateParts[0]);
+            $dataArray['values'][$i] = $data;
             $i++;
         }
-        return $data;
+        return $dataArray;
     }
     
     /**
