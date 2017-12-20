@@ -679,6 +679,129 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
+    
+ //************************************************************************* 
+    
+    /*
+     *  Calculates the sum of all payment concepts that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      don't care
+     *
+     */
+    public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
+        
+ 
+        
+    }  
+    
+    
+    
+    /*
+     *  Calculates the sum of the payment concept "LatePaymentFeeIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
+        
+ 
+    }   
+    
+    /*
+     *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCapitalRepaymentPerDay(&$transactionData, &$resultData) {
+
+     
+ 
+    }    
+ 
+    
+    /*
+     *  Calculates the sum of the payment concept "PrincipalBuyback" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalPrincipalBuybackPerDay(&$transactionData, &$resultData) {
+   
+ 
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "InterestIncomeBuyback" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
+
+     
+ 
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "RegularGrossInterestIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
+
+ 
+    }
+
+ 
+    /*
+     *  Calculates the sum of the payment concept "myInvestment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalMyInvestmentPerDay(&$transactionData, &$resultData) {
+    
+ 
+    }      
+    
+    
+    /*
+     *  Calculates the sum of the payment concept "secondaryMarketInvestment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalsecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
+    
+ 
+    }      
+    
+     /*
+     *  Calculates the sum of the payment concept "costSecondaryMarket" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalcostSecondaryMarketPerDay(&$transactionData, &$resultData) {
+    
+ 
+    }     
+    
+    
+    
+   
+    
 }
 
 /*

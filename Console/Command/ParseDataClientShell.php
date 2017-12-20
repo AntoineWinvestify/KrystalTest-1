@@ -655,7 +655,10 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
 
-                $internalVariablesToHandle = array(10001, 10002);      // TotalOutstandingPrincipal and numberActiveInvestments
+                $internalVariablesToHandle = array(10001, 10002, 10005, 
+                                                    10006, 10007, 10008,
+                                                    10009, 10010, 10011, 
+                                                    10012, 10013);      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -672,7 +675,6 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
         }
     }
 }
-
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {
                             $database[$dbTable][$transactionDataKey] = 0;
