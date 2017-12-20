@@ -158,9 +158,9 @@
                     <h2 class="g-font-size-32--xs g-font-size-36--md g-color--white"><?php echo __('All your portfolio and market data. Standardized.')?></h2>
                 </div>
             </div>
-            <div class="row" style="padding: 0px 0px 50px 0px;">
+            <div class="row portfolioData" style="padding: 0px 0px 50px 0px;">
                 <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1">
-                    <div class="row">
+                    <div class="row portfolioData">
                         <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4" style="padding: 25px;">
                             <img src="/img/analytics_4.png" class="center-block imgResponsive" height="75px;"/>
                             <h4 class="g-color--white" align="center"><?php echo __('PORTFOLIO DATA')?></h4>
