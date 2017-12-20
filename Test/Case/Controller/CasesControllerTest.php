@@ -235,7 +235,7 @@ class CasesControllerTest extends ControllerTestCase {
     public function testGenerateId2() {
         $expectedmb5 = array("global_d41d8cd98f00b204e9800998ecf8427e", "d41d8cd98f00b204e9800998ecf8427e");
         //$expectedrand = 
-        $expecteduuid = array(5, 43); 
+        $expecteduuid = array(5, 43);
         $actual = $this->testAction("/cases/testGenerateId2");
         $this->assertEquals($expectedmb5[0], $actual[0][0]["myValue"]);
         $this->assertEquals($expectedmb5[1], $actual[3][0]["myValue"]);
@@ -244,6 +244,21 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expecteduuid[0], count(explode("-", $actual[5][0]["myValue"])));
         $this->assertEquals($expecteduuid[1], strlen($actual[2][0]["myValue"]));
     }
+
+    public function testSortParameter() {
+        $expected = array(
+            "investment_country" => "Lithuania",
+            "investment_loanId" => "1655778-01",
+            "OriginalDate" => "11.24.2015",
+            "LoanType" => "Business Loan"
+        );
+        $actual = $this->testAction("/cases/testSortParameter");
+
+        $this->assertEquals($expected, $actual[0][2]);
+        $this->assertEquals($expected, $actual[1]["1655778-01"][0]);
+        $this->assertEquals($expected, $actual[2]["Lithuania"]["1655778-01"][0]);
+    }
+
     public function tearDown() {
         parent::tearDown();
         unset($this->Hello);

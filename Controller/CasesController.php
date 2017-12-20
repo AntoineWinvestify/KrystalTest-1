@@ -30,7 +30,7 @@ class CasesController extends AppController {
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
-            'testDefault', 'testGenerateId' ,'testGenerateId2'
+            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter'
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
@@ -54,10 +54,9 @@ class CasesController extends AppController {
 
         $myParser = new Fileparser();
         $myParser->setConfig(array(
-            'sortParameter' => "investment.investment_loanId",
+            'sortParameter' => null,
             'offsetStart' => 1,
             'offsetEnd' => 0,
-            'sortParameter' => array()
         ));
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
 
@@ -1049,10 +1048,11 @@ class CasesController extends AppController {
                     "functionName" => "generateId"]
             ]
         ];
-        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");        
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         $this->print_r2($tempResult);
         return $tempResult;
     }
+
     public function testGenerateId2() {
 
         $config = array('offsetStart' => 1, 'offsetEnd' => 0, 'sortParameter' => array(), 'separatorChar' => ";");
@@ -1070,7 +1070,7 @@ class CasesController extends AppController {
                     "functionName" => "generateId"]
             ]
         ];
-        
+
         $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
 
         $parserConfig = [
@@ -1137,8 +1137,56 @@ class CasesController extends AppController {
                     "functionName" => "generateId"]
             ]
         ];
-        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");        
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
         $this->print_r2($tempResult);
         return $tempResult;
+    }
+
+    function testSortParameter() {
+
+        $parserConfig = [
+            "A" => [
+                "name" => "investment_country"                               // Winvestify standardized name  OK
+            ],
+            "B" => [
+                "name" => "investment_loanId"                                // Winvestify standardized name  OK
+            ],
+            "C" => [
+                "name" => "OriginalDate"
+            ],
+            "D" => [
+                "name" => "LoanType"
+            ]
+        ];
+
+        $myParser = new Fileparser();
+
+        $myParser->setConfig(array(
+            'sortParameter' => null, //0 parameter in sorting
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $myParser->setConfig(array(
+            'sortParameter' => array("investment_loanId"), //One parameter in sorting
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+        $myParser->setConfig(array(
+            'sortParameter' => array("investment_country", "investment_loanId"), //Two parameter in sorting
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
+    
+    function testSeparatorChar(){
+        
     }
 }
