@@ -223,7 +223,13 @@ class loanbook extends p2pCompany {
         ]
     ];
      
-     
+    protected $transactionHeader = array(   "A" => "Fecha",
+                                            "B" => "Tipo de movimiento",
+                                            "C" => "Descripción",
+                                            "D" => "Importe",
+                                            "E" => "Referencia",
+                                            "F" => "Nombre de la Operación",
+                                        );
     
     function __construct() {
         parent::__construct();
@@ -238,6 +244,7 @@ class loanbook extends p2pCompany {
         $this->typeFileInvestment = "json";
         //$this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
@@ -1253,12 +1260,19 @@ class loanbook extends p2pCompany {
                 $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
                 $this->numPartFileTransaction++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1407,6 +1421,7 @@ class loanbook extends p2pCompany {
                 } else {
                     $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                     $this->saveFilePFP($this->fileName, json_encode($this->loanArray));
+                    
                     $this->idForSwitch++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                     break;

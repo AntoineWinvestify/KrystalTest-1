@@ -311,9 +311,6 @@ class finanzarel extends p2pCompany {
         $this->typeFileInvestment = "csv";
         //$this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $pathVendor = Configure::read('winvestifyVendor');
-        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
-        $this->myParser = new Fileparser();
 // Do whatever is needed for this subsclass
     }   
 
@@ -566,6 +563,7 @@ class finanzarel extends p2pCompany {
                         'p_request' => $this->request[0]);
                 print_r($credentialsFile);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->numFileInvestment++;
                 //$fileType = 'csv';
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
@@ -574,8 +572,7 @@ class finanzarel extends p2pCompany {
                 //https://chrismckee.co.uk/curl-http-417-expectation-failed/
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
                 $headers = array('Expect:');
-                //array_shift($this->urlSequence);
-                $this->headerComparation = $this->investmentHeader;
+                //array_shift($this->urlSequence);         
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);
                 break; 

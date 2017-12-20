@@ -172,7 +172,7 @@ class p2pCompany {
                                         );
     
     //Number of days for each company download. Only some pfp uses it.
-    protected $period = 30;
+    protected $period = 670;
     /**
      *
      * Prepare all the default data of the class and its subclasses
@@ -2834,23 +2834,27 @@ FRAGMENT
      */
     public function compareHeader(){
         
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();
+        
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
-        /*echo "Comapare: ";
+        echo "Comapare: ";
         print_r($this->headerComparation);
         echo SHELL_ENDOFLINE;
         echo "with: ";
         print_r($data);
-        echo SHELL_ENDOFLINE;*/
-        print_r(array_diff($this->headerComparation,$data));
-        if(array_diff($this->headerComparation,$data)){  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
-            foreach($data as $key => $value){
-                if($value !== $this->headerComparation[$key]){ // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+        echo SHELL_ENDOFLINE;
+        //print_r(array_diff($this->headerComparation,$data) );
+        if(!empty(array_diff($this->headerComparation,$data)) || empty($data) || empty($this->headerComparation)){  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            foreach($this->headerComparation as $key => $value){
+                if($value !== $data[$key]){ // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
                     echo "fatal error";
                     return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
                 }
-                echo "Warning";
-                return WIN_ERROR_FLOW_NEW_FINAL_HEADER; 
             }     
+            echo "Warning";
+            return WIN_ERROR_FLOW_NEW_FINAL_HEADER; 
         }
         echo "OK";
         return false;       

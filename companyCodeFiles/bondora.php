@@ -224,9 +224,7 @@ class bondora extends p2pCompany {
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
 
-        $pathVendor = Configure::read('winvestifyVendor');
-        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
-        $this->myParser = new Fileparser();
+        
         
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
@@ -507,6 +505,8 @@ class bondora extends p2pCompany {
      * @return array Control variables.
      */
     function collectUserGlobalFilesParallel($str = null) {
+        
+        
         switch ($this->idForSwitch) {
             case 0:
                 $this->numberOfFiles = 0;

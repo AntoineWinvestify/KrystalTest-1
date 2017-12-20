@@ -533,9 +533,6 @@ class mintos extends p2pCompany {
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
        
-        $pathVendor = Configure::read('winvestifyVendor');
-        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
-        $this->myParser = new Fileparser();
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass

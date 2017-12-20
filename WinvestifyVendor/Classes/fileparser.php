@@ -595,7 +595,7 @@ protected $countries = [
         
         
     function __construct() {
-        echo "starting parser\n";
+        //echo "starting parser\n";
     }
     
     /**

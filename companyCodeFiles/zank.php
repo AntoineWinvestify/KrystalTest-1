@@ -332,7 +332,25 @@ class zank extends p2pCompany {
             "investment_statusOfLoan" => "translateLoanStatus"
         ]
     ];
-
+    
+        protected $investmentHeader = array(   
+        'A' => 'Fecha',
+        'B' => 'Préstamo',
+        'C' => 'Rentabilidad',
+        'D' => 'Plazo',
+        'E' => 'Inversión',
+        'F' => 'Capital amortizado',
+        'G' => 'Intereses ordinarios',
+        'H' => 'Intereses demora',
+        'I' => 'Comision',
+        'J' => 'Estado');
+    
+    protected $transactionHeader = array(
+        'A' => 'Fecha',
+        'B' => 'Tipo',
+        'C' => 'Cantidad',
+        'D' => 'Destino',
+        'E' => 'Saldo');
 
     
     function __construct() {
@@ -1453,11 +1471,18 @@ class zank extends p2pCompany {
                 echo "investment url: " . $url;
                 $this->idForSwitch++;
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
@@ -1470,12 +1495,19 @@ class zank extends p2pCompany {
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
