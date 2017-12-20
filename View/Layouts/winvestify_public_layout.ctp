@@ -212,20 +212,6 @@
             echo $this->element('jsPublicLandingPage');
             echo $this->element('jsPublicFunctions');
         ?>
-        <script>
-            $(function (){
-                //Dropdown menu hover
-                $('ul.nav li.dropdown').hover(function() {
-                  $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
-                });
-                
-                //navbar collapse on clicking outside navbar
-                $(document).on("click", function(){
-                    $('.navbar-collapse').collapse('hide');
-                    $('ul.nav li.dropdown').find('.dropdown-menu').stop(true, true).delay(100).fadeOut(400); //hide loginDropdown
-                });
-            });
-        </script>
         
     </body>
 </html>

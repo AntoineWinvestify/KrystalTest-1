@@ -50,18 +50,29 @@
                     event.stopPropagation();
                 });
                 
+                
+                
                 //navbar collapse on clicking outside navbar
                 $(document).on("click", function(){
                     $('.navbar-collapse').collapse('hide');
-                    $('#loginDropdown').hide(); //hide loginDropdown
+                    //$('#loginDropdown').hide(); //hide loginDropdown
                 });
 
-                if ($(window).width() > 1023) {
-                    //Dropdown menu click
-                    $("ul.nav li.dropdown").on("click", function() {
-                      $(this).find('.dropdown-menu').stop(true, true).fadeToggle(400);
-                    });
-                }
+                //Dropdown menu click
+                $("ul.nav li.dropdown").on("click", function() {
+                    if ($(window).width() > 1023) {
+                        $(this).find('.dropdown-menu').stop(true, true).fadeToggle(400);
+                    }
+                });
+                
+                $("#liLogin").click(function() {
+                    if ($(window).width() < 1025) {
+                        //Dropdown menu click
+                        if ($('#principal_navbar').is(":visible")) {
+                            $('#principal_navbar').collapse('hide');
+                        }
+                    }
+                });
                 
                 //Initial schemaImg
                 var id = $(".flagvalue").attr("id");

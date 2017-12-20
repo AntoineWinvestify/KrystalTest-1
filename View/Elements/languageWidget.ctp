@@ -41,7 +41,7 @@ $usedLanguage = $this->requestAction('users/readUsedLanguage');				// read langu
 		<img src="/img/flags/<?php echo $usedLanguage?>.png" class="flagvalue" id="<?php echo $usedLanguage?>"/>&nbsp;<?php echo $tempArray[$usedLanguage]?>
 			<span class="caret"></span>
 	</a>
-    <ul style="width: 100%" class="dropdown-menu">
+    <ul style="width: 100%" class="dropdown-menu language-dropdown-menu">
                                         
 <?php
 	foreach ($listSupportedLanguages as $key=>$language) {

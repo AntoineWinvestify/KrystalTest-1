@@ -2,7 +2,6 @@
         <link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css">
         <link type="text/css" rel="stylesheet" href="/megaKit/css/style.css"/>
         <link type="text/css" rel="stylesheet" href="/megaKit/css/global.css"/>
-        <link type="text/css" rel="stylesheet" href="/css/compare_styles.css"/>
         <!-- Ionicons -->
         <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"/>
         <!-- Web Fonts -->
@@ -15,3 +14,4 @@
         <link type="text/css" rel="stylesheet" href="/megaKit/vendor/themify/themify.css"/>
         <link type="text/css" rel="stylesheet" href="/megaKit/vendor/scrollbar/scrollbar.min.css"/>
         <link type="text/css" rel="stylesheet" href="/megaKit/vendor/swiper/swiper.min.css"/>
+        <link type="text/css" rel="stylesheet" href="/css/compare_styles.css"/>
