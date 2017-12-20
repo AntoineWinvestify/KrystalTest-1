@@ -2339,3 +2339,20 @@ hr.specialHr:after {
     position: absolute;
     transform: rotate3d(0, 0, 1, -135deg);
 }
+
+#loginBtn {
+    border-radius: 20px;
+    box-sizing: border-box;
+    border-width: 2px;
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 7px 18px;
+    border-color: #66615B;
+    color: #66615B;
+    -webkit-transition: all 150ms linear;
+    -moz-transition: all 150ms linear;
+    -o-transition: all 150ms linear;
+    -ms-transition: all 150ms linear;
+    transition: all 150ms linear;
+}
