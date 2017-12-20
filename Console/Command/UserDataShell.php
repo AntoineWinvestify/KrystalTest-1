@@ -532,34 +532,27 @@ class UserDataShell extends AppShell {
     
 // ONLY FOR TESTING
      public function calculateTechnicalState(&$transactionData, &$resultData) {
-//     echo "entering technicalstate\n";
-         $tempOutstandingPrincipal = 1;
+         
+        $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
         }
 
-   /*     if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) > 1) {
-            $tempOutstandingPrincipal = 0;
-        }*/
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }
         if ($tempOutstandingPrincipal == 0) {
-//            echo "Writing technicalStateFinished\n";
-            return "FINISHED";
+            return "FINISHED";              // represents a decrement
         }        
         
         if ($resultData['investment']['investment_new'] == YES) {
-//            $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-//            echo "writing technicalStateActive\n";
-            return "INITIAL";  
+            return "INITIAL";               // represents an increment
         }       
-        
 
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
-            return "FINISHED";
+            return "FINISHED";              // return current value numberOfActiveInvestments
         }
-        return "ACTIVE";
+        return "ACTIVE";                    // return current value numberOfActiveInvestments
         
 //        $resultData['investment']['technicalState'] = "UNDEFINED";
     }

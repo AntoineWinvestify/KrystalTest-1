@@ -34,16 +34,14 @@
  *
  *
  * PENDING:
- * Adapt to     public function verifiedStatus($status, $message, $restartStatus, $errorStatus)
- * use of  createInvestment can be avoided if the investment model has a aftersave and check for create. In that case also create
- * the paymenttotal table. now here we can use the simple save (with or without the id
- * add list of finished loans to be sent to the
+ * 
+ * 
  */
 App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
 class ParseDataClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue', 'Paymenttotal', 'Investment');
+    public $uses = array('Queue', 'Paymenttotal', 'Investment', 'Investmentslice');
     protected $variablesConfig;
 
 // Only used for defining a stable testbed definition
@@ -68,7 +66,7 @@ class ParseDataClientShell extends GearmanClientShell {
         $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
 
         echo "Deleting Investmentslice\n";
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+ //       $this->Investmentslice = ClassRegistry::init('Investmentslice');
         $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
 
         return;
@@ -201,8 +199,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             echo "ERROR ENCOUNTERED\n"; 
                         }
                     }
-                    
-//                    $this->queueInfo[$queueIdKey]["loanIds"] = $newLoans; // store the list of loan Ids in DB, for FLOW3B
+
                     $this->Queue->id = $queueIdKey;
                     $this->Queue->save(array('queue_status' => $newFlowState,
                         'queue_info' => json_encode($this->queueInfo[$queueIdKey]),
@@ -322,8 +319,8 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
             'countWorkingNewLoans' => count($platformData['workingNewLoans']),
             'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
         );
-    file_put_contents("/home/antoine/controlData5.json", json_encode(($myArray)));
-    exit;
+    file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
+ //   exit;
 }
 
 
@@ -441,17 +438,18 @@ $database['measurements'][$keyDateTransaction]['increments'] = 0;
 
 $STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS + 1;
 $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
-
+ 
                     
                     
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
-                    $platformData['newLoans'][]= $transactionData['investment_loanId'];
+ 
+             //       $platformData['newLoans'][]= $transactionData['investment_loanId'];
                    
-                    if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
-                        if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
-                            $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
-                            }
-                        }
+             //       if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
+             //           if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {         // used for currently active loans and for Zombie loans
+             //               $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+             //           }
+             //       }
                     $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM    
                     
                         
@@ -475,30 +473,32 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
                         "investment_secondaryMarketInvestment", "investment_technicalStateTemp" ));
  
                     $investmentId = $tempInvestmentData[0]['Investment']['id'];
-if (empty($investmentId)) {         // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
-                                    // We mark to collect amortization table, assign minimum data to investment, store 
-                                    // it in the DB, mark investment as new,......
-    
-    echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
-                        echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";
-                    $database['investment']['investment_myInvestment'] = 0;
-                    $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-                    $database['investment']['investment_new'] = YES;
-                    $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
-                    $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 510
-}
-    
+                    if (empty($investmentId)) {         // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
+                                                        // We mark to collect amortization table and hope that the PFP will return amortizationtable data.
+                        
+
+echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
+                            echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";
+                        $loanStatus = WIN_LOANSTATUS_ACTIVE;        // So amortization data is collected
+                        $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
+                        $database['investment']['investment_myInvestment'] = 0;
+                        $database['investment']['investment_secondaryMarketInvestment'] = 0;  
+                        $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
+             //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 510
+                        $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;                        
+                    }
+                    else {  // A normal regular loan, which is already defined in our database
                     // Copy the information to the shadow database, for processing later on
 echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
-                    $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
-                    $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
-                    $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
-                    $database['investment']['investment_outstandingPrincipalOriginal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
-                    $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];   
-                    $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];                        
-                    $database['investment']['id'] = $investmentId;
+                        $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
+                        $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
+                        $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+                        $database['investment']['investment_outstandingPrincipalOriginal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+                        $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];   
+                        $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];                        
+                        $database['investment']['id'] = $investmentId;
 //$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
-
+                    }
                 }
 
                 echo __FILE__ . " " . __LINE__ . "\n"; 
@@ -508,8 +508,11 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                     if (isset($transactionData['conceptChars'])) {
                         if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
-                                $platformData['newLoans'][] = $transactionData['investment_loanId'];
-                                $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+                                $sliceId = $this->linkNewSlice($investmentId, $database['investment']['investment_sliceIdentifier']);
+                                if ($sliceId) {             //NOTE $investmentId does not exist for new loans and zombies so this won't always work
+                                    $platformData['newLoans'][$sliceId] = $database['investment']['investment_sliceIdentifier'];
+     //                             $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+                                }
                             }
                         }
                     }
@@ -651,7 +654,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 }
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
-echo "===> ANTOINE"; 
+
                 $internalVariablesToHandle = array(10001, 10002);      // TotalOutstandingPrincipal and numberActiveInvestments
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
@@ -685,6 +688,24 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                 unset($database['payment']);
             }
 
+            
+            
+        
+            
+/*                  
+            payment_latePaymentFeeIncome
+            payment_capitalRepayment
+            payment_principalBuyback
+            payment_interestIncomeBuyback
+            payment_regularGrossInterestIncome
+ 
+            payment_myInvestment
+            payment_secondaryMarketInvestment
+            payment_costSecondaryMarket
+ */           
+            
+            
+            
             echo "printing global data for the date = $dateKey\n";
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
             // The following is done only once per readout period independent if period covers one day, 1 week or if
@@ -743,7 +764,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
 
 
         $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];      // Holds the *last* calculated value
-        $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['numberActiveInvestments']; // Holds the last calculated value
+        $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']; // Holds the last calculated value
 
         $fileString = file_get_contents($controlVariableFile);         // must be a json file
 
@@ -771,7 +792,7 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
             'countWorkingNewLoans' => count($platformData['workingNewLoans']),
             'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
         );
-file_put_contents("/home/antoine/controlData1.json", json_encode(($myArray)));
+file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
        
 
         $calculationClassHandle->consolidatePlatformData($database);
@@ -781,4 +802,23 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 
         return true;
     }
+    
+    
+    
+    /**
+     * Connects a new 'Investmentslice' model to the 'Investment' model
+     * 
+     *  @param bigInt   $investmentId       The database 'id' of the 'Investment' table
+     *  @param string   $sliceIdentifier    The identifier of the new slice     
+     *  @return bigInt                      The database reference of the 'Investmentslice' model
+     *                  
+     */
+    public function linkNewSlice($investmentId, $sliceIdentifier) {
+        $id = $this->Investmentslice->getNewSlice ($investmentId, $sliceIdentifier);
+        return $id;
+    }  
+    
+    
+    
+    
 }
