@@ -1568,9 +1568,7 @@ hr.nomargin {
         left: 50px;
         top: -20px;
     }
-    #parallaxFeatures {
-        min-height: 900px;
-    }
+    
 }
 
 /************LANDSCAPE****************/
@@ -1586,9 +1584,6 @@ hr.nomargin {
     #screen {
         right: 170px;
         top: -20px;
-    }
-    #parallaxFeatures {
-        min-height: 900px;
     }
     .schemaImg{
         width: 90%;
@@ -1607,6 +1602,12 @@ hr.nomargin {
     #loginDropdown {
         position:absolute !important;
         background-color: #f8f8f8 !important;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 990px) {
+    #winvestifyActivePlatforms, #winvestifyFuturePlatforms, .platformActive {
+        margin-left: 0;
     }
 }
 
@@ -2127,11 +2128,16 @@ hr.nomargin {
     border-bottom:  2px solid #ff9933 !important;
 }
 /*Gray*/
-.blue_noborder4:focus {
+#btnLoginUsername:focus, #btnLoginPassword, .blue_noborder4:focus {
     border: none !important;
     border-bottom:  2px solid #9f9a93 !important;
     border-radius: 0px !important;
     background-color: white;
+    box-shadow: none;
+}
+
+#btnLoginUsername, #btnLoginPassword {
+    box-shadow: none;
 }
 
 .feedbackIcon {
@@ -2338,4 +2344,21 @@ hr.specialHr:after {
     border-bottom: none;
     position: absolute;
     transform: rotate3d(0, 0, 1, -135deg);
+}
+
+#loginBtn {
+    border-radius: 20px;
+    box-sizing: border-box;
+    border-width: 2px;
+    background-color: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 7px 18px;
+    border-color: #66615B;
+    color: #66615B;
+    -webkit-transition: all 150ms linear;
+    -moz-transition: all 150ms linear;
+    -o-transition: all 150ms linear;
+    -ms-transition: all 150ms linear;
+    transition: all 150ms linear;
 }
