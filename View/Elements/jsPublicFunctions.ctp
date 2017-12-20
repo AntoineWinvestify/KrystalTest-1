@@ -60,13 +60,13 @@
 
                 //Dropdown menu click
                 $("ul.nav li.dropdown").on("click", function() {
-                    if ($(window).width() > 1023) {
+                    if ($(window).width() > 1142) {
                         $(this).find('.dropdown-menu').stop(true, true).fadeToggle(400);
                     }
                 });
                 
                 $("#liLogin").click(function() {
-                    if ($(window).width() < 1025) {
+                    if ($(window).width() < 1143) {
                         //Dropdown menu click
                         if ($('#principal_navbar').is(":visible")) {
                             $('#principal_navbar').collapse('hide');
