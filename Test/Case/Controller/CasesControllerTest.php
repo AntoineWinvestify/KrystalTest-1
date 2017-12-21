@@ -285,6 +285,24 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected[1], $actual[1][0]);
     }
 
+    public function testAnalyzeJson() {
+        $expected = array( 0 => Array('Column A' => 472, 'Column B' => 'Centro de enseñanza primaria'));
+        $actual = $this->testAction("/cases/testAnalyzeJson");
+        $this->assertEquals($expected, $actual);
+    }  
+    
+    public function testConcepts() {
+        $expected = 'AM_TABLE';
+        $actual = $this->testAction("/cases/testConcepts");
+        $this->assertEquals($expected, $actual[0]['conceptChars']);
+    }
+
+     public function testJoinCell() {
+        $expected = 'Investment principal increase Loan ID: 1686178-01_196903155_2017-10-16 02:42:52';
+        $actual = $this->testAction("/cases/testJoinCell");
+        $this->assertEquals($expected, $actual[0]['JoinCells']);
+    }
+    
     public function tearDown() {
         parent::tearDown();
         unset($this->Hello);

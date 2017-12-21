@@ -30,7 +30,7 @@ class CasesController extends AppController {
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
-            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 'testChronoOrder', "testAnalyzeJson",
+            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 'testChronoOrder', "testAnalyzeJson", "testConcepts", "testJoinCell"
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCaseTransaction.xlsx';
@@ -1250,10 +1250,10 @@ class CasesController extends AppController {
     public function testAnalyzeJson() {
         $parserConfig = [
             "A" => [
-                "name" => "investment.investment_country"                               // Winvestify standardized name  OK
+                "name" => "Column A"
             ],
             "B" => [
-                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
+                "name" => "Column B"
             ],
         ];
 
@@ -1264,6 +1264,168 @@ class CasesController extends AppController {
             'offsetEnd' => 0,
         ));
         $tempResult = $myParser->analyzeFile($this->jsonPath, $parserConfig, "json");
+
+        print_r($tempResult);
+        return $tempResult;
+    }
+
+    public function testConcepts() {
+        $parserConfig = [// All types/names will be defined as associative index in array
+            "A" => [
+                "name" => "transaction_transactionId"                       // Winvestify standardized name
+            ],
+            "B" => [
+                [
+                    "type" => "date", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "Y-M-D",
+                    ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "investment_loanId", // Winvestify standardized name   OK
+                    "inputData" => [// trick to get the complete cell data as purpose
+                        "input2" => "Loan ID: ", // May contain trailing spaces
+                        "input3" => "",
+                        "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                    ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "original_concept", // 
+                    "inputData" => [// Get the "original" Mintos concept, which is used later on
+                        "input2" => "", // 
+                        "input3" => "Loan ID: ",
+                        "input4" => 0                                   // 'input3' is NOT mandatory. 
+                    ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "inputData" => [// List of all concepts that the platform can generate
+                        // format ["concept string platform", "concept string Winvestify"]
+                        "input2" => [0 => ["Incoming client payment" => "Cash_deposit"], // OK
+                            1 => ["Investment principal increase" => "Primary_market_investment"],
+                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                            3 => ["Investment principal repayment" => "Capital_repayment"], //OK
+                            4 => ["Investment principal rebuy" => "Principal_buyback"], // OK                               
+                            5 => ["Interest income on rebuy" => "Interest_income_buyback"], // OK
+                            6 => ["Interest income" => "Regular_gross_interest_income"], //
+                            7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"], // OK
+                            8 => ["Late payment fee income" => "Late_payment_fee_income"], // OK                                       
+                            9 => ["Delayed interest income" => "Delayed_interest_income"], // OK
+                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"], // For seller
+                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"], // for buyer
+                            12 => ["Client withdrawal" => "Cash_withdrawal"],
+                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
+                        ]
+                    ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "D" => [
+                [
+                    "type" => "amount", // This is *mandatory* field which is required for the 
+                    "inputData" => [// "transactionDetail"
+                        "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                        "input3" => ".", // and its content is the result of the "getAmount" method
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "transactionDetail", // The "original field" transactionDetail in [C] will be overwritten
+                    "inputData" => [// but keeping in mind if the amount of current row is an income or a cost
+                        "input2" => "#current.original_concept",
+                        // input3 is a two dimensional array as a key, which is the 
+                        // original concept may be mapped to different Winvestify concept
+                        // depending if the amount is positive or negative
+                        "input3" => [0 => ["Incoming client payment" => "Cash_deposit"], // OK
+                            1 => ["Investment principal increase" => "Primary_market_investment"],
+                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                            3 => ["Investment principal repayment" => "Capital_repayment"], //OK
+                            4 => ["Investment principal rebuy" => "Principal_buyback"], // OK                               
+                            5 => ["Interest income on rebuy" => "Interest_income_buyback"], // OK
+                            6 => ["Interest income" => "Regular_gross_interest_income"], //
+                            7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"], // OK
+                            8 => ["Late payment fee income" => "Late_payment_fee_income"], // OK                                       
+                            9 => ["Delayed interest income" => "Delayed_interest_income"], // OK
+                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"], // For seller
+                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"], // for buyer
+                            12 => ["Client withdrawal" => "Cash_withdrawal"],
+                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
+                        ]
+                    ],
+                    "functionName" => "getComplexTransactionDetail",
+                ],
+            ],
+            "E" => [
+                [
+                    "type" => "transaction_balance", // Winvestify standardized name
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ".",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "F" => [
+                [
+                    "type" => "currency", // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ],
+                [
+                    "type" => "conceptChars", // Winvestify standardized name
+                    "inputData" => [
+                        "input2" => "#current.internalName", // get Winvestify concept
+                    ],
+                    "functionName" => "getConceptChars",
+                ]
+            ],
+        ];
+
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 16,
+        ));
+        $tempResult = $myParser->analyzeFile($this->TransactionfilePath, $parserConfig, "xlsx");
+
+        print_r($tempResult);
+        return $tempResult;
+    }
+
+    public function testJoinCell() {
+        $parserConfig = [// All types/names will be defined as associative index in array
+            "A" => [
+                "name" => "cellA"                       // Winvestify standardized name
+            ],
+            "B" => [
+                "name" => "cellB"
+            ],
+            "C" => [
+                ["type" => "JoinCells",
+                "inputData" => [
+                    "input2" => "_",
+                    "input3" => FIFO,
+                    "input4" => "#current.cellA",
+                    "input5" => "#current.cellB"
+                ],
+                "functionName" => "joinDataCells",]
+            ],
+        ];
+
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        $tempResult = $myParser->analyzeFile($this->TransactionfilePath, $parserConfig, "xlsx");
 
         print_r($tempResult);
         return $tempResult;
