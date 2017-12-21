@@ -667,7 +667,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         //$command = "iconv -f cp1250 -t utf-8 " . $file " > " $file ";
         $inputFileType = 'CSV';
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        $objReader->setDelimiter($this->Config['separatorChar']);
+        $objReader->setDelimiter($this->config['separatorChar']);
         $objPHPExcel = $objReader->load($file);
         ini_set('memory_limit','2048M');
         $sheet = $objPHPExcel->getActiveSheet();
