@@ -1185,7 +1185,7 @@ class loanbook extends p2pCompany {
                             $this->loanArray[$this->j]['F'] = trim($div->nodeValue); //Initial TAE
                             break;
                         case 18:
-                            $this->loanArray[$this->j]['G'] = explode(" ", trim($div->nodeValue)[0]); //Time left
+                            $this->loanArray[$this->j]['G'] = explode(" ", trim($div->nodeValue))[0]; //Time left
                     }
                 }
 
