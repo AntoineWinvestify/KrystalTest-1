@@ -89,11 +89,10 @@ var $validate = array(
         
         $this->create();
         if (!isset($investmentdata['investment_sliceIdentifier'])) {
-            echo "ANANANANANAN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
             $result[0] = false;            
             return $result;
         }
-echo "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ee";
+
         if ($this->save($investmentdata, $validate = true)) {   // OK
             $investmentId = $this->id;
             

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -19,33 +20,32 @@
  * @date
  * @package
  */
-
 class UserDataShell extends AppShell {
-   
-    public $uses = array('Userinvestmentdata', 'Investment');    
-   
+
+    public $uses = array('Userinvestmentdata', 'Investment');
+
     /**
      * Constructor of the class
      */
     function __construct() {
+        
+    }
 
-    }    
-    
-   
-   /*not finished yet
-    * The control variables are calculated for each "DAY", but the checking is only done for the date of the readout.
-    * This means that if a reading period covers a week, the checking SHOULD be done only for the last calculation (= last day)
-    * The structure of both arrays is:
-    *     controlVariable['myWallet']
-    *                    ['outstandingPrincipal']
-    *                    ['activeInvestments']
-    * 
-    * @param  array       array with the calculated control variables for today's readout
-    * @param  array       array with the control variables as provided by platform
-    * @return boolean     true / false
-    * 
-    */
-    public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {        
+    /* not finished yet
+     * The control variables are calculated for each "DAY", but the checking is only done for the date of the readout.
+     * This means that if a reading period covers a week, the checking SHOULD be done only for the last calculation (= last day)
+     * The structure of both arrays is:
+     *     controlVariable['myWallet']
+     *                    ['outstandingPrincipal']
+     *                    ['activeInvestments']
+     * 
+     * @param  array       array with the calculated control variables for today's readout
+     * @param  array       array with the control variables as provided by platform
+     * @return boolean     true / false
+     * 
+     */
+
+    public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
         $result = false;
         $error = true;
         foreach ($externalControlVariables as $variableKey => $variable) {
@@ -65,19 +65,16 @@ class UserDataShell extends AppShell {
                         $error = true;
                     }
                     break;
-            }  
-        }  
+            }
+        }
         if ($error == true) {
             return false;
-        }
-        else {
+        } else {
             //generate application error
             return true;
         }
     }
-    
-    
-    
+
     public function consolidatePlatformData(&$database) {
         return;
         echo "FxF";
@@ -98,14 +95,13 @@ class UserDataShell extends AppShell {
         // also using a loop
     }
 
-
-
     /* OK
      *  Get the amount which corresponds to the "PartialPrincipalPayment" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
+
     public function consolidatePartialPrincipalRepayment() {
         $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
@@ -120,44 +116,41 @@ class UserDataShell extends AppShell {
     }
 
     /* var 37
-     *  Get the amount which corresponds to the "OutstandingPrincipal" concept
-     *  "Outstanding principal" = total amount of investment - paymenttotal_capitalRepayment
+     *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-    public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
-        echo "########  ANTOINE \n"; 
 
-        if ($transactionData['investment_loanId'] == "1691271-01"    ){ 
-echo "AABBBBA";
-            print_r($resultData);
-        }
-        $result = $resultData['investment']['investment_outstandingPrincipalOriginal'];
-        if (isset($resultData['investment']['investment_myInvestment'])) {
-            $result = bcadd($result,$resultData['investment']['investment_myInvestment'], 16); 
+    public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
+
+        $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
+
+        if (isset($resultData['payment']['payment_myInvestment'])) {
+            $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
         }
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
-            $result = bcadd($result,$resultData['payment']['payment_secondaryMarketInvestment'], 16); 
-        }        
+            $result = bcadd($result, $resultData['payment']['payment_secondaryMarketInvestment'], 16);
+        }
         if (isset($resultData['payment']['payment_capitalRepayment'])) {
-            $result = bcsub($result,$resultData['payment']['payment_capitalRepayment'], 16); 
+            $result = bcsub($result, $resultData['payment']['payment_capitalRepayment'], 16);
         }
         if (isset($resultData['payment']['payment_partialPrincipalRepayment'])) {
-            $result = bcsub($result,$resultData['payment']['payment_partialPrincipalRepayment'], 16); 
-        }  
-        if (isset($resultData['payment']['payment_principalBuyback'])) {
-            $result = bcsub($result,$resultData['payment']['payment_principalBuyback'], 16); 
+            $result = bcsub($result, $resultData['payment']['payment_partialPrincipalRepayment'], 16);
         }
-        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) { // read from db
-            $result = bcsub($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16); 
+        if (isset($resultData['payment']['payment_principalBuyback'])) {
+            $result = bcsub($result, $resultData['payment']['payment_principalBuyback'], 16);
+        }
+        if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) {
+            $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
-            $result = bcsub($result,$resultData['payment']['payment_currencyFluctuationNegative'], 16);            
-        }  
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
+        }
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
-            $result = bcadd($result,$resultData['payment']['payment_currencyFluctuationPositive'], 16);   
-        } 
+            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
+        }
         return $result;
     }
 
@@ -167,28 +160,29 @@ echo "AABBBBA";
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
+
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
         $result = 0.0;
         if (isset($resultData['payment']['payment_capitalRepayment'])) {
-            $result = bcadd($result,$resultData['payment']['payment_capitalRepayment'], 16);   
+            $result = bcadd($result, $resultData['payment']['payment_capitalRepayment'], 16);
         }
         if (isset($resultData['payment']['payment_partialPrincipalRepayment'])) {
-            $result = bcadd($result,$resultData['payment']['payment_partialPrincipalRepayment'], 16);   
+            $result = bcadd($result, $resultData['payment']['payment_partialPrincipalRepayment'], 16);
         }
         if (isset($resultData['payment']['payment_principalBuyback'])) {
-            $result = bcadd($result,$resultData['payment']['payment_principalBuyback'], 16);   
+            $result = bcadd($result, $resultData['payment']['payment_principalBuyback'], 16);
         }
         if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) {  // read from db
-            $result = bcadd($result,$resultData['investment']['investment_priceInSecondaryMarket'], 16);  
-        } 
+            $result = bcadd($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
+        }
         $result1 = '0.0';
         if (isset($resultData['investment']['investment_myInvestment'])) {  // read from db
-            $result1 = bcadd($result1,$resultData['investment']['investment_myInvestment'], 16);  
-        }        
+            $result1 = bcadd($result1, $resultData['investment']['investment_myInvestment'], 16);
+        }
         if (isset($resultData['investment']['investment_secondaryMarketInvestment'])) {  // read from db
-            $result1 = bcadd($result1,$resultData['investment']['investment_secondaryMarketInvestment'], 16);  
-        }        
-        $result1 = bcdiv($result,$result, 16);  
+            $result1 = bcadd($result1, $resultData['investment']['investment_secondaryMarketInvestment'], 16);
+        }
+        $result1 = bcdiv($result, $result, 16);
         return $result;
     }
 
@@ -198,6 +192,7 @@ echo "AABBBBA";
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
+
     public function xxxconsolidateTotalGrossIncome() {
         $sum = 0;
         return;
@@ -218,6 +213,7 @@ echo "AABBBBA";
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
+
     public function consolidateInterestgrossIncome() {
         $sum = 0;
         return;
@@ -238,33 +234,32 @@ echo "AABBBBA";
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
+
     public function calculateTotalLoanCost(&$transactionData, &$resultData) {
         $result = 0.0;
-        
+
         if (isset($resultData['payment']['payment_commissionPaid'])) {
-            $result = bcadd($resultData['payment']['payment_regularGrossInterestIncome'],$result, 16);
+            $result = bcadd($resultData['payment']['payment_regularGrossInterestIncome'], $result, 16);
         }
         if (isset($resultData['globalcashflowdata']['globalcashflowdata_bankCharges'])) {
-            $result = bcadd($resultData['globalcashflowdata']['payment_interestIncomeBuyback'],$result, 16);
-        }        
+            $result = bcadd($resultData['globalcashflowdata']['payment_interestIncomeBuyback'], $result, 16);
+        }
         if (isset($resultData['payment']['payment.payment_taxVAT'])) {
-            $result = bcadd($resultData['payment']['payment_delayedInterestIncome'],$result, 16);
+            $result = bcadd($resultData['payment']['payment_delayedInterestIncome'], $result, 16);
         }
         if (isset($resultData['payment']['payment.payment_incomeWithholdingTax'])) {
-            $result = bcadd($resultData['payment']['payment_delayedInterestIncomeBuyback'],$result, 16);
-        } 
+            $result = bcadd($resultData['payment']['payment_delayedInterestIncomeBuyback'], $result, 16);
+        }
         if (isset($resultData['payment']['payment.payment_interestPaymentSecondaryMarketPurchase'])) {
-            $result = bcadd($resultData['payment']['payment_latePaymentFeeIncome'],$result, 16);
+            $result = bcadd($resultData['payment']['payment_latePaymentFeeIncome'], $result, 16);
         }
         if (isset($resultData['investment']['investment_currencyExchangRateFee'])) {
-            $result = bcadd($resultData['investment']['investment_currencyExchangRateFee'],$result, 16);
-        }       
+            $result = bcadd($resultData['investment']['investment_currencyExchangRateFee'], $result, 16);
+        }
         if (isset($resultData['payment']['payment.payment_costSecondaryMarket'])) {
-            $result = bcadd($resultData['payment']['payment_costSecondaryMarket'],$result, 16);
-        }       
-        
-        
-        return $result;   
+            $result = bcadd($resultData['payment']['payment_costSecondaryMarket'], $result, 16);
+        }
+        return $result;
     }
 
     /* NOT YET
@@ -273,6 +268,7 @@ echo "AABBBBA";
      * @param  array       array with all data so far calculated and to be written to DB
      * @return string      the string representation of a large integer
      */
+
     public function consolidateNextPaymentDate() {
         $sum = 0;
         return $sum;
@@ -290,57 +286,45 @@ echo "AABBBBA";
         return $sum;
     }
 
-
-
-
-
     /* NOT YET
      *  Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
+
     public function calculateTotalGrossIncome(&$transactionData, &$resultData) {
         $result = 0.0;
-        
+
         if (isset($resultData['payment']['payment_regularGrossInterestIncome'])) {
-            $result = bcadd($resultData['payment_regularGrossInterestIncome'],$result, 16);
+            $result = bcadd($resultData['payment_regularGrossInterestIncome'], $result, 16);
         }
         if (isset($resultData['payment']['payment_interestIncomeBuyback'])) {
-            $result = bcadd($resultData['payment_interestIncomeBuyback'],$result, 16);
-        }        
+            $result = bcadd($resultData['payment_interestIncomeBuyback'], $result, 16);
+        }
         if (isset($resultData['payment']['payment_delayedInterestIncome'])) {
-            $result = bcadd($resultData['payment_delayedInterestIncome'],$result, 16);
+            $result = bcadd($resultData['payment_delayedInterestIncome'], $result, 16);
         }
         if (isset($resultData['payment']['payment_delayedInterestIncomeBuyback'])) {
-            $result = bcadd($resultData['payment_delayedInterestIncomeBuyback'],$result, 16);
-        } 
+            $result = bcadd($resultData['payment_delayedInterestIncomeBuyback'], $result, 16);
+        }
         if (isset($resultData['payment']['payment_latePaymentFeeIncome'])) {
-            $result = bcadd($resultData['payment_latePaymentFeeIncome'],$result, 16);
+            $result = bcadd($resultData['payment_latePaymentFeeIncome'], $result, 16);
         }
         if (isset($resultData['payment']['payment_loanRecoveries'])) {
-            $result = bcadd($resultData['payment_loanRecoveries'],$result, 16);
-        } 
+            $result = bcadd($resultData['payment_loanRecoveries'], $result, 16);
+        }
         if (isset($resultData['payment']['payment_loanIncentivesAndBonus'])) {
-            $result = bcadd($resultData['payment_loanIncentivesAndBonus'],$result, 16);
+            $result = bcadd($resultData['payment_loanIncentivesAndBonus'], $result, 16);
         }
         if (isset($resultData['payment']['payment_loanCompensation'])) {
-            $result = bcadd($resultData['payment_loanCompensation'],$result, 16);
+            $result = bcadd($resultData['payment_loanCompensation'], $result, 16);
         }
         if (isset($resultData['payment']['payment_incomeSecondaryMarket'])) {
-            $result = bcadd($resultData['payment_incomeSecondaryMarket'],$result, 16);
-        }  
-        return $result;   
+            $result = bcadd($resultData['payment_incomeSecondaryMarket'], $result, 16);
+        }
+        return $result;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
     /* NOT YET
      *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
@@ -358,15 +342,15 @@ echo "AABBBBA";
      *  Get the amount which corresponds to the "Primary_market_investment" concept, which is a new investment
      *  @param  $transactionData    array      array with the current transaction data
      *  @param  $resultData         array       array of shadow database with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
+     *  @return string      the string representation of a float
      * 12
      */
-    public function calculateMyInvestment(&$transactionData, &$resultData) {
-        $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
-        return $transactionData['amount'];
-    }   
-    
 
+    public function calculateMyInvestment(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+
+    
     public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
         echo "----------------->  BBBBBBBBB\n";
         print_r($transactionData);
@@ -380,8 +364,8 @@ echo "AABBBBA";
      *  @return string      the string representation of a large integer
      * 17
      */
+
     public function calculateRemainingTerm(&$transactionData, &$resultData) {
-        return 44332211;
         return $transactionData['amount'];
         //investment.investment_remainingDuration
     }
@@ -393,6 +377,7 @@ echo "AABBBBA";
      *  @return string
      * 47
      */
+
     public function calculateLatePaymentFeeIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -404,6 +389,7 @@ echo "AABBBBA";
      *  @return string
      * 34
      */
+
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -415,6 +401,7 @@ echo "AABBBBA";
      *  @return string
      * 45
      */
+
     public function calculateDelayedInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -426,6 +413,7 @@ echo "AABBBBA";
      *  @return string
      * 44
      */
+
     public function calculateInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -437,7 +425,9 @@ echo "AABBBBA";
      *  @return string
      * 36
      */
+
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
+        echo "PRINCIPAL BUYBACK, amount =  " . $transactionData['amount'];
         return $transactionData['amount'];
     }
 
@@ -448,6 +438,7 @@ echo "AABBBBA";
      *  @return string
      * 46
      */
+
     public function calculateDelayedInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -459,6 +450,7 @@ echo "AABBBBA";
      *  @return string
      * 66
      */
+
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -470,6 +462,7 @@ echo "AABBBBA";
      *  @return string
      * 67
      */
+
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -480,26 +473,99 @@ echo "AABBBBA";
      *  @return string
      * 43
      */
+
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
     /*
-     * Calculates the number of active investments. This function SHOULD be the very last function to execute
-     * and will execute only once per DAY
-     *
-     *  @param  array       array with the current transaction data [NOT REALLY NEEDED]
-     *  @param  array       array with all data so far calculated and to be written to DB [NOT REALLY NEEDED]
-     *  @return string
-     * 20000
+     * Calculates the number of active investments. Various investments in the same loan 
+     * are counted as 1 investment
+     * Note that some platforms use rounding for some of the concepts that determines if
+     * the outstanding principal = 0, which means that our absolute values ARE NOT ALWAYS 
+     * 0 for a "fully amortized loan".
+     * Due to this a parameter, $precision, is used to decide how many decimals are taken into
+     * account for deciding if the return value is really 0.  
+     * 
+     * @param  array       array with the current transaction data
+     * @param  array       array with all data so far calculated and to be written to DB 
+     * @return int         number of active loans
+     * $tempMeasurements = $database['Measurements'];
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
-        $filterConditions = array('Investment.investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE);
-        $activeInvestments = $this->Investment->find('count', array(
-            'conditions' => $filterConditions));
-        return $activeInvestments;
+        $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
+        $tempOutstandingPrincipal = 1;     // Any value other than 0 
+
+        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
+            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        }
+
+        if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
+            $tempOutstandingPrincipal = 0;
+        }
+        $resultData['measurements']['stateCounting'] = $resultData['measurements']['stateCounting'] + 1;
+        
+     //   if ($resultData['investment']['technicalState'] == WIN_TECH_STATE_ACTIVE) {
+            $resultData['measurements'][$transactionData['investment_loanId']]['winTechActiveStateCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechActiveStateCounting'] + 1;
+            if ($tempOutstandingPrincipal == 0) {
+      //          $resultData['investment']['technicalState'] = WIN_TECH_STATE_NOT_ACTIVE;
+                $resultData['measurements'][$transactionData['investment_loanId']]['decrements'][]  = 'YES';
+                $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
+                                                $resultData['investment']['technicalState'];
+                return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1);          
+            }
+     //   }
+
+        if ($resultData['investment']['investment_new'] == YES) {
+            $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] + 1;
+            $resultData['measurements'][$transactionData['investment_loanId']]['increments'][] = 'NO';
+            $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
+                                                $resultData['investment']['technicalState'];           
+            return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);   
+        } else {
+            return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'];
+        }
     }
 
+    
+    
+    
+// ONLY FOR TESTING
+     public function calculateTechnicalState(&$transactionData, &$resultData) {
+         
+        $tempOutstandingPrincipal = 1;
+        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
+            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        }
+
+        if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
+            $tempOutstandingPrincipal = 0;
+        }
+        if ($tempOutstandingPrincipal == 0) {
+            return "FINISHED";              // represents a decrement
+        }        
+        
+        if ($resultData['investment']['investment_new'] == YES) {
+            return "INITIAL";               // represents an increment
+        }       
+
+        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            return "FINISHED";              // return current value numberOfActiveInvestments
+        }
+        return "ACTIVE";                    // return current value numberOfActiveInvestments
+        
+//        $resultData['investment']['technicalState'] = "UNDEFINED";
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /*
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      *  @param  array       array with the current transaction data
@@ -507,11 +573,10 @@ echo "AABBBBA";
      *  @return string
      * 55
      */
+
     public function calculatePlatformBankCharges(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
-
 
     /**
      * Gets the latest (=last entry in DB) data of a model table
@@ -541,55 +606,24 @@ echo "AABBBBA";
         return $temp;
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
     /* NOT YET  checck if the index is investment or payment
      * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      * @return string      the string representation of a large integer
      */
+
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {
         if (empty($resultData['investment']['investment_loanTotalCost'])) {
             $resultData['investment_loanTotalCost'] = 0.0;
         }
         if (empty($resultData['investment']['investment_totalGrossIncome'])) {
             $resultData['investment_totalGrossIncome'] = 0.0;
-        }        
-        $result = bcsub($resultData['investment_totalGrossIncome'],$resultData['investment_loanTotalCost'], 16);
-        return $result;
-    }    
-    
-
-
-
-    /*
-     * Get the amount which corresponds to the "InterestgrossIncome" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     * @return string      the string representation of a large integer
-     */
-    public function calculateMyWallet() {
-        $sum = 0;
-        return;
-        $listResult = $this->Paymenttotal->find('list', array(
-            'fields' => array('paymenttotal_interestgrossIncome'),
-            "conditions" => array("status" => WIN_PAYMENTTOTALS_LAST),
-        ));
-
-        foreach ($listResult as $item) {
-            $sum = bcadd($sum, $item, 16);
         }
-        return $sum;
+        $result = bcsub($resultData['investment_totalGrossIncome'], $resultData['investment_loanTotalCost'], 16);
+        return $result;
     }
-    
+
     /*
      * 
      * 
@@ -601,17 +635,14 @@ echo "AABBBBA";
      * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      * @return string      the string representation of a large integer
      */
+
     public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
-  //      echo "CALCULATE TOTAL OUTSTANDING\n";
-//print_r($resultData);       
-        $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'],
-                      $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
+//        if (isset($resultData['investment']['investment_outstandingPrincipal)
+        $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
         return $result;
     }
-   
- 
-    
+
     /*
      *  Get the amount which corresponds to the "cost secondary market" concept
      *  @param  array       array with the current transaction data
@@ -619,115 +650,218 @@ echo "AABBBBA";
      *  @return string
      * 47
      */
+
     public function calculateCostSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
-    }    
- 
-    
-    
+    }
+
     /*
      *  Get the amount which corresponds to the "income secondary market" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
+     * 
      */
+
     public function calculateIncomeSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
-    }     
-
+    }
 
     /*
      *  Get the amount which corresponds to the "SecondaryMarketInvestment" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
+     * 26
      */
+
     public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
+    }
+
+    
+ //************************************************************************* 
+    
+    /*
+     *  Calculates the sum of all payment concepts that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      don't care
+     *
+     */
+    public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
+        
+ 
+        
     }  
+    
+    
+    
+    /*
+     *  Calculates the sum of the payment concept "LatePaymentFeeIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_latePaymentFeeIncome']);    
+    }   
+    
+    /*
+     *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCapitalRepaymentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_capitalRepayment']);
+    }    
+ 
+    
+    /*
+     *  Calculates the sum of the payment concept "PrincipalBuyback" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalPrincipalBuybackPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_principalBuyback']);            
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "InterestIncomeBuyback" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_interestIncomeBuyback']);
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "RegularGrossInterestIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_regularGrossInterestIncome']);    
+    }
+
+ 
+    /*
+     *  Calculates the sum of the payment concept "myInvestment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalMyInvestmentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_myInvestment']);
+    }      
+    
+    
+    /*
+     *  Calculates the sum of the payment concept "secondaryMarketInvestment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalSecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_secondaryMarketInvestment']);    
+    }      
+    
+     /*
+     *  Calculates the sum of the payment concept "costSecondaryMarket" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCostSecondaryMarketPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_costSecondaryMarket']);     
+    }     
+    
+    
+    
+   
     
 }
 
-
-
-
-
-
-
 /*
- // these are the total values per PFP
+  // these are the total values per PFP
 
-            if ($this->variablesConfig[30]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
-                $varName = $this->variablesConfig[30]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
-                $this->variablesConfig[30]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[30]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
+  $varName = $this->variablesConfig[30]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
+  $this->variablesConfig[30]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[31]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
-                $varName = $this->variablesConfig[31]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
-                $this->variablesConfig[31]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[31]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
+  $varName = $this->variablesConfig[31]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
+  $this->variablesConfig[31]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[34]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
-                $varName = $this->variablesConfig[34]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
-                $this->variablesConfig[34]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[34]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
+  $varName = $this->variablesConfig[34]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
+  $this->variablesConfig[34]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[35]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
-                $varName = $this->variablesConfig[35]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
-                $this->variablesConfig[35]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[35]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
+  $varName = $this->variablesConfig[35]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
+  $this->variablesConfig[35]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[37]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
-                $varName = $this->variablesConfig[37]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
-                $this->variablesConfig[37]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[37]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
+  $varName = $this->variablesConfig[37]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
+  $this->variablesConfig[37]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[38]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
-                $varName = $this->variablesConfig[38]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
-                $this->variablesConfig[38]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[38]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
+  $varName = $this->variablesConfig[38]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
+  $this->variablesConfig[38]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[42]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
-                $varName = $this->variablesConfig[42]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
-                $this->variablesConfig[42]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[42]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
+  $varName = $this->variablesConfig[42]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
+  $this->variablesConfig[42]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[43]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
-                $varName = $this->variablesConfig[43]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
-                $this->variablesConfig[43]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[43]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
+  $varName = $this->variablesConfig[43]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
+  $this->variablesConfig[43]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
-                $varName = $this->variablesConfig[53]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
-                $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
+  $varName = $this->variablesConfig[53]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
+  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
-                $varName = $this->variablesConfig[53]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
-                $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
+  $varName = $this->variablesConfig[53]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
+  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
-            if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
-                $varName = $this->variablesConfig[53]['databaseName'];
-                $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
-                $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-            }
+  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
+  $varName = $this->variablesConfig[53]['databaseName'];
+  $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
+  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
+  }
 
  */
-    
-    
-        
-
 ?>
