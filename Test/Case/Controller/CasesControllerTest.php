@@ -259,6 +259,32 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual[2]["Lithuania"]["1655778-01"][0]);
     }
 
+    public function testSeparatorChar() {
+        $expected = array(
+            0 => array('loanId' => 3221),
+            1 => array('loanId' => 3215),
+        );
+        $actual = $this->testAction("/cases/testSeparatorChar");
+        $this->assertEquals($expected[0], $actual[0][0]);
+        $this->assertEquals($expected[1], $actual[1][0]);
+    }
+
+    public function testChronoOrder() {
+        $expected = array(
+            0 => array('investment' => array(
+                    'investment_country' => 'Latvia',
+                    'investment_loanId' => '85005-01'
+                )),
+            1 => array('investment' => array(
+                    'investment_country' => 13,
+                    'investment_loanId' => '888888-13'
+                )),
+        );
+        $actual = $this->testAction("/cases/testChronoOrder");
+        $this->assertEquals($expected[0], $actual[0][0]);
+        $this->assertEquals($expected[1], $actual[1][0]);
+    }
+
     public function tearDown() {
         parent::tearDown();
         unset($this->Hello);

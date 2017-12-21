@@ -30,20 +30,19 @@ class CasesController extends AppController {
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
-            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 
+            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 'testChronoOrder', "testAnalyzeJson",
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
-        $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
+        $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCaseTransaction.xlsx';
         $this->amortizationPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "amortization.html";
-        $this->csvPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "csvFile.csv";
+        $this->csvPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "ParserTestCaseCsvFile.csv";
+        $this->jsonPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "ParserTestCaseJson.json";
     }
 
     /**
      * Analyze testing
      */
     public function testParserAnalyze() {
-
-
         $parserConfig = [
             "A" => [
                 "name" => "investment.investment_country"                               // Winvestify standardized name  OK
@@ -1190,19 +1189,83 @@ class CasesController extends AppController {
     function testSeparatorChar() {
         $parserConfig = [
             "A" => [
-                "name" => "loanId"                                          
+                "name" => "loanId"
             ],
         ];
-        
+
         $myParser = new Fileparser();
-        
         $myParser->setConfig(array(
             'separatorChar' => ";",
             'offsetStart' => 1,
-            'offsetEnd' => 0
+            'offsetEnd' => 0,
+            'sortParameter' => null
         ));
-        $tempResult = $myParser->analyzeFile($this->csvPath, $parserConfig, "csv");
+        print_r($myParser->getConfig());
+        $tempResult[] = $myParser->analyzeFile($this->csvPath, $parserConfig, "csv");
+
+        $myParser->setConfig(array(
+            'separatorChar' => ",",
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'sortParameter' => null
+        ));
+        print_r($myParser->getConfig());
+        $tempResult[] = $myParser->analyzeFile($this->csvPath, $parserConfig, "csv");
+
         $this->print_r2($tempResult);
+        return $tempResult;
+    }
+
+    public function testChronoOrder() {
+        $parserConfig = [
+            "A" => [
+                "name" => "investment.investment_country"                               // Winvestify standardized name  OK
+            ],
+            "B" => [
+                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
+            ],
+        ];
+
+        $myParser = new Fileparser();
+
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'changeCronologicalOrder' => 0
+        ));
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'changeCronologicalOrder' => 1
+        ));
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
+
+    public function testAnalyzeJson() {
+        $parserConfig = [
+            "A" => [
+                "name" => "investment.investment_country"                               // Winvestify standardized name  OK
+            ],
+            "B" => [
+                "name" => "investment.investment_loanId"                                // Winvestify standardized name  OK
+            ],
+        ];
+
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        $tempResult = $myParser->analyzeFile($this->jsonPath, $parserConfig, "json");
+
+        print_r($tempResult);
         return $tempResult;
     }
 
