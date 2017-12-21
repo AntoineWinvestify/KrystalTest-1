@@ -70,9 +70,12 @@ class WinFormulas {
     protected $variablesFormula_A_xirr = [
         "A" => [
             "type" => [
-                "userinvestmentdata_totalGrossIncome",
-                "userinvestmentdata_interestGrossIncome",
-                //need more data to take values from database
+                "variables" => [
+                    "userinvestmentdata_cashInPlatform",
+                    "userinvestmentdata_totalNetDeposits",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
             "dateInit" => "-366",
@@ -86,14 +89,15 @@ class WinFormulas {
             "dateInit" => "-366",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
-            "operation" => "add"
+            "operation" => "substract"
         ],
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
             "dateInit" => "-366",
             "dateFinish" => "-1",
-            "intervals" => "inclusive"
+            "intervals" => "inclusive",
+            "operation" => "substract"
         ]
     ];
     
@@ -220,6 +224,8 @@ class WinFormulas {
                 return $this->variablesFormula_A;
             case "formula_B":
                 return $this->variablesFormula_B;
+            case "formula_A_xirr":
+                return $this->variablesFormula_A_xirr;
         }
     }
     
