@@ -690,7 +690,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
-        
+                
  
         
     }  
