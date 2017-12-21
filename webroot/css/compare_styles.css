@@ -1365,6 +1365,10 @@ hr.nomargin {
     height: 500px;
 }
 
+.portfolioData {
+    margin-right:0;
+}
+
 /***********************MEDIA QUERIES********************/
 
 
@@ -1533,16 +1537,18 @@ hr.nomargin {
 
 @media (min-width:1450px) {
     #screen {
+        margin-left: -200px;
+    }
+}
+
+@media (min-width:1600px) {
+    #screen {
         margin-left: -100px;
     }
 }
 
-
-@media only screen and (min-device-width:768px) and (max-device-width: 1024px) {
-    #popUp {
-        width:50%;
-    }
-/*            Customize Navbar collapsing on tablets*/
+@media only screen and (min-device-width:768px) and (max-device-width: 1142px) {
+    /*            Customize Navbar collapsing on tablets*/
     .navbar-header {
         float: none;
     }
@@ -1579,6 +1585,14 @@ hr.nomargin {
     }
     .collapse-tablet {
         display: inline-block !important;
+    }
+    
+}
+
+
+@media only screen and (min-device-width:768px) and (max-device-width: 1110px) {
+    #popUp {
+        width:50%;
     }
 /*            Features new design*/
     .s-mockup-v1 {
