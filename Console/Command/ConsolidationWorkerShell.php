@@ -95,14 +95,14 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
-            //$variablesName = [];
-            /*foreach ($variables as $variableKey => $variable) {
+            foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
-            }*/
-            //$dataMergeByDate = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
-            $dataMergeByDate = $this->returnDataPreformat();
+            }
+            
+            $dataMergeByDate = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+            //$dataMergeByDate = $this->returnDataPreformat();
         }
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
@@ -386,21 +386,21 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
     }
     
-    public function getSumValuesOrderedByDate($modelName, $value, $keyValue, $date) {
+    public function getSumValuesOrderedByDate($modelName, $values, $keyValue, $date) {
         $model = ClassRegistry::init($modelName);
-        $sumValues = $value;
-        $nameSum = $value;
-        if (is_array($value)) {
+        $sumValues = $values;
+        $nameSum = $values;
+        if (is_array($values)) {
+            $sumValues = null;
             $nameSum = null;
-            foreach ($value as $string)  {
+            foreach ($values['variables'] as $string)  {
                 if (empty($nameSum)) {
                     $nameSum = $string;
                 }
-                $sumValues = $string . " + ";
+                $sumValues .= $string . " + ";
             }
             $sumValues = rtrim($sumValues,"+ ");
         }
-        
         $model->virtualFields = array($nameSum . '_sum' => 'sum(' . $sumValues . ')');
         $sumValue  =  $model->find('list',array(
                 'fields' => array('date', $nameSum . '_sum'),
@@ -412,7 +412,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 )
             )
         );
-        print_r($sumValue);
         return $sumValue;
     }
     
