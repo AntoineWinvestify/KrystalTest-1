@@ -30,11 +30,12 @@ class CasesController extends AppController {
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
-            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter'
+            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'transaction.xlsx';
         $this->amortizationPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "amortization.html";
+        $this->csvPath = DS . "home" . DS . "eduardo" . DS . "Downloads" . DS . "csvFile.csv";
     }
 
     /**
@@ -1185,8 +1186,24 @@ class CasesController extends AppController {
         $this->print_r2($tempResult);
         return $tempResult;
     }
-    
-    function testSeparatorChar(){
+
+    function testSeparatorChar() {
+        $parserConfig = [
+            "A" => [
+                "name" => "loanId"                                          
+            ],
+        ];
         
+        $myParser = new Fileparser();
+        
+        $myParser->setConfig(array(
+            'separatorChar' => ";",
+            'offsetStart' => 1,
+            'offsetEnd' => 0
+        ));
+        $tempResult = $myParser->analyzeFile($this->csvPath, $parserConfig, "csv");
+        $this->print_r2($tempResult);
+        return $tempResult;
     }
+
 }
