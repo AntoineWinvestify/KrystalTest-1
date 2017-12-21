@@ -705,8 +705,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
-        
- 
+        return($resultData['payment']['payment_latePaymentFeeIncome']);    
     }   
     
     /*
@@ -717,9 +716,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalCapitalRepaymentPerDay(&$transactionData, &$resultData) {
-
-     
- 
+        return($resultData['payment']['payment_capitalRepayment']);
     }    
  
     
@@ -731,8 +728,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalPrincipalBuybackPerDay(&$transactionData, &$resultData) {
-   
- 
+        return($resultData['payment']['payment_principalBuyback']);            
     }    
     
     /*
@@ -743,9 +739,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
-
-     
- 
+        return($resultData['payment']['payment_interestIncomeBuyback']);
     }    
     
     /*
@@ -756,8 +750,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
-
- 
+        return($resultData['payment']['payment_regularGrossInterestIncome']);    
     }
 
  
@@ -769,8 +762,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalMyInvestmentPerDay(&$transactionData, &$resultData) {
-    
- 
+        return($resultData['payment']['payment_myInvestment']);
     }      
     
     
@@ -781,9 +773,8 @@ class UserDataShell extends AppShell {
      *  @return string      accumulated amount
      *
      */
-    public function calculateGlobalTotalsecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
-    
- 
+    public function calculateGlobalTotalSecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_secondaryMarketInvestment']);    
     }      
     
      /*
@@ -793,9 +784,8 @@ class UserDataShell extends AppShell {
      *  @return string      accumulated amount
      *
      */
-    public function calculateGlobalTotalcostSecondaryMarketPerDay(&$transactionData, &$resultData) {
-    
- 
+    public function calculateGlobalTotalCostSecondaryMarketPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_costSecondaryMarket']);     
     }     
     
     

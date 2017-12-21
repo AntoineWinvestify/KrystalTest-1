@@ -42,10 +42,18 @@ Pending:
 
 class Globalcashflowdata extends AppModel
 {
-	var $name = 'Globalcashflowdata';
-        var $useTable = "globalcashflowdatas";
+    var $name = 'Globalcashflowdata';
+    var $useTable = "globalcashflowdatas";
 
-        
+
+    
+    public $belongsTo = array(
+        'Userinvestmentdata' => array(
+            'className' => 'Userinvestmentdata',
+            'foreignKey' =>  'userinvestmentdata_id'
+        )
+    );
+            
 
 /**
 *	Apparently can contain any type field which is used in a field. It does NOT necessarily

@@ -41,7 +41,7 @@ App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
 class ParseDataClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue', 'Paymenttotal', 'Investment', 'Investmentslice');
+    public $uses = array('Queue', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata');
     protected $variablesConfig;
 
 // Only used for defining a stable testbed definition
@@ -298,7 +298,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2015-12-09"){ 
+if ($dateKey == "2  015-11-05"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -320,7 +320,7 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
             'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
         );
     file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
- //   exit;
+    exit;
 }
 
 
@@ -655,17 +655,17 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
 
-                $internalVariablesToHandle = array(10001, 10002, 10005, 
+                $internalVariablesToHandle = array(10001, 10002, 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013);      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
-                    print_r($this->variablesConfig[$item]);                       
+ //                   print_r($this->variablesConfig[$item]);                       
                     $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
 echo "&&&&&=>: original amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
-
+/*
 if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
     if ($database[$varName[0]][$varName[1]] < $result){  // we close an investment
         $FINISHED_ACCOUNT = $FINISHED_ACCOUNT + 1;
@@ -675,6 +675,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
         }
     }
 }
+*/
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {
                             $database[$dbTable][$transactionDataKey] = 0;
@@ -690,24 +691,6 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                 unset($database['payment']);
             }
 
-            
-            
-        
-            
-/*                  
-            payment_latePaymentFeeIncome
-            payment_capitalRepayment
-            payment_principalBuyback
-            payment_interestIncomeBuyback
-            payment_regularGrossInterestIncome
- 
-            payment_myInvestment
-            payment_secondaryMarketInvestment
-            payment_costSecondaryMarket
- */           
-            
-            
-            
             echo "printing global data for the date = $dateKey\n";
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
             // The following is done only once per readout period independent if period covers one day, 1 week or if
@@ -746,8 +729,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
             if (!empty($database['globalcashflowdata'])) {
                 $database['globalcashflowdata']['userinvestmentdata_id'] = $userInvestmentDataId;
                 $database['globalcashflowdata']['date'] = $dateKey;
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";
-                print_r( $database['globalcashflowdata']);                
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";                
                 $this->Globalcashflowdata->create();
                 if ($this->Globalcashflowdata->save($database['globalcashflowdata'], $validate = true)) {
                     echo "Done\n";
@@ -758,8 +740,29 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                     }
                 }
             }
+            
+
+
+            if (!empty($database['globaltotalsdata'])) {
+                $database['globaltotalsdata']['userinvestmentdata_id'] = $userInvestmentDataId;
+                $database['globaltotalsdata']['date'] = $dateKey;
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globaltotalsdata Data... ";               
+                $this->Globaltotalsdata->create();
+                if ($this->Globaltotalsdata->save($database['globaltotalsdata'], $validate = true)) {
+                    echo "Done\n";
+                } 
+                else {
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId'] . "\n";
+                    }
+                }
+            }            
+            
+            
+            
             print_r($database['Userinvestmentdata']);
             print_r($database['globalcashflowdata']);  
+            print_r($database['globaltotalsdata']);  
 
             $tempMeasurements = $database['measurements'];
         }
