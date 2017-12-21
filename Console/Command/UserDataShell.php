@@ -347,13 +347,10 @@ class UserDataShell extends AppShell {
      */
 
     public function calculateMyInvestment(&$transactionData, &$resultData) {
-
-        echo __FUNCTION__ . " " . __LINE__ . "returning " . $transactionData['amount'] . "\n";
-        echo "existing value = " . $resultData['payment']['payment_myInvestment'] . "\n";
-//       $resultData['payment']['payment_myInvestment'] = $transactionData['amount'];        // THIS IS A HARDCODED RULE
         return $transactionData['amount'];
     }
 
+    
     public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
         echo "----------------->  BBBBBBBBB\n";
         print_r($transactionData);
@@ -493,10 +490,10 @@ class UserDataShell extends AppShell {
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB 
      * @return int         number of active loans
-     * 
+     * $tempMeasurements = $database['Measurements'];
      */
-
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
+        $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
         $tempOutstandingPrincipal = 1;     // Any value other than 0 
 
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
@@ -506,19 +503,69 @@ class UserDataShell extends AppShell {
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }
-
-        if ($tempOutstandingPrincipal == 0) {
-            return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1;
-        }
+        $resultData['measurements']['stateCounting'] = $resultData['measurements']['stateCounting'] + 1;
+        
+     //   if ($resultData['investment']['technicalState'] == WIN_TECH_STATE_ACTIVE) {
+            $resultData['measurements'][$transactionData['investment_loanId']]['winTechActiveStateCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechActiveStateCounting'] + 1;
+            if ($tempOutstandingPrincipal == 0) {
+      //          $resultData['investment']['technicalState'] = WIN_TECH_STATE_NOT_ACTIVE;
+                $resultData['measurements'][$transactionData['investment_loanId']]['decrements'][]  = 'YES';
+                $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
+                                                $resultData['investment']['technicalState'];
+                return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] - 1);          
+            }
+     //   }
 
         if ($resultData['investment']['investment_new'] == YES) {
-            //           $resultData['investment']['investment_new'] = NO;       // To avoid possible double counting
-            return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);
+            $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] + 1;
+            $resultData['measurements'][$transactionData['investment_loanId']]['increments'][] = 'NO';
+            $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
+                                                $resultData['investment']['technicalState'];           
+            return ($resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'] + 1);   
         } else {
             return $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments'];
         }
     }
 
+    
+    
+    
+// ONLY FOR TESTING
+     public function calculateTechnicalState(&$transactionData, &$resultData) {
+         
+        $tempOutstandingPrincipal = 1;
+        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
+            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        }
+
+        if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
+            $tempOutstandingPrincipal = 0;
+        }
+        if ($tempOutstandingPrincipal == 0) {
+            return "FINISHED";              // represents a decrement
+        }        
+        
+        if ($resultData['investment']['investment_new'] == YES) {
+            return "INITIAL";               // represents an increment
+        }       
+
+        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            return "FINISHED";              // return current value numberOfActiveInvestments
+        }
+        return "ACTIVE";                    // return current value numberOfActiveInvestments
+        
+//        $resultData['investment']['technicalState'] = "UNDEFINED";
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     /*
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      *  @param  array       array with the current transaction data
@@ -632,6 +679,119 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
+    
+ //************************************************************************* 
+    
+    /*
+     *  Calculates the sum of all payment concepts that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      don't care
+     *
+     */
+    public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
+        
+ 
+        
+    }  
+    
+    
+    
+    /*
+     *  Calculates the sum of the payment concept "LatePaymentFeeIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_latePaymentFeeIncome']);    
+    }   
+    
+    /*
+     *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCapitalRepaymentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_capitalRepayment']);
+    }    
+ 
+    
+    /*
+     *  Calculates the sum of the payment concept "PrincipalBuyback" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalPrincipalBuybackPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_principalBuyback']);            
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "InterestIncomeBuyback" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_interestIncomeBuyback']);
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "RegularGrossInterestIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_regularGrossInterestIncome']);    
+    }
+
+ 
+    /*
+     *  Calculates the sum of the payment concept "myInvestment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalMyInvestmentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_myInvestment']);
+    }      
+    
+    
+    /*
+     *  Calculates the sum of the payment concept "secondaryMarketInvestment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalSecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_secondaryMarketInvestment']);    
+    }      
+    
+     /*
+     *  Calculates the sum of the payment concept "costSecondaryMarket" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCostSecondaryMarketPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_costSecondaryMarket']);     
+    }     
+    
+    
+    
+   
+    
 }
 
 /*
