@@ -122,6 +122,8 @@ class zank extends p2pCompany {
 //set_time_limit(25);		// Zank is very very slow
         //echo $result; 
         $this->investmentDeletedList = $loanIdList;
+        echo 'id list: ';
+        print_r($this->investmentDeletedList);
         if (!$result) {   // Error while logging in
             echo __FUNCTION__ . __LINE__ . "login fail" . SHELL_ENDOFLINE;
             $tracings = "Tracing: " . SHELL_ENDOFLINE;
@@ -394,10 +396,10 @@ class zank extends p2pCompany {
             $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
             foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
-                /* foreach($subdivs as $subkey => $subdiv){
+                foreach($subdivs as $subkey => $subdiv){
                   echo 'Div: ' . HTML_ENDOFLINE;
                   echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
-                  } */
+                  }
                 $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
                 $tempArray['marketplace_loanReference'] = $loanId;
                 //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
@@ -428,6 +430,11 @@ class zank extends p2pCompany {
                 echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
                 $tds = $subdivs[126]->getElementsByTagName('td');
                 $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+                
+                if(strpos($tempArray['marketplace_statusLiteral'], 'ategor')){  //If the loan has been deleted, the pfp redeirect to the marketplace, we detect that and chage status
+                    $tempArray['marketplace_statusLiteral'] = 'Eliminada';
+                    $tempArray['marketplace_status'] = REJECTED;
+                }               
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
