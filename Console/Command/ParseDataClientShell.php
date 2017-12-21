@@ -759,11 +759,11 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
             }            
             
             
-            
+ /*           
             print_r($database['Userinvestmentdata']);
             print_r($database['globalcashflowdata']);  
             print_r($database['globaltotalsdata']);  
-
+*/
             $tempMeasurements = $database['measurements'];
         }
 
