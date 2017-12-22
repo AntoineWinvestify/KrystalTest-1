@@ -104,17 +104,18 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
             //$dataMergeByDate = $this->returnDataPreformat();
         }
+        
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
         require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
-        foreach ($dataMergeByDate as $linkedaccountId => $companyId) {
-            $data['netAnnualReturn'][$linkedaccountId] = $financialClass->XIRR($dataMergeByDate['values'], $dataMergeByDate['dates']);
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
         
         echo "this is the xiiiiiiiiiiiiiiir " . $xirr*100 . " \n" ;
         exit;
-        return json_encode($data);
+        return json_encode($returnData);
     }
     
     public function calculateNetAnnualTotalFunds($data) {

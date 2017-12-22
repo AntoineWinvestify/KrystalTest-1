@@ -77,7 +77,7 @@ class WinFormulas {
                 ],
                 "operation" => "add"
             ],
-            "table" => "Userinvestmentdata",
+            "table" => "Globaltotalsdata",
             "dateInit" => "-366",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
