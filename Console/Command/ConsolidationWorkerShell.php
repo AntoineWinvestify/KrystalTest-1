@@ -492,6 +492,43 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return $dataArray;
     }
     
+    public function getJoinAssociationForTable($tableName, $linkaccountId) {
+        switch($tableName) {
+            case "globaltotalsdatas":
+                $options['joins'] = array(
+                    array('table' => 'globaltotalsdatas',
+                        'alias' => 'globaltotalsdata',
+                        'type' => 'inner',
+                        'conditions' => array(
+                            'Sector.id = RolesSector.sector_id'
+                        )
+                    ),
+                    array('table' => 'roles',
+                        'alias' => 'Role',
+                        'type' => 'inner',
+                        'conditions' => array(
+                            'RolesSector.role_id = Role.id'
+                        )
+                    )
+                );
+
+                $options['conditions'] = array(
+                    'Role.id' => $roleId
+                );
+                //$options['field'] = array('Sector.*');
+                $options['recursive'] = -1;
+                $options['order'] = array(
+                    'Sector.sectors_father',
+                    'Sector.sectors_subSectorSequence'
+                );
+                break;
+            case "globalcashflowdatas":
+                
+                break;
+        }
+        return $joinAssociation;
+    }
+    
     /**
      * Function to initiate the formulas, in the future, this will be a config file
      */
