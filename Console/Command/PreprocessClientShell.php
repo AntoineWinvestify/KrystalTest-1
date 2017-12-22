@@ -72,7 +72,7 @@ class PreprocessClientShell extends GearmanClientShell {
                     print_r($jobInvestor);
                     $investorId = $jobInvestor['Investor']['id'];
                     $filterConditions = array(  'investor_id' => $investorId,
-                                                'company_id' => 10
+                                                'company_id' => 10                
                                             );
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";

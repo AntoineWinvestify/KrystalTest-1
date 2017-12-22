@@ -65,7 +65,7 @@
 class mintos extends p2pCompany {
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
             "A" =>  [
-                    "name" => "transaction_transactionId"                       // Winvestify standardized name
+                    "name" => "transaction_transactionId"                       // Winvestify standardized name  NOT NEEDED, ONLY USEFULL FOR TESTING
              ],
             "B" => [ 
                 [
@@ -109,10 +109,11 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
+                                            10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"]
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -146,10 +147,11 @@ class mintos extends p2pCompany {
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
                                             8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Disc/premium paid secondary market" => "Income_secondary_market"],   // For seller
-                                            11 => ["Disc/premium paid secondary market" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            13 => ["Comisión bancaria sobre el pago con la tarjeta" => "Bank_charges"]   // DOES NOT EXIST IN MINTOS
+                                            10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
+                                            11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"]
                                             ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
@@ -444,10 +446,39 @@ class mintos extends p2pCompany {
     
 
     protected $valuesExpiredLoan = [                                            // We are only interested in the investment_loanId
+        "A" =>  [
+            [
+                "type" => "investment_country",                                 // Winvestify standardized name  OK              
+                "functionName" => "getCountry",
+                ],
+             ],
         "B" => [
                 "name" => "investment_loanId"                                   // Winvestify standardized name  OK
              ],
-/*        
+        "D" =>  [
+            "name" => "investment_loanType"                                 // Winvestify standardized name   OK
+         ],
+
+        "E" =>  [
+            "name" => "investment_amortizationMethod"                       // Winvestify standardized name  OK
+         ],
+        
+        "F" =>  [
+                "name" => "investment_loanOriginator"                           // Winvestify standardized name  OK
+             ],
+        "G" =>  [
+                [
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ]
+             ],
+
+        /*        
         "H" =>  [
             [
                 "type" => "investment_remainingPrincipal",                      // Winvestify standardized name [remainder of TOTAL loan?
@@ -459,10 +490,16 @@ class mintos extends p2pCompany {
                 "functionName" => "getAmount",
             ]           
          ],
-*/        
-        "M" => [
-                "name" => "investment_stateOfLoan"                              // Winvestify standardized name  OK
-             ],       
+*/
+        "J" =>  [
+                "name" => "investment_nominalInterestRate",                     // Winvestify standardized name   OK
+             ],  
+        "M" =>  [
+                "name" => "investment_originalState"                              // Winvestify standardized name  OK
+             ], 
+        "N" =>  [
+                "name" => "investment_buyBackGuarantee"                         // Winvestify standardized name  OK
+             ],
         "R" =>  [
             [
                 "type" => "investment_outstandingPrincipal",                    // Winvestify standardized name OK 
@@ -472,11 +509,21 @@ class mintos extends p2pCompany {
                             "input4" => 16
                             ],
                 "functionName" => "getAmount",
+            ],
+            [
+                "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
+                "inputData" => [
+                            "input2" => "#current.investment_originalState",                            
+                            ],
+                "functionName" => "getDefaultValue",
+            ],
+        ],
+        "V" =>  [
+            [
+                "type" => "investment_currency",                            // Winvestify standardized name  OK
+                "functionName" => "getCurrency",
+                ],
             ]
-         ],        
-        "W" => [
-                "name" => "investment_state"                                    // Winvestify standardized name  OK
-        ]
     ];
     
       protected $callbacks = [
@@ -487,7 +534,11 @@ class mintos extends p2pCompany {
             "investment_statusOfLoan" => "translateOriginalLoanState"
         ],
         "expiredLoan" => [
-            "investment_originalState" => "translateOriginalLoanState"
+            "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+            "investment_loanType" => "translateLoanType",
+            "investment_amortizationMethod" => "translateAmortizationMethod", 
+            "investment_statusOfLoan" => "translateOriginalLoanState",
+            
         ]
     ];  
     
@@ -509,7 +560,7 @@ class mintos extends p2pCompany {
   
     protected $expiredLoanConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
                                  ); 
     
 
@@ -518,6 +569,10 @@ class mintos extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
@@ -660,7 +715,7 @@ class mintos extends p2pCompany {
                 }
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
-                    echo $a->nodeValue . SHELL_ENDOFLINE;
+                    //echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": Login found";
@@ -681,6 +736,7 @@ class mintos extends p2pCompany {
                     $msg = "Error while logging in user's portal. Wrong userid/password \n";
                     $msg = $msg . $tracings . " \n";
                     $this->logToFile("Warning", $msg);
+                    echo "Error login";   
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
 
@@ -712,43 +768,65 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                
+                
+                if(empty($this->tempUrl['transactionPage'])){                 
+                    $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
+                    //Url preparation for download multiple tramsaction files
+                    $this->numberOfFiles = 0;
+                    $this->dateInitPeriod = 0;
+                    $this->dateFinishPeriod = 0;
+                    $this->tempUrl['downloadTransacitonUrl'] = array_shift($this->urlSequence);
+                    $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);         
+                    $this->tempUrl['transactionsCredentials'] = array_shift($this->urlSequence);
+                    $this->tempUrl['headersJson'] = array_shift($this->urlSequence);
+                }
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['transactionPage']);
                 break;
             case 6:
-                //This two variables should disappear
-                $dateInit = date("d.m.Y", strtotime($this->dateInit));
-                $dateFinish = date('d.m.Y',strtotime($this->dateFinish));
-                //$credentialsFile = "account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                $url = array_shift($this->urlSequence);
-                $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array('{$date1}' => $dateInit));
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
+
+                $dateInit = date("d.m.Y",  strtotime($this->dateInitPeriod));      //date("d.m.Y", strtotime($this->dateInit));
+                $dateFinish = date("d.m.Y",  strtotime($this->dateFinishPeriod));  //date('d.m.Y',strtotime($this->dateFinish));
+                
+                $referer = strtr($this->tempUrl['transactionReferer'], array('{$date1}' => $dateInit));
                 $referer = strtr($referer, array('{$date2}' => $dateFinish));
-                $credentials = array_shift($this->urlSequence);
-                $credentials = strtr($credentials, array('{$date1}' => $dateInit));
+                echo "referer " . $referer;
+                
+                $credentials = strtr($this->tempUrl['transactionsCredentials'], array('{$date1}' => $dateInit));
                 $credentials = strtr($credentials, array('{$date2}' => $dateFinish));
-                $headersJson = array_shift($this->urlSequence);
-                $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
+                echo "credentials " . $credentials;
+                
+                $headers = strtr( $this->tempUrl['headersJson'], array('{$baseUrl}' => $this->baseUrl));
                 $headers = json_decode($headers, true);
+                echo "headers " . $headers;
+                
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                //$referer ="https://www.mintos.com/en/account-statement/?account_statement_filter[fromDate]={$today}&account_statement_filter[toDate]={$today}&account_statement_filter[maxResults]=20";
-                if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
-                    $this->idForSwitch++;
+                $this->numFileTransaction++;
+                if(!$continue){
+                    if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
+                        $this->idForSwitch++;
+                    }
+                    else {
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
+                        array_shift($this->urlSequence);
+                        $this->idForSwitch = 9;
+                    }
                 }
                 else {
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    array_shift($this->urlSequence);
-                    $this->idForSwitch = 9;
+                     $this->idForSwitch = 5;
                 }
-                $this->getPFPFileMulticurl($url, $referer, $credentials, $headers, $this->fileName);
+                $this->getPFPFileMulticurl($this->tempUrl['downloadTransacitonUrl'], $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
+                exit;
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);

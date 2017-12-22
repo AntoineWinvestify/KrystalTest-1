@@ -135,13 +135,18 @@ class p2pCompany {
     //Variables to download files
     protected $typeFileTransaction;
     protected $typeFileInvestment;
+    protected $typeFileExpiredLoan;
     protected $typeFileAmortizationtable;
-    protected $nameFileTransaction = "transaction_";
-    protected $nameFileInvestment = "investment_";
-    protected $nameFileAmortizationTable = "amortizationTable_";
-    protected $nameFileAmortizationTableList = "amortizationTableList.json";
+    protected $typeFileControlVariables = ".json";
+    protected $nameFileTransaction = WIN_FLOW_TRANSACTION_FILE . "_";
+    protected $nameFileInvestment = WIN_FLOW_INVESTMENT_FILE . "_";
+    protected $nameFileExpiredLoan = WIN_FLOW_EXPIRED_LOAN_FILE . "_";
+    protected $nameFileAmortizationTable = WIN_FLOW_AMORTIZATION_TABLE_FILE . "_";
+    protected $nameFileAmortizationTableList = WIN_FLOW_AMORTIZATION_TABLE_ARRAY . ".json";
+    protected $nameFileControlVariables = WIN_FLOW_CONTROL_FILE;
     protected $numFileTransaction = 1;
     protected $numFileInvestment = 1;
+    protected $numFileExpiredLoan = 1;
     protected $numFileAmortizationtable = 1;
     protected $companyName;
     protected $userReference;
@@ -158,7 +163,9 @@ class p2pCompany {
     protected $valuesAmortizationTable;
     protected $callbacks;
     protected $originExecution;
-
+    
+    //Number of days for each company download. Only some pfp uses it.
+    protected $period = 365;
     /**
      *
      * Prepare all the default data of the class and its subclasses
@@ -176,7 +183,6 @@ class p2pCompany {
         $this->cookiesDir = $createdFolder;
         $this->config['tracingActive'] = false;
         $this->headers = array();
-
 
 // ******************************** end of configuration parameters *************************************
         mkdir($this->tracingDir, 0777);
@@ -1794,7 +1800,7 @@ class p2pCompany {
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 300)
+                ->set(CURLOPT_TIMEOUT, 100)
                 ->set(CURLOPT_ENCODING, "gzip,deflate,br")
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
@@ -1804,7 +1810,45 @@ class p2pCompany {
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
     }
+    
+    /**
+     * Download multiple files betwen two dates given a period.
+     * Need for companies that take too long to download the historical, like bondora.
+     * 
+     * @param string $dateMin Minumum date init
+     * @param int $datePeriod Duration of each period in days.
+     * @return boolean
+     */
+    public function downloadTimePeriod($dateMin, $datePeriod){         
 
+        if(empty($dateMin)){
+            $dateMin = "20090101";
+        }
+        // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
+        if( $this->numberOfFiles == 0){
+            $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
+            if(date($this->dateInitPeriod) < date($dateMin)){
+                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            }
+            $this->dateFinishPeriod = date('Ymd',strtotime($this->dateFinish));
+            //echo 'Date ' . $this->dateInitPeriod . " " . $this->dateFinishPeriod;
+            $this->numberOfFiles++; 
+        }
+        else {
+            $this->dateFinishPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -1 . " days"));//Next finish date will we the previous day of the last Init date
+            $this->dateInitPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -$datePeriod . " days"));
+            if(date($this->dateInitPeriod) < date($dateMin)){
+                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            }
+            $this->numberOfFiles++;
+         }
+        if(date($this->dateInitPeriod) > date($dateMin)){
+            return true;   //Continue period download
+        }
+        else{
+            return false;  //End period download
+        }
+    }
   
     /**
      * Transform an array amortization table to a html structure with <table> tag
@@ -2786,6 +2830,14 @@ FRAGMENT
         //https://stackoverflow.com/questions/35037313/casperjs-download-and-save-file-to-specific-location
         //https://stackoverflow.com/questions/16144252/downloading-a-file-that-comes-as-an-attachment-in-a-post-request-response-in-pha/31124037#31124037
         //http://docs.casperjs.org/en/latest/modules/casper.html#download
+    }
+    
+    public function copyFile($file, $newFile) {
+        $created = true;
+        if (!copy($file, $newFile)) {
+            $created = false;
+        }
+        return $created;
     }
     
 }

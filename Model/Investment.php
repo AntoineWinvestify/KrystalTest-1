@@ -93,11 +93,10 @@ var $validate = array(
         
         $this->create();
         if (!isset($investmentdata['investment_sliceIdentifier'])) {
-            echo "ANANANANANAN%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%";
             $result[0] = false;            
             return $result;
         }
-echo "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ee";
+
         if ($this->save($investmentdata, $validate = true)) {   // OK
             $investmentId = $this->id;
             
@@ -152,8 +151,9 @@ echo "€€€€€€€€€€€€€€€€€€€€€€€€�
             //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
             $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
         }
+        $defaultedInvestments = $this->find("all",array("conditions" => $linkedaccount));
 
-        $this->saveMany($defaultedInvestments); //Save delayed days
+        //$this->saveMany($defaultedInvestments); //Save delayed days
         
        // print_r($defaultedInvestments);
         return $defaultedInvestments;
@@ -198,6 +198,8 @@ echo "€€€€€€€€€€€€€€€€€€€€€€€€�
         //print_r($defaultedInvestments);
         foreach ($defaultedInvestments as $defaultedInvestment) {
             switch ($defaultedInvestment['Investment']['investment_paymentStatus']) {
+                case 0:
+                    break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 90):
                     $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
                     $range[">90"] = round(($value[">90"] / $outstanding) * 100, 2);

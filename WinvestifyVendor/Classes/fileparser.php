@@ -70,7 +70,8 @@
  * New configuration parameter (changeCronologicalOrder)
  * 
  * 
- * 
+ * 2017-12-07
+ * rectified an error in saveExcelToArray. Error was related to removing an item at random
  * 
  * Pending:
  * chunking, csv file check
@@ -653,7 +654,7 @@ echo "INPUT FILE = $file \n";
 echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . "\n";
         $objPHPExcel = PHPExcel_IOFactory::load($file);
 
-        ini_set('memory_limit','2048M');
+        ini_set('memory_limit','4096M');
         $sheet = $objPHPExcel->getActiveSheet();
         $highestRow = $sheet->getHighestRow();
         $highestColumn = $sheet->getHighestColumn();
@@ -704,7 +705,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return array $temparray the data after the parsing process.
      *
      */
-    private function saveExcelToArray($rowDatas, $values, $totalRows) {
+    private function saveExcelToArray(&$rowDatas, $values, $totalRows) {
         $tempArray = [];
         $maxRows = count($rowDatas);
 
@@ -713,8 +714,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             if ($i == $this->config['offsetStart']) {
                 break;
             }
-            //echo "unset to happen, value of cell = " . print_r($rowDatas[$key][2]);
-            echo "\n";
+
             unset($rowDatas[$key]);
             $i++;
         }
@@ -727,18 +727,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             }
         }   
  
-        $i = 0;
-        //$totalRows = count($rowData);
-        foreach ($rowDatas as $key => $rowData) {
-            if ($i == $this->config['offsetEnd']) {
-                break;
-            }
-            unset($rowDatas[$totalRows]);
-            $totalRows = $totalRows - 1;
-            $i++;
-        }  
+        // remove items at from the end of the array
+        for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
+            array_pop($rowDatas);
+        }
        
-         
         $i = 0;
         $outOfRange = false;
 
@@ -804,7 +797,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                     }
                 }
             }
-
+          
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
@@ -1184,7 +1177,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * Determines the 'transactiondetail' based on a translationtable (=$config) and the sign of the amount ( positive or negative).
      * Note that the amount must already have been calculated before executing this function
      *
-     * @param string    $input
+     * @param string    $input          Represents an amount with - 
      * @param string    $originalConcept
      * @param array     $config             Translation table
      * @return array    [0] => Winvestify standardized concept
@@ -1195,14 +1188,26 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *                  The variable name is read from "internal variable" $this->transactionDetails.
      */   
     private function getComplexTransactionDetail($input, $originalConcept, $config) {
-        $position = strpos($input, "-");
+
+        $type = WIN_CONCEPT_TYPE_INCOME;
+// take care of amounts in scientific notation
         
-        if ($position !== false) {      // contains - sign 
-            $type = WIN_CONCEPT_TYPE_COST;
-        }    
-        else {
-            $type = WIN_CONCEPT_TYPE_INCOME;
+        $input = strtoupper($input);
+        $sciencePosition = strpos($input, "E");
+        if ($sciencePosition !== false) {
+            $input = $this->getAmount($input, "", ".", 16);   
+            $temp = explode("-", $input);
+            if (count($temp) == 3) {
+                $type = WIN_CONCEPT_TYPE_COST;
+            }
         }
+        else {
+            $position = strpos($input, "-");        
+            if ($position !== false) {      // contains - sign 
+                $type = WIN_CONCEPT_TYPE_COST;
+            }    
+        }
+        
         $found = NO;        
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);

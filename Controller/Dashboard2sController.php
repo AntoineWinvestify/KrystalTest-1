@@ -64,7 +64,7 @@ class Dashboard2sController extends AppController {
             FatalErrorException(__('You cannot access this page directly'));
         }
         //echo 1;
-        $executionStartTime = microtime(true);
+        //$executionStartTime = microtime(true);
 
         //Request data
         $linkedAccount = $this->request->data['id']; //Link account id
@@ -141,10 +141,18 @@ class Dashboard2sController extends AppController {
     /**
      * Global dashboard view
      */
-    function dashboardOverview() {
+     function dashboardOverview(){
+          $this->layout = 'azarus_private_layout';
+     }
+     
+    
+    function dashboardOverviewData() {
 
-        $executionStartTime = microtime(true);
-        $this->layout = 'azarus_private_layout';
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
+        echo 1;
         $this->Company = ClassRegistry::init('Company');
         //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
         $investorIdentityId = $this->Session->read('Auth.User.Investor.id');

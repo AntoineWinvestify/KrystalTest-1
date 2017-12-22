@@ -20,15 +20,16 @@
 ?>
 
 <?php
-	$supportedLanguages = array("spa" => "Espa&ntilde;ol",
-								"eng" => "English",
-					//			"fra" => "Francais",
-					//			"nld" => "Nederlands",
-					//			"de" => "Deutsch",
-								"ita" => "Italiano"
-								);
-	
-	$usedLanguage = $this->requestAction('users/readUsedLanguage');				// read language from Cookie
+    $supportedLanguages = array(
+        "spa" => "Español",
+        "eng" => "English",
+        //"fra" => "Francais",
+        //"nld" => "Nederlands",
+        //"de" => "Deutsch",
+        //"ita" => "Italiano"
+    );
+
+$usedLanguage = $this->requestAction('users/readUsedLanguage');				// read language from Cookie
 	
 	$languageCount = count($supportedLanguages);	
 	$tempArray = array($usedLanguage => $supportedLanguages[$usedLanguage]);
@@ -40,7 +41,7 @@
 		<img src="/img/flags/<?php echo $usedLanguage?>.png" class="flagvalue" id="<?php echo $usedLanguage?>"/>&nbsp;<?php echo $tempArray[$usedLanguage]?>
 			<span class="caret"></span>
 	</a>
-    <ul style="width: 100%" class="dropdown-menu">
+    <ul style="width: 100%" class="dropdown-menu language-dropdown-menu">
                                         
 <?php
 	foreach ($listSupportedLanguages as $key=>$language) {

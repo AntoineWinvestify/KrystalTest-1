@@ -168,7 +168,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2">
-                    <div class="wizard-container-small">
+                    <div class="wizard-container-small"> 
                         <div class="card wizard-card-small" data-color="green" id="wizardProfile">
                             <div class="wizard-header text-center">
                                 <button type="button" class="close closeBtn" data-dismiss="modal" aria-hidden="true" style="margin-right: 15px;">&times;</button>
@@ -178,7 +178,11 @@
                             <div class="tab-content">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                        <p align="justify"><?php echo __('To complete the registration process of your selected platforms, we will inform you that Winvestify meets your demand by providing to the requested platforms all the information and documentation provided by you (name, surname, DNI / NIE, bank account and other information that may allow us to identify you as a user). By accepting, you confirm that you have read and accept the conditions of this service.') ?></p>
+                                        <p align="justify"><?php echo __('To complete the registration process of your selected platforms, we will inform you that '
+                                                . 'Winvestify meets your demand by providing to the requested platforms all the information '
+                                                . 'and documentation provided by you (name, surname, DNI / NIE, bank account and other '
+                                                . 'information that may allow us to identify you as a user). By accepting, '
+                                                . 'you confirm that you have read and accept the conditions of this service.') ?></p>
                                         <ul>
                                             <?php foreach ($companies as $company) { ?>
                                                 <li><?php echo __($company["name"]) ?></li>

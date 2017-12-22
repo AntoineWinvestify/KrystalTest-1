@@ -252,6 +252,10 @@ class finanzarel extends p2pCompany {
     
     function __construct() {
         parent::__construct();
+        $this->typeFileTransaction = "csv";
+        $this->typeFileInvestment = "csv";
+        //$this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
 // Do whatever is needed for this subsclass
     }   
 
@@ -499,7 +503,7 @@ class finanzarel extends p2pCompany {
                         'p_debug' => '',
                         'p_request' => $this->request[0]);
                 print_r($credentialsFile);
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->numFileInvestment++;
                 //$fileType = 'csv';
                 //$referer = 'https://marketplace.finanzarel.com/apex/f?p=MARKETPLACE:' . $this->credentialsGlobal['p_flow_step_id'] . ":" . $this->credentialsGlobal['p_instance'];
@@ -510,7 +514,7 @@ class finanzarel extends p2pCompany {
                 $headers = array('Expect:');
                 //array_shift($this->urlSequence);
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $fileName);
+                $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);
                 break; 
             case 4:
                                                 if (!$this->verifyFileIsCorrect()) {
@@ -529,7 +533,7 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
-                $fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
                 $headers = array('Expect:');
                 if (count($this->request) > 2) {
                     $this->idForSwitch++;
@@ -537,7 +541,7 @@ class finanzarel extends p2pCompany {
                 else {
                     $this->idForSwitch = 6;
                 }
-                $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $fileName);
+                $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
                 break;
             case 5:
                                                 if (!$this->verifyFileIsCorrect()) {
@@ -550,11 +554,11 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[2]);
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->numFileInvestment++;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $fileName);
+                $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
                 break;
             case 6:
                 if (!$this->verifyFileIsCorrect()) {
@@ -603,9 +607,9 @@ class finanzarel extends p2pCompany {
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
                 $headers = array('Expect:');
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url,$referer, false, $headers, $fileName);
+                $this->getPFPFileMulticurl($url,$referer, false, $headers, $this->fileName);
                 break;
             case 9:
                 if (!$this->verifyFileIsCorrect()) {
@@ -667,13 +671,13 @@ class finanzarel extends p2pCompany {
         $url = array_shift($this->urlSequence);
         $fileUrl = $url . "p_flow_id=" . $credentials['p_flow_id'] . "&p_flow_step_id=" . $credentials['p_flow_step_id'] . "&p_instance=" . $credentials['p_instance'] . "&p_debug&p_request=" . $request;
         echo $fileUrl . HTML_ENDOFLINE;
-        $fileName = 'Finanzarel';
+        $this->fileName = 'Finanzarel';
         $fileType = 'csv';
 
         $pfpBaseUrl = 'http://www.finanzarel.com';
         $path = 'prueba';
 
-        $this->downloadPfpFile($fileUrl, $fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
+        $this->downloadPfpFile($fileUrl, $this->fileName, $fileType, $pfpBaseUrl, 'Finanzarel', 'prueba');
         echo 'Downloaded';
     }
     
