@@ -44,16 +44,14 @@ Pending:
 
 class Paymenttotal extends AppModel
 {
-	var $name= 'Paymenttotal';
-/*
-	var $hasOne = array(
-		'Investment' => array(
-			'className' => 'Investment',
-			'foreignKey' => '_id',
-		)
-	);
-*/
+    var $name= 'Paymenttotal';
 
+    public $belongsTo = array(
+        'Investment' => array(
+            'className' => 'Investment',
+            'foreignKey' =>  'investment_id'
+        )
+    );
 
         
         
