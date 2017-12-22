@@ -119,14 +119,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
-            $controlVariableFile = $data['controlVariableFile'];
             $companyHandle = $this->companyClass($data['pfp']);
 
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
 
-            print_r($data);
             $files = $data['files'];
 
             // First analyze the transaction file(s)
@@ -163,7 +161,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile(); 
-                        $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
+                                $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
                 
@@ -188,11 +186,15 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
-                            foreach ($tempResult as $expiredloankey => $item) {
-                                $listOfExpiredLoans[] = $expiredloankey;
+                            $totalParsingresultExpiredInvestments = $tempResult;
+                            $i = 0;
+                            foreach ($tempResult as $expiredLoankey => $item) {
+                                $listOfExpiredLoans[] = $expiredLoankey;
+                                $i++;
                             }
                             break;                            
                     }
+                    
 /*
                     try {
 
@@ -218,56 +220,72 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
+            $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
-            $returnData[$linkedAccountKey]['pfp'] = $platform;
+            $returnData[$linkedAccountKey]['actionOrigin'] = $data['actionOrigin'];
+            $returnData[$linkedAccountKey]['pfp'] = $platform;  
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-            $returnData[$linkedAccountKey]['controlVariableFile'] = $controlVariableFile; 
-            
-            
+            $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile'];         
             
  // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
             $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
            
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
-            $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
-            $iteriter = new RecursiveIteratorIterator($arrayiter);
-            foreach ($iteriter as $key => $value) {
-                if ($key == "investment_loanId"){
-                    if (in_array($value, $data['listOfCurrentActiveLoans']) == false) {         // Check if new investments have appeared
-                        $loanIdstructure = explode("_", $value);
-                        if ($loanIdstructure[0] == "global") {
-                            continue;
+            
+            if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                echo "action = account linking\n";
+                $newLoans = array_keys($returnData[$linkedAccountKey]['parsingResultInvestments']);
+            }
+            else {      // WIN_ACTION_ORIGIN_REGULAR UPDATE
+                $arrayiter = new RecursiveArrayIterator($returnData[$linkedAccountKey]['parsingResultTransactions']);
+                $iteriter = new RecursiveIteratorIterator($arrayiter);
+                foreach ($iteriter as $key => $value) {
+                    if ($key == "investment_loanId"){
+                        if (in_array($value, $data['listOfCurrentActiveLoans']) == false) {         // Check if new investments have appeared
+                            $loanIdstructure = explode("_", $value);
+                            if ($loanIdstructure[0] == "global") {
+                                continue;
+                            }
+                            if (in_array($value, $listOfExpiredLoans) == false){
+                                $newLoans[] = $value;
+                            }
+                       //     $newLoans[] = $value;         temp fix for Zank
                         }
-                        if (in_array($value, $listOfExpiredLoans) == false){
-                            $newLoans[] = $value;
-                        }
-                        $newLoans[] = $value;
                     }
                 }
             }
-            
             $newLoans = array_unique($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
             unset( $newLoans);
-            
-            echo "New loans are\n";
-            print_r($returnData[$linkedAccountKey]['newLoans']); 
-            
-            
-            
         }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
+//print_r($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']);
  //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
- //      print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
-        print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
- //     print_r($data['tempArray'][$linkedAccountKey]['error']);
- //     print_r($data);
- 
+ //echo "new loans = ";
+ //       print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
+     //   print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'][])
+        echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
+        echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
+        echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
+ /*$i = 0;
+ foreach  ($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments'] as $key => $dataXX){
+     echo $key . "@@";
+     $i++;
+     if ($i == 150) break;
+ }
+ $i = 0;
+ foreach ($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'] as $key => $dataXX){
+      $i++;
+     if ($i == 150) break;
+     echo $key . "@@";
+ } */
+        echo "The size of data to be sent to the Client = " . strlen(json_encode($data)) . " Bytes\n";
+ echo "Done\n";
         return json_encode($data);
     }       
         

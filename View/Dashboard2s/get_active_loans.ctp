@@ -38,10 +38,11 @@ echo $activeInvestments[0];
                                 <td dataorder="<?php echo $activeInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo number_format(round($activeInvestment['Investment']['investment_outstandingPrincipal'], 2), 2) . " &euro;"; ?></td>
                                 <td><?php echo $activeInvestment['Investment']['investment_nextPaymentDate']; ?></td>
                                 <td> <?php
-                                    switch ((int) $activeInvestment['Investment']['investment_paymentStatus']) {
+                             //   $activeInvestment['Investment']['investment_paymentStatus'] = -1;
+                                    switch ($activeInvestment['Investment']['investment_paymentStatus']) {
                                         case 0:
                                             echo __("Current");
-                                            break;
+                                            break;                                          
                                         case ($activeInvestment['Investment']['investment_paymentStatus'] > 90):
                                             echo __("91+ DPD");
                                             break;
@@ -57,9 +58,11 @@ echo $activeInvestments[0];
                                         case ((int) $activeInvestment['Investment']['investment_paymentStatus'] > 0):
                                             echo __("1-7 DPD");
                                             break;
+                                     
                                         default:
-                                            echo __("Current");
+                                            echo __("N/A");
                                             break;
+                                    
                                     }
                                     ?></td>
                             </tr>
