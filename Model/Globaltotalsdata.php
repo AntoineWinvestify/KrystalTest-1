@@ -18,13 +18,12 @@
 *
 * @author Antoine de Poorter
 * @version 0.1
-* @date 2017-10-18
+* @date 2017-12-20
 * @package
 *
 
-Hold "total" values of many of the concepts that are applicable to a loan
 
-2017-10-18		version 0.1
+2017-12-20		version 0.1
 initial version
 
 
@@ -41,42 +40,29 @@ Pending:
 
 */
 
-
-class Paymenttotal extends AppModel
+class Globaltotalsdata extends AppModel
 {
-    var $name= 'Paymenttotal';
+	var $name = 'Globaltotalsdata';
+        var $useTable = "globaltotalsdatas";
 
-    public $belongsTo = array(
-        'Investment' => array(
-            'className' => 'Investment',
-            'foreignKey' =>  'investment_id'
-        )
+
+    /**
+    *	Apparently can contain any type field which is used in a field. It does NOT necessarily
+    *	have to map to a existing field in the database. Very useful for automatic checks
+    *	provided by framework
+    */
+    var $validate = array(
+
     );
 
-        
-        
-        
-    /*
-     * 
-     * Update the corresponding fields in the paymenttotal table 
-     * 
-     */
-    function afterSave1($created, $options = array()) {  
-/*
- * 
- * here I should ad the contents of the paymenttotals table to the 
- * 
- * 
- * 
- * 
- * 
- * 
- */
-        
-        
-        print_r($this->data['Paymenttotal']);
-    }       
-        
-        
+
+    
+    public $belongsTo = array(
+        'Userinvestmentdata' => array(
+            'className' => 'Userinvestmentdata',
+            'foreignKey' =>  'userinvestmentdata_id'
+        )
+    );
+    
 
 }

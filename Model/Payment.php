@@ -42,9 +42,14 @@ Pending:
 
 class Payment extends AppModel
 {
-	var $name= 'Payment';
-
-
+    var $name= 'Payment';
+    
+    public $belongsTo = array(
+        'Investment' => array(
+            'className' => 'Investment',
+            'foreignKey' =>  'investment_id'
+        )
+    );
         
 /**
 *	Apparently can contain any type field which is used in a field. It does NOT necessarily
