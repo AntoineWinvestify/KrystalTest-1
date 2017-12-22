@@ -369,6 +369,15 @@ class finbee extends p2pCompany {
         
     );
 
+    protected $compareHeaderConfigParam = array(
+        'chunkInit' => 1,
+        'chunkSize' => 1,
+        0 => array(
+            'offsetStart' => 1,
+            'sheetName' => 'Active Loans'
+        )
+    );
+            
     function __construct() {
         $this->i = 0;
         $this->typeFileTransaction = "xlsx";

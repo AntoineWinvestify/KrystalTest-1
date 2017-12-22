@@ -2838,7 +2838,12 @@ FRAGMENT
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();
         
-        $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
+        if (!empty($this->compareHeaderConfigParam[0]['offsetStart'])) {
+            $data = $this->myParser->getFirstRowMultiSheet($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
+        }
+        else{
+            $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
+        }
         echo "Comapare: ";
         print_r($this->headerComparation);
         echo SHELL_ENDOFLINE;
