@@ -491,12 +491,19 @@ class finbee extends p2pCompany {
                 break;
             case 4:
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
