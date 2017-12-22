@@ -107,6 +107,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
      
     public function parseFileFlow($job) {
+ $timeStart = time();       
         //for debugging error purpose
         $this->job = $job;
         if (Configure::read('debug')) {
@@ -273,20 +274,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
- /*$i = 0;
- foreach  ($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments'] as $key => $dataXX){
-     echo $key . "@@";
-     $i++;
-     if ($i == 150) break;
- }
- $i = 0;
- foreach ($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'] as $key => $dataXX){
-      $i++;
-     if ($i == 150) break;
-     echo $key . "@@";
- } */
+
         echo "The size of data to be sent to the Client = " . strlen(json_encode($data)) . " Bytes\n";
- echo "Done\n";
+echo "Done\n";
+$timeStop = time();
+echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
+
         return json_encode($data);
     }       
         

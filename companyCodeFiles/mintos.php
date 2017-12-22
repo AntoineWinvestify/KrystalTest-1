@@ -1081,7 +1081,7 @@ class mintos extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData){
             case "MORTGAGE LOAN":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
@@ -1119,7 +1119,7 @@ class mintos extends p2pCompany {
      */
     public function translateAmortizationMethod($inputData) {
         $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData){
             case "FULL":
                 $type = WIN_AMORTIZATIONMETHOD_FULL;
@@ -1175,7 +1175,7 @@ class mintos extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         $data = WIN_BUYBACKGUARANTEE_NOT_PROVIDED;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "YES":
                 $data = WIN_BUYBACKGUARANTEE_PROVIDED;
