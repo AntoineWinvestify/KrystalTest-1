@@ -506,16 +506,23 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
                     if (isset($transactionData['conceptChars'])) {
-                        if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
+                        if ($transactionData['conceptChars'] == "AM_TABLE") {       // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
-                                $sliceId = $this->linkNewSlice($investmentId, $database['investment']['investment_sliceIdentifier']);
-                                if ($sliceId) {             //NOTE $investmentId does not exist for new loans and zombies so this won't always work
-                                    $platformData['newLoans'][$sliceId] = $database['investment']['investment_sliceIdentifier'];
-     //                             $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+                                if (isset($transactionData['sliceIdentifier'])) {
+                                        $sliceIdentifier = $transactionData['sliceIdentifier'];
+                                    }
+                                    else {      // Take the default one
+                                        $sliceIdentifier = $transactionData['investment_loanId'];
+                                }
+                                
+                                $sliceIdExists = array_search ($sliceIdentifier, $platformData['newLoans']);
+                                if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
+                                    $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
                                 }
                             }
                         }
                     }
+                    
 print_r($transactionData);
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // read all transaction concepts
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
@@ -589,9 +596,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                             }        
                         }
                     }                           
-                }
+                }   
                 
-// Now start consolidating of the results, these are to be stored in the investment table? (variable part)          
+// Now start consolidating of the results on investment level and per day                
                 $internalVariableToHandle = array(37, 10004);
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
@@ -655,6 +662,13 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
 
+   
+//Define which amortization tables shall be collected
+                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
+                    $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
+                    $platformData['newLoans'][$loanSliceId] = $tableSliceIdentifier;
+                }
+                                     
                 $internalVariablesToHandle = array(10001, 10002, 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
@@ -759,11 +773,11 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
             }            
             
             
-            
+ /*           
             print_r($database['Userinvestmentdata']);
             print_r($database['globalcashflowdata']);  
             print_r($database['globaltotalsdata']);  
-
+*/
             $tempMeasurements = $database['measurements'];
         }
 
@@ -781,7 +795,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
             
             
         }
-        
+       
 echo "FINISHED_ACCOUNT = $FINISHED_ACCOUNT   \n";
 echo "STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS \n"; 
 $myArray = array ('finished' => $FINISHED_ACCOUNT,

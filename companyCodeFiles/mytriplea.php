@@ -738,9 +738,11 @@ class mytriplea extends p2pCompany {
                 $baseUrl = array_shift($this->urlSequence);
                 echo "baseUrl = $baseUrl<br>";
                 $tables = $this->getElements($dom, "table", "id", "tablaPaginadaInversiones");
-                $this->verifyNodeHasElements($tables);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
+                }
+                if (count($tables) == 0) {
+                    return $tempArray;
                 }
                 $tbodys = $this->getElements($tables[0], "tbody");
                 if (!$this->hasElements) {
@@ -749,7 +751,9 @@ class mytriplea extends p2pCompany {
                 $trs = $this->getElements($tbodys[0], "tr"); // table with all active investments
 //echo __FILE__ . " " . __LINE__ . "<br>";
                 if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__);
+                    $tempArray = $this->tempArray;
+                    $this->getError(__LINE__, __FILE__);
+                    return $tempArray;
                 }
                 $this->numberOfInvestments = 0;
                 for ($key = 0; $key < count($trs); $key++) { // cycle through all the investments and get the data, including amortization table

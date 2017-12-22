@@ -115,7 +115,7 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-    /* var 37
+    /* 
      *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
      * 
      *  @param  array       array with the current transaction data
@@ -154,7 +154,7 @@ class UserDataShell extends AppShell {
         return $result;
     }
 
-    /* var 38
+    /* var 38 not fuly tested
      * Get the amount which corresponds to the "ReceivedPrepayments" concept
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB
@@ -162,7 +162,7 @@ class UserDataShell extends AppShell {
      */
 
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
-        $result = 0.0;
+        $result = '0.0';
         if (isset($resultData['payment']['payment_capitalRepayment'])) {
             $result = bcadd($result, $resultData['payment']['payment_capitalRepayment'], 16);
         }
@@ -690,7 +690,7 @@ class UserDataShell extends AppShell {
      *
      */
     public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
-        
+                
  
         
     }  
@@ -809,22 +809,11 @@ class UserDataShell extends AppShell {
   $this->variablesConfig[31]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
   }
 
-  if ($this->variablesConfig[34]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // capital repayment (34)
-  $varName = $this->variablesConfig[34]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateCapitalRepayment($database);
-  $this->variablesConfig[34]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
 
   if ($this->variablesConfig[35]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
   $varName = $this->variablesConfig[35]['databaseName'];
   $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
   $this->variablesConfig[35]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[37]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // outstanding principal (37)
-  $varName = $this->variablesConfig[37]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateOutstandingPrincipal($database);
-  $this->variablesConfig[37]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
   }
 
   if ($this->variablesConfig[38]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)

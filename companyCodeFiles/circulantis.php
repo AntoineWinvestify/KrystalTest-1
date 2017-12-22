@@ -1047,7 +1047,9 @@ class circulantis extends p2pCompany {
      */
     function structureRevision($node1, $node2) {
 
-
+        $node1->removeAttribute('class'); //This class is the loan type, can change
+        $node2->removeAttribute('class');
+        
         $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1056,7 +1058,7 @@ class circulantis extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
 
-        $node1 = $this->cleanDom($node1, array(//We only want delete the class of td, no other classes
+        $node1 = $this->cleanDom($node1, array(//We only want delete the class of td and tr, no other classes
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('class'));
 
@@ -1075,7 +1077,7 @@ class circulantis extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
 
-        $node2 = $this->cleanDom($node2, array(
+        $node2 = $this->cleanDom($node2, array( //We only want delete the class of td and tr, no other classes
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('class'));
 

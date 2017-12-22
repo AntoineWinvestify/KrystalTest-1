@@ -129,7 +129,7 @@ class MarketPlacesController extends AppController {
           // Allow only the following actions.
          */
 //	$this->Security->requireAuth();
-        $this->Auth->allow(array('cronMarketStart', 'listMarketPlace', 'getGlobalMarketPlaceData',
+        $this->Auth->allow(array('listMarketPlace', 'getGlobalMarketPlaceData',
             'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
             'test_linkingAccount', 'cronQueueEventParallel'));
     }
@@ -285,7 +285,7 @@ class MarketPlacesController extends AppController {
      *
      */
 // start the cronjob
-    function cronMarketStart($type = 1) {
+    /*function cronMarketStart($type = 1) {
 
 
         $this->autoRender = false;
@@ -338,7 +338,7 @@ class MarketPlacesController extends AppController {
                 $this->cronMarketPlaceHistorical($companyId, $structure, $companyDataResult[$companyId]['company_hasMultiplePages']);
             }
         }
-    }
+    }*/
 
     /**
      *
@@ -346,7 +346,7 @@ class MarketPlacesController extends AppController {
      * 
      *
      */
-    function cronMarketPlaceLoop($companyId, $structure) {
+    /*function cronMarketPlaceLoop($companyId, $structure) {
         $this->autoRender = false;
         $this->Structure = ClassRegistry::init('Structure');
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -486,11 +486,11 @@ class MarketPlacesController extends AppController {
                 }
             }
         }
-    }
+    }*/
 
     /* Collect all invesment of the user, open and closed */
 
-    function cronMarketPlaceHistorical($companyId, $structure, $hasMultplePages) {
+    /*function cronMarketPlaceHistorical($companyId, $structure, $hasMultplePages) {
         $this->autoRender = false;
         $this->Structure = ClassRegistry::init('Structure');
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -559,7 +559,7 @@ class MarketPlacesController extends AppController {
                 $type = $marketplaceArray[2];
             }
         }
-    }
+    }*/
 
     /**
      *
