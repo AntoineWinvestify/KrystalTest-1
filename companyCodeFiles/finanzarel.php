@@ -58,6 +58,7 @@ class finanzarel extends p2pCompany {
     protected $requestFiles = array();
     
     protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+        [
             "A" =>  [
                     "name" => "loanId"                                          // Winvestify standardized name
             ],
@@ -140,9 +141,11 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-        ];
+        ]
+    ];
 
    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+        [
             "A" =>  [
                     "name" => "transactionId"                                          // Winvestify standardized name
             ],
@@ -228,19 +231,23 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
             ]
-        ];
+        ]
+    ];
 
     protected $valuesAmortizationTable = [  // NOT FINISHED
             "A" =>  [
                 "name" => "transaction_id"
              ],
         ];
-
-    protected $transactionConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    
+    protected $transactionConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+        ]
+    ];
 
     /*protected $callbacks = [
         "investment" => [
