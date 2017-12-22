@@ -259,15 +259,15 @@ echo $companyInvestmentDetails[0];
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
-                                                        <td class="right"><?php echo __('12,15%') ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualTotalFundsReturn'], 2), 2) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
-                                                        <td class="right"><?php echo __('11,33%') ?></td>
+                                                        <td class="right"><?php  echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPast12Months'], 2), 2) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return past year.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year')?></td>
-                                                        <td class="right"><?php echo __('9,22%') ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPastYear'], 2), 2) . "%" ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>

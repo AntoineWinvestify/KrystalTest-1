@@ -65,7 +65,6 @@ class Dashboard2sController extends AppController {
         }
         //echo 1;
         //$executionStartTime = microtime(true);
-
         //Request data
         $idArray = explode(" ", $this->request->data['id']);
         $linkedAccount = $idArray[0]; //Link account id
@@ -93,8 +92,6 @@ class Dashboard2sController extends AppController {
         //Get and set range
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
 
-        $executionEndTime = microtime(true);
-        //echo $executionEndTime - $executionStartTime;
     }
 
     /**
@@ -142,11 +139,10 @@ class Dashboard2sController extends AppController {
     /**
      * Global dashboard view
      */
-     function dashboardOverview(){
-          $this->layout = 'azarus_private_layout';
-     }
-     
-    
+    function dashboardOverview() {
+        $this->layout = 'azarus_private_layout';
+    }
+
     function dashboardOverviewData() {
 
         if (!$this->request->is('ajax')) {
@@ -168,10 +164,15 @@ class Dashboard2sController extends AppController {
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
+
+       /*$global['netAnnualTotal'] = 0;
+        $global['netAnnual12Months'] = 0;
+        $global['netAnnualReturnLastYear'] = 0;*/
+
         $i = 0;
         //$global['netDeposits'] = 0; 
         foreach ($allInvestment as $globalKey => $individualPfpData) {
-            if(empty($individualPfpData)){
+            if (empty($individualPfpData)) {
                 unset($allInvestment[$globalKey]);
                 continue;
             }
@@ -214,7 +215,7 @@ class Dashboard2sController extends AppController {
                         break;
                     case "userinvestmentdata_totalNetDeposits":
                         //get global net deposits:
-                        $global['netDeposits'] = $global['netDeposits'] + $individualData;
+                        $global['netDeposits'] = bcadd($global['netDeposits'], $individualData, 16);
                         break;
                 }
             }
