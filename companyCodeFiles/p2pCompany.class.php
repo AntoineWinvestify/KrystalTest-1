@@ -2828,42 +2828,57 @@ FRAGMENT
         return $created;
     }
     
-    /**Function to compare header of the downloaded file of the pfps.
+    /*     * Function to compare header of the downloaded file of the pfps.
      * 
      * @return boolean true if header is different, false if is the same.
      */
-    public function compareHeader(){
-        
+
+    public function compareHeader() {
+
         $pathVendor = Configure::read('winvestifyVendor');
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();
-        
-        if (!empty($this->compareHeaderConfigParam[0]['offsetStart'])) {
-            $data = $this->myParser->getFirstRowMultiSheet($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
+        $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
+
+        if (!empty(array_diff($this->headerComparation, $data)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
+                return $this->compareMulti;
+            } else {
+                return $this->compareSimple;
+            }
         }
-        else{
-            $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName , $this->compareHeaderConfigParam);
+        echo "OK";
+        return false;
+    }
+
+    public function compareSimple() {
+        foreach ($this->headerComparation as $key => $value) {
+            if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                echo "fatal error";
+                return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
+            }
         }
-        echo "Comapare: ";
-        print_r($this->headerComparation);
-        echo SHELL_ENDOFLINE;
-        echo "with: ";
-        print_r($data);
-        echo SHELL_ENDOFLINE;
-        //print_r(array_diff($this->headerComparation,$data) );
-        if(!empty(array_diff($this->headerComparation,$data)) || empty($data) || empty($this->headerComparation)){  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
-            foreach($this->headerComparation as $key => $value){
-                if($value !== $data[$key]){ // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+        echo "Warning";
+        return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+
+    public function compareMulti() {
+        foreach ($this->headerComparation as $sheetHeader) {
+            foreach ($sheetHeader as $key => $value) {
+                if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
                     echo "fatal error";
                     return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
                 }
-            }     
-            echo "Warning";
-            return WIN_ERROR_FLOW_NEW_FINAL_HEADER; 
+            }
         }
-        echo "OK";
-        return false;       
-    } 
+        echo "Warning";
+        return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+
 }
+
+
+
+
 ?>
 

@@ -1642,17 +1642,31 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
     }
     
+    
+    /**
+     * Get the header for compare.
+     * 
+     * @param type $file
+     * @param type $configParam
+     * @return type
+     */
     public function getFirstRow($file, $configParam) {
-        $this->Config = $configParam;
+        $this->config = $configParam;
         $extension = $this->getExtensionFile($file);
         $inputType = $this->getInputFileType($extension);
-        $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
-        echo "HEADER IS: ";
-        print_r($data[1]);
-        return $data[1];
+        if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
+            $data = $this->convertExcelMultiSheetByParts($file, $inputType);
+            echo "HEADER IS: ";
+            print_r($data);
+            return $data;
+        } else { //Simple sheet
+            $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
+            echo "HEADER IS: ";
+            print_r($data[1]);
+            return $data[1];
+        }
     }
-    
-    
+      
      /**
      * Function to get the extension of a file
      * @param string $filePath FQDN of the file to analyze
@@ -1689,10 +1703,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $chunkSize = 500;
         }
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-        echo "/////////////" . $inputFileType . "////////////" . "-______ " . $this->Config['separatorChar'] . " ___________-";
         if($inputFileType == 'CSV'){
-            echo $this->Config['separatorChar'];
-            $objReader->setDelimiter($this->Config['separatorChar']);            
+            echo $this->config['separatorChar'];
+            $objReader->setDelimiter($this->config['separatorChar']);            
             $this->clearCsv($filePath);
         }
         /**  Create a new Instance of our Read Filter  **/
@@ -1701,7 +1714,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $chunkFilter->setRows($chunkInit,$chunkSize);
         /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
         $objReader->setReadFilter($chunkFilter);
-        
+     
         $objPHPExcel = $objReader->load($filePath);
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         echo "sheetDAta <br>";
@@ -1709,6 +1722,32 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return $sheetData;
     }
 
+    function convertExcelMultiSheetByParts($filePath, $inputFileType) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $worksheetNames = $objReader->listWorksheetNames($filePath);
+        foreach($this->config as $sheet){
+            if (in_array($sheet['sheetName'], $worksheetNames)) {
+                /**  Create a new Instance of our Read Filter  **/
+               $chunkFilter = new readFilterWinvestify();
+               /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+               $chunkFilter->setRows($sheet['chunkInit'],$sheet['chunkSize']);
+               /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+               $objReader->setReadFilter($chunkFilter);
+               
+               //Read this sheet
+               $objReader->setLoadSheetsOnly($sheet['sheetName']);
+               
+               $objPHPExcel = $objReader->load($filePath);
+               $sheetData[] = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+           }
+        }
+        var_dump($sheetData);
+        return $sheetData;
+    }
+    
     function clearCsv($filePath) {
             //WE MUST CLEAR CSV OF SPECIAL CHARACTERS
             $csv = fopen($filePath, "r");
