@@ -168,7 +168,10 @@ class bondora extends p2pCompany {
     function __construct() {
         parent::__construct();
         $this->i = 0;
-
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "xlsx";
+        $this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
@@ -394,22 +397,11 @@ class bondora extends p2pCompany {
                 break;
             case 5:
 
-                $this->finishDate = date('d/m/Y', strtotime($this->dateFinish - 1));
-                $this->initDate = date("d/m/Y", strtotime($this->dateFinish - $this->documents * 182));
-                if ($this->documents > 1) {
-                    $this->finishDate = date('d/m/Y', strtotime($this->dateFinish - 1 - $this->documents * 182));
-                    $this->initDate = date("d/m/Y", strtotime($this->dateFinish - $this->documents * 182 * 2));
+                $dateInit = date('d/m/Y', strtotime($this->dateInit - 1));
+                if ((int) explode("/", $dateInit)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                    $dateInit = '01/01/2009';
                 }
-                if ((int) explode("/", $this->initDate)[2] < 2009) { //Minimum date for bondora is 1/1/2009
-                    $this->initDate = '01/01/2009';
-                    $this->control = true;
-                }
-                /* if ((int) explode("/", $this->initDate)[2] + ($this->years - 1) < (int) explode("/", $this->finishDate)[2]) {  //If investment account report have more than one year, generating report take too much time. We generate it year to year.
-                  $this->finishDate = '01/01/' . ((int) explode("/", $this->initDate)[2] + $this->years);
-                  $this->initDate = '01/01/' . ((int) explode("/", $this->initDate)[2] + $this->years - 1);
-                  } else {
-                  $this->initDate = '01/01/' . ((int) explode("/", $this->finishDate)[2]);
-                  } */
+                $dateFinish = date("d/m/Y", strtotime($this->dateFinish));
 
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['getToken']);
@@ -719,9 +711,9 @@ class bondora extends p2pCompany {
 
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadInvestment'];
                 echo 'Investment url' . $url;
-                $fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, null, $fileName);
+                $this->getPFPFileMulticurl($url, null, false, null, $this->fileName);
                 break;
 
             case 5:
@@ -729,9 +721,9 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $url = $this->tempUrl['baseDownloadDelete'] . $this->tempUrl['downloadCashFlow'];
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, null, $fileName);
+                $this->getPFPFileMulticurl($url, null, false, null, $this->fileName);
                 break;
 
             case 6:

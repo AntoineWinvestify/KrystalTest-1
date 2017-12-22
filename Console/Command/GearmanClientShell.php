@@ -325,25 +325,28 @@ class GearmanClientShell extends AppShell {
                     }
                 }
             }
-            //$statusProcess = $this->consolidationResult($userResult, $queueId);
-            $this->Queue->id = $queueId;
-            if (!$globalDestruction) {
-                $newState = $status;
-                $this->queueInfo[$queueId]['numberTries'] = 0;
-                if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
+            if (!empty($this->queueInfo[$queueId]['companiesInFlow'])) {
+                    $this->Queue->id = $queueId;
+                if (!$globalDestruction) {
+                    $newState = $status;
+                    $this->queueInfo[$queueId]['numberTries'] = 0;
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
+                    }
+                } 
+                else {
+                    $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+                    $newState = $data["newStatus"];
+                    $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
                 }
-            } 
-            else {
-                $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
-                $newState = $data["newStatus"];
-                $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
+                $this->Queue->save(array(
+                            'queue_status' => $newState,
+                            'queue_info' => json_encode($this->queueInfo[$queueId])
+                        ),
+                        $validate = true
+                );
             }
-            $this->Queue->save(array(
-                    'queue_status' => $newState,
-                    'queue_info' => json_encode($this->queueInfo[$queueId])
-                ),
-                $validate = true);
+            //$statusProcess = $this->consolidationResult($userResult, $queueId);
         }
     }
     

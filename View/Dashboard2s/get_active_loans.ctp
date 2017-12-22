@@ -55,7 +55,7 @@ echo $activeInvestments[0];
                                         case($activeInvestment['Investment']['investment_paymentStatus'] > 7):
                                             echo __("8-30 DPD");
                                             break;
-                                        case ($activeInvestment['Investment']['investment_paymentStatus'] > 0):
+                                        case ((int) $activeInvestment['Investment']['investment_paymentStatus'] > 0):
                                             echo __("1-7 DPD");
                                             break;
                                      

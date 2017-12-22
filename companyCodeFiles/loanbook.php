@@ -234,6 +234,10 @@ class loanbook extends p2pCompany {
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
             'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
             'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
+        $this->typeFileTransaction = "xlsx";
+        $this->typeFileInvestment = "json";
+        //$this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileAmortizationtable = "html";
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
@@ -309,7 +313,7 @@ class loanbook extends p2pCompany {
                     $tempArray['marketplace_country'] = 'ES';
                     $loanData = $loan->getElementsByTagName('div');
                     foreach ($loanData as $index => $datum) {
-                        echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
+                        //echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
                         switch ($index) {
                             case 0:
                                 //Rating
@@ -395,10 +399,7 @@ class loanbook extends p2pCompany {
                         if ($tempArray['marketplace_subscriptionProgress'] == 10000 && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] == $tempArray['marketplace_status']) {
                             $readController++;
                             $investmentController = true;
-                        } else if ($tempArray['marketplace_subscriptionProgress'] == $inversionBackup['Marketplacebackup']['marketplace_subscriptionProgress'] && $tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference']) {
-                            unset($tempArray);
-                            continue;
-                        }
+                        } 
                     }
 
 
@@ -428,7 +429,7 @@ class loanbook extends p2pCompany {
                 unset($totalArray[$key]);
             }
         }
-
+        print_r($totalArray);
         $totalArray = array_merge($totalArray, $hiddenInvestments);
         //$this->print_r2($totalArray);
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
@@ -467,15 +468,22 @@ class loanbook extends p2pCompany {
             /* foreach ($subdivs as $keyDiv => $div) {
               echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
               } */
-            $tempArray['marketplace_rating'] = trim($subdivs[0]);
-            $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]);
-            $tempArray['marketplace_timeLeft'] = trim($subdivs[8]);
-            $tempArray['marketplace_subscriptionProgress'] = 10000;
+            $tempArray['marketplace_rating'] = trim($subdivs[0]->nodeValue);
+            $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]->nodeValue);
+            $tempArray['marketplace_timeLeft'] = trim(explode(" ", trim($this->$subdivs[8]->nodeValue))[0]);
+            $progress = $this->getElementsByClass($dom, "progress-bar");
+            if (!empty($progress)) {
+                $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($progress[0]->nodeValue);
+                                $tempArray['marketplace_status'] = REJECTED;
+            } else {
+                $tempArray['marketplace_subscriptionProgress'] = 0;
+                                $tempArray['marketplace_status'] = REJECTED;
+            }
 
             $table = $dom->getElementById("table-1");
             $tds = $table->getElementsByTagName('td');
             foreach ($tds as $keyTd => $td) {
-                echo "TD VALUE: " . $keyTd . " " . $td->nodeValue . HTML_ENDOFLINE;
+                //echo "TD VALUE: " . $keyTd . " " . $td->nodeValue . HTML_ENDOFLINE;
                 switch ($keyTd) {
                     case 1:
                         switch ($td->nodeValue) {
@@ -489,9 +497,11 @@ class loanbook extends p2pCompany {
                                 break;
                             case "En curso (EXISTENTE)":
                                 $tempArray['marketplace_statusLiteral'] = $td->nodeValue;
+                                $tempArray['marketplace_status'] = REJECTED;
                                 break;
                             case "Subasta":
                                 $tempArray['marketplace_statusLiteral'] = $td->nodeValue;
+                                $tempArray['marketplace_status'] = REJECTED;
                                 break;
                         }
                         break;
@@ -507,6 +517,7 @@ class loanbook extends p2pCompany {
                         break;
                 }
             }
+            print_r($tempArray);
             $newTotalArray[] = $tempArray;
         }
         return $newTotalArray;
@@ -1239,8 +1250,8 @@ class loanbook extends p2pCompany {
                 $dateFinish = strtotime($this->dateFinish) * 1000;
                 $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
-                $fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                $this->getPFPFileMulticurl($url, false, false, false, $fileName);
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
@@ -1677,12 +1688,16 @@ class loanbook extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'a'), //Contain loan id
             array('typeSearch' => 'element', 'tag' => 'div'), //Contain an id
             array('typeSearch' => 'element', 'tag' => 'button'), //Contain loan id
-                ), array('title', 'href', 'contracttypeid', 'style', 'id'));
+                ), array('title', 'href', 'contracttypeid', 'style', 'id', 'title', 'data-id'));
 
         $node1 = $this->cleanDom($node1, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('class'));
 
+        $node1 = $this->cleanDomTag($node1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'br'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+        ));
         /* $node1 = $this->cleanDomTag($node1, array(
           array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
           )); */
@@ -1693,13 +1708,17 @@ class loanbook extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'button'),
-                ), array('title', 'href', 'contracttypeid', 'style', 'id'));
+                ), array('title', 'href', 'contracttypeid', 'style', 'id', 'title', 'data-id'));
 
 
         $node2 = $this->cleanDom($node2, array(//We only want delete class of the span div, not class of the other tags
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('class'));
 
+        $node2 = $this->cleanDomTag($node2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'br'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+        ));
         /* $node2 = $this->cleanDomTag($node2, array(
           array('typeSearch' => 'tagElement', 'tag' => 'div', 'attr' => 'class', 'value' => 'highyield2'), //this div only appear in a few investment,
           )); */
