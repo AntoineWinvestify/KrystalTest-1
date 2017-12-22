@@ -81,7 +81,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $data["queue_id"] = $job['Queue']['id'];
                     $data["date"] = $queueInfo['date'];
                     $services = $this->getConsolidationWorkerFunction();
-                    foreach ($services as $service) {
+                    foreach ($services as $nameServiceKey => $service) {
                         $data['service'] = $service;
                         if (Configure::read('debug')) {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
@@ -92,7 +92,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $service['gearmanFunction'] . ".-;" . $job['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $nameServiceKey . ".-;" . $job['Queue']['queue_userReference']);
                     }
                 }
                 
@@ -165,8 +165,8 @@ class ConsolidationClientShell extends GearmanClientShell {
         ///////////////* THIS IS TEMPORAL
         $services = [];
         
-        $services[0]['service'] = "calculateNetAnnualReturnXirr";
-        $services[0]['gearmanFunction'] = 'getFormulaCalculate';
+        $services['netAnnualReturnXirr']['service'] = "calculateNetAnnualReturnXirr";
+        $services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
         //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
         //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
         //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
