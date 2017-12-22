@@ -476,7 +476,21 @@ class finbee extends p2pCompany {
         ),
     );
     
-    protected $investment2Header = array();
+    protected $investment2Header = array(    
+        'A' => 'Loan ID',
+        'B' => 'Sell request date',
+        'C' => 'Reserve price<br>±%',
+        'D' => 'Buy Now price<br>±%',
+        'E' => 'Borrower',
+        'F' => 'Sold to /<br>bought from',
+        'G' => 'Sold date',
+        'H' => 'New loan ID',
+        'I' => 'Profit loss',
+        'J' => 'Acc Int',
+        'K' => 'Deal price',
+        'L' => 'Fees paid',
+        'M' => 'Final price',
+    );
     protected $compareHeaderInvestment2ConfigParam = array(
         'chunkInit' => 1,
         'chunkSize' => 2,
@@ -485,7 +499,16 @@ class finbee extends p2pCompany {
     );
     
     
-    protected $transaction2Header = array();
+    protected $transactionHeader = array(
+        'A' => 'Date',
+        'B' => 'Narrative',
+        'C' => 'Description',
+        'D' => 'Paid in',
+        'E' => 'Paid out',
+        'F' => 'Balance',
+        'G' => 'bid ID',
+    );
+    
     protected $compareHeaderTransactionConfigParam = array(
         'chunkInit' => 1,
         'chunkSize' => 1,
