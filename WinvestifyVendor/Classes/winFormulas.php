@@ -71,8 +71,18 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "userinvestmentdata_cashInPlatform",
-                    "userinvestmentdata_totalNetDeposits",
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -84,8 +94,16 @@ class WinFormulas {
             "operation" => "add"
         ],
         "B" => [
-            "type" => "userinvestmentdata_totalLoansCost",
-            "table" => "Userinvestmentdata",
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
             "dateInit" => "-366",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
@@ -94,10 +112,10 @@ class WinFormulas {
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-366",
+            "dateInit" => "-1",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
-            "operation" => "substract"
+            "operation" => "add"
         ]
     ];
     
