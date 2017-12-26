@@ -69,7 +69,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $service = $data['service'];
         $serviceFunction = $service['service'];
         $result = $this->$serviceFunction($data);
-        
+        return $result;
     }
     
     
@@ -96,29 +96,59 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
             foreach ($variables as $variableKey => $variable) {
-                $date['init'] = $this->getDateForSum($variable['dateInit']);
-                $date['finish'] = $this->getDateForSum($variable['dateFinish']);
+                $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
             }
-            
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
             //$dataMergeByDate = $this->returnDataPreformat();
         }
-        
+        print_r($dataMergeByDate);
+        $returnData = null;
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
         require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            echo "llegueeeeeeeeee º1233434 \n";
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
         
-        echo "this is the xiiiiiiiiiiiiiiir " . $xirr*100 . " \n" ;
+        echo "this is the xiiiiiiiiiiiiiiir \n" ;
+        print_r($returnData);
         exit;
         return json_encode($returnData);
     }
     
-    public function calculateNetAnnualTotalFunds($data) {
+    public function calculateNetAnnualTotalFundsReturnXirr($data) {
+        $variables = $this->winFormulas->getFormulaParams("formula_A_xirr");
+        $values = [];
+        foreach ($data["companies"] as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+            }
+            $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+            //$dataMergeByDate = $this->returnDataPreformat();
+        }
+        print_r($dataMergeByDate);
+        $returnData = null;
+        Configure::load('p2pGestor.php', 'default');
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+        $financialClass = new Financial;
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            echo "llegueeeeeeeeee º1233434 \n";
+            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        }
+        
+        echo "this is the xiiiiiiiiiiiiiiir \n" ;
+        print_r($returnData);
+        exit;
+        return json_encode($returnData);
     }
     
     public function calculateNetAnnualPastReturn($data) {
@@ -312,9 +342,11 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return $data;
     }
     
-    public function getDateForSum($date) {
-        if (is_numeric($date)) {
-            $dataDate = date("Y-m-d",strtotime($date . " days"));
+    
+    public function getDateForSum($date, $datePeriod) {
+        if (is_numeric($datePeriod)) {
+            $time = strtotime($date . $datePeriod . " days");
+            $dataDate = date("Y-m-d",$time);
         }
         else {
             $year = date('Y') + $date['year']; // Get current year and subtract 1
@@ -406,9 +438,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             }
             $sumValues = rtrim($sumValues,"+ ");
         }
-        $model->virtualFields = array($nameSum . '_sum' => 'sum(' . $sumValues . ')');
+        $model->virtualFields = array('sum' => 'sum(' . $sumValues . ')');
         $sumValue  =  $model->find('list',array(
-                'fields' => array('date', $nameSum . '_sum'),
+                'fields' => array('date', 'sum'),
                 'group' => array('date'),
                 'conditions' => array(
                     "date >=" => $date['init'],
@@ -441,7 +473,10 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
             }
             $dateParts = explode("-", $date);
-            $data['dates'][$i] = mktime(0,0,0,$dateParts[2],$dateParts[1],$dateParts[0]);
+            if (empty($dataFormula)) {
+                continue;
+            }
+            $data['dates'][$i] = mktime(0,0,0,$dateParts[1],$dateParts[2],$dateParts[0]);
             $data['values'][$i] = $dataFormula;
             $i++;
 
