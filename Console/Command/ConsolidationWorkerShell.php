@@ -90,7 +90,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function calculateNetAnnualReturnXirr($data) {
-        $variables = $this->winFormulas->getFormulaParams("formula_A_xirr");
+        $variables = $this->winFormulas->getFormulaParams("netAnnualReturn_xirr");
         $values = [];
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
@@ -103,25 +103,21 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
             //$dataMergeByDate = $this->returnDataPreformat();
         }
-        print_r($dataMergeByDate);
         $returnData = null;
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
         require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            echo "llegueeeeeeeeee º1233434 \n";
+            echo "llegueeeeeeeeee º12334 \n";
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
-        
-        echo "this is the xiiiiiiiiiiiiiiir \n" ;
-        print_r($returnData);
-        exit;
-        return json_encode($returnData);
+        $dataArray['tempArray'] = $returnData;
+        return json_encode($dataArray);
     }
     
     public function calculateNetAnnualTotalFundsReturnXirr($data) {
-        $variables = $this->winFormulas->getFormulaParams("formula_A_xirr");
+        $variables = $this->winFormulas->getFormulaParams("netAnnualTotalFundsReturn_xirr");
         $values = [];
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
@@ -141,14 +137,11 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            echo "llegueeeeeeeeee º1233434 \n";
+            echo "llegueeeeeeeeee º12 \n";
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
-        
-        echo "this is the xiiiiiiiiiiiiiiir \n" ;
-        print_r($returnData);
-        exit;
-        return json_encode($returnData);
+        $dataArray['tempArray'] = $returnData;
+        return json_encode($dataArray);
     }
     
     public function calculateNetAnnualPastReturn($data) {
