@@ -232,6 +232,82 @@ class WinFormulas {
         ]
     ];
     
+    protected $variablesFormula_netAnnualPastReturn_xirr = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "year" => -1,
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "year" => -1,
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "year" => -1,
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "year" => -1,
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "year" => -1,
+                "month" => "12",
+                "day" => "31"
+            ],
+            "dateFinish" => [
+                "year" => -1,
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive"
+        ]
+    ];
+    
     protected $configFormula_B = [
         "steps" => [
             ["A"],
