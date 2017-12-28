@@ -31,6 +31,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     protected $formula = [];
     protected $config = [];
+    protected $originExecution;
     
    public function startup() {
         parent::startup();
@@ -47,7 +48,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //$this->GearmanWorker->addFunction('consolidation', array($this, 'consolidateUserData'));
         $this->GearmanWorker->addFunction('netAnnualReturn', array($this, 'calculateNetAnnualReturn'));
         $this->GearmanWorker->addFunction('netAnnualTotalFunds', array($this, 'calculateNetAnnualTotalFunds'));
-        $this->GearmanWorker->addFunction('netAnnualPastReturn', array($this, 'calculateNetAnnualPastReturn'));
+        //$this->GearmanWorker->addFunction('netAnnualPastReturn', array($this, 'calculateNetAnnualPastReturn'));
         $this->GearmanWorker->addFunction('getFormulaCalculate', array($this, 'getFormulaCalculate'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
         while( $this->GearmanWorker->work());
@@ -70,23 +71,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $serviceFunction = $service['service'];
         $result = $this->$serviceFunction($data);
         return $result;
-    }
-    
-    
-    public function calculateNetAnnualReturn($data) {
-        $variables = $this->winFormulas->getFormulaParams("formula_A");
-        foreach ($data["companies"] as $linkedaccountId) {
-            $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
-            foreach ($variables as $variableKey => $variable) {
-                $dateInit = $this->getDateForSum($variable['dateInit']);
-                $dateFinish = $this->getDateForSum($variable['dateFinish']);
-                $value = $this->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
-                $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
-                //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
-            }
-        }
-        print_r($formula);
-        exit;
     }
     
     public function calculateNetAnnualReturnXirr($data) {
@@ -144,29 +128,37 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return json_encode($dataArray);
     }
     
-    public function calculateNetAnnualPastReturn($data) {
-        $variables = $this->winFormulas->getFormulaParams("formula_A");
+    public function calculateNetAnnualReturnPastYearXirr($data) {
+        $variables = $this->winFormulas->getFormulaParams("netAnnualPastReturn_xirr");
+        $this->originExecution = $data['originExecution'];
         foreach ($data["companies"] as $linkedaccountId) {
-            $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
-            foreach ($variables as $variableKey => $variable) {
-                $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
-                foreach ($dates as $date) {
-                    $value = $this->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
-                    $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+            foreach ($dates as $keyDate => $date) {
+                foreach ($variables as $variableKey => $variable) {
+                    $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
                 }
-                
+                print_r($values);
+                exit;
+                $dataMergeByDate[$linkedaccountId][$keyDate] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
         }
+        print_r($dataMergeByDate);
         exit;
     }
     
     public function getPeriodOfTime($dateFinish, $linkedaccountId) {
         if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
-            $dateInit = $this->getFirstInvestmentDate($linkedaccountId);
+            $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
             $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
         }
+        //Else is not working yet
         else {
+            print_r($this->originExecution);
+            echo "\n";
+            exit;
             $dateFinishYear = date("Y",  strtotime($dateFinish));
             $pastReturnExist = $this->verifyPastReturnThisYearExist($dateFinishYear);
             $dates = null;
@@ -185,7 +177,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $totalYears = $dateFinishYear - $dateInitYear;
         $dates = [];
         for ($i = 1; $i <= $totalYears; $i++) {
-            $dates[] = $dateFinishYear - $i;
+            $dates[$dateFinishYear - $i]['init'] = $dataDate = date("Y-m-d", mktime(0, 0, 0, 1, 1, $dateFinishYear - $i));
+            $dates[$dateFinishYear - $i]['finish'] = $dataDate = date("Y-m-d", mktime(0, 0, 0, 12, 31, $dateFinishYear - $i));
         }
         return $dates;
         //$resultDate1 = $dateFinishTotal - $dateInitTotal;
@@ -202,10 +195,12 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
         $dateInit = $this->Userinvestmentdata->find('first',
             array( 'order' => array('date ASC'),
-                   'conditions' => array('Userinvestmentdata.linkedaccount_id' => $linkedaccountId)
+                   'conditions' => array('Userinvestmentdata.linkedaccount_id' => $linkedaccountId),
+                   'recursive' => -1,
+                   'fields' => array('Userinvestmentdata.date')
             )  
         ); 
-        return $dateInit;
+        return $dateInit['Userinvestmentdata']['date'];
     }
     
     /**
@@ -218,7 +213,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      *      $data["queue_id"]                   integer It is the queue id
      * @return json Json containing all the status collect and errors by link account id
      */
-    public function consolidateUserData($job) {
+    /*public function consolidateUserData($job) {
         $data = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -321,7 +316,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         } 
         print_r($returnData);
         return json_encode($returnData);
-    }
+    }*/
     
     /**
      * Function to get the correct value for the Formula
@@ -344,7 +339,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         else {
             $year = date('Y') + $date['year']; // Get current year and subtract 1
             //$start = mktime(0, 0, 0, 1, 1, $year);
-            $dataDate = date("M-d-Y", mktime(0, 0, 0, $date['month'], $date['day'], $year));
+            $dataDate = date("Y-m-d", mktime(0, 0, 0, $date['month'], $date['day'], $year));
         }
         return $dataDate;
     }
@@ -557,6 +552,23 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         return $joinAssociation;
     }
+    
+    /*public function calculateNetAnnualReturn($data) {
+        $variables = $this->winFormulas->getFormulaParams("formula_A");
+        $this->originExecution = $data['originExecution'];
+        foreach ($data["companies"] as $linkedaccountId) {
+            $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
+            foreach ($variables as $variableKey => $variable) {
+                $dateInit = $this->getDateForSum($variable['dateInit']);
+                $dateFinish = $this->getDateForSum($variable['dateFinish']);
+                $value = $this->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
+                $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
+                //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
+            }
+        }
+        print_r($formula);
+        exit;
+    }*/
     
     /**
      * Function to initiate the formulas, in the future, this will be a config file
