@@ -103,7 +103,6 @@ class ConsolidationClientShell extends GearmanClientShell {
                 }
 
                 $this->GearmanClient->runTasks();
-
                 // ######################################################################################################
 
                 if (Configure::read('debug')) {
@@ -167,6 +166,8 @@ class ConsolidationClientShell extends GearmanClientShell {
         
         $services['netAnnualReturnXirr']['service'] = "calculateNetAnnualReturnXirr";
         $services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
+        $services['netAnnualTotalFundsReturnXirr']['service'] = "calculateNetAnnualTotalFundsReturnXirr";
+        $services['netAnnualTotalFundsReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
         //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
         //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
         //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
