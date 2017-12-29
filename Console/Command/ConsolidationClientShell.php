@@ -167,10 +167,19 @@ class ConsolidationClientShell extends GearmanClientShell {
         
         $services['netAnnualReturnXirr']['service'] = "calculateNetAnnualReturnXirr";
         $services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
+        $services['netAnnualReturnXirr']['database']['table'] = 'userinvestmentdata';
+        $services['netAnnualReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPast12Months';
+        $services['netAnnualReturnXirr']['database']['model'] = 'Userinvestmentdata';
         $services['netAnnualTotalFundsReturnXirr']['service'] = "calculateNetAnnualTotalFundsReturnXirr";
         $services['netAnnualTotalFundsReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
+        $services['netAnnualTotalFundsReturnXirr']['database']['table'] = 'userinvestmentdata';
+        $services['netAnnualTotalFundsReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualTotalFundsReturn';
+        $services['netAnnualTotalFundsReturnXirr']['database']['model'] = 'Userinvestmentdata';
         $services['netAnnualReturnPastYearXirr']['service'] = "calculateNetAnnualReturnPastYearXirr";
         $services['netAnnualReturnPastYearXirr']['gearmanFunction'] = 'getFormulaCalculate';
+        $services['netAnnualReturnPastYearXirr']['database']['table'] = 'userinvestmentdata';
+        $services['netAnnualReturnPastYearXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPastYear';
+        $services['netAnnualReturnPastYearXirr']['database']['model'] = 'Userinvestmentdata';
         //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
         //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
         //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
