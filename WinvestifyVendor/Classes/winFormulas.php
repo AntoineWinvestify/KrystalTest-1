@@ -254,12 +254,10 @@ class WinFormulas {
             ],
             "table" => "Globaltotalsdata",
             "dateInit" => [
-                "year" => -1,
                 "month" => "1",
                 "day" => "1"
             ],
             "dateFinish" => [
-                "year" => -1,
                 "month" => "12",
                 "day" => "31"
             ],
@@ -278,12 +276,10 @@ class WinFormulas {
             ],
             "table" => "Globaltotalsdata",
             "dateInit" => [
-                "year" => -1,
                 "month" => "1",
                 "day" => "1"
             ],
             "dateFinish" => [
-                "year" => -1,
                 "month" => "12",
                 "day" => "31"
             ],
@@ -295,16 +291,15 @@ class WinFormulas {
             "table" => "userinvestmentdata",
             "operation" => "add",
             "dateInit" => [
-                "year" => -1,
                 "month" => "12",
                 "day" => "31"
             ],
             "dateFinish" => [
-                "year" => -1,
                 "month" => "12",
                 "day" => "31"
             ],
-            "intervals" => "inclusive"
+            "intervals" => "inclusive",
+            "operation" => "add"
         ]
     ];
     
