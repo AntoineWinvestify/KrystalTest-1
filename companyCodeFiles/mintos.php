@@ -557,7 +557,7 @@ class mintos extends p2pCompany {
     
     protected $transactionConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
             'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.
                                 
@@ -566,15 +566,15 @@ class mintos extends p2pCompany {
  
     protected $investmentConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
-       ]
+            'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
+        ]
     ]; 
     
     protected $amortizationConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
             'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
         ]
@@ -582,9 +582,9 @@ class mintos extends p2pCompany {
   
     protected $expiredLoanConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
         ]
     ]; 
     
@@ -993,7 +993,7 @@ class mintos extends p2pCompany {
                 echo "the table url is: " . $url;
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                $this->getCompanyWebpageMultiCurl($url);                        // Read individual investment
                 break;
             case 5:
                 $dom = new DOMDocument;
@@ -1004,9 +1004,9 @@ class mintos extends p2pCompany {
                 foreach($tables as $table) {
                     if ($table->getAttribute('class') == 'loan-table') {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE);                       // Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
-                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }

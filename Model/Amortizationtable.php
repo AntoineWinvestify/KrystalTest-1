@@ -90,22 +90,23 @@ class Amortizationtable extends AppModel
     }
     
     /**
-     * Function to save amortization tables by company
-     * @param array $linkaccountData It contains the data of a company
-     * @param array $investmentIds It contains all the investmentId by LoanId
+     * Function to save amortization tables per pfp
+     * @param array $amortizationData   It contains the amortization data of an investment(slice)
      * @return boolean
      */
-    public function saveAmortizationtable($linkaccountData, $investmentIds) {
+    public function saveAmortizationtable($amortizationData) {
         $amortizationtable = [];
-        foreach ($linkaccountData as $loanId => $loanData) {
+
+        foreach ($amortizationData as $loanId => $loanData) {
             foreach ($loanData as $value) {
-                $value['investment_id'] = $investmentIds[$loanId];
+                $loanIdInformation = explode("_", $loanId);
+                $value['investmentslice_id'] = $loanIdInformation[0];
                 $amortizationtable[] = $value;
             }
         }
-        echo "amortization";
+
         print_r($amortizationtable);
-        $this->saveMany($amortizationtable, $validate = true);
+        $this->saveMany($amortizationtable, array('validate' => true));
         return true;
     }
 

@@ -140,21 +140,18 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
      * Function to save all the amortization tables on DB per user and per linkaccount
      */
     public function saveAmortizationtablesToDB() {
-        $loanIds = [];
-        foreach ($this->tempArray as $queuekey => $tempArray) {
-            foreach ($tempArray as $data) {
-                foreach ($data as $loanId => $value) {
-                    $loanIds[] = $loanId;
-                }
+
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+
+        print_r(json_encode($this->tempArray));
+        echo "\n";
+        foreach ($this->tempArray as $tempArray) {
+            foreach ($tempArray as $amortizationData) {
+                $this->Amortizationtable->saveAmortizationtable($amortizationData);
             }
         }
-        $this->Investment = ClassRegistry::init('Investment');
-        $investmentIds = $this->Investment->getInvestmentIdByLoanId($loanIds);
-        foreach ($this->tempArray as $queuekey => $tempArray) {
-            foreach ($tempArray as $linkaccount => $linkaccountData) {
-                $this->Amortizationtable->saveAmortizationtable($linkaccountData, $investmentIds);
-            }
-        }
+        echo __FUNCTION__ . "Exiting\n";
+        exit;
     }
     
 }

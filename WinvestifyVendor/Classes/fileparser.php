@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version 0.8
- * @date  2017-11-20
+ * @version 0.9.0
+ * @date  2017-12-27
  * @package
  *
  *
@@ -27,14 +27,11 @@
  * This class parses the transaction/investments files etc by using a configuration file which is 
  * provided by each companyCodeFile. The result is returned in an array
  * 
- * 
- * 
  * 2017-10-15           version 0.2
  * support of configuration parameters 'offsetStart' and 'offsetEnd'
  * 
  * 2017-10-24           version 0.3
  * Added function to parse a html file
- * 
  * 
  * 2017-10-26           version 0.3
  * Due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
@@ -45,10 +42,8 @@
  * 2017-11-09           Version 0.4
  * Amount and currency bug fixing.
  * 
- * 
  * 2017-11-10           version 0.5
  * Updated function extractDataFromString with an extra parameter
- * 
  * 
  * 2017-11-11           version 0.6
  * Functions getDefaultValue and getCountry added
@@ -62,16 +57,19 @@
  * 2017-11-20           version 0.8
  * Added a new function "getConceptChars"; 
  * 
- * 
  * 2017-11-28           version0.8.1
  * New function, generateId, for generating a "random (unique)identifier" if cell is empty
  * Cell data is cleaned before sending it as '$input' to a function
  * Added configurations for Zank
  * New configuration parameter (changeCronologicalOrder)
  * 
- * 
  * 2017-12-07
  * rectified an error in saveExcelToArray. Error was related to removing an item at random
+ * 
+ * 2017-12-27           version 0.9.0
+ * method setConfig: take the extra index level into account
+ * 
+ * 
  * 
  * Pending:
  * chunking, csv file check
@@ -921,7 +919,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     public function setConfig($configurations)  {
-        foreach ($configurations as $configurationKey => $configuration) {
+        foreach ($configurations[0] as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
         return;
@@ -1421,6 +1419,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $trs = $dom->getElementsByTagName('tr');
         $tempArray = [];
         $i = 0;
+
         foreach ($trs as $tr) {
             if ($i == $this->config['offsetStart']) {
                 break;
@@ -1428,7 +1427,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $tr->parentNode->removeChild($tr);
             $i++;
         }
-        
+
         $trsNumber = $trs->length - 1;
         for ($i = $trsNumber; $i > $trsNumber-$this->config['offsetEnd']; $i--) {
             $tr = $trs[$i]->parentNode->lastChild;

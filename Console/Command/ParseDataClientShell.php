@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //       return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -185,7 +185,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $mapResult = $this->mapData($platformResult);
 
                         if ($mapResult == true) { 
-                            $newLoans = $platformResult['newLoans'];
+                            $newLoans = $platformResult['amortizationTablesOfNewLoans'];
                             if (!empty($newLoans)) {
                       //          $controlVariableFile =  $platformData['controlVariableFile'];
                                 file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
@@ -226,30 +226,6 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     /**
-     * Get the list of all active investments for a P2P as identified by the
-     * linkedaccount identifier.
-     *
-     * @param int $linkedaccount_id    linkedaccount reference
-     * @return array
-     *
-     */
-    public function getListActiveInvestments($linkedaccount_id) {
-        $this->Investment = ClassRegistry::init('Investment');
-        $filterConditions = array(
-            'linkedaccount_id' => $linkedaccount_id,
-            "investment_statusOfloan" => WIN_LOANSTATUS_ACTIVE,
-        );
-
-        $investmentListResult = $this->Investment->find("all", array("recursive" => -1,
-            "conditions" => $filterConditions,
-            "fields" => array("id", "investment_loanId"),
-        ));
-
-        $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
-        return $list;
-    }
-
-    /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values"
      * and writes all values to the database.
      *  @param  $array          Array which holds the data (per PFP) as received from the Worker
@@ -262,7 +238,7 @@ class ParseDataClientShell extends GearmanClientShell {
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
-      
+ini_set('memory_limit','2048M');      
 $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = NULL;
@@ -432,6 +408,7 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
                     $database['investment']['investment_myInvestment'] = 0;
                     $database['investment']['investment_secondaryMarketInvestment'] = 0;  
                     $database['investment']['investment_new'] = YES;
+                    $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
 //$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
 $database['measurements'][$keyDateTransaction]['decrements'] = 0;
 $database['measurements'][$keyDateTransaction]['increments'] = 0; 
@@ -450,7 +427,7 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
              //               $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
              //           }
              //       }
-                    $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM    
+            //        $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM    
                     
                         
                     foreach ($investmentListToCheck as $investmentDataKey => $investmentData) {
@@ -470,7 +447,7 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
                         "investment_priceInSecondaryMarket" , "investment_outstandingPrincipal", "investment_totalGrossIncome",
                         "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", 
-                        "investment_secondaryMarketInvestment", "investment_technicalStateTemp" ));
+                        "investment_secondaryMarketInvestment", "investment_technicalStateTemp", "investment_paidInstalments" ));
  
                     $investmentId = $tempInvestmentData[0]['Investment']['id'];
                     if (empty($investmentId)) {         // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
@@ -587,7 +564,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                             else {
                                 $database[$dbTable][$dbVariableName] = $transaction;
                                 if (isset($tempResult['linkedIndex'])) {   // THIS IS UNTESTED AND PROBABLY NOT NEEDED ANYWAY
-                                    echo "LINKED-INDEX_787G";
+                                    echo "LINKED-INDEX";
                                     print_r($this->variablesConfig[$tempResult['linkedIndex']]);
                                     $dataInformationInternIndex = explode(".", $tempResult['databaseName']);
                                     $dbTableInternalIndex = $dataInformationInternalIndex[0];
@@ -625,10 +602,10 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                     $resultCreate = $this->Investment->createInvestment($database['investment']);
 
-                    if ($resultCreate[0]) {
-                        $investmentId = $resultCreate[1];
+                    if (!empty($resultCreate)) {
+                        $investmentId = $resultCreate;
                         echo "Saving NEW loan with investmentId = $investmentId, Done\n";
-                        $database['investment']['id'] = $resultCreate[1];
+                        $database['investment']['id'] = $resultCreate;
                     } else {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
@@ -661,14 +638,15 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 }
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
-
-   
-//Define which amortization tables shall be collected
+  
+//Define which amortization tables shall be collected 
                 foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
                     $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
                     $platformData['newLoans'][$loanSliceId] = $tableSliceIdentifier;
                 }
-                                     
+                unset($slicesAmortizationTablesToCollect);
+                print_r($platformData['amortizationTablesOfNewLoans']);
+
                 $internalVariablesToHandle = array(10001, 10002, 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
@@ -753,9 +731,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['globalcashflowdata']['payment_loanId'] . "\n";
                     }
                 }
-            }
-            
-
+            }  
 
             if (!empty($database['globaltotalsdata'])) {
                 $database['globaltotalsdata']['userinvestmentdata_id'] = $userInvestmentDataId;
@@ -771,16 +747,8 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                     }
                 }
             }            
-            
-            
- /*           
-            print_r($database['Userinvestmentdata']);
-            print_r($database['globalcashflowdata']);  
-            print_r($database['globaltotalsdata']);  
-*/
             $tempMeasurements = $database['measurements'];
         }
-
 
         $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];      // Holds the *last* calculated value
         $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']; // Holds the last calculated value

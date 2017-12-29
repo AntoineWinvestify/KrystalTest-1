@@ -34,7 +34,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('collectamortizationtablesFileFlow', array($this, 'collectamortizationtablesFileFlow'));   
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseAmortizationDataworker starting to listen to data from its Client\n";
         while($this->GearmanWorker->work());
     }
     
@@ -68,7 +68,6 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
         $i = 0;
         $tempArray = array();
         foreach ($platformData as $linkedAccountKey => $data) {
-            //$platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
              if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
@@ -82,7 +81,8 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Amortization table File\n";
                 } 
                 $parserConfig = $companyHandle->getParserConfigAmortizationTableFile();
-                $loanId = $this->myParser->getLoanIdFromFile($file);
+                $IdInformation = $this->getIdInformationFromFile($file);
+                $loanId = $IdInformation[0] . "_" . $IdInformation[1];
                 if (empty($extensionFile)) {
                     $extensionFile = $this->getExtensionFile($file);
                 }
@@ -99,13 +99,17 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                 $data['statusCollect'][$linkedAccountKey] = "1";
             }
         }
+        
+
         $data['tempArray'] = $tempArray;
         $data['errors'] = $errors;
         print_r($tempArray);
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of ParseAmortizationDataWorker");
             print_r($data);
         }
+        
+        print_r(array_keys($tempArray[0]));
         return json_encode($data);
     }
     

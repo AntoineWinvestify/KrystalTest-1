@@ -86,8 +86,8 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$i]->generateCookiesFile();
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
-            $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
-            $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
+            $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']);         //Set the user for the class
+            $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']);     //Set the password for the class
             $configurationParameters = array('tracingActive' => true,
                 'traceID' => $data["queue_userReference"],
             );

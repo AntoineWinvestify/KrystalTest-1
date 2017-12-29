@@ -74,49 +74,25 @@ var $validate = array(
 
     /**
      *
-     * creates a new 'investment' table and also links an 'investmentSlice' database table.
-     * One field of the $investmentdata must be $investmentdata['sliceIdentifier']. This call
-     * will FAIL if $investmentdata['investment_sliceIdentifier'] is empty or non-existent.
+     * Creates a new 'investment' table.
      * 	
      * 	@param 		array 	$investmentdata 	All the data to be saved
-     * 	@return 	array[0]    => boolean
-     *                  array[1]    => detailed error information if array[0] = false
-     *                                 id if array[0] = true
+     * 	@return         id 
      * 			
      */
     public function createInvestment($investmentdata) {
-        $result = array();
-        
+
         $this->create();
-        if (!isset($investmentdata['investment_sliceIdentifier'])) {
-            $result[0] = false;            
-            return $result;
-        }
 
         if ($this->save($investmentdata, $validate = true)) {   // OK
             $investmentId = $this->id;
-            
-            $this->Investmentslice = ClassRegistry::init('Investmentslice');
-            $this->Investmentslice->create();
-          
-            if ($this->Investmentslice->getNewSlice($investmentId, $investmentdata['investment_sliceIdentifier'])) {
-                $result[0] = true;
-                $result[1] = $investmentId;  
-            }
-            else {
-                $result[0] = false;
-            }
-        } 
-        else {                     // error occurred while trying to save the Investment data
-            $result[0] = false;
-            $result[1] = $this->validationErrors;
+        return $investmentId;
         }
-        return $result;
     }
 
     public function getInvestmentIdByLoanId($loanIds) {
-        $fields = array('Investment.investment_loanReference', 'Investment.id');
-        $conditions = array('investment_loanReference' => $loanIds);
+        $fields = array('Investment.investment_loanId', 'Investment.id');
+        $conditions = array('investment_loanId ' => $loanIds);
         $investmentIds = $this->find('list', $params = array('recursive' => -1,
             'fields' => $fields,
             'conditions' => $conditions
@@ -127,7 +103,7 @@ var $validate = array(
     /**
      * Get defaulted investment of a linked account and save delayed days
      * 
-     * @param Int $linkedaaccount Link account id 
+     * @param Int $linkedaccount Link account id 
      * @return array Defaulted inversions of a linked account with the defaulted days
      */
     public function getDefaulted($linkedaccount) {

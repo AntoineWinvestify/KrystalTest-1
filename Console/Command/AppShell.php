@@ -205,8 +205,53 @@ class AppShell extends Shell {
         $name = $file->name();
         $nameSplit = explode("_", $name);
         $loanId = $nameSplit[1];
+        echo "loanId = $loanId\n";
+        print_r($nameSplit);
+        exit;
         return $loanId;
     }
         
-        
+    /** CAN BE DELETED, IT IS NOT USED AND 
+     * Function to get the loanId from the file name of an amortization table
+     * @param   string  $filePath   It is the full path to the file
+     * @return  array               [0] contains investmentslice_id
+     *                              [1] contains the loanId
+     */
+    public function getIdInformationFromFile($filePath) {
+        $file = new File($filePath, false);
+        $name = $file->name();
+        $nameSplit = explode("_", $name);
+        return array_slice($nameSplit, 1, 2);
+    } 
+    
+    
+    /**
+     * Get the list of all active investments for a P2P as identified by the
+     * linkedaccount identifier.
+     * Take into account that an investment can have 1 or more investmentslices.
+     *
+     * @param int $linkedaccount_id    linkedaccount reference
+     * @return array
+     *
+     */
+    public function getListActiveInvestments($linkedaccount_id) {
+        $this->Investment = ClassRegistry::init('Investment');
+        $filterConditions = array(
+            'linkedaccount_id' => $linkedaccount_id,
+            "investment_statusOfloan" => WIN_LOANSTATUS_ACTIVE,
+        );
+
+        $investmentListResult = $this->Investment->find("all", array("recursive" => -1,
+            "conditions" => $filterConditions,
+            "fields" => array("id", "investment_loanId"),
+        ));
+
+        $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
+        return $list;
+    }    
+    
+    
+    
+    
+    
 }

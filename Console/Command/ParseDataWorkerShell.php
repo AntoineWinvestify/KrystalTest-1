@@ -70,7 +70,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
 
         $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseDataWorker starting to listen to data from its Client\n";
         
         while($this->GearmanWorker->work());
 
@@ -163,7 +163,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile(); 
-                                $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
+                        $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
                 
