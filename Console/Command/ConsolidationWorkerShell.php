@@ -93,7 +93,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            echo "llegueeeeeeeeee º12334 \n";
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
         $dataArray['tempArray'] = $returnData;
@@ -121,8 +120,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
         $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            echo "llegueeeeeeeeee º12 \n";
-            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+            $returnData[$linkedaccountId]['netAnnualTotalFundsReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
@@ -135,18 +133,29 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
             $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
-            foreach ($dates as $keyDate => $date) {
+            foreach ($dates as $keyDate => $dateYear) {
                 foreach ($variables as $variableKey => $variable) {
+                    $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
+                    $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
                     $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
                 }
-                print_r($values);
-                exit;
-                $dataMergeByDate[$linkedaccountId][$keyDate] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+                $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
         }
         print_r($dataMergeByDate);
-        exit;
+        $returnData = null;
+        Configure::load('p2pGestor.php', 'default');
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+        $financialClass = new Financial;
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
+                $returnData[$linkedaccountId]['netAnnualReturnPastYearXirr'][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+            }
+        }
+        $dataArray['tempArray'] = $returnData;
+        return json_encode($dataArray);
     }
     
     public function getPeriodOfTime($dateFinish, $linkedaccountId) {
@@ -177,8 +186,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $totalYears = $dateFinishYear - $dateInitYear;
         $dates = [];
         for ($i = 1; $i <= $totalYears; $i++) {
-            $dates[$dateFinishYear - $i]['init'] = $dataDate = date("Y-m-d", mktime(0, 0, 0, 1, 1, $dateFinishYear - $i));
-            $dates[$dateFinishYear - $i]['finish'] = $dataDate = date("Y-m-d", mktime(0, 0, 0, 12, 31, $dateFinishYear - $i));
+            $dates[] = $dateFinishYear - $i;
         }
         return $dates;
         //$resultDate1 = $dateFinishTotal - $dateInitTotal;
@@ -337,9 +345,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $dataDate = date("Y-m-d",$time);
         }
         else {
-            $year = date('Y') + $date['year']; // Get current year and subtract 1
             //$start = mktime(0, 0, 0, 1, 1, $year);
-            $dataDate = date("Y-m-d", mktime(0, 0, 0, $date['month'], $date['day'], $year));
+            $dataDate = date("Y-m-d", mktime(0, 0, 0, $datePeriod['month'], $datePeriod['day'], $date));
         }
         return $dataDate;
     }
