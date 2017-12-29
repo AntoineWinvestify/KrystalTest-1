@@ -80,6 +80,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $data["queue_userReference"] = $job['Queue']['queue_userReference'];
                     $data["queue_id"] = $job['Queue']['id'];
                     $data["date"] = $queueInfo['date'];
+                    $data["originExecution"] = $queueInfo['originExecution'];
                     $services = $this->getConsolidationWorkerFunction();
                     foreach ($services as $nameServiceKey => $service) {
                         $data['service'] = $service;
@@ -168,11 +169,59 @@ class ConsolidationClientShell extends GearmanClientShell {
         $services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
         $services['netAnnualTotalFundsReturnXirr']['service'] = "calculateNetAnnualTotalFundsReturnXirr";
         $services['netAnnualTotalFundsReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
+        $services['netAnnualReturnPastYearXirr']['service'] = "calculateNetAnnualReturnPastYearXirr";
+        $services['netAnnualReturnPastYearXirr']['gearmanFunction'] = 'getFormulaCalculate';
         //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
         //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
         //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
         //$services[2]['gearmanFunction'] = 'getFormulaCalculate';
         /////////////////////
         return $services;
+    }
+    
+    /**
+     * Function that runs after a task was complete on the Gearman Worker
+     * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
+     *          string $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
+     *                  $data[0] It is the queueId of the task
+     *                  $data[1] It is the function name on the Gearman Worker
+     *                  $data[2] It is the userReference  
+     *          string $task->data Returns data being returned for a task by a worker
+     *                  $data["statusCollect"] It is the status of the request by linkaccount Id
+     *                  $data["errors"] If the statusCollect is 0, the error is saved on it
+     *                  $data["tempArray"] The information to save on database by linkaccount id
+     */
+    public function verifyCompleteTask (GearmanTask $task) {
+        echo "Received data from Worker \n";
+        $data = explode(".-;", $task->unique());
+        if (empty($this->userReference[$data[0]])) {
+            $this->userReference[$data[0]] = $data[2];
+        }
+        $dataWorker = json_decode($task->data(), true);
+        
+        if (!empty($dataWorker['statusCollect'])) {
+            foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
+                $this->userResult[$data[0]][$linkaccountId] = $status;
+                $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
+            }
+        }
+        if (!empty($dataWorker['tempArray'])) {
+            foreach ($dataWorker['tempArray'] as $linkaccountId => $dataArray) {
+                if (empty($this->tempArray[$data[0]][$linkaccountId])) {
+                    $this->tempArray[$data[0]][$linkaccountId] = $dataArray;
+                } 
+                else {
+                    $keyDataArray = key($dataArray);
+                    $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
+                }
+            }
+            
+        }
+
+//        print_r($this->userResult);
+//        print_r($this->userReference);
+        echo "ID Unique: " . $task->unique() . "\n";
+//        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
+        echo GEARMAN_SUCCESS;
     }
 }
