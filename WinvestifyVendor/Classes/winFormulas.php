@@ -67,25 +67,43 @@ class WinFormulas {
         ]
     ];
     
-    protected $variablesFormula_A_xirr = [
+    protected $variablesFormula_netAnnualReturn_xirr = [
         "A" => [
             "type" => [
                 "variables" => [
-                    "userinvestmentdata_cashInPlatform",
-                    "userinvestmentdata_totalNetDeposits",
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
-            "table" => "Userinvestmentdata",
+            "table" => "Globaltotalsdata",
             "dateInit" => "-366",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
             "operation" => "add"
         ],
         "B" => [
-            "type" => "userinvestmentdata_totalLoansCost",
-            "table" => "Userinvestmentdata",
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
             "dateInit" => "-366",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
@@ -94,10 +112,10 @@ class WinFormulas {
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-366",
+            "dateInit" => "-1",
             "dateFinish" => "-1",
             "intervals" => "inclusive",
-            "operation" => "substract"
+            "operation" => "add"
         ]
     ];
     
@@ -152,6 +170,136 @@ class WinFormulas {
                 ],
                 "intervals" => "inclusive"
             ]
+        ]
+    ];
+    
+    protected $variablesFormula_netAnnualTotalFundsReturn_xirr = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_outstandingPrincipal",
+                    "userinvestmentdata_cashInPlatform",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-1",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ]
+    ];
+    
+    protected $variablesFormula_netAnnualPastReturn_xirr = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
         ]
     ];
     
@@ -218,15 +366,8 @@ class WinFormulas {
     }
     
     public function getFormulaParams($type) {
-        
-        switch($type) {
-            case "formula_A":
-                return $this->variablesFormula_A;
-            case "formula_B":
-                return $this->variablesFormula_B;
-            case "formula_A_xirr":
-                return $this->variablesFormula_A_xirr;
-        }
+        $variableName = "variablesFormula_" . $type;  
+        return $this->$variableName;
     }
     
     public function getFormula($type) {
