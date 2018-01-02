@@ -143,15 +143,11 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
 
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
 
-        print_r(json_encode($this->tempArray));
-        echo "\n";
         foreach ($this->tempArray as $tempArray) {
             foreach ($tempArray as $amortizationData) {
                 $this->Amortizationtable->saveAmortizationtable($amortizationData);
             }
         }
-        echo __FUNCTION__ . "Exiting\n";
-        exit;
     }
     
 }

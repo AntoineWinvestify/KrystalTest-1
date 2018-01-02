@@ -69,6 +69,9 @@
  * 2017-12-27           version 0.9.0
  * method setConfig: take the extra index level into account
  * 
+ * 2018-01-02           version 0.9.1
+ * A new characteric, REPAYMENT,  was added to the $transactionDetails array
+ * 
  * 
  * 
  * Pending:
@@ -135,8 +138,8 @@ class Fileparser {
                             );   
  // Possible lables that can be applied to each concept are:
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
- //                 an already existing loan if a extra participation is bought.
- // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
+ //                     an already existing loan if a extra participation is bought
+ // REPAYMENT       => An amortization payment has taken place
  /*
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
@@ -173,7 +176,8 @@ class Fileparser {
                 "detail" => "Capital_repayment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "Capital",
-                "type" => "payment_capitalRepayment"                      
+                "type" => "payment_capitalRepayment",
+                "chars" => "REPAYMENT"                   
                 ],
             6 => [
                 "detail" => "Partial_principal_repayment",

@@ -105,7 +105,6 @@ class Amortizationtable extends AppModel
             }
         }
 
-        print_r($amortizationtable);
         $this->saveMany($amortizationtable, array('validate' => true));
         return true;
     }

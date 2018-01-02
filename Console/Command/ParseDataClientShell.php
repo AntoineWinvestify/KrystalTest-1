@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+//        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -483,7 +483,9 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
                     if (isset($transactionData['conceptChars'])) {
-                        if ($transactionData['conceptChars'] == "AM_TABLE") {       // New, or extra investment, so new amortizationtable shall be collected
+                        $conceptChars = explode(" ", $transactionData['conceptChars']);
+                        if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected
+        //        if ($transactionData['conceptChars'] == "AM_TABLE") {       // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 if (isset($transactionData['sliceIdentifier'])) {
                                         $sliceIdentifier = $transactionData['sliceIdentifier'];
@@ -551,6 +553,25 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 //echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
                                 }
 
+                              
+                                
+                                
+                                
+                                
+                                if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
+                                    if (in_array("REPAYMENT", $conceptChars)) {    
+                                        $this->repaymentReceived($transactionData, $database); 
+                                    }                                
+                                }
+                                else {
+                                    // Store the information so it can be processed in flow 3B
+                                }
+                                
+                                
+                                
+                                
+                                
+                                
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
                                     $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
@@ -807,5 +828,24 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     
     
     
+    /**
+     *  Deals with all the actions of a repayment of a loan. This is BEFORE ANYTHING has been
+     *  changed in the database by the main flow
+     * 
+     *  @param  array   array with the current transaction data
+     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @return 
+     *                  
+     */
+    public function repaymentReceived(&$transactionData, &$resultData) {
+        /*
+         * store repayment data in amortization table
+         * get next repayment data (date and amount)
+         * set paymentDelay = 0;
+         * 
+         */
+        $resultData['investment']['investment_paymentStatus'] = 0;
+        return;
+    }    
     
 }

@@ -545,20 +545,25 @@ class UserDataShell extends AppShell {
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }
+ 
+        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            return "FINISHED";             
+        }       
+        
         if ($tempOutstandingPrincipal == 0) {
-            return "FINISHED";              // represents a decrement
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+            return "FINISHED";              
         }        
         
         if ($resultData['investment']['investment_new'] == YES) {
-            return "INITIAL";               // represents an increment
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
+            return "INITIAL";               
         }       
-
+// the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
-            return "FINISHED";              // return current value numberOfActiveInvestments
+            return "FINISHED";             
         }
-        return "ACTIVE";                    // return current value numberOfActiveInvestments
-        
-//        $resultData['investment']['technicalState'] = "UNDEFINED";
+        return "ACTIVE";                    
     }
     
     
