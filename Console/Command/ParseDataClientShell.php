@@ -274,7 +274,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2  015-11-05"){ 
+if ($dateKey == "2015-11-05"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -668,7 +668,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 unset($slicesAmortizationTablesToCollect);
                 print_r($platformData['amortizationTablesOfNewLoans']);
 
-                $internalVariablesToHandle = array(10001, 10002, 
+                $internalVariablesToHandle = array(10001, 10004, // was 10002 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013);      
@@ -838,14 +838,98 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-        /*
+        echo __FUNCTION__ . __LINE__ . "\n";
+        print_r($transactionData);
+        print_r($resultData);
+        
+        /* transaction data contains loanId and slice identifier in case of Finbee.
+         * I just implement loanId (as for Mintos)
          * store repayment data in amortization table
          * get next repayment data (date and amount)
-         * set paymentDelay = 0;
+         * As this is a repayment, so an investmentId already exists.
+         * 
+         * get all slices where investment_id = XXXXX;
+         * for those investmentslices get the amortization table(s)
+         * 
+         * 
          * 
          */
         $resultData['investment']['investment_paymentStatus'] = 0;
+        
+        $conditions = array("AND" => array('investor_id' => $resultData['investment']['investment_loanId']));        
+ 	$this->Investment->Behaviors->load('Containable');
+	$this->Investment->contain('Investmentslice');  
+        print_r($conditions);
+	$resultInvestmentData = $this->Investment->find("all", $params = array('recursive' => 2,
+										'conditions'	=> $conditions,
+												));
+       
+        print_r($resultInvestmentData);
+        if (!empty($resultInvestmentData)) {
+            
+        }
+        else {      // An error occurred, I cannot find the investmentslice model
+            
+        }
+        echo "Exiting from " . __FUNCTION__ ;
+        exit;
         return;
     }    
+
+    /** is it worth the while to do this? I basically am only interested in the
+     *  next payment date and I trust the platform calculates correctly.
+     * 
+     *  Queues the repayment data as no amortization table(s) are stored yet.
+     *  This data is read when the tables are collected from the P2P.
+     *  This function is typically called for active investments at time of linking 
+     *  a new account
+     * 
+     *  @param  array   array with the current transaction data
+     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @return 
+     *                  
+     */
+    public function queueRepaymentData(&$transactionData, &$resultData) {
+        echo __FUNCTION__ . __LINE__ . "\n";
+        print_r($transactionData);
+        print_r($resultData);
+        
+        if (isset($resultData['investment']['investment_queuedPaymentData'])) {
+            
+        }
+        
+
+        echo "Exiting from " . __FUNCTION__ ;
+        exit;
+        return;
+    }       
+ 
+    
+    /** 
+     *  Reads the queued repaymentData and update the amortization tables
+     *  THIS IMPLEMENTATION ONLY COVERS MINTOS, ZANK AND DOES *NOT* HANDLE
+     *  FINBEE
+     * 
+     *  @param  array   array with the current transaction data
+     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @return 
+     *                  
+     */
+    public function getRepaymentDataFromQueue($loanId, $sliceIdentifier) {
+        echo __FUNCTION__ . __LINE__ . "\n";
+        print_r($transactionData);
+        print_r($resultData);
+        
+        if (isset($resultData['investment']['investment_queuedPaymentData'])) {
+            
+        }
+        
+
+        echo "Exiting from " . __FUNCTION__ ;
+        exit;
+        return;
+    } 
+
+    
     
 }

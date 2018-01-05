@@ -27,7 +27,7 @@ App::import('Shell','GearmanWorker');
  * Class CollectAmortizationDataWorker to collect all the amortization tables
  *
  */
-class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
+class CalculationConsolidationWorkerShell extends GearmanWorkerShell {
     
     public $uses = array('Marketplace', 'Company', 'Urlsequence');
     

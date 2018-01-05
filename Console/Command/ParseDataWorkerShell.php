@@ -266,11 +266,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
 //print_r($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']);
- //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+      print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
  //echo "new loans = ";
  //       print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
-     //   print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'][])
+       
         echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";

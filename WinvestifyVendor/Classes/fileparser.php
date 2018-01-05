@@ -923,7 +923,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     public function setConfig($configurations)  {
-        foreach ($configurations[0] as $configurationKey => $configuration) {
+
+        foreach ($configurations as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
         return;

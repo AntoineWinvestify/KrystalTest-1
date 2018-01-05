@@ -84,7 +84,7 @@ var $validate = array(
 
         $this->create();
 
-        if ($this->save($investmentdata, $validate = true)) {   // OK
+        if ($this->save($investmentdata, $validate = true)) {   
             $investmentId = $this->id;
         return $investmentId;
         }
@@ -101,44 +101,32 @@ var $validate = array(
     }
 
     /**
-     * Get defaulted investment of a linked account and save delayed days
+     * Get data of defaulted investment(s)
      * 
      * @param Int $linkedaccount Link account id 
      * @return array Defaulted inversions of a linked account with the defaulted days
      */
     public function getDefaulted($linkedaccount) {
 
-        $today = date("Y-m-d");
-        /*************************************/
-        /* Get defaulted investment and days */
-        /*************************************/
+        // Get defaulted investment and field paymentStatus 
         $defaultedInvestments = $this->find("all", array(
-            "fields" => array("id", "investment_loanId", "investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
-            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
+            "fields" => array("id", "investment_loanId", "investment_outstandingPrincipal", "investment_paymentStatus", "investment_statusOfLoan"),
+            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_paymentStatus > " => 0),
             "recursive" => -1,
         ));
 
-        foreach ($defaultedInvestments as $key => $defaultedInvestment) {
-            //echo strtotime($today) . HTML_ENDOFLINE;
-            //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
-            $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
-        }
-        $defaultedInvestments = $this->find("all",array("conditions" => $linkedaccount));
-
-        //$this->saveMany($defaultedInvestments); //Save delayed days
-        
-       // print_r($defaultedInvestments);
         return $defaultedInvestments;
     }
 
     /**
      * Get defaulted percent with the Outstanding principal.
      * 
-     * @param Int $linkedaccount Link account id 
+     * @param Int       $linkedaccount Link account id 
+     * @return Array    Percentage of each defaulted range
      */
     public function getDefaultedByOutstanding($linkedaccount) {
 
-        //Get total outstanding principal
+        //Get total outstanding principal for a P2P
         $outstandings = $this->find("all", array(
             "fields" => array("investment_outstandingPrincipal"),
             "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE),
@@ -146,8 +134,8 @@ var $validate = array(
         ));
 
         $totalOutstanding = 0;
-        foreach ($outstandings AS $outstanding) {
-            $totalOutstanding = $totalOutstanding + $outstanding['Investment']['investment_outstandingPrincipal'];
+        foreach ($outstandings as $outstanding) {
+            $totalOutstanding = bcadd($totalOutstanding, $outstanding['Investment']['investment_outstandingPrincipal'], 16);
         }
 
         $defaultedInvestments = $this->getDefaulted($linkedaccount);
@@ -196,7 +184,6 @@ var $validate = array(
         }
         //Calculate current
         $range["current"] = 100 - $range["1-7"] - $range["8-30"] - $range["31-60"] - $range["61-90"] - $range[">90"];
-        //print_r($range);
         return $range;
     }
 
@@ -207,7 +194,7 @@ var $validate = array(
      * 	Create a new Investmentslice when a new investment takes place in an existing loan
      * 	
      */
-    function beforeSave($created, $options = array()) {
+    function beforeSave1($created, $options = array()) {
 
         if (isset($this->data[$this->alias]['id'])) {       // = UPDATE of existing model
             if (isset($this->data[$this->alias]['markCollectNewAmortizationTable'])) { // adding a new slice

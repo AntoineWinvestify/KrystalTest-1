@@ -45,26 +45,18 @@
  */
 App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
-class ParseDataClientShell extends GearmanClientShell {
+class CalculationConsolidationClientShell extends GearmanClientShell {
 
     public $uses = array('Queue', 'Investment', 'Investmentslice');
     protected $variablesConfig;
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //       return;
-
-        echo "Deleting Paymenttotal\n";
-        $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
-
-        echo "Deleting all Amortization Tables\n";
-        $this->Payment = ClassRegistry::init('Payment');
-        $this->Payment->deleteAll(array('Payment.id >' => 0), false);
 
         return;
     }
 
-    public function initDataAnalysisClient() {
+    public function initConsolidationClient() {
         $handle = new UserDataShell();
 
         $this->resetTestEnvironment();      // Temporary function
@@ -125,22 +117,16 @@ class ParseDataClientShell extends GearmanClientShell {
                         $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
                         $i++;
                         echo "pfp = " . $pfp . "\n";
-                        $files[WIN_FLOW_TRANSACTION_FILE] = $dirs->findRecursive(WIN_FLOW_TRANSACTION_FILE . ".*", true);
-                        $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
-                        $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
-                        $listOfActiveInvestments = $this->getListActiveInvestments($linkedAccountId);
+                        $allFiles = $dirs->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
 
-                        $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE. ".*", true);
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
-                            'activeInvestments' => count($listOfActiveInvestments),
-                            'listOfCurrentActiveLoans' => $listOfActiveInvestments,
                             'userReference' => $job['Queue']['queue_userReference'],
-                            'controlVariableFile' => $controlVariableFile[0],
-                            'files' => $files,
+                            'files' => $allFiles,
                             'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING);
                     }
                     debug($params);
+                    print_r($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
@@ -149,6 +135,16 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
+                
+
+                
+                
+                $this->consolidateData($params);
+exit;
+
+
+
+
 
                 $this->GearmanClient->runTasks();
 
@@ -219,18 +215,14 @@ class ParseDataClientShell extends GearmanClientShell {
 
 
 
-    /**
-     * Read the identifiers of all active loans.
-     * check for each one of them the next payment date and write it in the investment table
-     * calculate the number of days overdue if applicable
+    /** FLOW 3B
+     * This method writes the nextPaymentDate in the investment object. 
+     * This is done for ALL the loanIds/loanslices whose amortization tables
+     * are stored on the directory currently under processing. These files are of
+     * format amortizationtable_[investmentslice_id][loanId].html 
+     * example: amortizationtable_120665_13730-01.html
      * 
-     * 
-     * Calculates the following fields:
-     *  - Number of days of payment delay (overdue)
-     *  - Next Payment date
-     *  - Next Payment amount 
-     * and store the data in the corresponding database table
-     * 
+     * Check each of them and writes the next payment date in the investment table.
      * 
      *  @param  $array          Array which holds the list of identifiers of the active loans
      *
@@ -238,31 +230,39 @@ class ParseDataClientShell extends GearmanClientShell {
      *                  false
      *
      */
-    public function mapData(&$platformData) {
-ini_set('memory_limit','2048M');      
+    public function consolidateData(&$parms) {
+        
+echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
- 
-       
-echo "FINISHED_ACCOUNT = $FINISHED_ACCOUNT   \n";
-echo "STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS \n"; 
-$myArray = array ('finished' => $FINISHED_ACCOUNT,
-            'finished_list' => $FINISHED_ACCOUNT_LIST,
-            'countFinishedList' => count($FINISHED_ACCOUNT_LIST),
-            'started_new_accounts'  => $STARTED_NEW_ACCOUNTS,
-            'started_new_accounts_list' => $STARTED_NEW_ACCOUNTS_LIST,
-            'countNewAccountList' => count($STARTED_NEW_ACCOUNTS_LIST),
-            'finished_duplicates_list' => $FINISHED_DUPLICATES_LIST,
-            'countFinishedDuplicatesList' => count($FINISHED_DUPLICATES_LIST),
-            'measurements' => $tempMeasurements,
-            'workingNewLoans' => $platformData['workingNewLoans'], 
-            'countWorkingNewLoans' => count($platformData['workingNewLoans']),
-            'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
-        );
-file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
-       
+                           
+        $file = new File($parms['885']['files'][0]);
+        $jsonLoanIds = $file->read(true, 'r');
+        $loanIds = json_decode($jsonLoanIds, true); 
+        print_r($loanIds);
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');       
+        foreach ($loanIds as $loanKey => $loanId) {
+            echo "\n\n$loanKey and $loanId\n";
 
-        $calculationClassHandle->consolidatePlatformData($database);
-        // remove duplicates from the 'newLoans'AND remove all loans whose loanId/slice are in expiredLoans
+            $this->Investmentslice->Behaviors->load('Containable');
+            $this->Investmentslice->contain('Amortizationtable');              
+
+            $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanKey),
+                                                                       'recursive' => 1)
+                                                                    );
+
+            foreach ($result[0]['Amortizationtable'] as $table) {
+                if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE) {
+                    $scheduledDate = $table['amortizationtable_scheduledDate'];
+                    echo $scheduledDate . " " . $result[0]['Investmentslice']['investment_id'] . "\n";
+
+                    $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
+                                                   'investment_nextPaymentDate' =>  $scheduledDate )
+                                                    );
+                    break;
+                }
+            }
+        }   
+
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 
@@ -272,7 +272,74 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     
     
     
-    
+    /** THIS FIELD IS NEEDED FOR THE CALCULATION OF DEFAULTED ETC.. FLOW 3C
+     * This method scans through all active loans per P2P of an investor and calculates the number of days of 
+     * payment delay. The result is written in the investment model object.
+     *  
+     * 
+     *  @param  $array          Array which holds the list of identifiers of the active loans
+     *
+     *  @return boolean true
+     *                  false
+     *
+     */
+    public function consolidatePaymentDelay() {    
+$timeStart = time();
+
+        $this->Investmentslice->Behaviors->load('Containable');
+        $this->Investmentslice->contain('Amortizationtable'); 
+        
+        $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE),
+                                            array('investment_nextPaymentDate <' => "2018-12-20")
+									),
+                    //        "OR" => array( array('investment_technicalStateTemp' => "ACTIVE"),
+                     //                      array('investment_technicalStateTemp' => "INITIAL"),
+                       //     )
+                );
+
+        $index = 0;
+        $controlIndex = 0;
+        $limit = 5;
+        
+        do {
+            $result = $this->Investment->find("all", array('conditions' => $conditions,
+                                                            'fields'    => array('id', 
+                                                                                 'investment_nextPaymentDate'),
+                                                            'recursive'  => -1,
+                                                            'limit' => $limit,
+                                                            'offset' => $index * $limit)
+                                             );
+
+            if (count($result) < $limit) {          // No more results available
+                $controlIndex = 1;
+            }
+            
+            foreach ($result as $item) {   
+                $nextPaymentDate = strtotime($item['Investment']['investment_nextPaymentDate']);
+                $today = strtotime('today');
+ 
+                if ($nextPaymentDate < $today) {
+                    $tempArray['investment_paymentStatus'] = ceil(abs($today - $nextPaymentDate) / 86400);
+                }
+                else {
+                    $tempArray['investment_paymentStatus'] = 0;
+                }
+                $tempArray['id'] = $item['Investment']['id'];
+                $investment[] = $tempArray;
+            }
+            $index++;
+        } 
+        while($controlIndex < 1); 
+        
+        print_r($investment);
+        $this->Investment->saveMany($investment, array('validate' => true));
+
+        
+$timeStop = time();
+echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
+
+        return true;
+    }    
     
     
     
