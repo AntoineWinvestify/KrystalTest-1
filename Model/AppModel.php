@@ -263,5 +263,16 @@ public function matchFields($check = array(), $compareField = null) {
         ));
         return $resultData;
     }
+    
+    /**
+     * Function to get the last query made by cakephp
+     * @return string
+     */
+    public function getLastQuery() {
+        $dbo = $this->getDatasource();
+        $logs = $dbo->getLog();
+        $lastLog = end($logs['log']);
+        return $lastLog['query'];
+    }
 
 }
