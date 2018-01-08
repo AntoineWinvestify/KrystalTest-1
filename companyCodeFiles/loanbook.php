@@ -1446,6 +1446,8 @@ class loanbook extends p2pCompany {
                   signin		Login
                   username	antoine.de.poorter@gmail.com
                  */
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;

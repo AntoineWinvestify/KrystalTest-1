@@ -537,6 +537,8 @@ class finbee extends p2pCompany {
         switch ($this->idForSwitch) {
             //LOGIN
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
