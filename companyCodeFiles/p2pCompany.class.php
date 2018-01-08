@@ -1429,7 +1429,7 @@ class p2pCompany {
             $data = $this->tempArray;
         }
         $pathCreated = $this->getFolderPFPFile();
-        $fp = fopen($pathCreated . DS . $fileName, 'w');
+        $fp = fopen($pathCreated . $fileName, 'w');
         fwrite($fp, $data);
         fclose($fp);
     }
