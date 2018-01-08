@@ -63,7 +63,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     protected $callbacks = [];
     protected $companyHandle;
     protected $myParser;
-
+    protected $cleanValueControlStop = false;
+    protected $cleanDepthControl = 0;
 
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
@@ -174,9 +175,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 if (empty($tempResult['error'])) {
                     switch ($fileTypeKey) {
                         case WIN_FLOW_INVESTMENT_FILE:
-                            $this->callbacks = $callbacks["investment"];
-                            $this->callbackInit($tempResult, $companyHandle);
-                            $totalParsingresultInvestments = $tempResult;                                
+                            $this->callbackInit($tempResult, $companyHandle, $callbacks["investment"]);
+                            $totalParsingresultInvestments = $tempResult;
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $totalParsingresultTransactions = $tempResult;
@@ -186,6 +186,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
+                            $this->callbackInit($tempResult, $companyHandle, $callbacks["expiredLoan"]);
                             $totalParsingresultExpiredInvestments = $tempResult;
                             $i = 0;
                             foreach ($tempResult as $expiredLoankey => $item) {
@@ -217,7 +218,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                 }
             }
-
+            
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
@@ -230,7 +231,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             
  // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
             $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
-           
+            
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
@@ -296,27 +297,57 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      * @param object $companyHandle It is the company instance
      * @return It nothing if the callback array is empty
      */
-    public function callbackInit(&$tempResult, $companyHandle) {
+    public function callbackInit(&$tempResult, $companyHandle, $callbackFunctions) {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
         }
         //$this->getCallbackFunction($valuesFile);
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ ;
+            print_r($callbackFunctions);
+        }
+        
+        if (empty($callbackFunctions)) {
+            return;
+        }
+        
+        foreach ($callbackFunctions as $functionNameKey => $callback) {
+            $this->$functionNameKey($tempResult, $companyHandle, $callback);
+        }
+    }
+    
+    /**
+     * Function to change values depending on callback functions for each company
+     * @param array $tempResult It contains the value to change
+     * @param object $companyHandle It is the company instance
+     * @return It nothing if the callback array is empty
+     */
+    public function parserDataCallback(&$tempResult, $companyHandle, $callbackData) {
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
+        }
+        $this->callbacks = $callbackData;
+        //$this->getCallbackFunction($valuesFile);
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ ;
             print_r($this->callbacks);
         }
-
+        
         if (empty($this->callbacks)) {
             return;
         }
+        
+        //$this->cleanData($tempResult, $callbacks["investment"]["cleanTempArray"]);
+        
+        
         $this->companyHandle = $companyHandle;
         array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
     }
     
     /**
      * Function to iterate in an array when callback is called and change the value if needed
-     * @param type $item
-     * @param type $key
+     * @param arrayValue $item It is the value of an array key
+     * @param arrayKey $key It is the key of the array value
      */
     public function changeValueIteratingCallback(&$item,$key){
         foreach ($this->callbacks as $callbackKey => $callback) {
@@ -400,7 +431,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     
     
     /**
-     * 
      * get the loanIds obtained during the parsing of the transactions
      * @param array $tempResult It contains the value to change
      * @param object $companyHandle It is the company instance
@@ -422,36 +452,74 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return($listExpiredInvestments);
     }
     
+    /**
+     * Get the data from a single file but it could have a single sheet file or 
+     * a file with multiple sheet
+     * @param string $file FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo __LINE__ . "Dealing with file $file\n";     
-        if (!empty($configParameters['offsetStart'])) {
-            $tempResult = $this->getSimpleSheetData($file, $parserConfigFile, $configParameters);
+        echo __LINE__ . "Dealing with file $file\n";  
+        //We need to pass the 0 value of the array because every company has a two-dimensional array starting with the value 0
+        if (!empty($configParameters[0]['offsetStart'])) {
+            $tempResult = $this->getSimpleSheetData($file, $parserConfigFile[0], $configParameters[0]);
         }
         else {
-            $tempResult = $this->getMultipleSheetData($file, $parserConfigFile, $configParameters);
+            $tempResult = $this->getMultipleSheetData($file, $parserConfigFile[0], $configParameters[0]);
         }
         return $tempResult;
     }
     
+    /**
+     * Get data from multiples files, it could be the same file with the same structure cut in files
+     * or different files with different structure
+     * @param string $filesByType FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
-        $tempResult = [];
+        $filesJoinedByParts = $this->joinFilesByParts($filesByType);
+        //If exit this key in the array, it is a multi variable files data an it has that in the first key of the array
+        if (in_array("fileConfigParam")) {
+            $orderParam = array_slice($configParameters, 0);
+        }
         $i = 0;
-        $orderParam = array_shift($configParameters);
-        foreach ($filesByType as $file) {
-            if (!empty($configParameters[$i]['offsetStart'])) {
-                $tempResult[] = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
-            }
-            else {
-                //if multiple files, we need an offset and offsetEnd individual
-                //An array is necessary 
-                $tempResult[] = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+        $arrayByType = [];
+        foreach ($filesJoinedByParts as $filesByType) {
+            $tempResult = null;
+            $arrayByType[$i] = [];
+            foreach ($filesByType as $file) {
+                if (!empty($configParameters[$i]['offsetStart'])) {
+                    $tempResult = $this->getSimpleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+                }
+                else {
+                    //if multiple files, we need an offset and offsetEnd individual
+                    //An array is necessary 
+                    $tempResult = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
+                }
+                $arrayByType[$i] = array_merge($arrayByType[$i], $tempResult);
             }
             $i++;
         }
-        $tempResultOrdered = $this->resultOrdering($tempResult, $orderParam);
+        if (!empty($orderParam)) {
+            $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
+        }
+        else {
+            $tempResultOrdered = $arrayByType[0];
+        }
         return $tempResultOrdered;
     }
     
+    /**
+     * Get data from one sheet data
+     * @param string $file FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
         $this->myParser->setConfig($configParameters);
         $extension = $this->getExtensionFile($file);
@@ -466,6 +534,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempResult;
     }
     
+    /**
+     * Get data from multiple sheet data with their individual configparameters
+     * @param string $file FQDN of the files
+     * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
+     * @param array $configParameters Configuration parameters
+     * @return array
+     */
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
         $orderParam = array_shift($configParameters);
         foreach ($configParameters as $key => $individualConfigParameters) {       
@@ -484,6 +559,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempResultOrdered;
     }
     
+    /**
+     * Order an array based on a ordering parameters
+     * @param array $tempArray Contain all the data
+     * @param array $orderParam Contain the order parameters
+     * @return array
+     */
     public function resultOrdering($tempArray, $orderParam) {
         $countSortParameters = count($this->config['sortParameter']);
         switch ($countSortParameters) {
@@ -500,7 +581,101 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 unset($tempArray[$i]);
             break;               
         }
+        return $tempArray;
     }
+    
+    /**
+     * Group the FQDN of the files by number, for example, the transaction_1 could have
+     * transaction_1_1, transaction_1_2, transaction_1_3 and transaction_2_1
+     * This function groups the FQDN of the file in an array bidimensional like
+     * $tempArray[1][1], $tempArray[1][2]...
+     * @param string $filesByType The FQDN of the files
+     * @return array
+     */
+    public function joinFilesByParts ($filesByType) {
+        $tempArrayFiles = [];
+        foreach ($filesByType as $filePath) {
+            $file = new File($filePath);
+            $nameFile = $file->name();
+            $tempNumber = explode("_", $nameFile);
+            $tempArrayFiles[$tempNumber[1]][$tempNumber[2]] = $filePath;
+        }
+        return $tempArrayFiles;
+    }
+    
+    public function cleanTempArray(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        foreach ($config as $functionNameKey => $values) {
+            $this->array_walk_recursive_delete($tempArray, array($this, $functionNameKey), $values);
+        }
+    }
+    
+    /**
+    * Remove any elements where the callback returns true
+    * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
+    * @param  array    $array    the array to walk
+    * @param  callable $callback callback takes ($value, $key, $userdata)
+    * @param  mixed    $userdata additional data passed to the callback.
+    * @return array
+    */
+    function array_walk_recursive_delete(&$array, callable $callback, $valuesToDelete, $userdata = null) {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->array_walk_recursive_delete($value, $callback, $valuesToDelete, $userdata);
+            }
+            if ($this->cleanValueControlStop && $this->cleanDepthControl < $valuesToDelete['valueDepth']) {
+                unset($array[$key]);
+                $this->cleanDepthControl++;
+                if ($this->cleanDepthControl == $valuesToDelete['valueDepth']) {
+                    $this->cleanDepthControl = 0;
+                    $this->cleanValueControlStop = false;
+                }
+            }
+            else if ($callback($value, $key, $valuesToDelete, $userdata)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+   
+    function findValueInArray($value, $key, $valuesToDelete, $userdata = null) {
+        $result = false;
+        if (is_array($value)) {
+            return empty($value);
+        }
+        if ($key == $valuesToDelete['key']) {
+            foreach ($valuesToDelete['values'] as $valueToDelete) {
+                $functionToCall = $valuesToDelete['function'];
+                if ($this->$functionToCall($value, $valueToDelete)) {
+                    $result = true;
+                    $this->cleanValueControlStop = true;
+                    break;
+                }
+            }
+        }
+        return $result;
+    }
+    
+    public function verifyEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value === $valueToVerify) {
+            $result  = true;
+        }
+        return $result;
+    }
+    
+    public function verifyNotEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value !== $valueToVerify) {
+            $result  = true;
+        }
+        return $result;
+    }
+   
+   
+   
     
 }
 

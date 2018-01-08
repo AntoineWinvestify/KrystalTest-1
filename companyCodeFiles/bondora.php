@@ -43,59 +43,61 @@
 class bondora extends p2pCompany {
 
     protected $valuesTransaction = [// All types/names will be defined as associative index in array
-        "A" => [
-            [
-                "type" => "date", // Winvestify standardized name  OK
-                "inputData" => [
-                    "input2" => "D/M/Y",
-                ],
-                "functionName" => "normalizeDate",
-            ]                           // Winvestify standardized name
-        ],
-        "B" => [
-            [
-                "type" => "currency", // Winvestify standardized name  OK
-                "functionName" => "getCurrency",
-            ]
-        ],
-        "C" => [
-            [
-                "type" => "amount", // This is *mandatory* field which is required for the 
-                "inputData" => [// "transactionDetail"
-                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
-                    "input3" => ".", // and its content is the result of the "getAmount" method
-                    "input4" => 16
-                ],
-                "functionName" => "getAmount",
-            ]
-        ],
-        "D" => [
-            [
-                "name" => "transaction_transactionId"                             // Winvestify standardized name
-            ]
-        ],
-        "E" => [
-            [
-                "type" => "transactionDetail", // Winvestify standardized name   OK
-                "inputData" => [// List of all concepts that the platform can generate
-                    // format ["concept string platform", "concept string Winvestify"]
-                    "input3" => [
-                        0 => ["TransferPartialMainRepaiment" => "Partial_principal_repayment"],
-                        1 => ["TransferExtraInterestRepaiment" => "Delayed_interest_income"],
-                        2 => ["TransferWithdraw" => "Cash_withdrawal"],
-                        3 => ["TransferMainRepaiment" => "Capital_repayment"], //OK
-                        4 => ["TransferLatePenaltyRepaiment" => "Late_payment_fee_income"],
-                        5 => ["TransferInterestRepaiment" => "Regular_gross_interest_income"], //
-                    ]
-                ],
-                "functionName" => "getTransactionDetail",
-            ]
-        ],
-        "F" => [
-            [
-                "name" => "investment_loanId"                             // Winvestify standardized name
-            ]
-        ],
+        [
+            "A" => [
+                [
+                    "type" => "date", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "D/M/Y",
+                    ],
+                    "functionName" => "normalizeDate",
+                ]                           // Winvestify standardized name
+            ],
+            "B" => [
+                [
+                    "type" => "currency", // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "amount", // This is *mandatory* field which is required for the 
+                    "inputData" => [// "transactionDetail"
+                        "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                        "input3" => ".", // and its content is the result of the "getAmount" method
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "D" => [
+                [
+                    "name" => "transaction_transactionId"                             // Winvestify standardized name
+                ]
+            ],
+            "E" => [
+                [
+                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "inputData" => [// List of all concepts that the platform can generate
+                        // format ["concept string platform", "concept string Winvestify"]
+                        "input3" => [
+                            0 => ["TransferPartialMainRepaiment" => "Partial_principal_repayment"],
+                            1 => ["TransferExtraInterestRepaiment" => "Delayed_interest_income"],
+                            2 => ["TransferWithdraw" => "Cash_withdrawal"],
+                            3 => ["TransferMainRepaiment" => "Capital_repayment"], //OK
+                            4 => ["TransferLatePenaltyRepaiment" => "Late_payment_fee_income"],
+                            5 => ["TransferInterestRepaiment" => "Regular_gross_interest_income"], //
+                        ]
+                    ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "F" => [
+                [
+                    "name" => "investment_loanId"                             // Winvestify standardized name
+                ]
+            ],
+        ]
     ];
     protected $valuesAmortizationTable = [// NOT FINISHED
         //See this value, it has two, the scheduledDate and the paymentDate
@@ -153,16 +155,23 @@ class bondora extends p2pCompany {
             ]
         ],
     ];
-    protected $transactionConfigParms = array('offsetStart' => 1,
-        'offsetEnd' => 0,
-        //        'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('offsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
+    
+    protected $transactionConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+        ]
+    ];
+    
+    protected $investmentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+       ]
+    ];
+    
     protected $amortizationConfigParms = array('offsetStart' => 1,
         'offsetEnd' => 1,
             //       'separatorChar' => ";",

@@ -95,156 +95,279 @@ class zank extends p2pCompany {
     private $start = 0;
  
     
-    protected $transactionConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                        //        'separatorChar' => ";",
-                                'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-                                'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
-                                 );                                             // 0 = do not inverse order of elements (=default)
+    protected $transactionConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+    //        'separatorChar' => ";",
+            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+        ]
+    ];                                             // 0 = do not inverse order of elements (=default)
  
     protected $valuesTransaction = [
-        "A" =>  [
-            [
-                "type" => "date",                                               // Winvestify standardized name  OK
-                "inputData" => [
-                            "input2" => "D/M/Y",
+        [
+            "A" =>  [
+                [
+                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ] 
+            ],
+            "B" => [
+                [
+                    "type" => "transactionDetail",                                  // Winvestify standardized name   OK
+                    "inputData" => [                                                // List of all concepts that the platform can generate  
+                                                                                    // format ["concept string platform", "concept string Winvestify"]
+                                "input2" => [
+                                    0 => ["ingreso" => "Cash_deposit"],
+                                    1 => ["retirado" => "Cash_withdrawal"],
+                                    2 => ["inversion" => "Primary_market_investment"],
+                                    3 => ["principal" => "Capital_repayment"],
+                                    4 => ["intereses" => "Regular_gross_interest_income"],
+                                    5 => ["recargo" => "Delayed_interest_income"],
+                                    6 => ["promocion" => "Incentives_and_bonus"],
+                                    7 => ["comision" => "Commission"],
+                                ]                    
                             ],
-                "functionName" => "normalizeDate",
-            ] 
-        ],
-        "B" => [
-            [
-                "type" => "transactionDetail",                                  // Winvestify standardized name   OK
-                "inputData" => [                                                // List of all concepts that the platform can generate  
-                                                                                // format ["concept string platform", "concept string Winvestify"]
-                            "input2" => [
-                                0 => ["ingreso" => "Cash_deposit"],
-                                1 => ["retirado" => "Cash_withdrawal"],
-                                2 => ["inversion" => "Primary_market_investment"],
-                                3 => ["principal" => "Capital_repayment"],
-                                4 => ["intereses" => "Regular_gross_interest_income"],
-                                5 => ["recargo" => "Delayed_interest_income"],
-                                6 => ["promocion" => "Incentives_and_bonus"],
-                                7 => ["comision" => "Commission"],
-                            ]                    
-                        ],
-                "functionName" => "getTransactionDetail",
-            ]
-        ],
-        "C" => [
-            [
-                "type" => "amount",                                             // This is an "empty variable name". So "type" is
-                "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
-                            "input2" => ".",                                    // and which BY DEFAULT is a Winvestify standardized variable name.
-                            "input3" => ",",                                    // and its content is the result of the "getAmount" method
-                            "input4" => 4
-                            ],
-                "functionName" => "getAmount",
-            ]
-        ], 
-        "D" =>  [
-            [
-                "type" => "investment_loanId",                                  // Typically used for generating a 'psuedo loanid' for platform related actions
-                "inputData" => [                                                // like for instance cash deposit or cash withdrawal
-                            "input2" => "global_",                                    
-                            "input3" => "rand",                   
-                            ],
-                "functionName" => "generateId",
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "amount",                                             // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                    // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ], 
+            "D" =>  [
+                [
+                    "type" => "investment_loanId",                                  // Typically used for generating a 'psuedo loanid' for platform related actions
+                    "inputData" => [                                                // like for instance cash deposit or cash withdrawal
+                                "input2" => "global_",                                    
+                                "input3" => "rand",                   
+                                ],
+                    "functionName" => "generateId",
+                ]
             ]
         ]
     ];
 
     
-    protected $investmentConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                         //       'separatorChar' => ";",
-                                'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    protected $investmentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+     //       'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+        ]
+    ];
+    
+    protected $expiredLoanConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+     //       'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+        ]
+    ];
     
     protected $valuesInvestment = [                                             // All types/names will be defined as associative index in array
-        "A" =>  [
-            [
-                "type" => "investment_investmentDate",                          // Winvestify standardized name
-                "inputData" => [
-                            "input2" => "D.M.Y",
-                            ],
-                "functionName" => "normalizeDate",
-            ]                                    
-        ],
-        "B" => [
-            "name" => "investment_loanId"                                       // Winvestify standardized name  OK
-        ],
-            //FIX THIS
-        "C" => [
-            [
-                "type" => "investment_expectAnnualYield",                       // Winvestify standardized name   OK
-                "inputData" => [
-                            "input2" => "",
-                            "input3" => ",",
-                            "input4" => 4
-                            ],
-                "functionName" => "getAmount",
-            ]                                           
-        ], 
-        "D" =>  [
-            "name" => "investment_originalDuration"
-        ],
-        "E" => [
-            [
-                "type" => "investment_myInvestment",                            // Winvestify standardized name   OK
-                "inputData" => [
-                            "input2" => "",
-                            "input3" => ",",
-                            "input4" => 16
-                            ],
-                "functionName" => "getAmount",
+        [
+            "A" =>  [
+                [
+                    "type" => "investment_investmentDate",                          // Winvestify standardized name
+                    "inputData" => [
+                                "input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]                                    
             ],
-            [
-                "type" => "investment_typeOfInvestment",                                    
-                "inputData" => [                                                   
-                            "input2" => "€",                                       
-                            "input3" => "",
-                        ],
-                "functionName" => "extractDataFromString",
+            "B" => [
+                "name" => "investment_loanId"                                       // Winvestify standardized name  OK
             ],
-            [
-                "type" => "investment_currency",                                // Winvestify standardized name  OK
-                "functionName" => "getCurrency",
+                //FIX THIS
+            "C" => [
+                [
+                    "type" => "investment_expectAnnualYield",                       // Winvestify standardized name   OK
+                    "inputData" => [
+                                "input2" => "",
+                                "input3" => ",",
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ]                                           
+            ], 
+            "D" =>  [
+                "name" => "investment_originalDuration"
             ],
-        ],
-        "F" => [
-            "name" => "investment_capitalRepaymentFromP2P"
-        ],
-        /*"G" => DON'T TAKE, ASK ANTOINE*/
-        /* "H" => DON'T TAKE, ASK ANTOINE*/
-        "I" => [
-            [
-                "type" => "investment_commissionPaid",                          // This is an "empty variable name". So "type" is
-                "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
-                            "input2" => "",                                     // and which BY DEFAULT is a Winvestify standardized variable name.
-                            "input3" => ",",                                    // and its content is the result of the "getAmount" method
-                            "input4" => 4
+            "E" => [
+                [
+                    "type" => "investment_myInvestment",                            // Winvestify standardized name   OK
+                    "inputData" => [
+                                "input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "investment_typeOfInvestment",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => " ",                                 //                                 // 'input3' is NOT mandatory. 
                             ],
-                "functionName" => "getAmount",
+                    "functionName" => "getDefaultValue",
+                ],
+                [
+                    "type" => "investment_typeOfInvestment",                                    
+                    "inputData" => [                                                   
+                                "input2" => "€",                                       
+                                "input3" => "",
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "investment_currency",                                // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ],
+            ],
+            "F" => [
+                "name" => "investment_capitalRepaymentFromP2P"
+            ],
+            /*"G" => DON'T TAKE, ASK ANTOINE*/
+            /* "H" => DON'T TAKE, ASK ANTOINE*/
+            "I" => [
+                [
+                    "type" => "investment_commissionPaid",                          // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
+                                "input2" => "",                                     // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            ///CHANGEEEE WITH REAL VALUE
+            "J" =>  [
+                [
+                    "type" => "investment_statusOfLoan",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "",                                 // 
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "investment_originalLoanState",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "#current.investment_statusOfLoan",                                 //                                 // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ]
             ]
-        ],
-        ///CHANGEEEE WITH REAL VALUE
-        "J" =>  [
-            [
-                "type" => "investment_statusOfLoan",                               // 
-                "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                            "input2" => "",                                 // 
-                            "input3" => "",
-                            "input4" => 0                                   // 'input3' is NOT mandatory. 
-                        ],
-                "functionName" => "extractDataFromString",
+        ]
+    ];
+    
+    protected $valuesExpiredLoan = [                                             // All types/names will be defined as associative index in array
+        [
+            "A" =>  [
+                [
+                    "type" => "investment_investmentDate",                          // Winvestify standardized name
+                    "inputData" => [
+                                "input2" => "D.M.Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]                                    
             ],
-            [
-                "type" => "investment_originalLoanState",                               // 
-                "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                            "input2" => "#current.investment_statusOfLoan",                                 //                                 // 'input3' is NOT mandatory. 
-                        ],
-                "functionName" => "getDefaultValue",
+            "B" => [
+                "name" => "investment_loanId"                                       // Winvestify standardized name  OK
+            ],
+                //FIX THIS
+            "C" => [
+                [
+                    "type" => "investment_expectAnnualYield",                       // Winvestify standardized name   OK
+                    "inputData" => [
+                                "input2" => "",
+                                "input3" => ",",
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ]                                           
+            ], 
+            "D" =>  [
+                "name" => "investment_originalDuration"
+            ],
+            "E" => [
+                [
+                    "type" => "investment_myInvestment",                            // Winvestify standardized name   OK
+                    "inputData" => [
+                                "input2" => "",
+                                "input3" => ",",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "investment_typeOfInvestment",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => " ",                                 //                                 // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ],
+                [
+                    "type" => "investment_typeOfInvestment",                                    
+                    "inputData" => [                                                   
+                                "input2" => "€",                                       
+                                "input3" => "",
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "investment_currency",                                // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                ],
+            ],
+            "F" => [
+                "name" => "investment_capitalRepaymentFromP2P"
+            ],
+            /*"G" => DON'T TAKE, ASK ANTOINE*/
+            /* "H" => DON'T TAKE, ASK ANTOINE*/
+            "I" => [
+                [
+                    "type" => "investment_commissionPaid",                          // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
+                                "input2" => "",                                     // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            ///CHANGEEEE WITH REAL VALUE
+            "J" =>  [
+                [
+                    "type" => "investment_statusOfLoan",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "",                                 // 
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "investment_originalLoanState",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "#current.investment_statusOfLoan",                                 //                                 // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ]
             ]
         ]
     ];
@@ -328,8 +451,32 @@ class zank extends p2pCompany {
     
     protected $callbacks = [
         "investment" => [
-            "investment_loanType" => "translateTypeOfInvestment",
-            "investment_statusOfLoan" => "translateLoanStatus"
+            "cleanTempArray" => [
+                "findValueInArray" => [
+                    "key" => "investment_statusOfLoan",
+                    "function" => "verifyEqual",
+                    "values" => ["Amortizado"],
+                    "valueDepth" => 2
+                ]
+            ],
+            "parserDataCallback" => [
+                "investment_typeOfInvestment" => "translateTypeOfInvestment",
+                "investment_statusOfLoan" => "translateLoanStatus"
+            ]
+        ],
+        "expiredLoan" => [
+            "cleanTempArray" => [
+                "findValueInArray" => [
+                    "key" => "investment_statusOfLoan",
+                    "function" => "verifyNotEqual",
+                    "values" => ["Amortizado"],
+                    "valueDepth" => 2
+                ]
+            ],
+            "parserDataCallback" => [
+                "investment_typeOfInvestment" => "translateTypeOfInvestment",
+                "investment_statusOfLoan" => "translateLoanStatus"
+            ]
         ]
     ];
     

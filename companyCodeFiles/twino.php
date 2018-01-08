@@ -56,123 +56,126 @@ class twino extends p2pCompany {
 // 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
 
     protected $valuesTransaction = [// All types/names will be defined as associative index in array
-        "A" => [
-            [
-                "type" => "date", // Winvestify standardized name 
-                "inputData" => [
-                    "input2" => "d/m/Y", // Input parameters. The first parameter
-                // is ALWAYS the contents of the cell
+        [
+            "A" => [
+                [
+                    "type" => "date", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "d/m/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",
                 ],
-                "functionName" => "normalizeDate",
             ],
-        ],
-        "C" => [
-            "name" => "transactionDetail",
-        ],
-        "D" => [// Simply changing name of column to the Winvestify standardized name
-            [
-                "type" => "transactionDetail",
-                "inputData" => [
-                    "input2" => [
-                        0 => ["FUNDING" => "Cash_deposit"], // OK
-                        1 => ["PRINCIPAL BUY_SHARES" => "Primary_market_investment"],
-                        2 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment"],
-                        3 => ["PRINCIPAL REPAYMENT" => "Capital_repayment"], //OK
-                        4 => ["PRINCIPAL BUYBACK" => "Principal_buyback"], // OK    
-                        5 => ["INTEREST BUYBACK" => "Interest_income_buyback"], // OK
-                        6 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
-                        7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
-                        8 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"], // OK                                       
-                        9 => ["INTEREST EXTENSION" => "Incentive_and_bonus"],
-                        10 => ["PRINCIPAL REPURCHASE" => "Principal_buyback"],
-                        11 => ["INTEREST REPURCHASE" => "Interest_income_buyback"],
-                        12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
-                        13 => ["INTEREST ACCRUED" => "Regular_gross_interest_income"],
-                        //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
-                        //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
-                        14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
-                        15 => ["PRINCIPAL RECOVERY" => "Recoveries"],
-                        16 => ["PRINCIPAL WRITEOFF" => "Write-off"],
-                        17 => ["WITHDRAWAL" => "Cash_withdrawal"]
-                    ], // Thousands seperator, typically "."
-                    "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "getMultipleInputTransactionDetail"
-            ]
-        ],
-        "E" => [// Simply changing name of column to the Winvestify standardized name
-            "name" => "investment_loanId"
-        ],
-        "F" => [// Simply changing name of column to the Winvestify standardized name
-            [
-                "type" => "amount", // This is *mandatory* field which is required for the 
-                "inputData" => [// "transactionDetail"
-                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
-                    "input3" => ".", // and its content is the result of the "getAmount" method
-                    "input4" => 4
-                ],
-                "functionName" => "getAmount",
+            "C" => [
+                "name" => "transactionDetail",
+            ],
+            "D" => [// Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "transactionDetail",
+                    "inputData" => [
+                        "input2" => [
+                            0 => ["FUNDING" => "Cash_deposit"], // OK
+                            1 => ["PRINCIPAL BUY_SHARES" => "Primary_market_investment"],
+                            2 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment"],
+                            3 => ["PRINCIPAL REPAYMENT" => "Capital_repayment"], //OK
+                            4 => ["PRINCIPAL BUYBACK" => "Principal_buyback"], // OK    
+                            5 => ["INTEREST BUYBACK" => "Interest_income_buyback"], // OK
+                            6 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
+                            7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
+                            8 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"], // OK                                       
+                            9 => ["INTEREST EXTENSION" => "Incentive_and_bonus"],
+                            10 => ["PRINCIPAL REPURCHASE" => "Principal_buyback"],
+                            11 => ["INTEREST REPURCHASE" => "Interest_income_buyback"],
+                            12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
+                            13 => ["INTEREST ACCRUED" => "Regular_gross_interest_income"],
+                            //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
+                            //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
+                            14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
+                            15 => ["PRINCIPAL RECOVERY" => "Recoveries"],
+                            16 => ["PRINCIPAL WRITEOFF" => "Write-off"],
+                            17 => ["WITHDRAWAL" => "Cash_withdrawal"]
+                        ], // Thousands seperator, typically "."
+                        "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "getMultipleInputTransactionDetail"
+                ]
+            ],
+            "E" => [// Simply changing name of column to the Winvestify standardized name
+                "name" => "investment_loanId"
+            ],
+            "F" => [// Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "amount", // This is *mandatory* field which is required for the 
+                    "inputData" => [// "transactionDetail"
+                        "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                        "input3" => ".", // and its content is the result of the "getAmount" method
+                        "input4" => 4
+                    ],
+                    "functionName" => "getAmount",
+                ]
             ]
         ]
     ];
 // Not finished
     protected $valuesInvestment = [// All types/names will be defined as associative index in array
-
-        "A" => [
-            "name" => "investment_country"                              // Winvestify standardized name  OK
-        ],
-        "B" => [
-            "name" => "loanId",
-        ],
-        "C" => [
-            [
-                "type" => "investment_investmentDate", // Winvestify standardized name 
-                "inputData" => [
-                    "input2" => "m/d/Y", // Input parameters. The first parameter
-                // is ALWAYS the contents of the cell
-                ],
-                "functionName" => "normalizeDate",
+        [
+            "A" => [
+                "name" => "investment_country"                              // Winvestify standardized name  OK
             ],
-        ],
-        "D" => [
-            "name" => "investment_riskRating",
-        ],
-        "E" => [
-            "name" => "investment_originalState",
-        ],
-        "F" => [
-            "name" => "investment_nominalInterestRate"
-        ],
-        "G" => [
-            "name" => "investment_expectedAnnualYield"
-        ],
-        //"H" => ASK ANTOINE Remaining Term
-        "I" => [
-            "name" => "investment_originalDuration"
-        ],
-        //"J" => ASK ANTOINE Extended
-        //"K" => IT IS NEXT PAYMENT, ASK ANTOINE IF IT NEEDED TO TAKE 
-        "L" => [
-            "name" => "investment_capitalRepaymentFromP2P"
-        ],
-        "M" => [
-            [
-                "type" => "investment_myInvestment", // Winvestify standardized name   OK
-                "inputData" => [
-                    "input2" => "",
-                    "input3" => ".",
-                    "input4" => 4
+            "B" => [
+                "name" => "loanId",
+            ],
+            "C" => [
+                [
+                    "type" => "investment_investmentDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",
                 ],
-                "functionName" => "getAmount",
+            ],
+            "D" => [
+                "name" => "investment_riskRating",
+            ],
+            "E" => [
+                "name" => "investment_originalState",
+            ],
+            "F" => [
+                "name" => "investment_nominalInterestRate"
+            ],
+            "G" => [
+                "name" => "investment_expectedAnnualYield"
+            ],
+            //"H" => ASK ANTOINE Remaining Term
+            "I" => [
+                "name" => "investment_originalDuration"
+            ],
+            //"J" => ASK ANTOINE Extended
+            //"K" => IT IS NEXT PAYMENT, ASK ANTOINE IF IT NEEDED TO TAKE 
+            "L" => [
+                "name" => "investment_capitalRepaymentFromP2P"
+            ],
+            "M" => [
+                [
+                    "type" => "investment_myInvestment", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ".",
+                        "input4" => 4
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            //"N" => ASK ANTOINE Interest income
+            "O" => [
+                "name" => "investment_outstandingPrincipalFromP2P"
+            ],
+            "P" => [
+                "name" => "investment_forSale"
             ]
-        ],
-        //"N" => ASK ANTOINE Interest income
-        "O" => [
-            "name" => "investment_outstandingPrincipalFromP2P"
-        ],
-        "P" => [
-            "name" => "investment_forSale"
         ]
     ];
     protected $valuesAmortizationTable = [
@@ -222,24 +225,34 @@ class twino extends p2pCompany {
             "name" => "amortizationtable_paymentStatus"
         ]
     ];
-    protected $transactionConfigParms = array('offsetStart' => 1,
-        'offsetEnd' => 0,
-        //        'separatorChar' => ";",
-        'sortParameter' => array("date", "investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
+    
+    protected $transactionConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+        ]
+    ];
+    
+    protected $investmentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+       ]
+    ]; 
+    
     protected $amortizationConfigParms = array('OffsetStart' => 0,
         'offsetEnd' => 0,
         //       'separatorChar' => ";",
         'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
     );
+    
     protected $callbacks = [
         "investment" => [
-            "status" => "translateLoanStatus"
+            "parserDataCallback" => [
+                "status" => "translateLoanStatus"
+            ]
         ]
     ];
     protected $investmentHeader = array('A' => "Country",

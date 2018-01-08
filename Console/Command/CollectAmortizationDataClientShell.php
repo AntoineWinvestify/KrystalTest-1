@@ -60,15 +60,36 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $queueInfoJson = $job['Queue']['queue_info'];
                     $queueInfo = json_decode($queueInfoJson, true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
-                    $linkAccountId = [];
-                    foreach ($queueInfo['loanIds'] as $key => $loanId) {
+                    $linkAccountIds = [];
+                    
+                    $baseDirectory = Configure::read('dashboard2Files') . $job['Queue']['queue_userReference'] . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+                    $dir = new Folder($baseDirectory);
+                    $pathToJsonFile = $dir->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
+                    foreach ($pathToJsonFile as $key => $path) {
+                        $tempName = explode("/", $path);
+                        if (Configure::read('debug')) {
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");
+                            print_r($tempName);
+                        }
+                        $linkedAccountId = $tempName[count($tempName) - 3];
+                        if (!in_array($linkedAccountId, $queueInfo['companiesInFlow'])) {
+                            continue;
+                        }
+                        $file = new File($path);
+                        $jsonLoanIds = $file->read(true, 'r');
+                        $loanIds = json_decode($jsonLoanIds, true);
+                        $linkAccountIds[] = $linkedAccountId;
+                        $queueInfos[] = $loanIds;
+                    }
+                    $filterConditions = array('id' => $linkAccountIds);
+                    $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+                    //foreach ($queueInfo['loanIds'] as $key => $loanId) {
+                    /*foreach ($loanIds as $key => $loanId) {
                         if (!in_array($key, $linkAccountId)) {
-                            $linkAccountId[] = $key; 
+                             
                         }
                     }
-                    $filterConditions = array('id' => $linkAccountId);
-                    $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-                    $queueInfos[] = $queueInfo['loanIds'];
+                    */
                 }
                 $userLinkedaccounts = [];
                 $loandIdLinkedaccounts = [];
@@ -84,7 +105,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
-                            $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key][$linkedaccountId];
+                            $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key];
                             $i++;
                         }
                     }

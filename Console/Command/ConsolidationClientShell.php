@@ -36,9 +36,6 @@ class ConsolidationClientShell extends GearmanClientShell {
      *  @param integer $this->args[1]|$queueTypeAccess It is the access type the user used to get the data
      */
     public function initClient() {
-        
-        $inActivityCounter = 0;
-        $this->flowName = "GEARMAN_FLOW4";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
@@ -79,20 +76,24 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
                     
                     $data["companies"] = $queueInfo['companiesInFlow'];
+                    $this->userLinkaccountIds[$job['Queue']['id']] = $queueInfo['companiesInFlow'];;
                     $data["queue_userReference"] = $job['Queue']['queue_userReference'];
                     $data["queue_id"] = $job['Queue']['id'];
                     $data["date"] = $queueInfo['date'];
-                    if (Configure::read('debug')) {
-                        $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
-                        print_r($data["companies"]);
-                        echo "userReference ". $data["queue_userReference"] . "\n";
-                        echo "queueId " . $data["queue_id"] . "\n";
-                        echo "the date is " . $data["date"] . "\n";
-                        echo "All information \n";
-                        print_r($data);
+                    $services = $this->getConsolidationWorkerFunction();
+                    foreach ($services as $nameServiceKey => $service) {
+                        $data['service'] = $service;
+                        if (Configure::read('debug')) {
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+                            print_r($data["companies"]);
+                            echo "userReference ". $data["queue_userReference"] . "\n";
+                            echo "queueId " . $data["queue_id"] . "\n";
+                            echo "the date is " . $data["date"] . "\n";
+                            echo "All information \n";
+                            print_r($data);
+                        }
+                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $nameServiceKey . ".-;" . $job['Queue']['queue_userReference']);
                     }
-                    $this->GearmanClient->addTask($workerFunction, json_encode($data), null, $data["queue_id"] . ".-;" .  $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
-
                 }
                 
                 
@@ -156,5 +157,21 @@ class ConsolidationClientShell extends GearmanClientShell {
                 $this->Amortizationtable->saveAmortizationtable($linkaccountData, $investmentIds);
             }
         }
+    }
+    
+    public function getConsolidationWorkerFunction() {
+        //Future implementation
+        //$formulaByInvestor = $this->getFormulasFromDB();
+        ///////////////* THIS IS TEMPORAL
+        $services = [];
+        
+        $services['netAnnualReturnXirr']['service'] = "calculateNetAnnualReturnXirr";
+        $services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
+        //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
+        //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
+        //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
+        //$services[2]['gearmanFunction'] = 'getFormulaCalculate';
+        /////////////////////
+        return $services;
     }
 }

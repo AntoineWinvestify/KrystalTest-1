@@ -66,6 +66,7 @@
  */
 class mintos extends p2pCompany {
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+        [
             "A" =>  [
                     "name" => "transaction_transactionId"                       // Winvestify standardized name  NOT NEEDED, ONLY USEFULL FOR TESTING
              ],
@@ -183,9 +184,11 @@ class mintos extends p2pCompany {
                     "functionName" => "getConceptChars",
                 ]                
              ],
-        ];
+        ]
+    ];
 
     protected $valuesInvestment = [
+        [
             "A" =>  [
                 [
                 "type" => "investment_country",                                 // Winvestify standardized name  OK              
@@ -387,7 +390,8 @@ class mintos extends p2pCompany {
                 
                 ],
             ]
-        ];
+        ]
+    ];
 
     protected $valuesAmortizationTable = [
         0 => [
@@ -448,122 +452,141 @@ class mintos extends p2pCompany {
     
 
     protected $valuesExpiredLoan = [                                            // We are only interested in the investment_loanId
-        "A" =>  [
-            [
-                "type" => "investment_country",                                 // Winvestify standardized name  OK              
-                "functionName" => "getCountry",
-                ],
-             ],
-        "B" => [
-                "name" => "investment_loanId"                                   // Winvestify standardized name  OK
-             ],
-        "D" =>  [
-            "name" => "investment_loanType"                                 // Winvestify standardized name   OK
-         ],
-
-        "E" =>  [
-            "name" => "investment_amortizationMethod"                       // Winvestify standardized name  OK
-         ],
-        
-        "F" =>  [
-                "name" => "investment_loanOriginator"                           // Winvestify standardized name  OK
-             ],
-        "G" =>  [
+        [
+            "A" =>  [
                 [
-                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name   OK
+                    "type" => "investment_country",                                 // Winvestify standardized name  OK              
+                    "functionName" => "getCountry",
+                    ],
+                 ],
+            "B" => [
+                    "name" => "investment_loanId"                                   // Winvestify standardized name  OK
+                 ],
+            "D" =>  [
+                "name" => "investment_loanType"                                 // Winvestify standardized name   OK
+             ],
+
+            "E" =>  [
+                "name" => "investment_amortizationMethod"                       // Winvestify standardized name  OK
+             ],
+
+            "F" =>  [
+                    "name" => "investment_loanOriginator"                           // Winvestify standardized name  OK
+                 ],
+            "G" =>  [
+                    [
+                        "type" => "investment_fullLoanAmount",                      // Winvestify standardized name   OK
+                        "inputData" => [
+                                    "input2" => "",
+                                    "input3" => ".",
+                                    "input4" => 16
+                                    ],
+                        "functionName" => "getAmount",
+                    ]
+                 ],
+
+            /*        
+            "H" =>  [
+                [
+                    "type" => "investment_remainingPrincipal",                      // Winvestify standardized name [remainder of TOTAL loan?
                     "inputData" => [
-				"input2" => "",
+                                "input2" => "",
                                 "input3" => ".",
                                 "input4" => 16
                                 ],
                     "functionName" => "getAmount",
-                ]
+                ]           
              ],
-
-        /*        
-        "H" =>  [
-            [
-                "type" => "investment_remainingPrincipal",                      // Winvestify standardized name [remainder of TOTAL loan?
-                "inputData" => [
-                            "input2" => "",
-                            "input3" => ".",
-                            "input4" => 16
-                            ],
-                "functionName" => "getAmount",
-            ]           
-         ],
-*/
-        "J" =>  [
-                "name" => "investment_nominalInterestRate",                     // Winvestify standardized name   OK
-             ],  
-        "M" =>  [
-                "name" => "investment_originalState"                              // Winvestify standardized name  OK
-             ], 
-        "N" =>  [
-                "name" => "investment_buyBackGuarantee"                         // Winvestify standardized name  OK
-             ],
-        "R" =>  [
-            [
-                "type" => "investment_outstandingPrincipal",                    // Winvestify standardized name OK 
-                "inputData" => [
-                            "input2" => "",
-                            "input3" => ".",
-                            "input4" => 16
-                            ],
-                "functionName" => "getAmount",
-            ],
-            [
-                "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
-                "inputData" => [
-                            "input2" => "#current.investment_originalState",                            
-                            ],
-                "functionName" => "getDefaultValue",
-            ],
-        ],
-        "V" =>  [
-            [
-                "type" => "investment_currency",                            // Winvestify standardized name  OK
-                "functionName" => "getCurrency",
+    */
+            "J" =>  [
+                    "name" => "investment_nominalInterestRate",                     // Winvestify standardized name   OK
+                 ],  
+            "M" =>  [
+                    "name" => "investment_originalState"                              // Winvestify standardized name  OK
+                 ], 
+            "N" =>  [
+                    "name" => "investment_buyBackGuarantee"                         // Winvestify standardized name  OK
+                 ],
+            "R" =>  [
+                [
+                    "type" => "investment_outstandingPrincipal",                    // Winvestify standardized name OK 
+                    "inputData" => [
+                                "input2" => "",
+                                "input3" => ".",
+                                "input4" => 16
+                                ],
+                    "functionName" => "getAmount",
                 ],
-            ]
+                [
+                    "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => "#current.investment_originalState",                            
+                                ],
+                    "functionName" => "getDefaultValue",
+                ],
+            ],
+            "V" =>  [
+                [
+                    "type" => "investment_currency",                            // Winvestify standardized name  OK
+                    "functionName" => "getCurrency",
+                    ],
+                ]
+        ]
     ];
-    
-      protected $callbacks = [
+      
+    protected $callbacks = [
         "investment" => [
-            "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
-            "investment_loanType" => "translateLoanType",
-            "investment_amortizationMethod" => "translateAmortizationMethod",  
-            "investment_statusOfLoan" => "translateOriginalLoanState"
+            "parserDataCallback" => [
+                "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+                "investment_loanType" => "translateLoanType",
+                "investment_amortizationMethod" => "translateAmortizationMethod",  
+                "investment_statusOfLoan" => "translateOriginalLoanState"
+            ]
         ],
         "expiredLoan" => [
-            "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
-            "investment_loanType" => "translateLoanType",
-            "investment_amortizationMethod" => "translateAmortizationMethod", 
-            "investment_statusOfLoan" => "translateOriginalLoanState",
-            
+            "parserDataCallback" => [
+                "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+                "investment_loanType" => "translateLoanType",
+                "investment_amortizationMethod" => "translateAmortizationMethod",  
+                "investment_statusOfLoan" => "translateOriginalLoanState"
+            ]
         ]
-    ];  
+    ];
     
  
     
-    protected $transactionConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.
-                                 );
+    protected $transactionConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.
+                                
+        ]
+    ];
  
-    protected $investmentConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
-                                 );
-    protected $amortizationConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+    protected $investmentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+       ]
+    ]; 
+    
+    protected $amortizationConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    ];
   
-    protected $expiredLoanConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
-                                 ); 
+    protected $expiredLoanConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    ]; 
     
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
