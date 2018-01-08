@@ -922,6 +922,8 @@ class mintos extends p2pCompany {
 
         switch ($this->idForSwitch) {
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . SHELL_ENDOFLINE;
