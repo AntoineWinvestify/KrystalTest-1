@@ -1671,6 +1671,8 @@ class zank extends p2pCompany {
     function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
                 break;

@@ -543,9 +543,10 @@ class twino extends p2pCompany {
      */
     function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
-
             /////////////LOGIN
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $credentials['name'] = $this->user;
                 $credentials['password'] = $this->password;
                 //$credentials['googleAnalyticClientId'] = '1778227581.1503479723';

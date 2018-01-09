@@ -919,9 +919,9 @@ class mintos extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null){
-        $this->loanIds = array_values($this->loanIds);
         switch ($this->idForSwitch) {
             case 0:
+                $this->loanTotalIds = $this->loanIds;
                 $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
@@ -1010,6 +1010,7 @@ class mintos extends p2pCompany {
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
+                        break;
                     }
                 }
 

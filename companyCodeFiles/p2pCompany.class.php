@@ -1402,7 +1402,7 @@ class p2pCompany {
      * @return string It is the path that will contain the files
      */
     public function getFolderPFPFile() {
-        $date = date("Ymd", strtotime($this->dateFinish-1));
+        $date = date("Ymd", strtotime($this->dateFinish));
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
@@ -1414,9 +1414,12 @@ class p2pCompany {
      * Function to create all the amortization table by loan Id
      */
     public function saveAmortizationTable() {
-        foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
+        foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
+            $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId .  "." . $this->typeFileAmortizationtable, $this->tempArray[$loanId]);
         }
+        /*foreach ($this->tempArray as $key => $tempArray) {
+            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
+        }*/
     }
     
     /**

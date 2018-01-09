@@ -1000,6 +1000,8 @@ class bondora extends p2pCompany {
     function collectAmortizationTablesParallel($str = null) { //{"loanIds":{"702":["7e89377c-15fc-4de3-8b65-a55500ef6a1b","6b3649c5-9a6b-4cee-ac05-a55500ef480a"]}} example in queue_info
         switch ($this->idForSwitch) {
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
