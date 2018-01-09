@@ -1011,6 +1011,7 @@ class mintos extends p2pCompany {
                         $AmortizationTableString =  $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
+                        break;
                     }
                 }
 
