@@ -536,7 +536,7 @@ class UserDataShell extends AppShell {
     
 // ONLY FOR TESTING
      public function calculateTechnicalState(&$transactionData, &$resultData) {
-         
+
         $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
@@ -544,25 +544,27 @@ class UserDataShell extends AppShell {
 
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
-        }
+        }       
  
+// the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
             return "FINISHED";             
-        }       
+        }    
         
         if ($tempOutstandingPrincipal == 0) {
-            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
-            return "FINISHED";              
+            if ($resultData['investment']['investment_technicalStateTemp'] <> 'FINISHED') {
+                $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
+                return "FINISHED";              
+            }
         }        
         
         if ($resultData['investment']['investment_new'] == YES) {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
             return "INITIAL";               
         }       
-// the following is perhaps not needed
-        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
-            return "FINISHED";             
-        }
+
         return "ACTIVE";                    
     }
     

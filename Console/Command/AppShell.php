@@ -52,7 +52,6 @@ class AppShell extends Shell {
     }
 
 
-
      /**
      * checks to see if jobs are waiting in the queue for processing
      *
@@ -72,8 +71,6 @@ class AppShell extends Shell {
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
         return $jobList;
     }
-
-
 
 
 
@@ -106,12 +103,12 @@ class AppShell extends Shell {
 
     
     /**
-     * checks if an element with value $element exists in a two dimensional array
+     * Checks if an element with value $element exists in a two dimensional array
      * @param type $element
      * @param type $array
      *
      * @return array with data
-     *          or false of $elements does not exist in two dimensional array
+     *          or false of $element does not exist in two dimensional array
      */
     public function in_multiarray($element, $array) {
         while (current($array) !== false) {
@@ -128,23 +125,18 @@ class AppShell extends Shell {
     }    
     
     
-    
-    
-    
-    
-    
 
     /**
      * Read the names in a list of files (FDQN) that fulfill the $typeOfFiles bitmap
      *
-     * @param array $fileNameList   list of filesnames to be analyzed
+     * @param array $fileNameList   list of filenames to be analyzed
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
      *                              INVESTMENT_FILE, TRANSACTION_TABLE_FILE, CONTROL_FILE, ....
      * @return array  $approveFileNameList    list of FQDN filenames
      */
     function readFilteredFiles($fileNameList,  $typeOfFiles) {
         $approvedFileNameList = array();
-// start temp
+
         $knownFileTypesNames = array (
             WIN_FLOW_TRANSACTION_FILE => "transaction",
             WIN_FLOW_EXTENDED_TRANSACTION_FILE => "extendentransaction",
@@ -195,7 +187,7 @@ class AppShell extends Shell {
         return $extension;
     }
     
-    /**
+    /** CAN BE DELETED, IT IS NOT USED AND 
      * Function to get the loanId from the file name of one amortization table
      * @param string $filePath It is the path to the file
      * @return string It is the loanId
@@ -211,7 +203,7 @@ class AppShell extends Shell {
         return $loanId;
     }
         
-    /** CAN BE DELETED, IT IS NOT USED AND 
+    /** 
      * Function to get the loanId from the file name of an amortization table
      * @param   string  $filePath   It is the full path to the file
      * @return  array               [0] contains investmentslice_id

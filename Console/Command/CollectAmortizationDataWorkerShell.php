@@ -27,7 +27,7 @@ App::import('Shell','GearmanWorker');
  * Class CollectAmortizationDataWorker to collect all the amortization tables
  *
  */
-class CalculationConsolidationWorkerShell extends GearmanWorkerShell {
+class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
     
     public $uses = array('Marketplace', 'Company', 'Urlsequence');
     
@@ -82,7 +82,7 @@ class CalculationConsolidationWorkerShell extends GearmanWorkerShell {
             $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
-            $this->newComp[$i]->setDateFinal($data["date"]);
+            $this->newComp[$i]->setDateFinish($data["date"]);
             $this->newComp[$i]->generateCookiesFile();
             $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
             $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
@@ -125,6 +125,7 @@ class CalculationConsolidationWorkerShell extends GearmanWorkerShell {
        
        $data['statusCollect'] = $statusCollect;
        $data['errors'] = $errors;
+       print_r($data);
        return json_encode($data);
     }
 

@@ -919,9 +919,10 @@ class mintos extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null){
-
+        $this->loanIds = array_values($this->loanIds);
         switch ($this->idForSwitch) {
             case 0:
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . SHELL_ENDOFLINE;
@@ -1208,12 +1209,15 @@ class mintos extends p2pCompany {
             case "60+ Days Late": 
                 $result = WIN_LOANSTATUS_ACTIVE;
                 break; 
+            case "Default": 
+                $result = WIN_LOANSTATUS_ACTIVE;
+                break;            
             case "Finished": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break; 
             case "Finished prematurely": 
                 $result = WIN_LOANSTATUS_FINISHED;
-                break;             
+                break;   
         }   
         return $result; 
     }       

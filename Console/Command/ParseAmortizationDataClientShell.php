@@ -73,7 +73,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-                    echo "Subdiiiiiiir";
+
                     print_r($subDir);
                     $i = 0;
                     foreach ($subDir[0] as $subDirectory) {
@@ -137,7 +137,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
     }
     
     /**
-     * Function to save all the amortization tables on DB per user and per linkaccount
+     * Function to save all the amortization tables in DB per user and per linked account
      */
     public function saveAmortizationtablesToDB() {
 
