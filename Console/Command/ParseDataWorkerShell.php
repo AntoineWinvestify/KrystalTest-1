@@ -603,6 +603,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempArrayFiles;
     }
     
+    /**
+     * Clean the array of unnecessary values using array_walk_recursive_delete
+     * @param array $tempArray the array to walk recursively
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with functions from which we will clean the array
+     * @return null if config not exist
+     */
     public function cleanTempArray(&$tempArray, $companyHandle, $config) {
         if (empty($config)) {
             return;
@@ -640,6 +647,14 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $array;
     }
    
+    /**
+     * Function to find a value in an array
+     * @param string/integer $value It is the actual value
+     * @param string/integer $key It is the key of the array 
+     * @param array $valuesToDelete They are the values to find and delete
+     * @param mixed $userdata additional data passed to the callback
+     * @return boolean
+     */
     function findValueInArray($value, $key, $valuesToDelete, $userdata = null) {
         $result = false;
         if (is_array($value)) {
@@ -658,6 +673,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $result;
     }
     
+    /**
+     * Function to verify if two data are equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
     public function verifyEqual($value, $valueToVerify) {
         $result = false;
         if ($value === $valueToVerify) {
@@ -666,6 +687,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $result;
     }
     
+    /**
+     * Function to verify if two data are not equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
     public function verifyNotEqual($value, $valueToVerify) {
         $result = false;
         if ($value !== $valueToVerify) {
