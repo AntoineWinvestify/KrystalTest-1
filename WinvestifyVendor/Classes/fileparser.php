@@ -616,6 +616,12 @@ protected $countries = [
                 }
                 $tempArray = $this->analyzeFileExcel($file, $configuration);
                 break;
+            case "xls":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing xls file";
+                }
+                $tempArray = $this->analyzeFileExcel($file, $configuration);
+                break;
             case "csv":
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . "analyzing csv file";
