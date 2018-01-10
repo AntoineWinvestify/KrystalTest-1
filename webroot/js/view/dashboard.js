@@ -86,10 +86,10 @@ function singlePfpJS() {
     $(document).on("click", "#activeTab", function (event) {
         event.preventDefault();
         id = $(this).attr("value");
-        var params = {
-            id: id
-        };
-        var data = jQuery.param(params);
+
+
+
+        var data = null;
         link = $(this).attr("href");
         ga_allInvestments();
         getServerData(link, data, successLoansAjax, errorLoansAjax);
@@ -98,10 +98,7 @@ function singlePfpJS() {
     $(document).on("click", "#defaultedTab", function (event) {
         event.preventDefault();
         id = $(this).attr("value");
-        var params = {
-            id: id
-        };
-        var data = jQuery.param(params);
+        var data = null;
         link = $(this).attr("href");
         getServerData(link, data, successLoansAjax, errorLoansAjax);
     });
