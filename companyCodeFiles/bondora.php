@@ -607,10 +607,12 @@ class bondora extends p2pCompany {
                     if (!$this->verifyFileIsCorrect()) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                     }
-                    /*$headerError = $this->compareHeader();
+                    $unoconv = Unoconv\Unoconv::create();
+                    $unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
+                    $headerError = $this->compareHeader();
                     if($headerError){
                         $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
-                    }*/
+                    }
                 }
                 $this->idForSwitch++;
                 if (empty($this->tempUrl['tokenUrl'])) {
@@ -721,10 +723,12 @@ class bondora extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                /*$headerError = $this->compareHeader();
+                $unoconv = Unoconv\Unoconv::create();
+                $unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
+                $headerError = $this->compareHeader();
                 if($headerError){
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
-                }*/
+                }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
