@@ -225,6 +225,151 @@ class bondora extends p2pCompany {
         "NewReports[8].DateFilterSelected" => 'false',
     );
 
+    protected $investmentHeader = array(
+        'A' => 'LoanId',
+        'B' => 'PartyId',
+        'C' => 'note_id',
+        'D' => 'AuctionId',
+        'E' => 'AppliedAmount',
+        'F' => 'Amount',
+        'G' => 'BiddingStartedOn',
+        'H' => 'ListedOnUTC',
+        'I' => 'BidPrincipal',
+        'J' => 'BoughtFromResale_Date',
+        'K' => 'PurchasePrice',
+        'L' => 'SoldInResale_Date',
+        'M' => 'SoldInResale_Price',
+        'N' => 'SoldInResale_Principal',
+        'O' => 'OnSaleSince',
+        'P' => 'LoanNumber',
+        'Q' => 'AuctionNumber',
+        'R' => 'AuctionBidNumber',
+        'S' => 'AuctionName',
+        'T' => 'UserName',
+        'U' => 'NewCreditCustomer',
+        'V' => 'LoanApplicationStartedDate',
+        'W' => 'ContractEndDate',
+        'X' => 'FirstPaymentDate',
+        'Y' => 'MaturityDate_Original',
+        'Z' => 'MaturityDate_Last',
+        'AA' => 'ApplicationSignedHour',
+        'AB' => 'ApplicationSignedWeekday',
+        'AC' => 'Interest',
+        'AD' => 'LoanDuration',
+        'AE' => 'VerificationType',
+        'AF' => 'LanguageCode',
+        'AG' => 'Age',
+        'AH' => 'DateOfBirth',
+        'AI' => 'Gender',
+        'AJ' => 'Country',
+        'AK' => 'County',
+        'AL' => 'City',
+        'AM' => 'CreditScoreEsMicroL',
+        'AN' => 'CreditScoreEsEquifaxRisk',
+        'AO' => 'CreditScoreFiAsiakasTietoRiskGrade',
+        'AP' => 'CreditScoreEeMini',
+        'AQ' => 'UseOfLoan',
+        'AR' => 'Education',
+        'AS' => 'EmploymentDurationCurrentEmployer',
+        'AT' => 'EmploymentPosition',
+        'AU' => 'EmploymentStatus',
+        'AV' => 'MaritalStatus',
+        'AW' => 'NrOfDependants',
+        'AX' => 'WorkExperience',
+        'AY' => 'OccupationArea',
+        'AZ' => 'HomeOwnershipType',
+        'BA' => 'IncomeFromPrincipalEmployer',
+        'BB' => 'IncomeFromPension',
+        'BC' => 'IncomeFromFamilyAllowance',
+        'BD' => 'IncomeFromSocialWelfare',
+        'BE' => 'IncomeFromLeavePay',
+        'BF' => 'IncomeFromChildSupport',
+        'BG' => 'IncomeOther',
+        'BH' => 'IncomeTotal',
+        'BI' => 'ExistingLiabilities',
+        'BJ' => 'RefinanceLiabilities',
+        'BK' => 'LiabilitiesTotal',
+        'BL' => 'DebtToIncome',
+        'BM' => 'MonthlyPayment',
+        'BN' => 'MonthlyPaymentDay',
+        'BO' => 'FreeCash',
+        'BP' => 'CurrentDebtDaysPrimary',
+        'BQ' => 'CurrentDebtDaysSecondary',
+        'BR' => 'DebtOccuredOn',
+        'BS' => 'DebtOccuredOnForSecondary',
+        'BT' => 'DefaultDate',
+        'BU' => 'LoanStatusActiveFrom',
+        'BV' => 'Status',
+        'BW' => 'ActiveLateCategory',
+        'BX' => 'WorseLateCategory',
+        'BY' => 'ActiveLateLastPaymentCategory',
+        'BZ' => 'ActiveScheduleFirstPaymentReached',
+        'CA' => 'LoanCancelled',
+        'CB' => 'Restructured',
+        'CC' => 'PrincipalRecovery',
+        'CD' => 'InterestRecovery',
+        'CE' => 'PlannedPrincipalPostDefault',
+        'CF' => 'PlannedInterestPostDefault',
+        'CG' => 'PlannedPrincipalTillDate',
+        'CH' => 'PlannedInterestTillDate',
+        'CI' => 'RecoveryStage',
+        'CJ' => 'StageActiveSince',
+        'CK' => 'ModelVersion',
+        'CL' => 'ExpectedLoss',
+        'CM' => 'ExpectedReturn',
+        'CN' => 'LossGivenDefault',
+        'CO' => 'ProbabilityOfDefault',
+        'CP' => 'Rating',
+        'CQ' => 'EL_V0',
+        'CR' => 'EL_V1',
+        'CS' => 'EL_V2',
+        'CT' => 'Rating_V0',
+        'CU' => 'Rating_V1',
+        'CV' => 'Rating_V2',
+        'CW' => 'PrincipalOverdueBySchedule',
+        'CX' => 'PrincipalPaymentsMade',
+        'CY' => 'InterestAndPenaltyPaymentsMade',
+        'CZ' => 'PrincipalWriteOffs',
+        'DA' => 'InterestAndPenaltyWriteOffs',
+        'DB' => 'PrincipalDebtServicingCost',
+        'DC' => 'InterestAndPenaltyDebtServicingCost',
+        'DD' => 'PrincipalBalance',
+        'DE' => 'InterestAndPenaltyBalance',
+        'DF' => 'InterestLateAmount',
+        'DG' => 'PenaltyLateAmount',
+        'DH' => 'NoteLoanTransfersMainAmount',
+        'DI' => 'NoteLoanTransfersInterestAmount',
+        'DJ' => 'NoteLoanLateChargesPaid',
+        'DK' => 'NoOfPreviousLoans',
+        'DL' => 'AmountOfPreviousLoans',
+        'DM' => 'PreviousRepayments',
+        'DN' => 'PreviousEarlyRepayments',
+        'DO' => 'PreviousEarlyRepaymentsCount',
+        'DP' => 'GracePeriodStart',
+        'DQ' => 'GracePeriodEnd',
+        'DR' => 'ReScheduledOn',
+        'DS' => 'NextPaymentDate',
+        'DT' => 'NextPaymentNr',
+        'DU' => 'NrOfScheduledPayments',
+        'DV' => 'NextPaymentSum',
+        'DW' => 'LastPaymentOn',
+        'DX' => 'LoanDate',
+        'DY' => 'EAD1',
+        'DZ' => 'EAD2'
+    );
+    
+    protected $transactionHeaders = array(
+        'A' => 'TransferDate',
+        'B' => 'Currency',
+        'C' => 'Amount',
+        'D' => 'Number',
+        'E' => 'Description',
+        'F' => 'LoanNumber',
+        'G' => 'Counterparty',
+        'H' => 'BalanceAfterPayment'
+    );
+    
+    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -232,7 +377,7 @@ class bondora extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-
+        $this->unoconv = Unoconv\Unoconv::create();
         
         
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
@@ -560,7 +705,7 @@ class bondora extends p2pCompany {
                 break;
 
             case 3:
-                if ($this->investmentNumber === 0) {  //Only get globlal variables the first time
+                if ($this->investmentNumber === 0 && $this->timerInvestment === 0) {  //Only get globlal variables the first time
                     $dom = new DOMDocument;  //Check if works
                     $dom->loadHTML($str);
                     $dom->preserveWhiteSpace = false;
@@ -603,12 +748,12 @@ class bondora extends p2pCompany {
                     foreach ($spans as $globalDataKey => $span) {
                         echo $globalDataKey . " IS " . $span->getAttribute('data-original-title');
                     }
-                } else {
+                } else if ( $this->investmentNumber >= 1){
                     if (!$this->verifyFileIsCorrect()) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                     }
-                    $unoconv = Unoconv\Unoconv::create();
-                    $unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
+                    
+                    $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
                     $headerError = $this->compareHeader();
                     if($headerError){
                         $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
@@ -681,7 +826,7 @@ class bondora extends p2pCompany {
                 }
 
                 if ($waitInvestment == true) { //Wait the report generation
-                    if ($this->timerInvestment > 6) {
+                    if ($this->timerInvestment > 12) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     $this->idForSwitch = 3;
@@ -713,7 +858,7 @@ class bondora extends p2pCompany {
                     $this->tempUrl['investmentHeaders'] = array_shift($this->urlSequence);
                 }
                 $headerJsonDecode = json_decode(mb_convert_encoding($this->tempUrl["investmentHeaders"], 'UTF-8'), true); //HEADERS FOR CURL
-                $this->headerComparation = array("A" => 'hola');//$this->investmetHeader; //HEADER OF THE FILE
+                $this->headerComparation = $this->investmentHeader;//$this->investmetHeader; //HEADER OF THE FILE
                 header('Content-type: application/xml');
                 $this->getPFPFileMulticurl($url, $this->tempUrl['investmentReferer'], false, $headerJsonDecode, $this->fileName); //Download the report.
                 break;
@@ -723,8 +868,9 @@ class bondora extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $unoconv = Unoconv\Unoconv::create();
-                $unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
+                
+               
+                $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
                 $headerError = $this->compareHeader();
                 if($headerError){
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
@@ -821,12 +967,18 @@ class bondora extends p2pCompany {
                     $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);
                     $this->tempUrl['transactionHeaders'] = array_shift($this->urlSequence);
                 }
+                $this->headerComparation = $this->transactionHeaders;//$this->investmetHeader; //HEADER OF THE FILE
                 $headerJsonDecode = json_decode(mb_convert_encoding($this->tempUrl["transactionHeaders"], 'UTF-8'), true);
                 $this->getPFPFileMulticurl($url, $this->tempUrl['transactionReferer'], false, $headerJsonDecode, $this->fileName);
                 break;
 
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
+                $headerError = $this->compareHeader();
+                if($headerError){
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 $this->idForSwitch++;

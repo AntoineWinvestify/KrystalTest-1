@@ -23,7 +23,8 @@
         "stil/curl-easy": "^1.2",
 		"nilportugues/sql-query-builder": "^1.5",
                 "usmanhalalit/pixie": "2.*@dev",
-		"phpcasperjs/phpcasperjs": "^1.3"
+		"phpcasperjs/phpcasperjs": "^1.3",
+		"php-unoconv/php-unoconv": "^0.3.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*",
