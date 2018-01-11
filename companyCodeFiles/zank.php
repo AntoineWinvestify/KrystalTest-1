@@ -479,7 +479,25 @@ class zank extends p2pCompany {
             ]
         ]
     ];
-
+    
+        protected $investmentHeader = array(   
+        'A' => 'Fecha',
+        'B' => 'Préstamo',
+        'C' => 'Rentabilidad',
+        'D' => 'Plazo',
+        'E' => 'Inversión',
+        'F' => 'Capital amortizado',
+        'G' => 'Intereses ordinarios',
+        'H' => 'Intereses demora',
+        'I' => 'Comision',
+        'J' => 'Estado');
+    
+    protected $transactionHeader = array(
+        'A' => 'Fecha',
+        'B' => 'Tipo',
+        'C' => 'Cantidad',
+        'D' => 'Destino',
+        'E' => 'Saldo');
 
     
     function __construct() {
@@ -1534,7 +1552,7 @@ class zank extends p2pCompany {
                 break;
             case 2:
                 //This is an error because we don't verify if we have entered
-                if ($str == 200 or $str == 103) {
+                if ($str == 200 or $str == 302) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
                     $this->doCompanyLoginMultiCurl($this->credentials);
@@ -1617,13 +1635,21 @@ class zank extends p2pCompany {
                 }
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
+                echo "investment url: " . $url;
                 $this->idForSwitch++;
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
@@ -1635,13 +1661,20 @@ class zank extends p2pCompany {
 
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
-                $$this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, $$this->fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1653,12 +1686,16 @@ class zank extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $divs = $dom->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 /*foreach($divs as $key => $div){
                     if($div->getAttribute('class') == 'panel-body'){
                         echo " " . $key . "=>" . $div->nodeValue . " ";
                     }
                 }*/
-                $this->tempArray['global']['activeInvestment'] = $ps[28]->nodeValue;
+                $this->tempArray['global']['activeInvestment'] = $divs[28]->nodeValue;
                 return $this->tempArray; 
         }
     }
@@ -1717,7 +1754,7 @@ class zank extends p2pCompany {
                 break;
             case 2:
                 //This is an error because we don't verify if we have entered
-                if ($str == 200 or $str == 103) {
+                if ($str == 200 or $str == 302) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
                     $this->doCompanyLoginMultiCurl($this->credentials);
@@ -1774,7 +1811,6 @@ class zank extends p2pCompany {
 
                 $index = 0;
                 $ps = $dom->getElementsByTagName('p');
-
                 $this->verifyNodeHasElements($ps);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
@@ -1801,6 +1837,10 @@ class zank extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
                     if ($table->getAttribute('id') == 'parte') {
                         $AmortizationTable = new DOMDocument();

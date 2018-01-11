@@ -588,9 +588,17 @@ class mintos extends p2pCompany {
         ]
     ]; 
     
-
+    
+     protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
+            'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 'I' => 'Next Payment',
+            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Term', 'N' => 'Payments Received', 'O' => 'Status', 
+            'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Purchase' , 'S' => 'Received Payments', 
+            'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
+            );
      
-
+    protected $transactionHeader = array('A' => 'Transaction ID', 'B' => 'Date', 'C' => 'Details', 'D' => 'Turnover',
+            'E' => 'Balance', 'F' => 'Currency'
+            );
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -598,6 +606,7 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+       
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
@@ -667,6 +676,10 @@ class mintos extends p2pCompany {
         $confirm = false;
 
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $a) {
             // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
             if (trim($a->nodeValue) == 'Overview') {
@@ -739,6 +752,10 @@ class mintos extends p2pCompany {
                     echo __FUNCTION__ . " " . __LINE__ . ": Check login \n";
                 }
                 $as = $dom->getElementsByTagName('a');
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $a) {
                     //echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
@@ -794,13 +811,19 @@ class mintos extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 
+                /*
+                $this->headerComparation = $this->investmentHeader;
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                }*/
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
                     //Url preparation for download multiple tramsaction files
                     $this->numberOfFiles = 0;
-                    $this->dateInitPeriod = 0;
-                    $this->dateFinishPeriod = 0;
                     $this->tempUrl['downloadTransacitonUrl'] = array_shift($this->urlSequence);
                     $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);         
                     $this->tempUrl['transactionsCredentials'] = array_shift($this->urlSequence);
@@ -827,8 +850,9 @@ class mintos extends p2pCompany {
                 $headers = json_decode($headers, true);
                 echo "headers " . $headers;
                 
-                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                $this->numFileTransaction++;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                $this->numPartFileTransaction++;
+                $this->headerComparation = $this->transactionHeader;
                 if(!$continue){
                     if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
                         $this->idForSwitch++;
@@ -847,7 +871,6 @@ class mintos extends p2pCompany {
                 $this->getPFPFileMulticurl($this->tempUrl['downloadTransacitonUrl'], $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
-                exit;
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
@@ -885,11 +908,16 @@ class mintos extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 
-                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes'); 
+                $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
+
                 foreach($boxes as $keyBox => $box){
                     //echo $box->nodeValue;
                     //echo "BOX NUMBER: =>" . $keyBox;
                     $tds = $box->getElementsByTagName('td');
+                    $this->verifyNodeHasElements($tds);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     foreach($tds as $key => $td){
                         //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
@@ -899,6 +927,10 @@ class mintos extends p2pCompany {
 
                     }
                     $divs = $box->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($divs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
                     /*foreach($divs as $key => $div){
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
@@ -906,7 +938,15 @@ class mintos extends p2pCompany {
 
                 }
                 $lis = $boxes[0]->getElementsByTagName('li');
+                $this->verifyNodeHasElements($lis);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $divs = $lis[2]->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $tempArray["global"]["activeInvestment"] = $divs[2]->nodeValue;
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
@@ -935,6 +975,7 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+
                 $csrf = $input[0]->getAttribute('value'); //this is the csrf token
 
                 $this->credentials['_username'] = $this->user;
@@ -962,6 +1003,10 @@ class mintos extends p2pCompany {
                 $resultLogin = false;
                 echo 'Check login' . SHELL_ENDOFLINE;
                 $as = $dom->getElementsByTagName('a');
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $a) {
                     echo $a->nodeValue . SHELL_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Overview') {
@@ -1002,6 +1047,10 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach($tables as $table) {
                     if ($table->getAttribute('class') == 'loan-table') {
                         $AmortizationTable = new DOMDocument();
@@ -1042,6 +1091,10 @@ class mintos extends p2pCompany {
         $dom->loadHTML($str); //Load page with the url
         $dom->preserveWhiteSpace = false;
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $a) { //get logout url
             if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
                 $logoutUrl = $a->getAttribute('href');
@@ -1060,6 +1113,10 @@ class mintos extends p2pCompany {
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
         $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
         foreach ($as as $a) {
             echo $a->getAttribute('class') . HTML_ENDOFLINE;
             if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {

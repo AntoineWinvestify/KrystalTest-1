@@ -30,6 +30,8 @@ App::import('Shell','GearmanWorker');
  */
 class PreprocessWorkerShell extends GearmanWorkerShell {
     
+     var $uses = array("Company", "Urlsequence");
+    
     /**
      * Function main that init when start the shell class
      */
