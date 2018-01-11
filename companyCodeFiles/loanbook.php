@@ -292,7 +292,7 @@ class loanbook extends p2pCompany {
             /* foreach ($subdivs as $keyDiv => $div) {
               echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
               } */
-            $tempArray['marketplace_rating'] = trim($subdivs[0]->nodeValue);
+            $tempArray['marketplace_rating'] = preg_replace('/\s*/m', '', $subdivs[0]->nodeValue);
             $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]->nodeValue);
             $tempArray['marketplace_timeLeft'] = trim(explode(" ", trim($this->$subdivs[8]->nodeValue))[0]);
             $progress = $this->getElementsByClass($dom, "progress-bar");
