@@ -1637,7 +1637,7 @@ class zank extends p2pCompany {
                 echo $url;
                 $$this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, $$this->fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
