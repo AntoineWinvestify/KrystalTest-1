@@ -32,17 +32,20 @@ function overviewDataJS() {
         ga_company(id, name);
         var data = jQuery.param(params);
         link = $(this).attr("href");
+        $(".togetoverlay_overview").addClass("togetoverlay");
         getServerData(link, data, successOverviewAjax, errorOverviewAjax);
     });
 
     function successOverviewAjax(result) {
         // alert("ok " + result);
+        $(".togetoverlay_overview").removeClass("togetoverlay");
         $(".dashboardGlobalOverview").fadeOut();
         $(".ajaxResponse").html(result);
 
     }
 
     function errorOverviewAjax(result) {
+        $(".togetoverlay_overview").removeClass("togetoverlay");
         //alert("not ok " + result);
     }
 }
@@ -97,6 +100,7 @@ function singlePfpJS() {
 
     $(document).on("click", "#defaultedTab", function (event) {
         event.preventDefault();
+        $(".togetoverlay_loans").addClass("togetoverlay");
         id = $(this).attr("value");
         var params = {
             id: id
@@ -110,10 +114,12 @@ function singlePfpJS() {
 
     function successLoansAjax(result) {
         // alert("ok " + result);
+        $(".togetoverlay_loans").removeClass("togetoverlay");
         $(".loans-table").html(result);
     }
 
     function errorLoansAjax(result) {
+        $(".togetoverlay_loans").removeClass("togetoverlay");
         //alert("not ok " + result);
     }
 
