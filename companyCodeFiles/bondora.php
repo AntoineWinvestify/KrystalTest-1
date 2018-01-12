@@ -557,7 +557,7 @@ class bondora extends p2pCompany {
                     $inputsValue[$input->getAttribute('name')] = $input->getAttribute('value');
                 }
 
-                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
@@ -602,7 +602,7 @@ class bondora extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
-                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
@@ -782,7 +782,7 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
-                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
@@ -895,7 +895,7 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
-                $continue = $this->downloadTimePeriod("20171109"/* $this->dateInit */, $this->period);
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
                 if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';

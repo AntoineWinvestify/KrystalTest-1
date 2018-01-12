@@ -162,23 +162,23 @@ var $validate = array(
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 90):
                     $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">90"] = round(($value[">90"] / $outstanding) * 100, 2);
+                    $range[">90"] = round(($value[">90"] / $outstanding) * 100, SHOW_DECIMAL);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 60):
                     $value["61-90"] = $value["61-90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["61-90"] = round(($value["61-90"] / $outstanding) * 100, 2);
+                    $range["61-90"] = round(($value["61-90"] / $outstanding) * 100, SHOW_DECIMAL);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 30):
                     $value["31-60"] = $value["31-60"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["31-60"] = round(($value["31-60"] / $outstanding) * 100, 2);
+                    $range["31-60"] = round(($value["31-60"] / $outstanding) * 100, SHOW_DECIMAL);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 7):
                     $value["8-30"] = $value["8-30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["8-30"] = round(($value["8-30"] / $outstanding) * 100, 2);
+                    $range["8-30"] = round(($value["8-30"] / $outstanding) * 100, SHOW_DECIMAL);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 0):
                     $value["1-7"] = $value["1-7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["1-7"] = round(($value["1-7"] / $outstanding) * 100, 2);
+                    $range["1-7"] = round(($value["1-7"] / $outstanding) * 100, SHOW_DECIMAL);
                     break;
             }
         }

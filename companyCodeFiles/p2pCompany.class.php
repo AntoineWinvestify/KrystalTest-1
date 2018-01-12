@@ -172,7 +172,7 @@ class p2pCompany {
                                         );
     
     //Number of days for each company download. Only some pfp uses it.
-    protected $period = 670;
+    protected $period = 365;
     /**
      *
      * Prepare all the default data of the class and its subclasses
