@@ -56,7 +56,7 @@ class Dashboard2sController extends AppController {
     /**
      * [AJAX call]
      * 	Read the data of all active investments that belong to a linked account
-     * @throws FatalErrorException Error when you access winouth ajax
+     * @throws FatalErrorException Error when you access without ajax
      */
     function getDashboard2SinglePfpData() {
 
@@ -147,7 +147,7 @@ class Dashboard2sController extends AppController {
     /**
      * [AJAX call]
      * Get active loans of a linked account
-     * @throws FatalErrorException Error when you access winouth ajax
+     * @throws FatalErrorException Error when you access without ajax
      */
     function getActiveLoans() {
         if (!$this->request->is('ajax')) {

@@ -117,6 +117,7 @@ class GearmanClientShell extends AppShell {
      *                  $data["tempArray"] The information to save on database by linkaccount id
      */
     public function verifyCompleteTask (GearmanTask $task) {
+        echo "Received data from Worker \n";
         $data = explode(".-;", $task->unique());
         if (empty($this->userReference[$data[0]])) {
             $this->userReference[$data[0]] = $data[2];
@@ -223,8 +224,7 @@ class GearmanClientShell extends AppShell {
     public function verifyCompanyFolderExist($userReference, $linkaccountId, $fileName = null) {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $date = date("Ymd", strtotime($this->date-1));
-        $path = $userReference . DS . $date . DS . $linkaccountId;
+        $path = $userReference . DS . $this->date . DS . $linkaccountId;
         print_r($path);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);

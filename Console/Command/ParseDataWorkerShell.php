@@ -70,7 +70,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
 
         $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseDataWorker starting to listen to data from its Client\n";
         
         while($this->GearmanWorker->work());
 
@@ -107,6 +107,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
      
     public function parseFileFlow($job) {
+ $timeStart = time();       
         //for debugging error purpose
         $this->job = $job;
         if (Configure::read('debug')) {
@@ -162,7 +163,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
                         } 
                         $parserConfigFile = $companyHandle->getParserConfigExpiredLoanFile(); 
-                                $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
+                        $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
                 
@@ -265,28 +266,20 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
 //print_r($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']);
- //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']);
+ //     print_r($data['tempArray'][$linkedAccountKey]['parsingResultTransactions']);
  //       print_r($data['tempArray'][$linkedAccountKey]['activeInvestments']);
  //echo "new loans = ";
  //       print_r($data['tempArray'][$linkedAccountKey]['newLoans']);
-     //   print_r($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'][])
+       
         echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
- /*$i = 0;
- foreach  ($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments'] as $key => $dataXX){
-     echo $key . "@@";
-     $i++;
-     if ($i == 150) break;
- }
- $i = 0;
- foreach ($data['tempArray'][$linkedAccountKey]['parsingResultInvestments'] as $key => $dataXX){
-      $i++;
-     if ($i == 150) break;
-     echo $key . "@@";
- } */
+
         echo "The size of data to be sent to the Client = " . strlen(json_encode($data)) . " Bytes\n";
- echo "Done\n";
+echo "Done\n";
+$timeStop = time();
+echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
+
         return json_encode($data);
     }       
         
@@ -603,6 +596,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $tempArrayFiles;
     }
     
+    /**
+     * Clean the array of unnecessary values using array_walk_recursive_delete
+     * @param array $tempArray the array to walk recursively
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with functions from which we will clean the array
+     * @return null if config not exist
+     */
     public function cleanTempArray(&$tempArray, $companyHandle, $config) {
         if (empty($config)) {
             return;
@@ -640,6 +640,14 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $array;
     }
    
+    /**
+     * Function to find a value in an array
+     * @param string/integer $value It is the actual value
+     * @param string/integer $key It is the key of the array 
+     * @param array $valuesToDelete They are the values to find and delete
+     * @param mixed $userdata additional data passed to the callback
+     * @return boolean
+     */
     function findValueInArray($value, $key, $valuesToDelete, $userdata = null) {
         $result = false;
         if (is_array($value)) {
@@ -658,6 +666,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $result;
     }
     
+    /**
+     * Function to verify if two data are equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
     public function verifyEqual($value, $valueToVerify) {
         $result = false;
         if ($value === $valueToVerify) {
@@ -666,6 +680,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         return $result;
     }
     
+    /**
+     * Function to verify if two data are not equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
     public function verifyNotEqual($value, $valueToVerify) {
         $result = false;
         if ($value !== $valueToVerify) {

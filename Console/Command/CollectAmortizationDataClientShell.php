@@ -45,7 +45,6 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
         $companyTypes = $this->Company->find('list', array(
             'fields' => array('Company.company_typeAccessAmortization')
         ));
-        $this->date = date("Ymd");
         $inActivityCounter++;  
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');

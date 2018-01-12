@@ -81,7 +81,7 @@ echo $companyInvestmentDetails[0];
         $(".logo").hover(function () {
             id = $(this).attr("id");
             $("#showBtn").toggle();
-        });
+        });*/
 
         /*$(document).on("click", ".chartIcon", function () {
          id = $(this).attr("id");
@@ -148,49 +148,6 @@ echo $companyInvestmentDetails[0];
          }
          });*/
 </script>
-<style>
-    td {
-        text-align: center;
-    }
-    #box1Table td, #box2Table td, #box3Table td {
-        font-size: 12px;
-        padding: 5px 0px !important;
-    }
-    th {
-        text-align: center;
-        font-weight: bold;
-        padding-bottom: 4px !important;
-    }
-    td.right { 
-        text-align: right; 
-    }
-    td.left {
-        text-align: left;
-    }
-    .card-footer {
-        border-top: 1px solid #00e64d !important;
-    }
-    .headerBox {
-        font-size: large;
-    }
-    hr {
-        margin: 8px !important;
-        border-color: white !important;
-    }
-    .platformLogo {
-        max-width: 150px !important;
-    }
-    .ion-ios-information-outline {
-        color: lightslategray;
-    }
-    td.logo:hover {
-        background-color: rgba(0,0,0,0.3);
-    }
-    #showBtn {
-        position: absolute;
-        margin-left: 80px;
-    }
-</style>
 <div class="dashboardOverview">
     <div class="row" id="overview">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -220,7 +177,12 @@ echo $companyInvestmentDetails[0];
                         <div class="tab-pane active" id="<?php echo $companyInvestmentDetails[1]['name'] ?>Tab">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-2 col-md-offset-5 col-lg-2 col-lg-offset-5">
-                                    <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/>
+                                    <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/> <i class="ion ion-ios-information-outline tooltipPFP"></i>
+                                </div>
+                            </div>
+                            <div class="row" style="display:none;" id="tooltipPFP">
+                                <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+                                    <?php echo $tooltipSinglePfpData[$companyInvestmentDetails[1]['name']] ?>
                                 </div>
                             </div>
                             <div class="row firstParagraph">
@@ -381,7 +343,11 @@ echo $companyInvestmentDetails[0];
                         </div>
                     </div>
                 </div>
-                <div class="card-content">
+                <div class="card-content togetoverlay">
+                    <div class="overlay">
+                        <div class="fa fa-spin fa-spinner" style="color:green">	
+                        </div>
+                    </div>
                     <div class="loans-table">
                         <div id="defaultedTab">
                             <div class="row">

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -17,8 +16,14 @@
  *
  * @author 
  * @version 0.2
- * @date
+ * @date 2017-12-22
  * @package
+ * 
+ * 
+ * 
+ * Pending:
+ * methods to read the next payment date, next payment amount and numberOfPaymentDelay
+ * 
  */
 class UserDataShell extends AppShell {
 
@@ -389,7 +394,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 34
      */
-
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -532,7 +536,7 @@ class UserDataShell extends AppShell {
     
 // ONLY FOR TESTING
      public function calculateTechnicalState(&$transactionData, &$resultData) {
-         
+
         $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
@@ -540,21 +544,28 @@ class UserDataShell extends AppShell {
 
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
-        }
+        }       
+ 
+// the following is perhaps not needed
+        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            return "FINISHED";             
+        }    
+        
         if ($tempOutstandingPrincipal == 0) {
-            return "FINISHED";              // represents a decrement
+            if ($resultData['investment']['investment_technicalStateTemp'] <> 'FINISHED') {
+                $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
+                return "FINISHED";              
+            }
         }        
         
         if ($resultData['investment']['investment_new'] == YES) {
-            return "INITIAL";               // represents an increment
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
+            return "INITIAL";               
         }       
 
-        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
-            return "FINISHED";              // return current value numberOfActiveInvestments
-        }
-        return "ACTIVE";                    // return current value numberOfActiveInvestments
-        
-//        $resultData['investment']['technicalState'] = "UNDEFINED";
+        return "ACTIVE";                    
     }
     
     
@@ -790,7 +801,22 @@ class UserDataShell extends AppShell {
     
     
     
-   
+    /* NOT FINISHED YET. Only taking into account the simple model of Mintos, 1 investment and 1 investmentSlice
+     *  
+     * If more slices, then the paidInstalments is the same for all slices
+     * 
+     *  Get the amount which corresponds to the "paidInstalments" concept. 
+     * 
+     *  It can distinguish on an per investmentSlice base, i.e. each investmentslice can have their own amortization table
+     *  with its own repayment amount.
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculatePaidInstalments(&$transactionData, &$resultData) {
+        $resultData['investment']['investment_paidInstalments']++;
+        return $resultData['investment']['investment_paidInstalments']; 
+    }          
     
 }
 

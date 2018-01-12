@@ -42,9 +42,9 @@ echo $defaultedInvestments[0];
                             <th><?php echo __('Investment Date') ?></th>
                             <th><?php echo __('My Investment') ?></th>
                             <th><?php echo __('Interest Rate') ?></th>
-                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The number of received payments divided by total numer of payments.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The number of received payments divided by the total number of payments') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
                             <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Unpaid loan amount.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Next dapyment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Next repayment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                         </tr>
                     </thead>
 

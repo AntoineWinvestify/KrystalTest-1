@@ -557,7 +557,7 @@ class mintos extends p2pCompany {
     
     protected $transactionConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
             'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.
                                 
@@ -566,25 +566,25 @@ class mintos extends p2pCompany {
  
     protected $investmentConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
-       ]
+            'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
+        ]
     ]; 
     
     protected $amortizationConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")    // used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
   
     protected $expiredLoanConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart'   => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
         ]
     ]; 
     
@@ -959,9 +959,10 @@ class mintos extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null){
-
         switch ($this->idForSwitch) {
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . SHELL_ENDOFLINE;
@@ -1038,7 +1039,7 @@ class mintos extends p2pCompany {
                 echo "the table url is: " . $url;
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                $this->getCompanyWebpageMultiCurl($url);                        // Read individual investment
                 break;
             case 5:
                 $dom = new DOMDocument;
@@ -1053,11 +1054,12 @@ class mintos extends p2pCompany {
                 foreach($tables as $table) {
                     if ($table->getAttribute('class') == 'loan-table') {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE);                       // Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
-                        $AmortizationTableString =  $AmortizationTable->saveHTML();
+                        $AmortizationTableString = $AmortizationTable->saveHTML();
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
+                        break;
                     }
                 }
 
@@ -1138,7 +1140,7 @@ class mintos extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData){
             case "MORTGAGE LOAN":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
@@ -1176,7 +1178,7 @@ class mintos extends p2pCompany {
      */
     public function translateAmortizationMethod($inputData) {
         $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData){
             case "FULL":
                 $type = WIN_AMORTIZATIONMETHOD_FULL;
@@ -1232,7 +1234,7 @@ class mintos extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         $data = WIN_BUYBACKGUARANTEE_NOT_PROVIDED;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "YES":
                 $data = WIN_BUYBACKGUARANTEE_PROVIDED;
@@ -1265,12 +1267,15 @@ class mintos extends p2pCompany {
             case "60+ Days Late": 
                 $result = WIN_LOANSTATUS_ACTIVE;
                 break; 
+            case "Default": 
+                $result = WIN_LOANSTATUS_ACTIVE;
+                break;            
             case "Finished": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break; 
             case "Finished prematurely": 
                 $result = WIN_LOANSTATUS_FINISHED;
-                break;             
+                break;   
         }   
         return $result; 
     }       
