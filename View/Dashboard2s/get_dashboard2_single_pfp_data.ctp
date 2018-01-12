@@ -81,7 +81,7 @@ echo $companyInvestmentDetails[0];
         $(".logo").hover(function () {
             id = $(this).attr("id");
             $("#showBtn").toggle();
-        });*/
+        });
 
         /*$(document).on("click", ".chartIcon", function () {
          id = $(this).attr("id");
