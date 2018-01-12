@@ -67,9 +67,7 @@ class bondora extends p2pCompany {
                 ]
             ],
             "D" => [
-                [
-                    "name" => "transaction_transactionId"                             // Winvestify standardized name
-                ]
+                "name" => "transaction_transactionId"                             // Winvestify standardized name
             ],
             "E" => [
                 [
@@ -89,9 +87,7 @@ class bondora extends p2pCompany {
                 ]
             ],
             "F" => [
-                [
-                    "name" => "investment_loanId"                             // Winvestify standardized name
-                ]
+                "name" => "investment_loanId"                             // Winvestify standardized name
             ],
         ]
     ];
