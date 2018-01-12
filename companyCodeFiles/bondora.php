@@ -91,6 +91,13 @@ class bondora extends p2pCompany {
             ],
         ]
     ];
+    
+    protected $valuesInvestment = [
+        [
+            
+        ]
+    ];
+    
     protected $valuesAmortizationTable = [// NOT FINISHED
         //See this value, it has two, the scheduledDate and the paymentDate
         0 => [
