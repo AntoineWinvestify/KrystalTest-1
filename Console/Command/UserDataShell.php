@@ -520,7 +520,7 @@ class UserDataShell extends AppShell {
             }
      //   }
 
-        if ($resultData['investment']['investment_new'] == YES) {
+        if ($resultData['investment']['investment_new'] == YES) {            //CHECK THE StatusOfLoan field instead
             $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] + 1;
             $resultData['measurements'][$transactionData['investment_loanId']]['increments'][] = 'NO';
             $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
@@ -559,7 +559,7 @@ class UserDataShell extends AppShell {
             }
         }        
         
-        if ($resultData['investment']['investment_new'] == YES) {
+        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
             return "INITIAL";               
@@ -817,6 +817,35 @@ class UserDataShell extends AppShell {
         $resultData['investment']['investment_paidInstalments']++;
         return $resultData['investment']['investment_paidInstalments']; 
     }          
+    
+    
+    /**
+     *  Calculates the effect of a disinvestment of an investment which never matured to a real loan, i.e. it 
+     *  started with state "reserved" and never reached status "active".
+     *   
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a float
+     */
+    public function calculateDisinvestment(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }   
+    
+    
+    /**
+     *  Calculates the new state of a disinvestment of an investment.  It never matured to a real loan, i.e. it 
+     *  started with state "reserved" and never reached status "active".
+     *   
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculateCancellationState(&$transactionData, &$resultData) {
+        return WIN_LOANSTATUS_CANCELLED;
+    }    
+  
+
+    
     
 }
 

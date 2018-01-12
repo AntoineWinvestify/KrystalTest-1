@@ -65,7 +65,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
 
-        $this->flowName = "GEARMAN_FLOW2";
+        $this->flowName = "GEARMAN_FLOW3C";
         $inActivityCounter = 0;
         $workerFunction = "parseFileFlow";
 
@@ -83,7 +83,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
         $this->variablesConfig = Configure::read('internalVariables');
         
         while (true) {
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_START_CALCULATION_CONSOLIDATION, $jobsInParallel);
             print_r($pendingJobs);
 
             if (Configure::read('debug')) {
@@ -117,15 +117,14 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                         $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
                         $i++;
                         echo "pfp = " . $pfp . "\n";
-                        $allFiles = $dirs->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
-
+                        $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
                             'userReference' => $job['Queue']['queue_userReference'],
                             'files' => $allFiles,
-                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING);
+                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
+                            'queueInfo' => json_decode($job['Queue']['queue_info'], true));
                     }
-                    debug($params);
                     print_r($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" .
@@ -137,9 +136,9 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                 }
                 
 
-               // before calling ths method you should download all amoritzation tables, and store them in the database (Flow 3A and 3B)
-               $this->consolidateData($params);
-               exit;
+                // before calling the method you should download all amortization tables and store them in the database (Flow 3A and 3B)
+                $this->consolidateData($params);
+                exit;
                 $this->consolidatePaymentDelay($params);
 exit;
 
@@ -171,22 +170,8 @@ exit;
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
                         
-                        $mapResult = $this->mapData($platformResult);
+                        $newFlowState = WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED;
 
-                        if ($mapResult == true) { 
-                            $newLoans = $platformResult['newLoans'];
-                            if (!empty($newLoans)) {
-                      //          $controlVariableFile =  $platformData['controlVariableFile'];
-                                file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
-                                $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
-                            } 
-                            else {
-                                $newFlowState = WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED;
-                            }
-                        }
-                        else {
-                            echo "ERROR ENCOUNTERED\n"; 
-                        }
                     }
 
                     $this->Queue->id = $queueIdKey;
@@ -217,7 +202,7 @@ exit;
 
 
     /** FLOW 3C
-     * This method writes the nextPaymentDate in the investment object. 
+     * This method writes the 'nextPaymentDateTech' in the investment object. 
      * This is done for ALL the loanIds/loanslices whose amortization tables
      * are stored on the directory currently under processing. These files are of
      * format amortizationtable_[investmentslice_id][loanId].html 
@@ -231,39 +216,58 @@ exit;
      *                  false
      *
      */
-    public function consolidateData(&$parms) {
-        
+    public function consolidateData(&$linkedAccounts) {
+ 
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
-                           
-        $file = new File($parms['885']['files'][0]);        //??
-        $jsonLoanIds = $file->read(true, 'r');
-        $loanIds = json_decode($jsonLoanIds, true); 
-//        print_r($loanIds);
 
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');       
-        foreach ($loanIds as $loanKey => $loanId) {
-            echo "\n$loanKey and $loanId ";
+        
 
-            $this->Investmentslice->Behaviors->load('Containable');
-            $this->Investmentslice->contain('Amortizationtable');              
-
-            $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanKey),
-                                                                       'recursive' => 1)
-                                                                    );
-
-            foreach ($result[0]['Amortizationtable'] as $table) {
-                if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE) {
-                    $scheduledDate = $table['amortizationtable_scheduledDate'];
-                    echo $scheduledDate . " ñ " . $result[0]['Investmentslice']['investment_id'] . "\n";
-
- //                   $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
- //                                                  'investment_nextPaymentDate' =>  $scheduledDate )
- //                                                   );
-                    break;
-                }
+        foreach ($linkedAccounts as $linkedAccountKey => $linkedAccount) {
+            print_r($linkedAccount['queueInfo']);
+            $tempNames = explode("_", $linkedAccount['files']);
+            foreach ($linkedAccount['files'] as $tempName) {
+                print_r($tempName);
+                $name = explode("_", $tempName);
+                $jsonLoanIds[] = $name[3];
+                
             }
-        }   
+            print_r($jsonLoanIds);
+            exit;
+            $readoutDate = $file['queueInfo']['date'];
+            $linkedAccountId = $paramsKey;
+            echo $readoutDate . $linkedAccountId;
+       //     $file = new File($params[$linkedAccountId]['files'][0]);        
+       //     $jsonLoanIds = $file->read(true, 'r');
+       //     $loanIds = json_decode($jsonLoanIds, true); 
+    //        print_r($loanIds);            
+            
+echo "ANANA";
+print_r($jsonLoanIds);
+            foreach ($loanIds as $loanKey => $loanId) { // chunking is required
+                echo "\n$loanKey and $loanId ";
+    exit;
+                $this->Investmentslice->Behaviors->load('Containable');
+                $this->Investmentslice->contain('Amortizationtable');              
+
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanKey),
+                                                                           'recursive' => 1)
+                                                                        );
+
+                foreach ($result[0]['Amortizationtable'] as $table) {
+                    if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE) {
+                        $scheduledDate = $table['amortizationtable_scheduledDate'];
+                        echo $scheduledDate . " = " . $result[0]['Investmentslice']['investment_id'] . "\n";
+
+               //         $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
+               //                                        'investment_nextPaymentDate' =>  $scheduledDate )
+               //                                        );
+                        break;
+                    }
+                }
+            } 
+        }
+                                   
 
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
@@ -286,7 +290,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      *
      */
     public function consolidatePaymentDelay($params) {    
-        echo "Antoine";
+echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 print_r($params);
 
@@ -297,7 +301,7 @@ print_r($params);
 
         $index = 0;
         $controlIndex = 0;
-        $limit = 1000;
+        $limit = WIN_DATABASE_READOUT_LIMIT;
         $investment = array();
         
         do {

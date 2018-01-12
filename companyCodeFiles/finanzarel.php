@@ -709,7 +709,7 @@ class finanzarel extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-         $inputData = strtoupper($inputData);
+         $inputData = mb_strtoupper($inputData);
         switch ($inputData){
             case "FACTURA":
                 return WIN_TYPEOFLOAN_PERSONAL;
