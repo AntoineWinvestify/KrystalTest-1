@@ -391,7 +391,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",     
+                    "type" => "investment_originalState",     
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
