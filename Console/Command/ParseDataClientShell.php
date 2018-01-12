@@ -446,26 +446,17 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
            //               $this->variablesConfig[$investmentDataKey]['state'] = WIN_FLOWDATA_VARIABLE_DONE;   // Mark done
                         }
                     }
-                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                        $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
-                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
-                        $database['investment']['investment_technicalStateTemp'] = "INITIAL";
-                    }
-                    
-                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
-                        $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan
-                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
-                        $database['investment']['investment_technicalStateTemp'] = "INITIAL";
-                    }
-                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
-                        $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan
-                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
-                        $database['investment']['investment_technicalStateTemp'] = "INITIAL";
-                    }                   
                     
                     
-                    
-                    
+                    switch($database['investment']['investment_statusOfLoan']) {
+                        case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                        case WIN_LOANSTATUS_ACTIVE:
+                        case WIN_LOANSTATUS_FINISHED:    
+                            $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
+                            $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
+                            $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
+                        break;
+                    }   
                 } 
                 else {  // Already an existing loan
                     $filterConditions = array("investment_loanId" => $keyDateTransaction,
