@@ -118,6 +118,15 @@ class zank extends p2pCompany {
             ],
             "B" => [
                 [
+                    "type" => "original_concept",                               // 
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "",                                 // 
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
                     "type" => "transactionDetail",                                  // Winvestify standardized name   OK
                     "inputData" => [                                                // List of all concepts that the platform can generate  
                                                                                     // format ["concept string platform", "concept string Winvestify"]
@@ -125,17 +134,19 @@ class zank extends p2pCompany {
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
                                     2 => ["inversion" => "Primary_market_investment"],
-                                    3 => ["principal" => "Capital_repayment"],
-                                    4 => ["intereses" => "Regular_gross_interest_income"],
-                                    5 => ["recargo" => "Delayed_interest_income"],
-                                    6 => ["promocion" => "Incentives_and_bonus"],
-                                    7 => ["comision" => "Commission"],
+                                    3 => ["inversion" => "Disinvestment"],  
+                                    4 => ["principal" => "Capital_repayment"],
+                                    5 => ["intereses" => "Regular_gross_interest_income"],
+                                    6 => ["recargo" => "Delayed_interest_income"],
+                                    7 => ["promocion" => "Incentives_and_bonus"],
+                                    8 => ["comision" => "Commission"],
                                 ]                    
                             ],
                     "functionName" => "getTransactionDetail",
                 ]
             ],
             "C" => [
+                
                 [
                     "type" => "amount",                                             // This is an "empty variable name". So "type" is
                     "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
@@ -144,6 +155,25 @@ class zank extends p2pCompany {
                                 "input4" => 4
                                 ],
                     "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "transactionDetail",                                  // Winvestify standardized name   OK
+                    "inputData" => [                                                // List of all concepts that the platform can generate  
+                                                                                    // format ["concept string platform", "concept string Winvestify"]
+                                  "input2" => "#current.original_concept",                                                    
+                                  "input3" => [
+                                    0 => ["ingreso" => "Cash_deposit"],
+                                    1 => ["retirado" => "Cash_withdrawal"],
+                                    2 => ["inversion" => "Primary_market_investment"],
+                                    3 => ["inversion" => "Disinvestment"],  
+                                    4 => ["principal" => "Capital_repayment"],
+                                    5 => ["intereses" => "Regular_gross_interest_income"],
+                                    6 => ["recargo" => "Delayed_interest_income"],
+                                    7 => ["promocion" => "Incentives_and_bonus"],
+                                    8 => ["comision" => "Commission"],
+                                ]                    
+                            ],
+                    "functionName" => "getComplexTransactionDetail",
                 ]
             ], 
             "D" =>  [

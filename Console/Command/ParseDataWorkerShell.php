@@ -52,6 +52,7 @@
  * TO BE DONE:
  * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.
  * detecting "unknown concept"
+ * Rename the index loanId of a disinvestment record
  *
  */
 App::import('Shell','GearmanWorker');
@@ -304,7 +305,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         continue;
                         }
                     }
-                    //modify disinvestment record based on original record
+                    //modify disinvestment (add investment_loanId) transaction record and its index (=loanId)
                     $this->array_keys_recursive($myArray, 4, "internal", "inversion");
                     $foundArrays = $this->filteredArray;
                     print_r($foundArrays);
