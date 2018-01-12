@@ -448,16 +448,23 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
                     }
                     if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
                         $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
-                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;                       
+                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
+                        $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                     }
                     
                     if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                         $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan
                         $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
-$database['measurements'][$keyDateTransaction]['decrements'] = 0;
-$database['measurements'][$keyDateTransaction]['increments'] = 0; 
                     }
+                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
+                        $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan
+                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
+                        $database['investment']['investment_technicalStateTemp'] = "INITIAL";
+                    }                   
+                    
+                    
+                    
                     
                 } 
                 else {  // Already an existing loan

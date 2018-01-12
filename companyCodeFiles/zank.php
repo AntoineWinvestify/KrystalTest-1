@@ -383,7 +383,7 @@ class zank extends p2pCompany {
             "J" =>  [
                 [
                     "type" => "investment_statusOfLoan",  
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "",         
                                 "input3" => "",
                                 "input4" => 0                                   // 'input3' is NOT mandatory. 
@@ -392,7 +392,7 @@ class zank extends p2pCompany {
                 ],
                 [
                     "type" => "investment_originalLoanState",     
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
