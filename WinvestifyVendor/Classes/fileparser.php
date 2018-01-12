@@ -341,6 +341,23 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "concept33"
+                ], 
+        
+            // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
+            // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
+            // matured into a real loan
+            100 => [
+                "detail" => "Disinvestment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestment"
+                ],
+            101 => [
+                "detail" => "change_to_active_state",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "activeStateChange",
+                "chars" => "AM_TABLE"                        // = Collect Amortization table
                 ]
         ];
 
@@ -610,7 +627,6 @@ protected $countries = [
      *         false in case an error occurred
      */
     public function analyzeFile($file, $configuration, $extension) {
-        
         switch($extension) {
             case "xlsx":
                 if (Configure::read('debug')) {
@@ -852,7 +868,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Returns the quotient * 100 of a division. This represents the %
-     * an unknown "payment" concept was found.
+     * 
      * @param   string  $input   Content of row
      * @param   int     $divident
      * @param   int     $divisor
@@ -1451,13 +1467,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $keyTr = 0;
             $outOfRange = false;
             foreach ($parserConfig as $key => $value) {
-                echo "value";
-                print_r($value);
+ //               echo "value";
+//                print_r($value);
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 $valueTd = trim($tds[$key]->nodeValue);
-                echo "tdValue";
-                print_r($valueTd);
+//                echo "tdValue";
+//                print_r($valueTd);
                 if (array_key_exists("name", $value)) {      // "name" => .......
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $valueTd .  "'; ";
@@ -1470,7 +1486,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                         }
                         else {
                             foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
-                                print_r($input);
+//                                print_r($input);
                                 if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
                                     if (stripos ($input, "#previous.") !== false) {
                                         if ($previousKey == -1) {
@@ -1488,13 +1504,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                             }
                         }
                         array_unshift($userFunction['inputData'], $valueTd);       // Add cell content to list of input parameters
-                        print_r($userFunction['inputData']);
+ //                       print_r($userFunction['inputData']);
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array($this,
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']
                                     );
-                            print_r($tempResult);
+//                            print_r($tempResult);
                             if (is_array($tempResult)) {
                                 $userFunction = $tempResult;
                                 $tempResult = $tempResult[0];

@@ -103,7 +103,7 @@ class zank extends p2pCompany {
             'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
-    ];                                             // 0 = do not inverse order of elements (=default)
+    ];                                                      // 0 = do not inverse order of elements (=default)
  
     protected $valuesTransaction = [
         [
@@ -182,7 +182,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_investmentDate",                          // Winvestify standardized name
+                    "type" => "investment_investmentDate",                      // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -190,12 +190,12 @@ class zank extends p2pCompany {
                 ]                                    
             ],
             "B" => [
-                "name" => "investment_loanId"                                       // Winvestify standardized name  OK
+                "name" => "investment_loanId"                                   // Winvestify standardized name  OK
             ],
-                //FIX THIS
+               
             "C" => [
                 [
-                    "type" => "investment_expectAnnualYield",                       // Winvestify standardized name   OK
+                    "type" => "investment_expectAnnualYield",                   // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "",
                                 "input3" => ",",
@@ -209,7 +209,7 @@ class zank extends p2pCompany {
             ],
             "E" => [
                 [
-                    "type" => "investment_myInvestment",                            // Winvestify standardized name   OK
+                    "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "",
                                 "input3" => ",",
@@ -218,9 +218,9 @@ class zank extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "investment_typeOfInvestment",                               // 
+                    "type" => "investment_typeOfInvestment",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => " ",                                 //                                 // 'input3' is NOT mandatory. 
+                                "input2" => " ",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -233,7 +233,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_currency",                                // Winvestify standardized name  OK
+                    "type" => "investment_currency",                            // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
                 ],
             ],
@@ -244,10 +244,10 @@ class zank extends p2pCompany {
             /* "H" => DON'T TAKE, ASK ANTOINE*/
             "I" => [
                 [
-                    "type" => "investment_commissionPaid",                          // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
-                                "input2" => "",                                     // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                    "type" => "investment_commissionPaid",                      // This is an "empty variable name". So "type" is
+                    "inputData" => [                                            // obtained from $parser->TransactionDetails['type']
+                                "input2" => "",                                 // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                // and its content is the result of the "getAmount" method
                                 "input4" => 4
                                 ],
                     "functionName" => "getAmount",
@@ -256,18 +256,18 @@ class zank extends p2pCompany {
             ///CHANGEEEE WITH REAL VALUE
             "J" =>  [
                 [
-                    "type" => "investment_statusOfLoan",                               // 
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "",                                 // 
+                    "type" => "investment_statusOfLoan",                          
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                                "input2" => "",                               
                                 "input3" => "",
                                 "input4" => 0                                   // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",                               // 
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "#current.investment_statusOfLoan",                                 //                                 // 'input3' is NOT mandatory. 
+                    "type" => "investment_originalLoanState",                    
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                                "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ]
@@ -279,7 +279,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_investmentDate",                          // Winvestify standardized name
+                    "type" => "investment_investmentDate",                      // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -287,12 +287,12 @@ class zank extends p2pCompany {
                 ]                                    
             ],
             "B" => [
-                "name" => "investment_loanId"                                       // Winvestify standardized name  OK
+                "name" => "investment_loanId"                                   // Winvestify standardized name  OK
             ],
-                //FIX THIS
+               
             "C" => [
                 [
-                    "type" => "investment_expectAnnualYield",                       // Winvestify standardized name   OK
+                    "type" => "investment_expectAnnualYield",                   // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "",
                                 "input3" => ",",
@@ -306,7 +306,7 @@ class zank extends p2pCompany {
             ],
             "E" => [
                 [
-                    "type" => "investment_myInvestment",                            // Winvestify standardized name   OK
+                    "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "",
                                 "input3" => ",",
@@ -315,9 +315,9 @@ class zank extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "investment_typeOfInvestment",                               // 
+                    "type" => "investment_typeOfInvestment",   
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => " ",                                 //                                 // 'input3' is NOT mandatory. 
+                                "input2" => " ",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -330,7 +330,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_currency",                                // Winvestify standardized name  OK
+                    "type" => "investment_currency",                            // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
                 ],
             ],
@@ -341,30 +341,29 @@ class zank extends p2pCompany {
             /* "H" => DON'T TAKE, ASK ANTOINE*/
             "I" => [
                 [
-                    "type" => "investment_commissionPaid",                          // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
-                                "input2" => "",                                     // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                    "type" => "investment_commissionPaid",                      // This is an "empty variable name". So "type" is
+                    "inputData" => [                                            // obtained from $parser->TransactionDetails['type']
+                                "input2" => "",                                 // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                // and its content is the result of the "getAmount" method
                                 "input4" => 4
                                 ],
                     "functionName" => "getAmount",
                 ]
             ],
-            ///CHANGEEEE WITH REAL VALUE
             "J" =>  [
                 [
-                    "type" => "investment_statusOfLoan",                               // 
+                    "type" => "investment_statusOfLoan",  
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "",                                 // 
+                                "input2" => "",         
                                 "input3" => "",
                                 "input4" => 0                                   // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",                               // 
+                    "type" => "investment_originalLoanState",     
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "#current.investment_statusOfLoan",                                 //                                 // 'input3' is NOT mandatory. 
+                                "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ]
@@ -518,6 +517,7 @@ class zank extends p2pCompany {
      *
      * 	Calculates how much it will cost in total to obtain a loan for a certain amount
      * 	from a company. This includes fixed fee amortization fee(s) etc.
+     * 
      * 	@param  int	$amount 	: The amount (in Eurocents) that you like to borrow 
      * 	@param	int $duration		: The amortization period (in months) of the loan
      * 	@param	int $interestRate	: The interestrate to be applied (1% = 100)
@@ -1702,6 +1702,7 @@ class zank extends p2pCompany {
 
     /**
      * Get amortization tables of user investments
+     * 
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
@@ -1939,6 +1940,7 @@ class zank extends p2pCompany {
 
     /**
      * Dom clean for structure revision
+     * 
      * @param Dom $node1
      * @param Dom $node2
      * @return boolean
@@ -1972,15 +1974,16 @@ class zank extends p2pCompany {
     
     /**
      * Function to translate loan type for Zank file
+     * 
      * @param string $inputData It is string to convert to integer
      * @return int It is the loan type converted to integer
      */
     public function translateTypeOfInvestment($inputData) {
-        $data = WIN_LOANSTATUS_MANUALINVESTMENT;
+        $data = WIN_INVESTMENT_TYPE_MANUALINVESTMENT;
         $inputData = mb_strtoupper($inputData, "UTF-8");
         switch ($inputData) {
             case "AUTO":
-                $data = WIN_LOANSTATUS_AUTOMATEDINVESTMENT;
+                $data = WIN_INVESTMENT_TYPE_AUTOMATEDINVESTMENT;
                 break;
         }
         return $data;
@@ -1989,6 +1992,7 @@ class zank extends p2pCompany {
      /**
      * Function to translate the company specific loan status to the Winvestify standardized
      * loan type
+      * 
      * @param string $inputData     company specific loan status
      * @return int                  Winvestify standardized loan status
      */ 
@@ -2022,6 +2026,7 @@ class zank extends p2pCompany {
     /**
      * Function to translate the company specific loan type to the Winvestify standardized
      * loan type
+     * 
      * @param string $inputData     company specific loan type
      * @return int                  Winvestify standardized loan type
      */
@@ -2032,6 +2037,7 @@ class zank extends p2pCompany {
     /**
      * Function to translate the company specific amortization method to the Winvestify standardized
      * amortization type
+     * 
      * @param string $inputData     company specific amortization method
      * @return int                  Winvestify standardized amortization method
      */
@@ -2042,6 +2048,7 @@ class zank extends p2pCompany {
     /**
      * Function to translate the company specific payment frequency to the Winvestify standardized
      * payment frequency
+     * 
      * @param string $inputData     company specific payment frequency
      * @return int                  Winvestify standardized payment frequency
      */
@@ -2052,6 +2059,7 @@ class zank extends p2pCompany {
     /**
      * Function to translate the type of investment market to an to the Winvestify standardized
      * investment market concept
+     * 
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
      */
@@ -2062,6 +2070,7 @@ class zank extends p2pCompany {
     /**
      * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
      * investmentBuyBackGuarantee
+     * 
      * @param string $inputData     company specific investmentBuyBackGuarantee
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */

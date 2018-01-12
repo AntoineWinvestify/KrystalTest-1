@@ -1601,7 +1601,7 @@ class loanbook extends p2pCompany {
      */
     public function translatePaymentFrequency($inputData) {
         $type = WIN_PAYMENTFREQUENCY_UNKNOWN;
-        $inputData = strtoupper(trim($inputData));
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PAGO ÚNICO":
                 $type = WIN_PATMENTFREQUENCY_ONEPAYMENT;
@@ -1627,7 +1627,7 @@ class loanbook extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "PRÉSTAMO":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
