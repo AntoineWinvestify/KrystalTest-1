@@ -61,37 +61,10 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         $queueCurlFunction = $this->queueCurlFunction;
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
-        $index = 0;
         $i = 0;
         foreach ($data["companies"] as $linkedaccount) {
-            echo "<br>******** Executing the loop **********<br>";
-            $index++;
-            $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
-            echo "companyId = " . $this->companyId[$i] . " <br>";
-            $companyConditions = array('Company.id' => $this->companyId[$i]);
-            $result[$i] = $this->Company->getCompanyDataList($companyConditions);
-            $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
-            $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
-            $this->newComp[$i]->setClassForQueue($this);
-            $this->newComp[$i]->setQueueId($data["queue_id"]);
-            $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
-            $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
-            $this->newComp[$i]->setUserReference($data["queue_userReference"]);
-            $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
+            $this->initCompanyClass($data, $i, $linkedaccount, WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
-            $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
-            $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
-            $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
-            $this->newComp[$i]->setDateFinish($data["date"]);
-            $this->newComp[$i]->generateCookiesFile();
-            $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
-            $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
-            $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
-            $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
-            $configurationParameters = array('tracingActive' => true,
-                'traceID' => $data["queue_userReference"],
-            );
-            $this->newComp[$i]->defineConfigParms($configurationParameters);
             $i++;
         }
         $companyNumber = 0;
