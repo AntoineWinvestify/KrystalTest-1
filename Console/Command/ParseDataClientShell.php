@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-//        return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -136,17 +136,23 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_TRANSACTION_FILE] = $dirs->findRecursive(WIN_FLOW_TRANSACTION_FILE . ".*", true);
                         $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
-                        $listOfActiveInvestments = $this->getListActiveInvestments($linkedAccountId);
-
+                        $listOfActiveInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_ACTIVE);
+                        $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedaccount_id, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
+                        
                         $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE. ".*", true);
+
+                        
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
                             'activeInvestments' => count($listOfActiveInvestments),
-                            'listOfCurrentActiveLoans' => $listOfActiveInvestments,
+                            'listOfCurrentActiveInvestments' => $listOfActiveInvestments,
+                            'listOfReservedInvestments' => $listOfReservedInvestments,
                             'userReference' => $job['Queue']['queue_userReference'],
                             'controlVariableFile' => $controlVariableFile[0],
                             'files' => $files,
-                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING);
+                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
+                //            'actionOrigin' => $this->queueInfo[$job['Queue']['id']]['originExecution'],
+                            );
                     }
                     debug($params);
 
@@ -410,9 +416,7 @@ print_r($database);
                     echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
                     $database['investment']['investment_myInvestment'] = 0;
                     $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-                    $database['investment']['investment_new'] = YES;
-                    $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
-                    $database['investment']['investment_technicalStateTemp'] = "INITIAL";
+
 //$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
 $database['measurements'][$keyDateTransaction]['decrements'] = 0;
 $database['measurements'][$keyDateTransaction]['increments'] = 0; 
@@ -420,8 +424,6 @@ $database['measurements'][$keyDateTransaction]['increments'] = 0;
 $STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS + 1;
 $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
  
-                    
-                    
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
  
              //       $platformData['newLoans'][]= $transactionData['investment_loanId'];
@@ -433,7 +435,7 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
              //       }
             //        $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM    
                     
-                        
+                    // Load all the data of the investment  
                     foreach ($investmentListToCheck as $investmentDataKey => $investmentData) {
                         $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
 
@@ -443,7 +445,18 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
                             $database[$dbTable][$investmentDataKey] = $investmentData;
            //               $this->variablesConfig[$investmentDataKey]['state'] = WIN_FLOWDATA_VARIABLE_DONE;   // Mark done
                         }
-                    }                  
+                    }
+                    
+                    
+                    switch($database['investment']['investment_statusOfLoan']) {
+                        case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                        case WIN_LOANSTATUS_ACTIVE:
+                        case WIN_LOANSTATUS_FINISHED:    
+                            $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
+                            $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
+                            $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
+                        break;
+                    }   
                 } 
                 else {  // Already an existing loan
                     $filterConditions = array("investment_loanId" => $keyDateTransaction,
@@ -451,15 +464,14 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
                         "investment_priceInSecondaryMarket" , "investment_outstandingPrincipal", "investment_totalGrossIncome",
                         "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
-                        "investment_secondaryMarketInvestment", "investment_paidInstalments"));
+                        "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan"));
  
                     $investmentId = $tempInvestmentData[0]['Investment']['id'];
                     if (empty($investmentId)) {         // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
-                                                        // We mark to collect amortization table and hope that the PFP will return amortizationtable data.
-                        
+                                                        // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
 
 echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
-                            echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";
+echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";
                         $loanStatus = WIN_LOANSTATUS_ACTIVE;        // So amortization data is collected
                         $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
@@ -473,6 +485,7 @@ echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
                     else {  // A normal regular loan, which is already defined in our database
                     // Copy the information to the shadow database, for processing later on
 echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
+                        $database['investment']['investment_statusOfLoan'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
                         $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
                         $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
                         $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
@@ -485,7 +498,6 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                     }
                 }
 
-                echo __FILE__ . " " . __LINE__ . "\n"; 
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";

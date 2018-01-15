@@ -242,7 +242,31 @@ class AppShell extends Shell {
         return $list;
     }    
     
-    
+    /**
+     * Get the list of all investments with status = $status for a P2P as identified by the
+     * linkedaccount identifier.
+     * Take into account that an investment can have 1 or more investmentslices.
+     *
+     * @param int $linkedaccount_id    linkedaccount reference
+     * @param   int $status          The status of the investment
+     * @return array
+     *
+     */
+    public function getLoanIdListOfInvestments($linkedaccount_id, $status) {
+        $this->Investment = ClassRegistry::init('Investment');
+        $filterConditions = array(
+            'linkedaccount_id' => $linkedaccount_id,
+            "investment_statusOfloan" => $status,
+        );
+
+        $investmentListResult = $this->Investment->find("all", array("recursive" => -1,
+            "conditions" => $filterConditions,
+            "fields" => array("id", "investment_loanId"),
+        ));
+
+        $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
+        return $list;
+    }    
     
     
     

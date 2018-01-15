@@ -155,7 +155,7 @@ var $validate = array(
         $value = array();
 
         $range['total'] = $outstanding;
-        //print_r($defaultedInvestments);
+
         foreach ($defaultedInvestments as $defaultedInvestment) {
             switch ($defaultedInvestment['Investment']['investment_paymentStatus']) {
                 case 0:
@@ -187,31 +187,5 @@ var $validate = array(
         return $range;
     }
 
- 
-
-    /**
-     *
-     * 	Create a new Investmentslice when a new investment takes place in an existing loan
-     * 	
-     */
-    function beforeSave1($created, $options = array()) {
-
-        if (isset($this->data[$this->alias]['id'])) {       // = UPDATE of existing model
-            if (isset($this->data[$this->alias]['markCollectNewAmortizationTable'])) { // adding a new slice
-                if ($this->data[$this->alias]['markCollectNewAmortizationTable'] == "AM_TABLE") {
-                    $this->Investmentslice = ClassRegistry::init('Investmentslice');
-
-                    $data = array( "investment_id" => $this->data[$this->alias]['id'],
-                                    "sliceIdentifier" => $this->data[$this->alias]['sliceIdentifier']
-                                );
-
-                    if (!$this->Investmentslice->save($data, $validate = true)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
 
 }
