@@ -103,9 +103,9 @@ class Dashboard2sController extends AppController {
         $this->autoRender = false;
 
         $this->Investment->virtualFields = array(
-            'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . SHOW_DECIMAL . ')))',
-            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . SHOW_DECIMAL . '))',
-            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . SHOW_DECIMAL . '))',
+            'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
         );
 
         $this->paginate = array(
@@ -130,9 +130,9 @@ class Dashboard2sController extends AppController {
         $this->autoRender = false;
 
         $this->Investment->virtualFields = array(
-            'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30, ' . SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . SHOW_DECIMAL . ')))',
-            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . SHOW_DECIMAL . '))',
-            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . SHOW_DECIMAL . '))',
+            'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
         );
         $this->paginate = array(
             'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
@@ -320,33 +320,33 @@ class Dashboard2sController extends AppController {
                     case "1-7":
                         $value = ($defaultedRange["1-7"] * $defaultedRange["total"]) / 100;
                         $globalValue["1-7"] = $globalValue["1-7"] + $value;
-                        $globalRange["1-7"] = round(($globalValue["1-7"] / $globalTotal) * 100, SHOW_DECIMAL);
+                        $globalRange["1-7"] = round(($globalValue["1-7"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case "8-30":
                         $value = ($defaultedRange["8-30"] * $defaultedRange["total"]) / 100;
                         $globalValue["8-30"] = $globalValue["8-30"] + $value;
-                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, SHOW_DECIMAL);
+                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case "31-60":
                         $value = ($defaultedRange["31-60"] * $defaultedRange["total"]) / 100;
                         $globalValue["31-60"] = $globalValue["31-60"] + $value;
-                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, SHOW_DECIMAL);
+                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case "61-90":
                         $value = ($defaultedRange["61-90"] * $defaultedRange["total"]) / 100;
                         $globalValue["61-90"] = $globalValue["61-90"] + $value;
-                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, SHOW_DECIMAL);
+                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case ">90":
                         $value = ($defaultedRange[">90"] * $defaultedRange["total"]) / 100;
                         $globalValue[">90"] = $globalValue[">90"] + $value;
-                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, SHOW_DECIMAL);
+                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                 }
             }
         }
 
-        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] - $globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], SHOW_DECIMAL));
+        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] - $globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], WIN_SHOW_DECIMAL));
         return $globalRange;
     }
 

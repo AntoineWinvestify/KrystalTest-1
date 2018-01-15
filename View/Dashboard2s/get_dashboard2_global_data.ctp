@@ -317,7 +317,7 @@ if ($noAccountsLinked == true) {
                 <!-- small box -->
                 <div class="small-box bg-win1">
                     <div class="inner" data-toggle="tooltip" data-placement="auto" title="<?php echo __('Amount of money currently invested') ?>">
-                        <h3><?php echo number_format((float) $dashboardGlobals['amountInvested'] / 100, SHOW_DECIMAL, ',', '') ?>&euro;</h3>
+                        <h3><?php echo number_format((float) $dashboardGlobals['amountInvested'] / 100, WIN_SHOW_DECIMAL, ',', '') ?>&euro;</h3>
                         <p><?php echo __('Amount Invested') ?></p>
                     </div>
                     <div class="icon">
@@ -331,7 +331,7 @@ if ($noAccountsLinked == true) {
                 <!-- small box -->
                 <div class="small-box bg-win3" data-toggle="tooltip" data-placement="auto" title="<?php echo __('Amount of money in all your Wallets') ?>">
                     <div class="inner">
-                        <h3><?php echo number_format((float) $dashboardGlobals['wallet'] / 100, SHOW_DECIMAL, ',', '') ?>&euro;</h3>
+                        <h3><?php echo number_format((float) $dashboardGlobals['wallet'] / 100, WIN_SHOW_DECIMAL, ',', '') ?>&euro;</h3>
                         <p><?php echo __('Available Funds') ?></p>
                     </div>
                     <div class="icon">
@@ -344,7 +344,7 @@ if ($noAccountsLinked == true) {
                 <!-- small box -->
                 <div class="small-box bg-win5" data-toggle="tooltip" data-placement="auto" title="<?php echo __('The average profitibility of all your active investments') ?>">
                     <div class="inner">
-                        <h3><?php echo number_format((float) $dashboardGlobals['meanProfitibility'] / 100, SHOW_DECIMAL, ',', '') ?>&#37;</h3>
+                        <h3><?php echo number_format((float) $dashboardGlobals['meanProfitibility'] / 100, WIN_SHOW_DECIMAL, ',', '') ?>&#37;</h3>
                         <p><?php echo __('Return') ?></p>
                     </div>
                     <div class="icon">
@@ -525,7 +525,7 @@ if ($noAccountsLinked == true) {
                                     <div class="description-block border-right">
                                         <span class="description-text"><?php echo __('AVAILABLE FUNDS') ?></span>
                                         <h4 class="description-header">
-        <?php echo number_format((float) $companyGlobal['global']['myWallet'] / 100, SHOW_DECIMAL, ',', '') . " &euro;"; ?></h4>
+        <?php echo number_format((float) $companyGlobal['global']['myWallet'] / 100, WIN_SHOW_DECIMAL, ',', '') . " &euro;"; ?></h4>
                                     </div>
                                     <!-- /.description-block 1 -->
                                 </div>
@@ -534,7 +534,7 @@ if ($noAccountsLinked == true) {
                                     <div class="description-block border-right">
                                         <span class="description-text"><?php echo __('RETURN') ?></span>
                                         <h4 class="description-header">
-        <?php echo number_format((float) $companyGlobal['global']['profitibility'] / 100, SHOW_DECIMAL, ',', '') . "  &#37;"; ?></h4>
+        <?php echo number_format((float) $companyGlobal['global']['profitibility'] / 100, WIN_SHOW_DECIMAL, ',', '') . "  &#37;"; ?></h4>
                                     </div>
                                     <!-- /.description-block 2 -->
                                 </div> <!-- /col -->
@@ -542,14 +542,14 @@ if ($noAccountsLinked == true) {
                                     <div class="description-block border-right">
                                         <span class="description-text"><?php echo __('INVESTED') ?></span>
                                         <h4 class="description-header">
-        <?php echo number_format((float) $companyGlobal['global']['totalInvestment'] / 100, SHOW_DECIMAL, ',', '') . " &euro;"; ?></h4>
+        <?php echo number_format((float) $companyGlobal['global']['totalInvestment'] / 100, WIN_SHOW_DECIMAL, ',', '') . " &euro;"; ?></h4>
                                     </div><!-- /.description-block 3 -->
                                 </div> <!-- /col -->
                                 <div class="col-sm-2 col-xs-6">
                                     <div class="description-block">
                                         <span class="description-text"><?php echo __('OUTSTANDING PRINCIPAL') ?></span>
                                         <h4 class="description-header">
-        <?php echo number_format((float) $companyGlobal['global']['activeInInvestments'] / 100, SHOW_DECIMAL, ',', '') . " &euro;"; ?></h4>
+        <?php echo number_format((float) $companyGlobal['global']['activeInInvestments'] / 100, WIN_SHOW_DECIMAL, ',', '') . " &euro;"; ?></h4>
                                     </div> <!-- description-box 4 --> 
                                 </div> <!-- /col -->
                                 <div class="col-sm-2 col-xs-6">
