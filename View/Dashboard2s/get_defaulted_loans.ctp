@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 
-echo $defaultedInvestments[0];
+echo 1;
 ?>
 <script>
     
@@ -31,7 +31,7 @@ echo $defaultedInvestments[0];
         ],
     });
 </script>
-<div id="defaultedTab">
+<div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
             <div class="table-responsive">  
@@ -47,7 +47,6 @@ echo $defaultedInvestments[0];
                             <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Next repayment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                         </tr>
                     </thead>
-
                 </table>
             </div>
         </div>

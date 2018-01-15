@@ -146,7 +146,7 @@ class Dashboard2sController extends AppController {
 
     /**
      * [AJAX call]
-     * Get active loans of a linked account
+     * Get active loans view for datatables.
      * @throws FatalErrorException Error when you access without ajax
      */
     function getActiveLoans() {
@@ -154,35 +154,17 @@ class Dashboard2sController extends AppController {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
-
-        $linkedAccount = $this->request->data['id']; //Link account id
-        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-
-        if (!empty($activeInvestments)) {
-            $this->set('activeInvestments', [1, $activeInvestments]);
-        } else {
-            $this->set('activeInvestments', [1, "Not active loans found"]);
-        }
     }
 
     /**
      * [AJAX call]
-     * Defaulted loans view of a linked account
+     * Get active Defaulted view for datatables.
      * @throws FatalErrorException Error when you access winouth ajax
      */
     function getDefaultedLoans() {
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
-        }
-
-        $linkedAccount = $this->request->data['id']; //Link account id
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
-
-        if (!empty($defaultedInvestments)) {
-            $this->set('defaultedInvestments', [1, $defaultedInvestments]);
-        } else {
-            $this->set('defaultedInvestments', [1, "Not defaulted loans found"]);
         }
     }
 

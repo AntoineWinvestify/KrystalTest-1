@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 
-echo $activeInvestments[0];
+echo 1;
 ?>
 <script>
     $("#activeInvestmentTable").DataTable({
@@ -31,7 +31,7 @@ echo $activeInvestments[0];
         ],
     });
 </script>
-<div id="activeTab">
+<div>
     <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
             <div class="table-responsive">  
@@ -48,7 +48,6 @@ echo $activeInvestments[0];
                             <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Indicates the number of days of payment delay.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Status') ?></th>
                         </tr>
                     </thead>
-
                 </table>
             </div>
         </div>

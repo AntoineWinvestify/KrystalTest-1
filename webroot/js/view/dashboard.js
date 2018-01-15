@@ -89,9 +89,6 @@ function singlePfpJS() {
     $(document).on("click", "#activeTab", function (event) {
         event.preventDefault();
         id = $(this).attr("value");
-
-
-
         var data = null;
         link = $(this).attr("href");
         ga_allInvestments();
