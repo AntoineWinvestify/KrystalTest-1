@@ -1654,6 +1654,12 @@ hr.nomargin {
     }
 }
 
+@media (max-width:522px) {
+    .loginBox {
+        margin-right: 45px;
+    }
+}
+
 
 
 /*MOBILE SWAP MEDIA QUERY >320*/
@@ -1758,7 +1764,20 @@ hr.nomargin {
     #featuresButton button {
         margin-left: 60px;
     }
-}     
+}    
+
+@media (max-width: 380px) {
+    .loginBox {
+        background-color: white;
+        border: 1px solid gray;
+        height: 300px;
+        width: 300px;
+        float: right;
+        border-radius: 5px;
+        margin: 170px 10px 0px 0px;
+        padding-top: 20px;
+    }
+}
 
 @media (min-width: 320px) and (max-width: 480px) and (orientation: portrait) {
     #featuresButton button {
