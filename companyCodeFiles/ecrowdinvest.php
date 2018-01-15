@@ -84,11 +84,11 @@ class ecrowdinvest extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrowd doesnt have pagination
-        
-        
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) { //ecrowd doesnt have pagination
         $readController = 0;
         $investmentController = false;
+        $this->investmentDeletedList = $loanIdList;
+
 
         $totalArray = array();
         $str = $this->getCompanyWebpage();
@@ -100,17 +100,16 @@ class ecrowdinvest extends p2pCompany {
         $attribute = 'class';
         $value = 'panel panel-default';
         $projectwidgets = $this->getElements($dom, $tag, $attribute, $value);
-        
 
-          foreach ($projectwidgets as $key => $projectwidget) {
-            
+
+        foreach ($projectwidgets as $key => $projectwidget) {
+
             if ($key == 0) { //Compare structures, only compare the first element
-                
-                $structureRevision = $this->htmlRevision($structure,'div',null,'class','col-xs-12',array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
-                if($structureRevision[1]){
+                $structureRevision = $this->htmlRevision($structure, 'div', null, 'class', 'col-xs-12', array('dom' => $dom, 'tag' => 'div', 'attribute' => 'id', 'attrValue' => 'filter-projects'));
+                if ($structureRevision[1]) {
                     $totalArray = false; //Stop reading in error                         
                     break;
-                }    
+                }
             }
 
 
@@ -182,6 +181,7 @@ class ecrowdinvest extends p2pCompany {
                 unset($tempArray);
                 $investmentController = false;
             } else {
+                $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                 $totalArray[] = $tempArray;
                 $this->print_r2($totalArray);
                 unset($tempArray);
@@ -192,14 +192,29 @@ class ecrowdinvest extends p2pCompany {
                 echo $readController;
                 break;
             }
-    }
+        }
         $this->print_r2($totalArray);
+        echo 'To delete';
+        print_r($this->investmentDeletedList);
+        $deletedInvestment = $this->deleteInvestment($this->investmentDeletedList);
+
+        $totalArray = array_merge($totalArray,$deletedInvestment);
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
 
+    function deleteInvestment($referenceArray){
+        foreach($referenceArray as $id){
+            $tempArray["marketplace_loanReference"] = $id;
+            $tempArray['marketplace_statusLiteral'] = 'Eliminada';
+            $tempArray['marketplace_status'] = REJECTED;
+            $totalArray[] = $tempArray;
+        }
+        return $totalArray;
+    }
+    
     /**
      *  Collect all investments
      * @param Array $structure
