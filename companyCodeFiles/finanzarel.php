@@ -146,16 +146,18 @@ class finanzarel extends p2pCompany {
 
    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
         [
+            //iS THS REALLY NNEEDED?
             "A" =>  [
                     "name" => "transactionId"                                          // Winvestify standardized name
             ],
-            "B" => [
+            /*"B" => [
                     "name" => "dummy_year",                                                  // Winvestify standardized name  OK
-            ],
-            "C" => [
+            ],*/
+            /*"C" => [
                     "name" => "dummy_quarter",                                            // This is an "empty variable name". So "type" is
-            ], 
+            ],*/ 
             "D" =>  [
+                //This is OK¿???¿?¿? ASK ANTOINE
                 [
                     "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
                     "inputData" => [
@@ -165,15 +167,15 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             "E" => [
-                    "type" => "loanId",                                            // This is an "empty variable name". So "type" is
+                    "type" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
             ], 
             "F" => [// NOT FINISHED YET
                 [
-                    "name" => "get_detail",                                      // Winvestify standardized name   OK
+                    "name" => "transactionDetail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [0 => ["Provisión de fondos" => "Cash_deposit"],
-                                //              1 => [ "" => "Cash_withdrawal"],
+                                                1 => [ "Retirada de fondos" => "Cash_withdrawal"],
                                                 2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
                                 //              3 => [  "" => "Secondary_market_investment"],
                                 //              4 => [  "" => "Principal_repayment"],
@@ -201,9 +203,7 @@ class finanzarel extends p2pCompany {
                                 //              26 => [  "" => "Write-off"],
                                 //              27 => [  "" => "Registration"],
                                 //              28 => [   "" => "Currency_exchange_transaction"],
-                                //              29 => [   "" => "Unknown_income"],
-                                //              30 => [  "" => "Unknown_cost"],
-                                //              31 => [  "" => "Unknown_concept"],
+                                                29 => ["Retiro de fondos" => "Cash_withdrawal"]
                                                 ]
                             ],
                     "functionName" => "getTransactionDetail",
