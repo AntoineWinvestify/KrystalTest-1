@@ -74,49 +74,25 @@ var $validate = array(
 
     /**
      *
-     * creates a new 'investment' table and also links an 'investmentSlice' database table.
-     * One field of the $investmentdata must be $investmentdata['sliceIdentifier']. This call
-     * will FAIL if $investmentdata['investment_sliceIdentifier'] is empty or non-existent.
+     * Creates a new 'investment' table.
      * 	
      * 	@param 		array 	$investmentdata 	All the data to be saved
-     * 	@return 	array[0]    => boolean
-     *                  array[1]    => detailed error information if array[0] = false
-     *                                 id if array[0] = true
+     * 	@return         id 
      * 			
      */
     public function createInvestment($investmentdata) {
-        $result = array();
-        
-        $this->create();
-        if (!isset($investmentdata['investment_sliceIdentifier'])) {
-            $result[0] = false;            
-            return $result;
-        }
 
-        if ($this->save($investmentdata, $validate = true)) {   // OK
+        $this->create();
+
+        if ($this->save($investmentdata, $validate = true)) {   
             $investmentId = $this->id;
-            
-            $this->Investmentslice = ClassRegistry::init('Investmentslice');
-            $this->Investmentslice->create();
-          
-            if ($this->Investmentslice->getNewSlice($investmentId, $investmentdata['investment_sliceIdentifier'])) {
-                $result[0] = true;
-                $result[1] = $investmentId;  
-            }
-            else {
-                $result[0] = false;
-            }
-        } 
-        else {                     // error occurred while trying to save the Investment data
-            $result[0] = false;
-            $result[1] = $this->validationErrors;
+        return $investmentId;
         }
-        return $result;
     }
 
     public function getInvestmentIdByLoanId($loanIds) {
-        $fields = array('Investment.investment_loanReference', 'Investment.id');
-        $conditions = array('investment_loanReference' => $loanIds);
+        $fields = array('Investment.investment_loanId', 'Investment.id');
+        $conditions = array('investment_loanId ' => $loanIds);
         $investmentIds = $this->find('list', $params = array('recursive' => -1,
             'fields' => $fields,
             'conditions' => $conditions
@@ -125,44 +101,32 @@ var $validate = array(
     }
 
     /**
-     * Get defaulted investment of a linked account and save delayed days
+     * Get data of defaulted investment(s)
      * 
-     * @param Int $linkedaaccount Link account id 
+     * @param Int $linkedaccount Link account id 
      * @return array Defaulted inversions of a linked account with the defaulted days
      */
     public function getDefaulted($linkedaccount) {
 
-        $today = date("Y-m-d");
-        /*************************************/
-        /* Get defaulted investment and days */
-        /*************************************/
+        // Get defaulted investment and field paymentStatus 
         $defaultedInvestments = $this->find("all", array(
-            "fields" => array("id", "investment_loanId", "investment_outstandingPrincipal", "investment_nextPaymentDate", "investment_statusOfLoan"),
-            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_nextPaymentDate < " => $today, "investment_statusOfLoan" => 2),
+            "fields" => array("id", "investment_loanId", "investment_outstandingPrincipal", "investment_paymentStatus", "investment_statusOfLoan"),
+            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_paymentStatus > " => 0),
             "recursive" => -1,
         ));
 
-        foreach ($defaultedInvestments as $key => $defaultedInvestment) {
-            //echo strtotime($today) . HTML_ENDOFLINE;
-            //echo strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) . HTML_ENDOFLINE;
-            $defaultedInvestments[$key]['Investment']['investment_paymentStatus'] = -(strtotime($defaultedInvestment['Investment']['investment_nextPaymentDate']) - strtotime($today)) / (60 * 60 * 24);
-        }
-        $defaultedInvestments = $this->find("all",array("conditions" => $linkedaccount));
-
-        //$this->saveMany($defaultedInvestments); //Save delayed days
-        
-       // print_r($defaultedInvestments);
         return $defaultedInvestments;
     }
 
     /**
      * Get defaulted percent with the Outstanding principal.
      * 
-     * @param Int $linkedaccount Link account id 
+     * @param Int       $linkedaccount Link account id 
+     * @return Array    Percentage of each defaulted range
      */
     public function getDefaultedByOutstanding($linkedaccount) {
 
-        //Get total outstanding principal
+        //Get total outstanding principal for a P2P
         $outstandings = $this->find("all", array(
             "fields" => array("investment_outstandingPrincipal"),
             "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE),
@@ -170,8 +134,8 @@ var $validate = array(
         ));
 
         $totalOutstanding = 0;
-        foreach ($outstandings AS $outstanding) {
-            $totalOutstanding = $totalOutstanding + $outstanding['Investment']['investment_outstandingPrincipal'];
+        foreach ($outstandings as $outstanding) {
+            $totalOutstanding = bcadd($totalOutstanding, $outstanding['Investment']['investment_outstandingPrincipal'], 16);
         }
 
         $defaultedInvestments = $this->getDefaulted($linkedaccount);
@@ -191,7 +155,7 @@ var $validate = array(
         $value = array();
 
         $range['total'] = $outstanding;
-        //print_r($defaultedInvestments);
+
         foreach ($defaultedInvestments as $defaultedInvestment) {
             switch ($defaultedInvestment['Investment']['investment_paymentStatus']) {
                 case 0:
@@ -220,35 +184,8 @@ var $validate = array(
         }
         //Calculate current
         $range["current"] = 100 - $range["1-7"] - $range["8-30"] - $range["31-60"] - $range["61-90"] - $range[">90"];
-        //print_r($range);
         return $range;
     }
 
- 
-
-    /**
-     *
-     * 	Create a new Investmentslice when a new investment takes place in an existing loan
-     * 	
-     */
-    function beforeSave($created, $options = array()) {
-
-        if (isset($this->data[$this->alias]['id'])) {       // = UPDATE of existing model
-            if (isset($this->data[$this->alias]['markCollectNewAmortizationTable'])) { // adding a new slice
-                if ($this->data[$this->alias]['markCollectNewAmortizationTable'] == "AM_TABLE") {
-                    $this->Investmentslice = ClassRegistry::init('Investmentslice');
-
-                    $data = array( "investment_id" => $this->data[$this->alias]['id'],
-                                    "sliceIdentifier" => $this->data[$this->alias]['sliceIdentifier']
-                                );
-
-                    if (!$this->Investmentslice->save($data, $validate = true)) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
 
 }

@@ -145,7 +145,9 @@ class p2pCompany {
     protected $nameFileAmortizationTableList = WIN_FLOW_AMORTIZATION_TABLE_ARRAY . ".json";
     protected $nameFileControlVariables = WIN_FLOW_CONTROL_FILE;
     protected $numFileTransaction = 1;
+    protected $numPartFileTransaction = 1;
     protected $numFileInvestment = 1;
+    protected $numPartFileInvestment = 1;
     protected $numFileExpiredLoan = 1;
     protected $numFileAmortizationtable = 1;
     protected $companyName;
@@ -164,8 +166,13 @@ class p2pCompany {
     protected $callbacks;
     protected $originExecution;
     
+    
+    protected $compareHeaderConfigParam = array( "chunkInit" => 1,
+                                        "chunkSize" => 1,     
+                                        );
+    
     //Number of days for each company download. Only some pfp uses it.
-    protected $period = 365;
+    protected $period = 670;
     /**
      *
      * Prepare all the default data of the class and its subclasses
@@ -1700,8 +1707,8 @@ class p2pCompany {
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
-        echo "urls: ";
-        print_r($this->urlSequence);
+        /*echo "urls: ";
+        print_r($this->urlSequence);*/
         
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -1713,7 +1720,6 @@ class p2pCompany {
         }
         if ($credentials !== false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
-            //echo $pfpBaseUrl;
         }
         
         if ($headers !== false && empty($headers)) {
@@ -1830,8 +1836,8 @@ class p2pCompany {
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if( $this->numberOfFiles == 0){
             $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
-            if(date($this->dateInitPeriod) < date($dateMin)){
-                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            if(date($this->dateInitPeriod) <= date($dateMin)){
+                $this->dateInitPeriod = date('Ymd',strtotime($dateMin)); //Condition for dont go a previus date than $dateMin;
             }
             $this->dateFinishPeriod = date('Ymd',strtotime($this->dateFinish));
             //echo 'Date ' . $this->dateInitPeriod . " " . $this->dateFinishPeriod;
@@ -1845,10 +1851,13 @@ class p2pCompany {
             }
             $this->numberOfFiles++;
          }
+         /*echo "aassassa" . $this->dateInitPeriod . "_" . $dateMin;
+         echo "dasfs" . date("Ymd", $this->dateInitPeriod);
+         echo "jljhka" . date("Ymd",$dateMin);*/
         if(date($this->dateInitPeriod) > date($dateMin)){
             return true;   //Continue period download
         }
-        else{
+        else {
             return false;  //End period download
         }
     }
@@ -2822,6 +2831,57 @@ FRAGMENT
         return $created;
     }
     
+    /*     * Function to compare header of the downloaded file of the pfps.
+     * 
+     * @return boolean true if header is different, false if is the same.
+     */
+
+    public function compareHeader() {
+
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();
+        $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
+
+        if (!empty(array_diff($this->headerComparation, $data)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
+                return $this->compareMulti();
+            } else {
+                return $this->compareSimple();
+            }
+        }
+        echo "OK";
+        return false;
+    }
+
+    public function compareSimple() {
+        foreach ($this->headerComparation as $key => $value) {
+            if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                echo "fatal error";
+                return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
+            }
+        }
+        echo "Warning";
+        return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+
+    public function compareMulti() {
+        foreach ($this->headerComparation as $sheetHeader) {
+            foreach ($sheetHeader as $key => $value) {
+                if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                    echo "fatal error";
+                    return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
+                }
+            }
+        }
+        echo "Warning";
+        return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+
 }
+
+
+
+
 ?>
 

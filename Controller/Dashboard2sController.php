@@ -45,6 +45,7 @@ class Dashboard2sController extends AppController {
 
     var $name = 'Dashboard2s';
     var $helpers = array('Html', 'Js');
+    public $components = array('DataTable');
     var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment");
 
     function beforeFilter() {
@@ -55,7 +56,7 @@ class Dashboard2sController extends AppController {
     /**
      * [AJAX call]
      * 	Read the data of all active investments that belong to a linked account
-     * @throws FatalErrorException Error when you access winouth ajax
+     * @throws FatalErrorException Error when you access without ajax
      */
     function getDashboard2SinglePfpData() {
 
@@ -65,7 +66,6 @@ class Dashboard2sController extends AppController {
         }
         //echo 1;
         //$executionStartTime = microtime(true);
-
         //Request data
         $idArray = explode(" ", $this->request->data['id']);
         $linkedAccount = $idArray[0]; //Link account id
@@ -92,15 +92,62 @@ class Dashboard2sController extends AppController {
         $this->set('defaultedInvestments', $defaultedInvestments);
         //Get and set range
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
+    }
 
-        $executionEndTime = microtime(true);
-        //echo $executionEndTime - $executionStartTime;
+    /**
+     * [AJAX call]
+     * Get defaulted loans for data table with server side pagination
+     */
+    function ajaxDataTableDefaultedInvestments($linkedAccount) {
+
+        $this->autoRender = false;
+
+        $this->Investment->virtualFields = array(
+            'MyInvestmentFloat' => 'CAST(`Investment.investment_myInvestment` as decimal(13, 2))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(13, 2))',
+            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(13, 2))',
+        );
+
+        $this->paginate = array(
+            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
+            'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.investment_paymentStatus >" => 90, "Investment.linkedaccount_id" => $linkedAccount),
+        );
+
+
+        $this->DataTable->mDataProp = true;
+
+        $investments = $this->DataTable->getResponse(null, 'Investment');
+        $recordNumber = count($investments['aaData']);
+        echo json_encode($investments);
+    }
+
+    /**
+     * [AJAX call]
+     * Get defaulted loans for data table with server side pagination
+     */
+    function ajaxDataTableActiveInvestments($linkedAccount) {
+
+        $this->autoRender = false;
+
+        $this->Investment->virtualFields = array(
+            'MyInvestmentFloat' => 'CAST(`Investment.investment_myInvestment` as decimal(13, 2))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(13, 2))',
+            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(13, 2))',
+        );
+        $this->paginate = array(
+            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
+            'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.linkedaccount_id" => $linkedAccount),
+        );
+        $this->DataTable->mDataProp = true;
+
+        $investments = $this->DataTable->getResponse(null, 'Investment');
+        echo json_encode($investments);
     }
 
     /**
      * [AJAX call]
      * Get active loans of a linked account
-     * @throws FatalErrorException Error when you access winouth ajax
+     * @throws FatalErrorException Error when you access without ajax
      */
     function getActiveLoans() {
         if (!$this->request->is('ajax')) {
@@ -120,7 +167,7 @@ class Dashboard2sController extends AppController {
 
     /**
      * [AJAX call]
-     * Get defaulted loans of a linked account
+     * Defaulted loans view of a linked account
      * @throws FatalErrorException Error when you access winouth ajax
      */
     function getDefaultedLoans() {
@@ -142,11 +189,10 @@ class Dashboard2sController extends AppController {
     /**
      * Global dashboard view
      */
-     function dashboardOverview(){
-          $this->layout = 'azarus_private_layout';
-     }
-     
-    
+    function dashboardOverview() {
+        $this->layout = 'azarus_private_layout';
+    }
+
     function dashboardOverviewData() {
 
         if (!$this->request->is('ajax')) {
@@ -168,10 +214,15 @@ class Dashboard2sController extends AppController {
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
+
+        /* $global['netAnnualTotal'] = 0;
+          $global['netAnnual12Months'] = 0;
+          $global['netAnnualReturnLastYear'] = 0; */
+
         $i = 0;
         //$global['netDeposits'] = 0; 
         foreach ($allInvestment as $globalKey => $individualPfpData) {
-            if(empty($individualPfpData)){
+            if (empty($individualPfpData)) {
                 unset($allInvestment[$globalKey]);
                 continue;
             }
@@ -214,7 +265,7 @@ class Dashboard2sController extends AppController {
                         break;
                     case "userinvestmentdata_totalNetDeposits":
                         //get global net deposits:
-                        $global['netDeposits'] = $global['netDeposits'] + $individualData;
+                        $global['netDeposits'] = bcadd($global['netDeposits'], $individualData, 16);
                         break;
                 }
             }

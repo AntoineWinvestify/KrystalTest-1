@@ -305,7 +305,7 @@ if ($noAccountsLinked == true) {
             if ($investmentRefreshInProgress == true) {
                 echo "<br>";
                 echo __("We are currently collecting the data for your updated dashboard. ");
-                echo __("You will receive a notification once the process is finished.");
+                echo __("You will receive a notification once the process has finished.");
             }
             ?>		
         </strong>

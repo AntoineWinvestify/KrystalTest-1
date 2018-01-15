@@ -8,7 +8,28 @@
 echo $defaultedInvestments[0];
 ?>
 <script>
-    $("#defaultedInvestmentTable").DataTable();
+    
+    $("#defaultedInvestmentTable").DataTable({
+        "bProcessing": true,
+        "bServerSide": true,
+        "sAjaxSource": "ajaxDataTableDefaultedInvestments/"+ id,
+        "aoColumns": [
+            {"mData": 'Investment.investment_loanId'},
+            {"mData": 'Investment.investment_nextPaymentDate'},
+            {"mData": 'Investment.MyInvestmentFloat', "sType": "numeric", "mRender": function (data, type, row) {
+                    return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' €';
+                },
+            },
+            {"mData": 'Investment.InterestFloat', "sType": "numeric", "mRender": function (data, type, row) {
+                    return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' %';
+                }},
+            {"mData": 'Investment.investment_instalmentsProgress'},
+            {"mData": 'Investment.OutstandingFloat', "sType": "numeric", "mRender": function (data, type, row) {
+                    return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' €';
+                }},
+            {"mData": 'Investment.investment_myInvestmentDate'}
+        ],
+    });
 </script>
 <div id="defaultedTab">
     <div class="row">
@@ -21,24 +42,12 @@ echo $defaultedInvestments[0];
                             <th><?php echo __('Investment Date') ?></th>
                             <th><?php echo __('My Investment') ?></th>
                             <th><?php echo __('Interest Rate') ?></th>
-                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The number of received payments divided by total numer of payments.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The number of received payments divided by the total number of payments') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Instalment Progress') ?></th>
                             <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Unpaid loan amount.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Outstanding Principal') ?></th>
-                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Next dapyment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
+                            <th><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Next repayment date.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Next Payment Date') ?></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php foreach ($defaultedInvestments[1] as $defaultedInvestment) { ?>
-                            <tr>
-                                <td><?php echo $defaultedInvestment['Investment']['investment_loanId'] ?></td>
-                                <td><?php echo $defaultedInvestment['Investment']['investment_myInvestmentDate'] ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_investment'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_myInvestment'], 2), 2) . " &euro;"; ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2), 2) . "%" ?></td>
-                                <td dataorder="<?php echo (int) explode("/", $defaultedInvestment['Investment']['investment_instalmentsProgress'])[0] / (int) explode("/", $defaultedInvestment['Investment']['investment_instalmentsProgress'])[1] ?>"><?php echo $defaultedInvestment['Investment']['investment_instalmentsProgress'] ?></td>
-                                <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2), 2) . " &euro;"; ?></td>
-                                <td><?php echo $defaultedInvestment['Investment']['investment_nextPaymentDate']; ?></td>                                                       
-                            </tr>
-                        <?php } ?>
-                    </tbody>
+
                 </table>
             </div>
         </div>

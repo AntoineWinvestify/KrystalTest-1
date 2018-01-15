@@ -236,12 +236,18 @@ class loanbook extends p2pCompany {
         ]
     ];
      
-     
+    protected $transactionHeader = array(   "A" => "Fecha",
+                                            "B" => "Tipo de movimiento",
+                                            "C" => "Descripción",
+                                            "D" => "Importe",
+                                            "E" => "Referencia",
+                                            "F" => "Nombre de la Operación",
+                                        );
     
     function __construct() {
         parent::__construct();
         $this->i = 0;
-        $this->j = 1;
+        $this->j = 0;
         $this->loanArray;
         $this->UserLoansId = array();
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
@@ -251,6 +257,7 @@ class loanbook extends p2pCompany {
         $this->typeFileInvestment = "json";
         //$this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+
         //$this->loanIdArray = array(472);
         //$this->maxLoans = count($this->loanIdArray);
 // Do whatever is needed for this subsclass
@@ -535,181 +542,6 @@ class loanbook extends p2pCompany {
         }
         return $newTotalArray;
     }
-
-    /*     * ************************************************************ */
-    /* LOANBOOK MARKETPLACE CHANGE ELIMIMATED THE HISTORICAL TABLE */
-    /*     * ************************************************************ */
-    /**
-     * collect all investment
-     * @param Array $structure
-     * @return Array
-     */
-    /* function collectHistorical($structure) { //loanbook doesnt have pagination
-      $totalArray = array();
-      $str = $this->getCompanyWebpage();  // load Webpage into a string variable so it can be parsed
-      $dontRepeat = true;
-      $dom = new DOMDocument;
-      $dom->loadHTML($str);
-      $dom->preserveWhiteSpace = false;
-
-      $sections = $dom->getElementsByTagName('tbody');
-      foreach ($sections as $section) {
-
-      $trs = $section->getElementsByTagName('tr');
-      if ($totalArray !== false) {
-      foreach ($trs as $key => $tr) {
-
-      if ($key == 0 && $dontRepeat == true) { //Compare structures, olny compare the first element
-      $structureRevision = $this->htmlRevision($structure, 'tr', $section, 'class', 'fila_subasta', null, 0, 1);
-      $dontRepeat = false;
-      if ($structureRevision[1]) {
-      $totalArray = false; //Stop reading in error
-      break;
-      }
-      }
-
-      $tempAttribute = $tr->getAttribute('class');
-      if ($tempAttribute == 'fila_subasta' || $tempAttribute == 'fila_subasta tablesorter-childRow') {
-
-      $tds = $tr->getElementsByTagName('td');
-      $index = -1;
-      foreach ($tds as $td) {
-      $index++;
-      switch ($index) {
-      case 0:
-      $tempArray['marketplace_country'] = 'ES';
-      break;
-      case 1:
-      $divs = $td->getElementsByTagName('div');
-      foreach ($divs as $div) {
-
-      $tempData = explode(",", $div->nodeValue);
-      $tempDataAmount = explode(" ", $tempData[count($tempData) - 1]);
-
-      for ($i = 1; $i < count($tempData); $i++) { //If the purpose have one or more ',' we need fix our array.
-      if ($i != count($tempData) - 1) {
-      $tempData[0] = $tempData[0] . $tempData[$i];
-      }
-      if ($i == count($tempData) - 1) {
-      $tempData[1] = $tempData[count($tempData) - 1];
-      }
-      }
-
-      $loanReference = explode("€", str_replace(" ", "", $tempData[1]));
-
-      echo 'loan id : <br>';
-      /* $this->print_r2($tempData);
-      $this->print_r2($tempData[1]);
-      $this->print_r2($loanReference); */
-
-    //print_r($tempData);
-    /* $tempDataAux = explode(" ", $tempData[0]);
-
-      $max = count($tempDataAux);
-      foreach ($tempDataAux as $key => $tmp) {
-      //echo 'Ascii ' .$key . " :". ord($locationArray) . '/';
-      if (!$tmp) {
-      unset($tempDataAux[$key]);
-      }
-      }
-      unset($tempDataAux[0]);
-
-      $sector = '';
-      $auxKey = 0;
-
-      foreach ($tempDataAux as $key => $sectorArray) {
-      if (ord($sectorArray) == LINE_FEED) {
-      $auxKey = $key;
-      break;
-      }
-
-      $sector = $sector . $sectorArray . ' ';
-      }
-
-      $location = '';
-      for ($i = $auxKey + 1; $i <= $max; $i++) {
-      echo $i . ': ' . $tempDataAux[$i];
-      if ($tempDataAux[$i]) {
-      $location = $location . $tempDataAux[$i] . ' ';
-      }
-      }
-
-
-
-      //$tempArray['marketplace_sector'] = $sector;
-      $tempArray['marketplace_requestorLocation'] = $location;
-      $tempArray['marketplace_amount'] = $this->getMonetaryValue($tempDataAmount[1]);
-      $tempArray['marketplace_loanReference'] = trim($loanReference[1]);
-
-      $as = $div->getElementsByTagName('a');  //just one is found
-      foreach ($as as $a) {
-      $tempArray['marketplace_purpose'] = trim($a->nodeValue);
-      }
-
-      break;
-      }
-      break;
-      case 2:
-      $tempProductType = trim($td->nodeValue);
-      if (stripos($tempProductType, "stamo")) {  // LOAN
-      $tempArray['marketplace_productType'] = LOAN;
-      }
-      if (stripos($tempProductType, "agar")) {  // PAGARÉ
-      $tempArray['marketplace_productType'] = PAGARE;
-      }
-      break;
-      case 3:
-      $tempArray['marketplace_rating'] = trim($td->nodeValue);
-      break;
-      case 4:
-      break;
-      case 5:
-      $tempArray['marketplace_interestRate'] = $this->getPercentage($td->nodeValue);
-      break;
-      case 7:
-      list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($td->nodeValue);
-      break;
-      case 6:
-      break;
-      case 8:
-      $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($td->nodeValue);
-      break;
-      case 9:
-      list($tempArray['marketplace_timeLeft'], $tempArray['marketplace_timeLeftUnit'] ) = $this->getDurationValue($td->nodeValue);
-      break;
-      }
-      }
-
-      if ($tempArray['marketplace_subscriptionProgress'] == 10000) {
-      if ($tempArray['marketplace_timeLeft']) {
-      $tempArray['marketplace_statusLiteral'] = 'Completado/Con tiempo';
-      $tempArray['marketplace_status'] = PERCENT;
-      } else {
-      $tempArray['marketplace_statusLiteral'] = 'Completado/Sin tiempo';
-      $tempArray['marketplace_status'] = CONFIRMED;
-      $tempArray['marketplace_timeLeft'] = 0;
-      }
-      } else {
-      $tempArray['marketplace_statusLiteral'] = 'En proceso';
-      }
-      }
-      if ($tempArray) {
-      $totalArray[] = $tempArray;
-      }
-      unset($tempArray);
-      }
-      }
-      }
-      foreach ($totalArray as $key => $investment) { //Delete empy lines
-      if (!$investment['marketplace_loanReference'] || !$investment['marketplace_loanReference'] = null || !$investment['marketplace_loanReference'] = '') {
-      unset($totalArray[$key]);
-      }
-      }
-      return [$totalArray, false, null, $structureRevision[0], $structureRevision[2]]; //false -> Loanbook doesnt have pagination
-      //$totalarray Contain the pfp investment or is false if we have an error
-      //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
-      //$structureRevision[2] return the type of error
-      } */
 
     /**
      *
@@ -1186,7 +1018,6 @@ class loanbook extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($uls as $ul) {
-
                     $as = $ul->getElementsByTagName('a');
                     $this->verifyNodeHasElements($as);
                     if (!$this->hasElements) {
@@ -1215,60 +1046,78 @@ class loanbook extends p2pCompany {
                 }
 
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
+                if(empty($this->tempUrl['globalVariablespage'])){
+                    $this->tempUrl['globalVariablespage'] = array_shift($this->urlSequence);
+                }
+                $this->getCompanyWebpageMultiCurl($this->tempUrl['globalVariablespage']);  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
+                if(empty($this->tempArray)){
+                    $dom = new DOMDocument;
+                    libxml_use_internal_errors(true);
+                    $dom->loadHTML($str); // obtained in the function	"companyUserLogin"	
+                    $dom->preserveWhiteSpace = false;
 
-                $dom = new DOMDocument;
-                libxml_use_internal_errors(true);
-                $dom->loadHTML($str); // obtained in the function	"companyUserLogin"	
-                $dom->preserveWhiteSpace = false;
-
-                // Read the global investment data of this user
-                $spans = $dom->getElementsByTagName('span');
-                $this->verifyNodeHasElements($spans);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
-                foreach ($spans as $span) {
-                    if ($span->getAttribute('class') == 'lb_main_menu_bold') {
-                        $this->tempArray['global']['myWallet'] = $span->nodeValue;
-                        echo $this->tempArray['global']['myWallet'];
-                        break; //myWallet is only the first span
+                    // Read the global investment data of this user
+                    $spans = $dom->getElementsByTagName('span');
+                    $this->verifyNodeHasElements($spans);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
-                }
-
-                $divs = $dom->getElementsByTagName('div');
-                $this->verifyNodeHasElements($divs);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
-                foreach ($divs as $div) {
-                    if ($div->getAttribute('id') == 'lb_cartera_data_2') {
-                        $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
-                        echo $div->nodeValue;
+                    foreach ($spans as $span) {
+                        if ($span->getAttribute('class') == 'lb_main_menu_bold') {
+                            $this->tempArray['global']['myWallet'] = $span->nodeValue;
+                            echo $this->tempArray['global']['myWallet'];
+                            break; //myWallet is only the first span
+                        }
                     }
+
+                    $divs = $dom->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($divs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
+                    foreach ($divs as $div) {
+                        if ($div->getAttribute('id') == 'lb_cartera_data_2') {
+                            $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
+                            echo $div->nodeValue;
+                        }
+                    }              
+                    $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
+                    $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
                 }
-
-
-                $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
-
-
-                print_r($this->tempArray);
-
-                $this->idForSwitch++;
-                $url = array_shift($this->urlSequence);
-                $dateInit = strtotime($this->dateInit) * 1000;
-                $dateFinish = strtotime($this->dateFinish) * 1000;
+                
+                //$continue = $this->downloadTimePeriod("20171104", $this->period);
+                //echo "_" . $this->dateInitPeriod . "/" . $this->dateFinishPeriod . "_";
+                $dateInit = strtotime($this->dateInit); //strtotime($this->dateInitPeriod);
+                $dateFinish = strtotime($this->dateFinish); //strtotime($this->dateFinishPeriod);
+               // echo "_" . $dateInit . "/" . $dateFinish . "_";
+                /*if($continue){
+                    $this->idForSwitch = 3;
+                }
+                else{*/
+                    $this->idForSwitch++;
+                //}
+                if(empty($this->tempUrl['downloadTransaction'])){
+                    $this->tempUrl['downloadTransaction'] = array_shift($this->urlSequence);
+                }
+                $url = $this->tempUrl['downloadTransaction'];
                 $url = strtr($url, array('{$date1}' => $dateInit)); //Date in milliseconds from 1970 
                 $url = strtr($url, array('{$date2}' => $dateFinish));
-                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "_" . $this->numPartFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
+                $this->numPartFileTransaction++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1325,7 +1174,7 @@ class loanbook extends p2pCompany {
                 break;
             case 8:
                 //echo $str;
-                $this->loanArray[$this->j - 1]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
+                $this->loanArray[$this->j]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
 
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -1344,19 +1193,19 @@ class loanbook extends p2pCompany {
                     switch ($key) {
                         case 7:
                             $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
-                            $this->loanArray[$this->j - 1]['B'] = $str[0]; //Loan Purpose
-                            $this->loanArray[$this->j - 1]['C'] = $str[1]; //Loan Price target
-                            $this->loanArray[$this->j - 1]['D'] = explode("(", $str[2])[0]; //Loan Location
+                            $this->loanArray[$this->j]['B'] = $str[0]; //Loan Purpose
+                            $this->loanArray[$this->j]['C'] = $str[1]; //Loan Price target
+                            $this->loanArray[$this->j]['D'] = explode("(", $str[2])[0]; //Loan Location
                             break;
                         case 8:
                             $str = explode(" ", trim($div->nodeValue));
-                            $this->loanArray[$this->j - 1]['E'] = $str[0]; //Loan Rating
+                            $this->loanArray[$this->j]['E'] = $str[0]; //Loan Rating
                             break;
                         case 12:
-                            $this->loanArray[$this->j - 1]['F'] = trim($div->nodeValue); //Initial TAE
+                            $this->loanArray[$this->j]['F'] = trim($div->nodeValue); //Initial TAE
                             break;
                         case 18:
-                            $this->loanArray[$this->j - 1]['G'] = explode(" ", trim($div->nodeValue)[0]); //Time left
+                            $this->loanArray[$this->j]['G'] = explode(" ", trim($div->nodeValue))[0]; //Time left
                     }
                 }
 
@@ -1376,27 +1225,27 @@ class loanbook extends p2pCompany {
                             echo $subkey . " is " . trim($td->nodeValue) . SHELL_ENDOFLINE;
                             switch ($subkey) {
                                 case 3:
-                                    $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Type
+                                    $this->loanArray[$this->j]['H'] = trim($td->nodeValue); //Type
                                     break;
                                 /* case 7:
-                                  $this->loanArray[$this->j - 1]['H'] = trim($td->nodeValue); //Loan Type
+                                  $this->loanArray[$this->j]['H'] = trim($td->nodeValue); //Loan Type
                                   break; */
                                 case 9:
-                                    $this->loanArray[$this->j - 1]['I'] = trim($td->nodeValue); //Frecuencia pago
+                                    $this->loanArray[$this->j]['I'] = trim($td->nodeValue); //Frecuencia pago
                                     break;
                                 case 11:
-                                    $this->loanArray[$this->j - 1]['J'] = trim($td->nodeValue); //Interes Nominal
+                                    $this->loanArray[$this->j]['J'] = trim($td->nodeValue); //Interes Nominal
                                     break;
                                 case 15:
-                                    $this->loanArray[$this->j - 1]['K'] = trim($td->nodeValue); //Loan start date
+                                    $this->loanArray[$this->j]['K'] = trim($td->nodeValue); //Loan start date
                                     break;
                                 case 17:
-                                    $this->loanArray[$this->j - 1]['L'] = trim($td->nodeValue);
+                                    $this->loanArray[$this->j]['L'] = trim($td->nodeValue);
                                     break;
                                 case 19:
                                     $str = array_values(array_unique(explode(" ", trim($td->nodeValue))));
                                     print_r($str);
-                                    $this->loanArray[$this->j - 1]['M'] = trim($str[2]); //Duration
+                                    $this->loanArray[$this->j]['M'] = trim($str[2]); //Duration
                                     break;
 
                                 //case 21 SECTOR
@@ -1407,7 +1256,7 @@ class loanbook extends p2pCompany {
                 }
 
                 print_r($this->loanArray);
-                //$this->loanArray[$this->j - 1]['B'];
+                //$this->loanArray[$this->j]['B'];
 
 
                 if ($this->j < $this->maxUserLoans) {
@@ -1417,6 +1266,7 @@ class loanbook extends p2pCompany {
                 } else {
                     $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                     $this->saveFilePFP($this->fileName, json_encode($this->loanArray));
+                    
                     $this->idForSwitch++;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                     break;
@@ -1751,7 +1601,7 @@ class loanbook extends p2pCompany {
      */
     public function translatePaymentFrequency($inputData) {
         $type = WIN_PAYMENTFREQUENCY_UNKNOWN;
-        $inputData = strtoupper(trim($inputData));
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PAGO ÚNICO":
                 $type = WIN_PATMENTFREQUENCY_ONEPAYMENT;
@@ -1777,7 +1627,7 @@ class loanbook extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "PRÉSTAMO":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
