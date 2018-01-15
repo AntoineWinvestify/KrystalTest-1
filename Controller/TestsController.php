@@ -177,9 +177,9 @@ class TestsController extends AppController {
           return true; //Continue period download */
     }
 
-    function arrayToExcel(/* $array, $excelName */) {
-        $array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
-        $excelName = "prueba";
+    function arrayToExcel($array, $excelName) {
+        /*$array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
+        $excelName = "prueba";*/
         $keyArray = array();
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
@@ -195,12 +195,9 @@ class TestsController extends AppController {
         $objPHPExcel->setActiveSheetIndex(0)
                 ->fromArray($keyArray, NULL, 'A1')
                 ->fromArray($array, NULL, 'A2');
-
-        /* header('Content-Type: application/vnd.ms-excel');
-          header('Content-Disposition: attachment;filename="' . $excelName . '.xls"');
-          header('Cache-Control: max-age=0'); */
+        
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save(APP . "files" . DS . 'preuba2.xls');
+        $objWriter->save($excelName);
         exit;
     }
 
