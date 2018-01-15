@@ -443,6 +443,7 @@ class twino extends p2pCompany {
 
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
+                    sleep(2);
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     $this->idForSwitch--;
@@ -480,6 +481,7 @@ class twino extends p2pCompany {
                     $this->idForSwitch = 9;
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
+                    sleep(2);
                     $this->controlVariable = false;
                     $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     $this->idForSwitch = 8;
@@ -498,6 +500,7 @@ class twino extends p2pCompany {
                     echo 'downloading in ' . $this->statusDownloadUrl . $response['reportId'] . '/download';
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
+                    sleep(2);
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     $this->idForSwitch = 7;
