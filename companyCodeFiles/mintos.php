@@ -3303,12 +3303,10 @@ class mintos extends p2pCompany {
         $node2 = $dom2->loadHTML($node2);
         
         $node1 = $this->cleanDomTag($node1, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'td'),
             array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'm-labeled-col'),
         ));
          
         $node2 = $this->cleanDomTag($node2, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'td'),
             array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'm-labeled-col'),
         ));
         
