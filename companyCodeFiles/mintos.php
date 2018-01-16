@@ -3068,10 +3068,14 @@ class mintos extends p2pCompany {
                         $clone = $table->cloneNode(TRUE);                       // Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone,TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
-                        $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
-                        exit;
-                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
+                        $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
+                        if($revision){
+                            echo ' ok';
+                            $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
+                        } else{
+                            $this->tempArray['error'][] = $this->loanIds[$this->i - 1];
+                        }                     
                         break;
                     }
                 }
@@ -3297,20 +3301,23 @@ class mintos extends p2pCompany {
     function structureRevisionAmortizationTable($node1, $node2){
         
         $dom1 = new DOMDocument();
-        $node1 = $dom1->loadHTML($node1);
+        $dom1->loadHTML($node1);
         
         $dom2 = new DOMDocument();
-        $node2 = $dom2->loadHTML($node2);
+        $dom2->loadHTML($node2);
         
-        $node1 = $this->cleanDomTag($node1, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'm-labeled-col'),
+        $dom1 = $this->cleanDomTag($dom1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'tbody'),
+            array('typeSearch' => 'tagElement', 'tag' => 'i'),
         ));
          
-        $node2 = $this->cleanDomTag($node2, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'm-labeled-col'),
+        $dom2 = $this->cleanDomTag($dom2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'tbody'),
+            array('typeSearch' => 'tagElement', 'tag' => 'i'),
         ));
         
-        $structureRevision = $this->verify_dom_structure($node1, $node2);
+        echo 'compare structure';
+        $structureRevision = $this->verifyDomStructure($dom1, $dom2);
         return $structureRevision;
     }
     
