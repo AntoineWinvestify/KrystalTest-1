@@ -160,7 +160,10 @@ class ecrowdinvest extends p2pCompany {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
                     $tempArray['marketplace_status'] = PERCENT;
                 }
-                foreach ($companyBackup as $inversionBackup) { //if completed and same status that is in backup
+                //print_r($tempArray);
+                foreach ($companyBackup as $inversionBackup) { //if completed and same status that is in backup 
+                   // echo '//////////////////// comapare with backup ' . $inversionBackup['Marketplacebackup']['marketplace_loanReference'] . ' and ' . $tempArray['marketplace_loanReference'];
+                    
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] === $tempArray['marketplace_status']) {
                         echo HTML_ENDOFLINE . $tempArray['marketplace_loanReference'] . HTML_ENDOFLINE;
                         print_r($inversionBackup);
@@ -168,6 +171,7 @@ class ecrowdinvest extends p2pCompany {
                         $investmentController = true;
                     }
                 }
+                
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
                 $tempArray['marketplace_statusLiteral'] = 'En estudio';
                 $tempArray['marketplace_status'] = null;
@@ -178,27 +182,34 @@ class ecrowdinvest extends p2pCompany {
 
 
             if ($investmentController) { //Don't save a already existing investment
+                echo "unset, don't save";
                 unset($tempArray);
                 $investmentController = false;
             } else {
+                echo "save:";
+                print_r($tempArray);
                 $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                 $totalArray[] = $tempArray;
-                $this->print_r2($totalArray);
                 unset($tempArray);
             }
             echo $readController;
-            if ($readController > 50) {  //If we find more than 25 completed investment existing in the backpup, stop reading
+            if ($readController > 15) {  //If we find more than 25 completed investment existing in the backpup, stop reading
                 echo 'Stop reading';
                 echo $readController;
                 break;
             }
         }
-        $this->print_r2($totalArray);
+    
         echo 'To delete';
         print_r($this->investmentDeletedList);
         $deletedInvestment = $this->deleteInvestment($this->investmentDeletedList);
-
-        $totalArray = array_merge($totalArray,$deletedInvestment);
+        echo 'totalpremerge';
+        print_r($totalArray);
+        if(!empty($deletedInvestment)){
+            $totalArray = array_merge($totalArray,$deletedInvestment);
+            echo 'total:';
+            $this->print_r2($totalArray);       
+        }
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
