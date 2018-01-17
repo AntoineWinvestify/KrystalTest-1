@@ -584,7 +584,7 @@ class zank extends p2pCompany {
 
             $as = $dom->getElementsByTagName('a');
             foreach ($as as $a) {
-                $tempArray['marketplace_purpose'] = $a->getAttribute('data-original-title');
+                $tempArray['marketplace_purpose'] = utf8_decode($a->getAttribute('data-original-title'));
             }
 
             array_push($totalArray, $tempArray);
