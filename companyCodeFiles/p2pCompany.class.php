@@ -1418,7 +1418,7 @@ class p2pCompany {
     }
     
     /**
-     * Function to create all the amortization table by loan Id
+     * Function to save all the amortization table by loan Id as html
      */
     public function saveAmortizationTable() {
         foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
@@ -2875,6 +2875,18 @@ FRAGMENT
         }
         echo "Warning";
         return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+    
+    public function verifyErrorAmortizationTable() {
+        
+        if (!empty($this->tempArray['errorTables'])) {
+            
+        }
+        foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
+            if (!empty($this->tempArray['tables'][$loanId])) {
+                $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId . "." . $this->typeFileAmortizationtable, $this->tempArray['tables'][$loanId]);
+            }
+        }
     }
 
 }
