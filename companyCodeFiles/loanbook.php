@@ -159,12 +159,12 @@ class loanbook extends p2pCompany {
                             case 7:
                                 //Purpose and ID
                                 $a = $datum->getElementsByTagName('a')[0];
-                                $tempArray['marketplace_purpose'] = trim($a->nodeValue);
+                                $tempArray['marketplace_purpose'] = utf8_decode(trim($a->nodeValue));
                                 $tempArray['marketplace_loanReference'] = $a->getAttribute('data-id');
                                 //Amount
                                 $tempArray['marketplace_amount'] = $this->getMonetaryValue($datum->getElementsByTagName('span')[2]->nodeValue);
                                 //Location
-                                $tempArray['marketplace_requestorLocation'] = trim($datum->getElementsByTagName('span')[3]->nodeValue);
+                                $tempArray['marketplace_requestorLocation'] = utf8_decode(trim($datum->getElementsByTagName('span')[3]->nodeValue));
                                 //Loan id 
                                 $tempArray['marketplace_loanReference'] = trim($datum->getElementsByTagName('span')[4]->nodeValue) . " " . $a->getAttribute('data-id');
                                 //Progress
@@ -197,12 +197,12 @@ class loanbook extends p2pCompany {
                                     $this->conditon21 = true;
                                 }
                                 if ($this->conditon20) {
-                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                    $tempArray['marketplace_sector'] = utf8_decode(trim($datum->nodeValue));
                                 }
                                 break;
                             case 22:
                                 if ($this->conditon21) {
-                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                    $tempArray['marketplace_sector'] = utf8_decode(trim($datum->nodeValue));
                                 }
                                 break;
                             case 24:
@@ -213,7 +213,7 @@ class loanbook extends p2pCompany {
                                 break;
                             case 25:
                                 if ($this->conditon24) {
-                                    $tempArray['marketplace_sector'] = trim($datum->nodeValue);
+                                    $tempArray['marketplace_sector'] = utf8_decode(trim($datum->nodeValue));
                                 }
                                 break;
                         }

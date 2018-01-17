@@ -422,12 +422,12 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_status'] = REJECTED;
                 }
 
-                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
-                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
+                $tempArray['marketplace_sector'] = utf8_decode($subdivs[124]->getElementsByTagName('h4')[0]->nodeValue);
+                $tempArray['marketplace_purpose'] = utf8_decode($subdivs[124]->getElementsByTagName('p')[0]->nodeValue);
 
                 echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
                 $tds = $subdivs[126]->getElementsByTagName('td');
-                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+                $tempArray['marketplace_requestorLocation'] = utf8_decode($tds[5]->nodeValue);
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
