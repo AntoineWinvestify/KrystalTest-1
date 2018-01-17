@@ -89,6 +89,7 @@ class GearmanWorkerShell extends AppShell {
             }
             else if ($this->queueCurlFunction == "collectAmortizationTablesParallel") {
                 $this->newComp[$info["companyIdForQueue"]]->saveAmortizationTable();
+                $this->newComp[$info["companyIdForQueue"]]->verifyErrorAmortizationTable();
             }
             $this->logoutOnCompany($info["companyIdForQueue"], $str);
             if ($info["typeOfRequest"] == "LOGOUT") {
