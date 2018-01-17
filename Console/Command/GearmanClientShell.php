@@ -152,7 +152,7 @@ class GearmanClientShell extends AppShell {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $flow = constant("WIN_ERROR_" . $this->flowName);
-        $date = date("Ymd", strtotime($this->date-1));
+        $date = date("Ymd", strtotime($this->date));
         $path = $this->userReference[$queueId] . DS . $date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
@@ -302,6 +302,11 @@ class GearmanClientShell extends AppShell {
         foreach ($this->userResult as $queueId => $userResult) {
             $globalDestruction = false;
             unset($this->queueInfo[$queueId]['companiesInFlow']);
+            /*
+             * foreach to verify if there was an error in the worker collecting the data
+             * $linkaccountId if it's defined as global, there was a crash error in the worker
+             * $result it is true if everything was correct and false if there was an error
+             */
             foreach ($userResult as $linkaccountId => $result) {
                 if ($linkaccountId == 'global') {
                     $globalDestruction = true;
@@ -316,6 +321,9 @@ class GearmanClientShell extends AppShell {
                 }
                 $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
             }
+            /*
+             * When there is a globalDestruction, all content of the files are deleted
+             */
             if ($globalDestruction) {
                 foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
                     $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
