@@ -88,10 +88,10 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
        $errors = null;
        for ($i = 0; $i < $lengthTempArray; $i++) {
            if (empty($this->tempArray[$i]['global']['error'])) {
-               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "1";
+               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
            }
            else {
-               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = "0";
+               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_ERROR;
                $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
            }
        }
