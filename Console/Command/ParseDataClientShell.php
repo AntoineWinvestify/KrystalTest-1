@@ -139,7 +139,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
                         $listOfActiveInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_ACTIVE);
-                        $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedaccount_id, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
+                        $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedAccount_id, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
                         
                         $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE. ".*", true);
 
@@ -359,7 +359,7 @@ print_r($database);
                 
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
-                if ($keyDateTransactionNames[0] == "global") {               // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                if ($keyDateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple

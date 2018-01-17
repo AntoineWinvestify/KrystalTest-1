@@ -268,7 +268,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             unset( $newLoans);
             
   
-            
+            print_r($returnData[$linkedAccountKey]['parsingResultTransactions']['2015-10-29']);
            
       
             
@@ -284,9 +284,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     //      $this->addNewArray(&$inputArray, $array, $arrayData )       // generate a statechange record
                             $dateKeys = array_keys($totalParsingresultTransactions);
                             $key = $dateKeys[count($dateKeys) - 1];
-                            $totalParsingresultTransactions[$loanId][100]['date'] = $key;
-                            $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
-                            $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";        
+                //            $totalParsingresultTransactions[$loanId][100]['date'] = $key;
+                //            $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
+                //            $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";
+                            $newArrayData = array($loanId => array(100 => array('date' => $key, 
+                                                'investment_loanId' => $loanId,
+                                                'internalName' => "activeStateChange")));
+                            $this->addNewArray($totalParsingresultTransactions[$loanId], $newArrayData);
                             continue;
                         }
                         if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
@@ -299,9 +303,13 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                    //        addNewArray(&$inputArray, $array, $arrayData )     // generate a statechange record
                             $dateKeys = array_keys($totalParsingresultTransactions);
                             $key = $dateKeys[count($dateKeys) - 1];
-                            $totalParsingresultTransactions[$loanId][100]['date'] = $key;
-                            $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
-                            $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";                                
+                //            $totalParsingresultTransactions[$loanId][100]['date'] = $key;
+                //            $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
+                //            $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange"; 
+                            $newArrayData = array(array(100) => array('date' => $key, 
+                                                'investment_loanId' => $loanId,
+                                                'internalName' => "activeStateChange"));
+                            $this->addNewArray($totalParsingresultTransactions[$loanId], $newArrayData);                            
                         continue;
                         }
                     }
@@ -831,43 +839,13 @@ function array_keys_recursive(&$inputArray, $maxDepth, $searchKey, $searchValue,
     /**
      * Add a new array to an existing array
      * 
-     * @param  array    $inputArray     the array to walk
-     * @param  array    $array          the set of indices of the "new" array to introduce
+     * @param  array    $inputArray     the array to to which the new array to be added
+     * @param  array    $array          the set of indices of the "new" array to introduce OR JUST INDEX?
      * @param  string   $arraydata      The data of the new array to introduce 
      * @return boolean
      */
-function addNewArray(&$inputArray, $array, $arrayData){
+function addNewArray(&$inputArray, $arrayData){
 
-    if ($depth < $maxDepth) {
-        $depth++;
-        $keys = array_keys($inputArray);
-
-        foreach($keys as $key){
-            if ($this->tempDepth > $depth) {
-                $control = $this->tempDepth - $depth;
-                for ($i = 0; $i < $control; $i++)  {               
-                    array_pop($this->tempKey);
-                }    
-            }
-            $this->tempKey[] = $key;
-            $this->tempDepth = $depth;
-                
-            if(is_array($inputArray[$key])){
-                $arrayKeys[$key] = $this->array_keys_recursive($inputArray[$key], $maxDepth, $searchKey, $searchValue, $depth);
-            }
-            else {
-                if ($depth == $maxDepth) {
-                    if ($searchValue == $inputArray[$key] && $searchKey == $key){
-                        $this->filteredArray[] = $this->tempKey;
-                        array_pop($this->tempKey);
-                    }
-                    else {
-                        array_pop($this->tempKey);
-                    }
-                }
-            }
-        }
-    }
 } 
  
 

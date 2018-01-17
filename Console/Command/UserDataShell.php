@@ -844,7 +844,24 @@ class UserDataShell extends AppShell {
         return WIN_LOANSTATUS_CANCELLED;
     }    
   
+ 
+    
+    /**
+     *  Calculates the new state of a investment. The new state is the badDebt state 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculateBadDebt(&$transactionData, &$resultData) {
+        
+        
+        return WIN_LOANSTATUS_CANCELLED;
+    } 
 
+    
+    
+   
     
     
 }

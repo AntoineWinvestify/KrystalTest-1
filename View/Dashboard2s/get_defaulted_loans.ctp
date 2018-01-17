@@ -35,7 +35,7 @@ echo $defaultedInvestments[0];
                                 <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_nominalInterestRate'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_nominalInterestRate'], 2), 2) . "%" ?></td>
                                 <td dataorder="<?php echo (int) explode("/", $defaultedInvestment['Investment']['investment_instalmentsProgress'])[0] / (int) explode("/", $defaultedInvestment['Investment']['investment_instalmentsProgress'])[1] ?>"><?php echo $defaultedInvestment['Investment']['investment_instalmentsProgress'] ?></td>
                                 <td dataorder="<?php echo $defaultedInvestment['Investment']['investment_outstandingPrincipal'] ?>"><?php echo number_format(round($defaultedInvestment['Investment']['investment_outstandingPrincipal'], 2), 2) . " &euro;"; ?></td>
-                                <td><?php echo $defaultedInvestment['Investment']['investment_nextPaymentDate']; ?></td>                                                       
+                                <td><?php echo $defaultedInvestment['Investment']['investment_nextPaymentDateTech']; ?></td>                                                       
                             </tr>
                         <?php } ?>
                     </tbody>
