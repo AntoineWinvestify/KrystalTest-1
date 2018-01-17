@@ -1422,11 +1422,10 @@ class p2pCompany {
      */
     public function saveAmortizationTable() {
         foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
-            $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId .  "." . $this->typeFileAmortizationtable, $this->tempArray[$loanId]);
+            if (!empty($this->tempArray['tables'][$loanId])) {
+                $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId . "." . $this->typeFileAmortizationtable, $this->tempArray['tables'][$loanId]);
+            }
         }
-        /*foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
-        }*/
     }
     
     /**
