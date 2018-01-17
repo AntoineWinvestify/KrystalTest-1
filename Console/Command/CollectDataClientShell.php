@@ -61,8 +61,13 @@ class CollectDataClientShell extends GearmanClientShell {
         while ($numberOfIteration == 0){
             if (Configure::read('debug')) {
                 $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
-            }
-            $pendingJobs  = $this->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, $jobsInParallel);
+            } 
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA),
+                                                  WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA,
+                                                $jobsInParallel);
+            print_r($pendingJobs);            
+            
+            
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");

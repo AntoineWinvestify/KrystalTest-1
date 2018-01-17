@@ -57,7 +57,12 @@ class PreprocessClientShell extends GearmanClientShell {
         $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $pendingJobs  = $this->checkJobs(WIN_QUEUE_STATUS_START_PREPROCESS, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_START_PREPROCESS, WIN_QUEUE_STATUS_STARTING_PREPROCESS),
+                                                  WIN_QUEUE_STATUS_STARTING_PREPROCESS,
+                                                $jobsInParallel);
+            print_r($pendingJobs);         
+            
+            
             print_r($pendingJobs);
             if (!empty($pendingJobs)) {
                 $linkedaccountsResults = [];

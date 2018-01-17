@@ -50,7 +50,10 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_DATA_EXTRACTED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES),
+                                                  WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES,
+                                                $jobsInParallel);            
+            
             $linkedaccountsResults = [];
             $queueInfos = [];
             print_r($pendingJobs);
@@ -136,6 +139,8 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
                 
+                // ######################################################################################################                
+
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $numberOfIteration++;
             }

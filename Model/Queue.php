@@ -147,7 +147,7 @@ public function removeFromQueue($queueReference) {
 public function checkQueue($queueReference) {
 	$result = $this->find("first", array("recursive" => -1,
 			"conditions" => array("queue_userReference" => $queueReference,
-			"queue_status" 		=> WAITING_FOR_EXECUTION),
+			"queue_status"  => WAITING_FOR_EXECUTION),
 			));
 	if (empty($result)) {
 		return false;
@@ -252,7 +252,7 @@ public function beforeSave1($options = array()) {
             return;
         }
 
-        print_r($result);
+//        print_r($result);
         return $result;
     }
     

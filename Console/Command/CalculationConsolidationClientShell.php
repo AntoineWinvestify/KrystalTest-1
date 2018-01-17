@@ -20,8 +20,8 @@
  * @date 2017-12-23
  * @package
  *
- * This client deals with performing the parsing of the files that have been downloaded
- * from the PFP's. Once the data has been parsed by the Worker, the Client starts analyzing
+ * This client deals with performing the parsing of the amortization table data that has been downloaded
+ * from the PFP's. The Client starts analyzing
  * the data and writes the data-elements to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
  *
@@ -56,10 +56,9 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
         return;
     }
 
-    public function initConsolidationClient() {
+    public function initClient() {
         $handle = new UserDataShell();
 
-        $this->resetTestEnvironment();      // Temporary function
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
@@ -83,7 +82,10 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
         $this->variablesConfig = Configure::read('internalVariables');
         
         while (true) {
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_START_CALCULATION_CONSOLIDATION, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION),
+                                                  WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION,
+                                                $jobsInParallel);              
+            
             print_r($pendingJobs);
 
             if (Configure::read('debug')) {
@@ -125,7 +127,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                             'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'queueInfo' => json_decode($job['Queue']['queue_info'], true));
                     }
-                    print_r($params);
+//                   print_r($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
@@ -140,16 +142,14 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                 $this->consolidateData($params);
                 exit;
                 $this->consolidatePaymentDelay($params);
-exit;
+                
+                $this->verifyStatus(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, "Amortization tables succesfully stored", WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
 
 
-
-
-
-                $this->GearmanClient->runTasks();
+        //        $this->GearmanClient->runTasks();
 
                 // ######################################################################################################
-
+            /*
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
@@ -181,6 +181,7 @@ exit;
                     );
                 }
                 break;
+            */    
             } 
             else {
                 $inActivityCounter++;
@@ -204,7 +205,7 @@ exit;
     /** FLOW 3C
      * This method writes the 'nextPaymentDateTech' in the investment object. 
      * This is done for ALL the loanIds/loanslices whose amortization tables
-     * are stored on the directory currently under processing. These files are of
+     * are stored in the directory currently under processing. These files are of
      * format amortizationtable_[investmentslice_id][loanId].html 
      * example: amortizationtable_120665_13730-01.html
      * 
@@ -212,65 +213,52 @@ exit;
      * 
      *  @param  $array          Array which holds the list of identifiers of the active loans
      *
-     *  @return boolean true
-     *                  false
+     *  @return boolean 
      *
      */
-    public function consolidateData(&$linkedAccounts) {
+    public function consolidateData(&$linkedAccountData) {
  
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 
-        
-
-        foreach ($linkedAccounts as $linkedAccountKey => $linkedAccount) {
-            print_r($linkedAccount['queueInfo']);
-            $tempNames = explode("_", $linkedAccount['files']);
+        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
             foreach ($linkedAccount['files'] as $tempName) {
-                print_r($tempName);
                 $name = explode("_", $tempName);
-                $jsonLoanIds[] = $name[3];
-                
+                $tempIdData = explode(".", $name[3]);
+                $nameIdData[0] = $tempIdData[0];
+                $nameIdData[1] = $name[2];
+                $loanDataId[] = $nameIdData;
             }
-            print_r($jsonLoanIds);
-            exit;
-            $readoutDate = $file['queueInfo']['date'];
-            $linkedAccountId = $paramsKey;
-            echo $readoutDate . $linkedAccountId;
-       //     $file = new File($params[$linkedAccountId]['files'][0]);        
-       //     $jsonLoanIds = $file->read(true, 'r');
-       //     $loanIds = json_decode($jsonLoanIds, true); 
-    //        print_r($loanIds);            
-            
-echo "ANANA";
-print_r($jsonLoanIds);
-            foreach ($loanIds as $loanKey => $loanId) { // chunking is required
-                echo "\n$loanKey and $loanId ";
-    exit;
+
+            foreach ($loanDataId as $loanKey => $loanId) { // chunking is required
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
-                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanKey),
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId[1]),
                                                                            'recursive' => 1)
                                                                         );
 
-                foreach ($result[0]['Amortizationtable'] as $table) {
-                    if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE) {
-                        $scheduledDate = $table['amortizationtable_scheduledDate'];
-                        echo $scheduledDate . " = " . $result[0]['Investmentslice']['investment_id'] . "\n";
+                $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search bsckwards in amortization table
 
-               //         $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
-               //                                        'investment_nextPaymentDate' =>  $scheduledDate )
-               //                                        );
+                foreach ($reversedData as $table) {
+                    if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE || 
+                                                  $table['amortizationtable_paymentDate'] == "") {                       
+                        $tempScheduledDate = $table['amortizationtable_scheduledDate'];
+                    }
+                    else {
                         break;
                     }
                 }
+                
+                $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
+                                               'investment_nextPaymentDateTech' =>  $tempScheduledDate )
+                                               );   
             } 
         }
                                    
 
 $timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
+echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 
         return true;
     }
@@ -282,21 +270,15 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      * This method scans through *ALL* active loans per P2P of an investor and calculates the number of days of 
      * payment delay. The result is written in the investment model object.
      *  
-     * 
      *  @param  $array          Array which holds the list of identifiers of the active loans
-     *
-     *  @return boolean true
-     *                  false
+     *  @return boolean
      *
      */
     public function consolidatePaymentDelay($params) {    
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
-print_r($params);
 
-        $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE),
-                                        //    array('investment_nextPaymentDate <' => "2017-11-30"
-                                                
+        $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE),    
 									));
 
         $index = 0;
@@ -338,11 +320,9 @@ print_r($params);
         while($controlIndex < 1); 
         
         $this->Investment->saveMany($investment, array('validate' => true));
-
-        
+      
 $timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
-
+echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         return true;
     }    
     

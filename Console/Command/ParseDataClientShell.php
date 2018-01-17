@@ -97,9 +97,11 @@ class ParseDataClientShell extends GearmanClientShell {
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
-        
+
         while (true) {
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, WIN_QUEUE_STATUS_EXTRACTING_DATA_FROM_FILE),
+                                                  WIN_QUEUE_STATUS_EXTRACTING_DATA_FROM_FILE,
+                                                $jobsInParallel);
             print_r($pendingJobs);
 
             if (Configure::read('debug')) {
@@ -204,13 +206,18 @@ class ParseDataClientShell extends GearmanClientShell {
                         else {
                             echo "ERROR ENCOUNTERED\n"; 
                         }
-                    }
-
+                    }                                                       //verifyStatus($status, $message, $restartStatus, $errorStatus)
+                    $this->verifyStatus($newFlowState, 
+                            "Data successfully downloaded", 
+                            WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, 
+                            WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
+/*               
                     $this->Queue->id = $queueIdKey;
                     $this->Queue->save(array('queue_status' => $newFlowState,
                         'queue_info' => json_encode($this->queueInfo[$queueIdKey]),
                             ), $validate = true
                     );
+*/
                 }
                 break;
             } 
@@ -247,7 +254,7 @@ class ParseDataClientShell extends GearmanClientShell {
 ini_set('memory_limit','2048M');      
 $timeStart = time();
         $calculationClassHandle = new UserDataShell();
-        $investmentId = NULL;
+        $investmentId = null;
         $linkedaccountId = $platformData['linkedaccountId'];
         $userReference = $platformData['userReference']; 
         $controlVariableFile =  $platformData['controlVariableFile'];                   // Control variables as supplied by P2P
@@ -347,7 +354,7 @@ print_r($database);
                     }
                 } 
  */            
-                $database['investment']['investment_new'] = NO;
+//                $database['investment']['investment_new'] = NO;
                 echo "\nkeyDateTransaction = $keyDateTransaction \n";
                 
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
@@ -409,9 +416,6 @@ print_r($database);
                     if ($arrayIndex !== false) {        // Deleting the array from new loans list
                         unset($platformData['workingNewLoans'][$arrayIndex]);
                     }
-                    else {          // ONLY FOR TESTING
-                        $errorDeletingWorkingNewloans++;
-                    }
 
                     echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
                     $database['investment']['investment_myInvestment'] = 0;
@@ -421,9 +425,7 @@ print_r($database);
 $database['measurements'][$keyDateTransaction]['decrements'] = 0;
 $database['measurements'][$keyDateTransaction]['increments'] = 0; 
 
-$STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS + 1;
-$STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
- 
+
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
  
              //       $platformData['newLoans'][]= $transactionData['investment_loanId'];
@@ -452,7 +454,7 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
                         case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
                         case WIN_LOANSTATUS_ACTIVE:
                         case WIN_LOANSTATUS_FINISHED:    
-                            $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
+//                            $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
                             $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                             $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
                         break;
@@ -473,11 +475,11 @@ $STARTED_NEW_ACCOUNTS_LIST[] = $keyDateTransaction;
 echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
 echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";
                         $loanStatus = WIN_LOANSTATUS_ACTIVE;        // So amortization data is collected
-                        $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
+ //                       $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
                         $database['investment']['investment_secondaryMarketInvestment'] = 0;  
                         $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
-             //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 510
+             //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 501
                         $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                         $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
@@ -654,20 +656,22 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10004 ){
 //  print_r($database['payment']);
                 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
-                if ($database['investment']['investment_new'] == YES) {   
+//               if ($database['investment']['investment_new'] == YES) {
+                if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                     $resultCreate = $this->Investment->createInvestment($database['investment']);
 
                     if (!empty($resultCreate)) {
                         $investmentId = $resultCreate;
-                        echo "Saving NEW loan with investmentId = $investmentId, Done\n";
+                        echo "Saving 'NEW' loan with investmentId = $investmentId, Done\n";
                         $database['investment']['id'] = $resultCreate;
                     } else {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
                         }
                     }
-                } else {
+                } 
+                else {
                     $database['investment']['id'] = $investmentId;
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
                     $result = $this->Investment->save($database['investment']);
