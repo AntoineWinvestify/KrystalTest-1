@@ -2974,6 +2974,7 @@ class mintos extends p2pCompany {
             case 0:
                 $this->loanTotalIds = $this->loanIds;
                 $this->loanIds = array_values($this->loanIds);
+                $this->loanKeys = array_keys($this->loanIds);
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl();
                 echo 'Next: ' . $next . SHELL_ENDOFLINE;
@@ -3074,7 +3075,7 @@ class mintos extends p2pCompany {
                             echo ' ok';
                             $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
                         } else{
-                            $this->tempArray['error'][] = $this->loanIds[$this->i - 1];
+                            $this->tempArray['error'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         }                     
                         break;
                     }
