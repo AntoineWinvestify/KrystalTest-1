@@ -148,11 +148,11 @@ class Investor extends AppModel {
             'allowEmpty' => false,
             'message' => 'City validation error',
         ),
-/*        'investor_country' => array(
+        'investor_country' => array(
             'rule' => array('minLength', 2),
             'allowEmpty' => false,
             'message' => 'Country validation error',
-        ),*/
+        ),
         'investor_email' => array(
             'rule' => '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
             'allowEmpty' => false,
