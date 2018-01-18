@@ -324,7 +324,6 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
 
             $filterConditions = array("linkedaccount_id" => $linkedaccountId);
             $database = $calculationClassHandle->getLatestTotals("Userinvestmentdata", $filterConditions);
-print_r($database);
 
             $this->Userinvestmentdata->create();
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
@@ -332,7 +331,7 @@ print_r($database);
             $database['Userinvestmentdata']['date'] = $dateKey;
             
             $database['configParms']['outstandingPrincipalRoundingParm'] = '0.00001';      // configuration parameter 
-            $database['measurements'] = $tempMeasurements;
+
             
             foreach ($dates as $keyDateTransaction => $dateTransaction) {           // read all *individual* transactions of a loanId per day
 
@@ -422,8 +421,6 @@ print_r($database);
                     $database['investment']['investment_secondaryMarketInvestment'] = 0;  
 
 //$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
-$database['measurements'][$keyDateTransaction]['decrements'] = 0;
-$database['measurements'][$keyDateTransaction]['increments'] = 0; 
 
 
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
@@ -813,7 +810,6 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                     }
                 }
             }            
-            $tempMeasurements = $database['measurements'];
         }
 
         $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];      // Holds the *last* calculated value
@@ -840,7 +836,6 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
             'countNewAccountList' => count($STARTED_NEW_ACCOUNTS_LIST),
             'finished_duplicates_list' => $FINISHED_DUPLICATES_LIST,
             'countFinishedDuplicatesList' => count($FINISHED_DUPLICATES_LIST),
-            'measurements' => $tempMeasurements,
             'workingNewLoans' => $platformData['workingNewLoans'], 
             'countWorkingNewLoans' => count($platformData['workingNewLoans']),
             'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
