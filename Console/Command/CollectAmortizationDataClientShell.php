@@ -29,6 +29,8 @@ App::import('Shell','GearmanClient');
  */
 class CollectAmortizationDataClientShell extends GearmanClientShell {
     
+    protected $fileName = WIN_FLOW_AMORTIZATION_TABLE_FILE;
+    
     /**
      * Process to initiate the process to collect all the amortization tables
      */
