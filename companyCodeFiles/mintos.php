@@ -3075,7 +3075,7 @@ class mintos extends p2pCompany {
                             echo ' ok';
                             $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
                         } else{
-                            $this->tempArray['error'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                            $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         }                     
                         break;
                     }
