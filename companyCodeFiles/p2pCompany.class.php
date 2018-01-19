@@ -2877,15 +2877,14 @@ FRAGMENT
         return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
     }
     
+    /**
+     * Function to create a new loanIds.json with the amortizationTables that failed
+     * and rename the old file loanIds to 
+     */
     public function verifyErrorAmortizationTable() {
         
         if (!empty($this->tempArray['errorTables'])) {
             
-        }
-        foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
-            if (!empty($this->tempArray['tables'][$loanId])) {
-                $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId . "." . $this->typeFileAmortizationtable, $this->tempArray['tables'][$loanId]);
-            }
         }
     }
 
