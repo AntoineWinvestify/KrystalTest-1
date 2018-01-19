@@ -56,7 +56,7 @@ class CollectDataClientShell extends GearmanClientShell {
         $companyTypes = $this->Company->find('list', array(
             'fields' => array('Company.company_typeAccessTransaction')
         ));
-        $this->date = date("Ymd");
+        $this->date = date("Ymd", strtotime("-1 day"));
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
             if (Configure::read('debug')) {
@@ -102,7 +102,6 @@ class CollectDataClientShell extends GearmanClientShell {
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";
-                    print_r($linkedaccountsResults);
                     //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
                 $userLinkedaccounts = [];
@@ -122,8 +121,7 @@ class CollectDataClientShell extends GearmanClientShell {
                                 //that we are going to collect inside the variables companiesInFlow
                                 $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
-                            //After verify that a folder doesn't exist, 
-                            //we verify that companiesInFlow doesn't exist neither
+                            $this->queueInfo[$job['Queue']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = date("Ymd", strtotime($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']));
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
@@ -135,7 +133,6 @@ class CollectDataClientShell extends GearmanClientShell {
                         print_r($this->queueInfo[$job['Queue']['id']]['companiesInFlow']);
                     }
                     
-
                 }
                 
                 if (Configure::read('debug')) {
