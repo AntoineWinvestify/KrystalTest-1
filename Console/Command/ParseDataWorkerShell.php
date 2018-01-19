@@ -68,6 +68,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     protected $filteredArray;
     protected $tempKey = array();
     protected $tempDepth = 0;      // Required to see if the $depth is decreasing    
+    protected $startDate;
+    protected $finishDate;
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
@@ -94,6 +96,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['listOfCurrentActiveInvestments']    => list of all active loans BEFORE this analysis     
      *      $data['linkedAccountId']['files'][filename1']           => Array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']
+     *      $data['linkedAccountId']['finishDate']
+     *      $data['linkedAccountId']['startDate']
 
      * @return array 
      *  The worker provides all error information to the Client according to the following format:  
@@ -134,7 +138,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
 
             $files = $data['files'];
-
+            $this->startDate = $data[$linkedAccountKey]['startDate'];
+            $this->finishDate = $data[$linkedAccountKey]['finishDate'];
             // First analyze the transaction file(s)
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
@@ -187,6 +192,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             $totalParsingresultInvestments = $tempResult;
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
+                            $this->callbackInit($tempResult, $companyHandle, $callbacks["transactionFile"]);
                             $totalParsingresultTransactions = $tempResult;
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
@@ -821,40 +827,61 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @param  string   $searchValue    Corresponding value of the key
      * @return array    array with the set of indices for each matched array
      */
-function array_keys_recursive(&$inputArray, $maxDepth, $searchKey, $searchValue, $depth = 0 ){
+    function array_keys_recursive(&$inputArray, $maxDepth, $searchKey, $searchValue, $depth = 0 ){
 
-    if ($depth < $maxDepth) {
-        $depth++;
-        $keys = array_keys($inputArray);
+        if ($depth < $maxDepth) {
+            $depth++;
+            $keys = array_keys($inputArray);
 
-        foreach($keys as $key){
-            if ($this->tempDepth > $depth) {
-                $control = $this->tempDepth - $depth;
-                for ($i = 0; $i < $control; $i++)  {               
-                    array_pop($this->tempKey);
-                }    
-            }
-            $this->tempKey[] = $key;
-            $this->tempDepth = $depth;
-                
-            if(is_array($inputArray[$key])){
-                $arrayKeys[$key] = $this->array_keys_recursive($inputArray[$key], $maxDepth, $searchKey, $searchValue, $depth);
-            }
-            else {
-                if ($depth == $maxDepth) {
-                    if ($searchValue == $inputArray[$key] && $searchKey == $key){
-                        $this->filteredArray[] = $this->tempKey;
+            foreach($keys as $key){
+                if ($this->tempDepth > $depth) {
+                    $control = $this->tempDepth - $depth;
+                    for ($i = 0; $i < $control; $i++)  {               
                         array_pop($this->tempKey);
-                    }
-                    else {
-                        array_pop($this->tempKey);
+                    }    
+                }
+                $this->tempKey[] = $key;
+                $this->tempDepth = $depth;
+
+                if(is_array($inputArray[$key])){
+                    $arrayKeys[$key] = $this->array_keys_recursive($inputArray[$key], $maxDepth, $searchKey, $searchValue, $depth);
+                }
+                else {
+                    if ($depth == $maxDepth) {
+                        if ($searchValue == $inputArray[$key] && $searchKey == $key){
+                            $this->filteredArray[] = $this->tempKey;
+                            array_pop($this->tempKey);
+                        }
+                        else {
+                            array_pop($this->tempKey);
+                        }
                     }
                 }
             }
         }
+    } 
+    
+    /**
+     * Clean the array of unnecessary values using array_walk_recursive_delete
+     * @param array $tempArray the array to walk recursively
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with functions from which we will clean the array
+     * @return null if config not exist
+     */
+    public function cleanDatesTempArray(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        if (empty($this->startDate)) {
+            return;
+        }
+        $rangeDates = $this->createDateRange($this->startDate, $this->finishDate);
+        array_shift($rangeDates);
+        array_push($rangeDates, $this->finishDate);
+        /******
+         * WE NEED TO DELETE DATES OUTSIDE THE RANGE
+         */
     }
-}  
-   
     
 }
 
