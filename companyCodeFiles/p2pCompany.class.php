@@ -2879,7 +2879,7 @@ FRAGMENT
     
     /**
      * Function to create a new loanIds.json with the amortizationTables that failed
-     * and rename the old file loanIds to 
+     * and rename the old file loanIds to oldIdsLoan
      */
     public function verifyErrorAmortizationTable() {
         
