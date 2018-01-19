@@ -424,17 +424,17 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_status'] = REJECTED;
                 }
 
-                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
-                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
+                $tempArray['marketplace_sector'] = utf8_decode($subdivs[124]->getElementsByTagName('h4')[0]->nodeValue);
+                $tempArray['marketplace_purpose'] = utf8_decode($subdivs[124]->getElementsByTagName('p')[0]->nodeValue);
 
                 echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
                 $tds = $subdivs[126]->getElementsByTagName('td');
-                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+                $tempArray['marketplace_requestorLocation'] = utf8_decode($tds[5]->nodeValue);
                 
                 if(strpos($tempArray['marketplace_statusLiteral'], 'ategor')){  //If the loan has been deleted, the pfp redeirect to the marketplace, we detect that and chage status
                     $tempArray['marketplace_statusLiteral'] = 'Eliminada';
                     $tempArray['marketplace_status'] = REJECTED;
-                }               
+                }
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
@@ -591,7 +591,7 @@ class zank extends p2pCompany {
 
             $as = $dom->getElementsByTagName('a');
             foreach ($as as $a) {
-                $tempArray['marketplace_purpose'] = $a->getAttribute('data-original-title');
+                $tempArray['marketplace_purpose'] = utf8_decode($a->getAttribute('data-original-title'));
             }
 
             array_push($totalArray, $tempArray);
