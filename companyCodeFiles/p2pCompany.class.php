@@ -2110,6 +2110,17 @@ class p2pCompany {
         return $dom;
     }
 
+    function cleanDomTagNotFirst($dom, $elementsToDelete) { //CLEAR A TAG
+        foreach ($elementsToDelete as $element) {
+            $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);           
+            foreach ($nodes as $key=>$node) {
+                if($key === 0) continue;
+                    $node->parentNode->removeChild($node);
+            }
+        }
+        return $dom;
+    }
+
     /**
      * Search the elements to delete in cleanDom and cleanDomTag functions.
      * 
