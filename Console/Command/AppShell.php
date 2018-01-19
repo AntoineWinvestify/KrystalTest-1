@@ -268,6 +268,26 @@ class AppShell extends Shell {
         return $list;
     }    
     
-    
-    
+    /**
+    * Returns every date between two dates as an array
+    * @param string $startDate the start of the date range
+    * @param string $endDate the end of the date range
+    * @param string $format DateTime format, default is Y-m-d
+    * @return array returns every date between $startDate and $endDate, formatted as "Y-m-d"
+    */
+    function createDateRange($startDate, $endDate, $format = "Ymd") {
+        $begin = new DateTime($startDate);
+        $end = new DateTime($endDate);
+
+        $interval = new DateInterval('P1D'); // 1 Day
+        $dateRange = new DatePeriod($begin, $interval, $end);
+
+        $range = [];
+        foreach ($dateRange as $date) {
+            $range[] = $date->format($format);
+        }
+
+        return $range;
+    }
+
 }
