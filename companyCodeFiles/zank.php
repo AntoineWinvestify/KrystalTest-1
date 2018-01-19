@@ -506,6 +506,14 @@ class zank extends p2pCompany {
                 "investment_typeOfInvestment" => "translateTypeOfInvestment",
                 "investment_statusOfLoan" => "translateLoanStatus"
             ]
+        ],
+        "transactionFile" => [
+            "cleanDatesTempArray" => [
+                "values" => [
+                    "startDate",
+                    "finishDate"
+                ]
+            ]
         ]
     ];
     
