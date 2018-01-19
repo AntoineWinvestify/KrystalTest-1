@@ -75,6 +75,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $companyNumber++;
         }
         
+        //This function is in GearmanWorkerShell
         $this->queueCurls->addListener('complete', array($this, 'multiCurlQueue'));
 
        //This is the queue. It is working until there are requests
@@ -88,7 +89,12 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
        $errors = null;
        for ($i = 0; $i < $lengthTempArray; $i++) {
            if (empty($this->tempArray[$i]['global']['error'])) {
-               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+               if (!empty($this->tempArray[$i]['errorTables'])) {
+                   $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
+               }
+               else {
+                   $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+               }
            }
            else {
                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_ERROR;
