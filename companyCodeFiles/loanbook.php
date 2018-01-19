@@ -140,6 +140,9 @@ class loanbook extends p2pCompany {
                         //echo HTML_ENDOFLINE . $index . " => " . $datum->nodeValue . HTML_ENDOFLINE;
                         switch ($index) {
                             case 0:
+                                
+                                $idLinkNode = $datum->getElementsByTagName('a')[0];
+                                $urlId = explode("/",trim($idLinkNode->getAttribute('href')))[3];
                                 //Rating
                                 $tempArray['marketplace_rating'] = trim($datum->getElementsByTagName('span')[0]->nodeValue);
                                 //Loan Type
@@ -166,7 +169,7 @@ class loanbook extends p2pCompany {
                                 //Location
                                 $tempArray['marketplace_requestorLocation'] = trim($datum->getElementsByTagName('span')[3]->nodeValue);
                                 //Loan id 
-                                $tempArray['marketplace_loanReference'] = trim($datum->getElementsByTagName('span')[4]->nodeValue) . " " . $a->getAttribute('data-id');
+                                $tempArray['marketplace_loanReference'] = trim($datum->getElementsByTagName('span')[4]->nodeValue) . " " . $urlId;
                                 //Progress
                                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($datum->getElementsByTagName('span')[5]->nodeValue);
                                 //print_r($tempArray);
