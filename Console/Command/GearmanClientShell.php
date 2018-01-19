@@ -254,10 +254,31 @@ class GearmanClientShell extends AppShell {
      * @return array 
      * 
      */   
-    public function checkJobs ($presentStatus, $limit) {
+    public function checkJobs ($presentStatus, $newStatus, $limit) {
+
+        if (is_array($presentStatus)) {
+            foreach ($presentStatus as $presentStatusKey => $status) {
+                $list[] = array("queue_status" => $status);
+            }
+                $conditions = array("AND" => array($list));
+        }
+        else {
+            $conditions = array("AND" => array('investor_id' => $presentStatus));
+        }
+
         $userAccess = 0;
-        echo "VVV";
+
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
+    
+        $tempData = array();
+        foreach ($jobList as $job) {
+            $jobListId = $job['Queue']['id'];
+            $tempData[] = array('id' => $jobListId,
+                              'queue_status' => $newStatus
+                              );
+        }
+
+        $this->Queue->saveMany($tempData, array('validate' => true));
         return $jobList;
     }    
     

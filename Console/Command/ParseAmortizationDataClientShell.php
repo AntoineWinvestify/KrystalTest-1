@@ -30,7 +30,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Queue', 'Payment', 'Investment', 'Amortizationtable');  
+    public $uses = array('Queue', 'Amortizationtable');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -59,7 +59,12 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             if (Configure::read('debug')) {
                 $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
             }
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE),
+                                                  WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE,
+                                                $jobsInParallel);            
+                        
+            
+            
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
