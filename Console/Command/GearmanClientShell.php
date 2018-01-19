@@ -158,7 +158,7 @@ class GearmanClientShell extends AppShell {
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
         $delete = false;
-        if ($flow < 8) {
+        if ($flow < WIN_ERROR_GEARMAN_FLOW3A) {
             if (!is_null($folder->path)) {
                 $delete = $folder->delete();
             }
@@ -185,7 +185,7 @@ class GearmanClientShell extends AppShell {
         $globalDestruction = false;
         unset($this->queueInfo[$queueId]['companiesInFlow']);
         foreach ($userResult as $linkaccountId => $result) {
-            if ($linkaccountId == 'global') {
+            if ($linkaccountId == WIN_STATUS_COLLECT_GLOBAL_ERROR) {
                 $globalDestruction = true;
                 break;
             }
@@ -308,12 +308,22 @@ class GearmanClientShell extends AppShell {
              * $result it is true if everything was correct and false if there was an error
              */
             foreach ($userResult as $linkaccountId => $result) {
-                if ($linkaccountId == 'global') {
+                if ($linkaccountId == WIN_STATUS_COLLECT_GLOBAL_ERROR) {
                     $globalDestruction = true;
                     break;
                 }
                 if (!$result) {
                     $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                    continue;
+                }
+                else if ($result === WIN_STATUS_COLLECT_WARNING) {
+                    $dataStatus['nextStatus'] = $status;
+                    $dataStatus['restartStatus'] = $restartStatus;
+                    $dataStatus['errorStatus'] = $errorStatus;
+                    $this->requeueCompanyWithWarning($queueId, $linkaccountId, $dataStatus, count($userResult));
                     if (!empty($this->tempArray)) {
                         unset($this->tempArray[$queueId][$linkaccountId]);
                     }
@@ -380,6 +390,7 @@ class GearmanClientShell extends AppShell {
         $data["companiesInFlow"][0] = $linkaccountId;
         $userReference = $this->userReference[$queueId];
         $data["date"] = $this->queueInfo[$queueId]["date"];
+        $data["originExecution"] = $this->queueInfo[$queueId]['originExecution'];
         $newQueueId = null;
         if ($numberOfCompanies == 1) {
             $newQueueId = $queueId;
@@ -404,6 +415,42 @@ class GearmanClientShell extends AppShell {
         } 
         else {
             $data["newStatus"] = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
+        }
+        return $data;
+    }
+    
+    public function requeueCompanyWithWarning($queueId, $linkaccountId, $status, $numberOfCompanies) {
+        $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_WARNING_" . $this->flowName);
+        $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "WARNING on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+        $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "WARNING on " . $this->flowName
+                . " with type of warning: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'];
+        $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
+        $data = [];
+        $newData = $this->getWarningStatus($queueId, $status['restartStatus'], $status['nextStatus']);
+        $data["numberTriesWarning"] = $newData["numberTriesWarning"];
+        $data["companiesInFlow"][0] = $linkaccountId;
+        $userReference = $this->userReference[$queueId];
+        $data["date"] = $this->queueInfo[$queueId]["date"];
+        $data["originExecution"] = $this->queueInfo[$queueId]['originExecution'];
+        $newQueueId = null;
+        if ($numberOfCompanies == 1) {
+            $newQueueId = $queueId;
+        }
+        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
+    }
+    
+    public function getWarningStatus($queueId, $restartStatus, $nextStatus) {
+        $data["newStatus"] = $restartStatus;
+        echo "There was a warning downloading data";
+        if (empty($this->queueInfo[$queueId]['numberTriesWarning'])) {
+            $data["numberTriesWarning"] = 1;
+        } 
+        else if ($this->queueInfo[$queueId]['numberTriesWarning'] == 1) {
+            $data['numberTriesWarning'] = 2;
+        } 
+        else {
+            $data["newStatus"] = $nextStatus; //UNRECOVERED_WARNING_ENCOUNTERED;CONTINUE EXECUTION 
+            $data['numberTriesWarning'] = 0;
         }
         return $data;
     }
