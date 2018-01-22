@@ -2039,8 +2039,8 @@ class zank extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 $this->loanTotalIds = $this->loanIds;
-                $this->loanIds = array_values($this->loanIds);
                 $this->loanKeys = array_keys($this->loanIds);
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
                 break;
@@ -2179,15 +2179,16 @@ class zank extends p2pCompany {
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
-                         echo $AmortizationTableString;
                         $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
                         if ($revision) {
+                            echo "Comparation ok";
                             $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
+                            $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         } else {
+                            echo 'Not so ok';
                             $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         }
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
-                        echo $AmortizationTableString;
                     }
                 }
                 if ($this->i < $this->maxLoans) {
@@ -2425,17 +2426,19 @@ class zank extends p2pCompany {
         $dom2->loadHTML($node2);
 
         $dom1 = $this->cleanDom($dom1, array(
-            array('typeSearch' => 'element', 'tag' => 'table')), array('id'));
+            array('typeSearch' => 'element', 'tag' => 'table')), array('id', 'style'));
         $dom1 = $this->cleanDomTagNotFirst($dom1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'tr')));
 
         $dom2 = $this->cleanDom($dom2, array(
-            array('typeSearch' => 'element', 'tag' => 'table')), array('id'));
+            array('typeSearch' => 'element', 'tag' => 'table')), array('id', 'style'));
         $dom2 = $this->cleanDomTagNotFirst($dom2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'tr')));
 
+        
         echo 'compare structure';
         $structureRevision = $this->verifyDomStructure($dom1, $dom2);
+        echo $structureRevision;
         return $structureRevision;
     }
 

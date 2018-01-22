@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 /**
  * +-----------------------------------------------------------------------------+
@@ -2888,11 +2888,38 @@ FRAGMENT
         echo "Warning";
         return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
     }
+    
+    
+    /**
+     * Function to create a new loanIds.json with the amortizationTables that failed
+     * and rename the old file loanIds to oldIdsLoan
+     */
+    public function verifyErrorAmortizationTable() {
+        $path = $this->getFolderPFPFile();
+        $oldFilePath = $path . DS . "oldLoanIds.json";
+        $filePath = $path . DS . "loanIds.json";
+        echo "goods";
+        print_r($this->tempArray['correctTables']);
+        echo "bads";
+        print_r($this->tempArray['errorTables']);
+
+        if (!empty($this->tempArray['correctTables'])) {
+            $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
+            $jsonIds = json_encode($this->tempArray['correctTables']);
+            fwrite($idsJsonFile, $jsonIds);
+            fclose($idsJsonFile);
+        }
+        
+        if (empty($this->tempArray['errorTables'])) { $this->tempArray['errorTables'] = json_encode(array()); }
+            unlink($filePath);
+            $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+            $jsonIds = json_encode($this->tempArray['errorTables']);
+            fwrite($idsJsonFile, $jsonIds);
+            fclose($idsJsonFile);
+        
+        exit;
+    }
 
 }
-
-
-
-
 ?>
 
