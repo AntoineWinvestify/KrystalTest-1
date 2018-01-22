@@ -270,6 +270,18 @@ class finanzarel extends p2pCompany {
                                     "O" => "Estado",
                                     "P" => "Amortizaci?nPendiente",
                                     "Q" => " ");
+
+    protected $investment2Header = array(
+                                    "A" => "Subasta",
+                                    "B" => "Deudor",
+                                    "C" => "Tipo",
+                                    "D" => "Rating",
+                                    "E" => "Vencimiento",
+                                    "F" => "Mi oferta",
+                                    "G" => "Precio de compra",
+                                    "H" => "Estado",
+                                    "I" => "Pendiente",
+                                    "J" => " ");
     
     protected $expiredLoansHeader = array(
                                     "A" => "Subasta",
@@ -298,6 +310,15 @@ class finanzarel extends p2pCompany {
                                  "G" => "Importe",
                                  "H" => "Saldo");
     
+    protected $transaction2Header = array(
+                                 "A" => "Id",
+                                 "B" => "A?o",
+                                 "C" => "Trimestre",
+                                 "D" => "Fecha",
+                                 "E" => "Subasta",
+                                 "F" => "Descripci?n",
+                                 "G" => "Importe",
+                                 "H" => "Saldo");
     
     protected  $compareHeaderConfigParam = array( 'separatorChar' => ";",
                                                   'chunkInit' => 1,
@@ -730,7 +751,6 @@ class finanzarel extends p2pCompany {
                     $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                
-                echo 'eeeeeee';
                 $url = array_shift($this->urlSequence);
                 echo "The url of last is : ".$url;
                 $url = strtr($url, array(
@@ -746,6 +766,8 @@ class finanzarel extends p2pCompany {
                 $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
                 $this->numFileTransaction = 2;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transaction2Header;
+
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, $referer, false, $headers, $this->fileName);                 
                 break;
@@ -753,12 +775,14 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                /*$headerError = $this->compareHeader();
+                $headerError = $this->compareHeader();
+                echo $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
                     $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
-                }*/
+                }
+                
                
                 $url =  array_shift($this->urlSequence);
                 //echo "The url is " . $url . "\n";
@@ -775,7 +799,7 @@ class finanzarel extends p2pCompany {
                         'p_request' => $this->requestInvestment2);
                 print_r($credentialsFile);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                //$this->headerComparation = $this->investmentHeader;
+                $this->headerComparation = $this->investment2Header;
                 $this->numFileInvestment++;
 
                 $headers = array('Expect:');
@@ -785,7 +809,17 @@ class finanzarel extends p2pCompany {
                 break;
  
             case 11:
-                
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                echo $this->compareHeader();
+                exit;
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                }
                 return $this->tempArray;
         }
     }
