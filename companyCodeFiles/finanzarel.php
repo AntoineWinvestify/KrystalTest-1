@@ -116,7 +116,7 @@ class finanzarel extends p2pCompany {
             ]
         ],
         [
-             "D" =>  [
+            "D" =>  [
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
                     "inputData" => [
@@ -143,7 +143,7 @@ class finanzarel extends p2pCompany {
             ],
             "G" => [
                 [
-                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "type" => "transactionDetail",                                           // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
                                 "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
                                 "input3" => ",",                                        // and its content is the result of the "getAmount" method
@@ -156,11 +156,20 @@ class finanzarel extends p2pCompany {
         [
             "A" => [
                 [
-                    "type" => "investment_typeOfInvestment",                        
+                    "type" => "transactionDetail",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => " ",                                // 'input3' is NOT mandatory. 
+                                "input2" => "createReserverdFundsWithImpactOutstandingPrincipal",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
+                ]
+            ],
+            "B" => [
+                [
+                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => "D/M/Y",
+                                ],
+                    "functionName" => "getDefaultDate",
                 ]
             ],
             "K" => [
