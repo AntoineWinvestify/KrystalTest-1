@@ -639,8 +639,9 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[2]);
-                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                $this->headerComparation = $this->investmentHeader;
+                $this->numFileTransaction = 3;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                //$this->headerComparation = $this->investmentHeader;
                 $this->numFileInvestment++;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
@@ -680,17 +681,29 @@ class finanzarel extends p2pCompany {
                     if ($pos !== false) {
                         echo "cashflow $id";
                         $credentialCashflows = explode("_", $id);
-                        $this->credentialCashflow = $credentialCashflows[0];
+                        $this->credentialCashflow[] = $credentialCashflows[0];
                         echo "Found cashflow $this->credentialCashflow";
-                        break;
-                    }
-                        
+                    }        
                 }
+                
+                $as = $dom->getElementsByTagName('a');
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
+                foreach ($as as $key => $a) {
+                    //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
+                    if (trim($a->nodeValue) == 'Descargar') {
+                        $this->requestInvestment2 = explode("'", $a->getAttribute('href'))[1];
+                        
+                    }
+                }
+                                   
                 $url = array_shift($this->urlSequence);
                 echo "The url of last is : ".$url;
                 $url = strtr($url, array(
                             '{$p_instance}' => $this->credentialsGlobal['p_instance'],
-                            '{$credentialCashflow}' => $this->credentialCashflow
+                            '{$credentialCashflow}' => $this->credentialCashflow[0]
                         ));
                 echo "now the url is " . $url;
                 $referer = array_shift($this->urlSequence);
@@ -699,6 +712,7 @@ class finanzarel extends p2pCompany {
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
                 $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
+                $this->numFileTransaction = 1;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->headerComparation = $this->transactionHeader;
                 $this->idForSwitch++;
@@ -715,8 +729,64 @@ class finanzarel extends p2pCompany {
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
                     $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
-                return $this->tempArray;
+               
+                echo 'eeeeeee';
+                $url = array_shift($this->urlSequence);
+                echo "The url of last is : ".$url;
+                $url = strtr($url, array(
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance'],
+                            '{$credentialCashflow}' => $this->credentialCashflow[1]
+                        ));
+                echo "now the url is " . $url;
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                            '{$p_flow_step_id}' => 11,
+                            '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
+                $this->numFileTransaction = 2;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url, $referer, false, $headers, $this->fileName);                 
+                break;
+            case 10:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                /*$headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                }*/
+               
+                $url =  array_shift($this->urlSequence);
+                //echo "The url is " . $url . "\n";
+                $referer = array_shift($this->urlSequence);
+                $referer = strtr($referer, array(
+                    '{$p_flow_step_id}' => 1,
+                    '{$p_instance}' => $this->credentialsGlobal['p_instance']
+                        ));
+                $credentialsFile = array(
+                        'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
+                        'p_flow_step_id' => 11, 
+                        'p_instance' => $this->credentialsGlobal['p_instance'],  
+                        'p_debug' => '',
+                        'p_request' => $this->requestInvestment2);
+                print_r($credentialsFile);
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                //$this->headerComparation = $this->investmentHeader;
+                $this->numFileInvestment++;
+
+                $headers = array('Expect:');
+                //array_shift($this->urlSequence);         
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);                 
+                break;
+ 
+            case 11:
                 
+                return $this->tempArray;
         }
     }
 
