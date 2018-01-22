@@ -123,11 +123,14 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
                             'userReference' => $job['Queue']['queue_userReference'],
-                            'files' => $allFiles,
+                //            'files' => $allFiles,
                             'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
+                            'finishDate' => $this->queueInfo[$queueId]['date'],
+                            'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
+
                             'queueInfo' => json_decode($job['Queue']['queue_info'], true));
                     }
-//                   print_r($params);
+                   print_r($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
@@ -136,13 +139,13 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
-                
-
+               
                 // before calling the method you should download all amortization tables and store them in the database (Flow 3A and 3B)
-                $this->consolidateData($params);
-                exit;
+ echo "Calling consolidateData\n";
+    //            $this->consolidateData($params);
+ echo "Calling consolidatePaymentDelay\n";               
                 $this->consolidatePaymentDelay($params);
-                
+                exit;
                 $this->verifyStatus(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, "Amortization tables succesfully stored", WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
 
 
@@ -204,7 +207,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 
     /** FLOW 3C
      * This method writes the 'nextPaymentDateTech' in the investment object. 
-     * This is done for ALL the loanIds/loanslices whose amortization tables
+     * This is done for ** the loanIds/loanslices whose amortization tables
      * are stored in the directory currently under processing. These files are of
      * format amortizationtable_[investmentslice_id][loanId].html 
      * example: amortizationtable_120665_13730-01.html
@@ -230,7 +233,7 @@ $timeStart = time();
                 $loanDataId[] = $nameIdData;
             }
 
-            foreach ($loanDataId as $loanKey => $loanId) { // chunking is required
+            foreach ($loanDataId as $loanId) { // chunking is required
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
@@ -256,78 +259,78 @@ $timeStart = time();
             } 
         }
                                    
-
 $timeStop = time();
 echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
-
         return true;
     }
     
     
     
     
-    /** THIS FIELD IS NEEDED FOR THE CALCULATION OF DEFAULTED ETC.. FLOW 3D
+    /** 
+     * 
      * This method scans through *ALL* active loans per P2P of an investor and calculates the number of days of 
      * payment delay. The result is written in the investment model object.
      *  
-     *  @param  $array          Array which holds the list of identifiers of the active loans
+     *  @param  $array      Array which holds the list of identifiers of the active loans
      *  @return boolean
      *
      */
-    public function consolidatePaymentDelay($params) {    
+    public function consolidatePaymentDelay(&$linkedAccountData) { 
+ 
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 
-        $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE),    
-									));
+        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
+ //print_r($linkedAccount);
+         
+            $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
+                                                      'linkedaccount_id'  => $linkedAccountKey
+                                              ));
+            $index = 0;
+            $controlIndex = 0;
+            $limit = WIN_DATABASE_READOUT_LIMIT;
+            $investment = array();
 
-        $index = 0;
-        $controlIndex = 0;
-        $limit = WIN_DATABASE_READOUT_LIMIT;
-        $investment = array();
-        
-        do {
-            $result = $this->Investment->find("all", array('conditions' => $conditions,
-                                                            'fields'    => array('id', 
-                                                                                 'investment_nextPaymentDate'),
-                                                            'recursive'  => -1,
-                                                            'limit' => $limit,
-                                                            'offset' => $index * $limit)
-                                             );
+            do {
+                $result = $this->Investment->find("all", array('conditions' => $conditions,
+                                                                'fields'    => array('id', 
+                                                                                     'investment_nextPaymentDate'),
+                                                                'recursive'  => -1,
+                                                                'limit' => $limit,
+                                                                'offset' => $index * $limit)
+                                                 );
 
-            if (count($result) < $limit) {          // No more results available
-                $controlIndex = 1;
-            }
-           
-            foreach ($result as $item) {   
-                $nextPaymentDate = strtotime($item['Investment']['investment_nextPaymentDate']);
-                $today = strtotime('2017-11-30');
- 
-                if ($nextPaymentDate < $today) {
+                if (count($result) < $limit) {          // No more results available
+                    $controlIndex = 1;
+                }
+ //              print_r($result);
+                
+                $today = strtotime($linkedAccount['finishDate']);
+                
+                foreach ($result as $item) {   
+                    $nextPaymentDate = strtotime($item['Investment']['investment_nextPaymentDate']);
+                    $today = strtotime($linkedAccount['finishDate']);
+
+                    if ($nextPaymentDate < $today) {
+                        $tempArray['id'] = $item['Investment']['id'];
+                        $tempArray['investment_paymentStatus'] = ceil(abs($today - $nextPaymentDate) / 86400);
+                        print_r($tempArray);
+                    }
+                    else {
+                        $tempArray['investment_paymentStatus'] = 0;
+                    }
                     $tempArray['id'] = $item['Investment']['id'];
-                    $tempArray['investment_paymentStatus'] = ceil(abs($today - $nextPaymentDate) / 86400);
-                    print_r($tempArray);
-                    
+                    $investment[] = $tempArray;
                 }
-                else {
-                    $tempArray['investment_paymentStatus'] = 0;
-                }
-                $tempArray['id'] = $item['Investment']['id'];
-                $investment[] = $tempArray;
-            }
-            $index++;
-        } 
-        while($controlIndex < 1); 
-        
-        $this->Investment->saveMany($investment, array('validate' => true));
-      
+                $index++;
+            } 
+            while($controlIndex < 1); 
+            $this->Investment->saveMany($investment, array('validate' => true));
+        }
 $timeStop = time();
 echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         return true;
     }    
-    
-    
-    
-  
-    
+     
 }

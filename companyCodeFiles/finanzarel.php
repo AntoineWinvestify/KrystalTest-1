@@ -57,28 +57,142 @@ class finanzarel extends p2pCompany {
     protected $credentialsGlobal = array();
     protected $requestFiles = array();
     
+    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+        [
+            "D" =>  [
+                [
+                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ] 
+            ],
+            "E" => [
+                    "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [// NOT FINISHED YET
+                [
+                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                    "input3" => [
+                                        0 => ["Provisión de fondos" => "Cash_deposit"],
+                                        1 => [ "Retirada de fondos" => "Cash_withdrawal"],
+                                        2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
+                                        5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
+                                        7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
+                                        9 => ["Intereses de demora" => "Delayed_interest_income"],
+                                        14 => ["Retrocesión de comisiones" => "Compensation"],
+                                        18 => ["Comisiones" => "Commission"],
+                                        24 => ["IVA sobre Comisiones" => "Tax_VAT"],
+                                        29 => ["Retiro de fondos" => "Cash_withdrawal"]
+                                    ]
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "H" => [
+                [
+                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ],
+            ]
+        ],
+        [
+             "D" =>  [
+                [
+                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ] 
+            ],
+            "E" => [
+                "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [
+                [
+                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                    "input3" => [
+                                        0 => ["Intereses" => "Regular_gross_interest_income"],
+                                        1 => ["Efecto fallido" => ""]
+                                    ]
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+        ],
+        [
+            "A" => [
+                [
+                    "type" => "investment_typeOfInvestment",                        
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => " ",                                // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ]
+            ],
+            "K" => [
+                [
+                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ]
+        ]
+    ];
+    
     protected $valuesInvestment = [     // All types/names will be defined as associative index in array
         [
             "A" =>  [
-                    "name" => "loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                          // Winvestify standardized name
             ],
             "B" => [
-                    "name" => "investment_debtor",                           // Winvestify standardized name  OK
+                "name" => "investment_debtor",                           // Winvestify standardized name  OK
             ],
             "C" => [
-                    "name" => "investment_riskRating",                                            // This is an "empty variable name". So "type" is
+                "name" => "investment_riskRating",
             ], 
             "D" =>  [
-                [
-                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "D/M/Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
+                "name" => "investment_typeOfInvestment"
             ],
             "E" => [
-                    "type" => "investment_fullLoanAmount",                                            // This is an "empty variable name". So "type" is
+                "name" => "investment_fullLoanAmount",                                           
             ], 
             "F" => [// NOT FINISHED YET
                 [
@@ -141,96 +255,6 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-        ]
-    ];
-
-   protected $valuesTransaction = [     // All types/names will be defined as associative index in array
-        [
-            "A" =>  [
-                    "name" => "transactionId"                                          // Winvestify standardized name
-            ],
-            "B" => [
-                    "name" => "dummy_year",                                                  // Winvestify standardized name  OK
-            ],
-            "C" => [
-                    "name" => "dummy_quarter",                                            // This is an "empty variable name". So "type" is
-            ], 
-            "D" =>  [
-                [
-                    "type" => "investment.nextPaymentDate",                             // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "D/M/Y",
-                                ],
-                    "functionName" => "normalizeDate",
-                ]
-            ],
-            "E" => [
-                    "type" => "loanId",                                            // This is an "empty variable name". So "type" is
-            ], 
-            "F" => [// NOT FINISHED YET
-                [
-                    "name" => "get_detail",                                      // Winvestify standardized name   OK
-                    "inputData" => [                                                    // List of all concepts that the platform can generate
-                                                                                        // format ["concept string platform", "concept string Winvestify"]
-                                    "input3" => [0 => ["Provisión de fondos" => "Cash_deposit"],
-                                //              1 => [ "" => "Cash_withdrawal"],
-                                                2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
-                                //              3 => [  "" => "Secondary_market_investment"],
-                                //              4 => [  "" => "Principal_repayment"],
-                                                5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
-                                //              6 => [  "" => "Principal_buyback"].
-                                                7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
-                                //              8 => [  "" => "Regular_gross_interest_income"],
-                                                9 => ["Intereses de demora" => "Delayed_interest_income"],
-                                //              10 => [  "" => "Late_payment_fee_income"],
-                                //              11 => [  "" => "Interest_income_buyback"],
-                                //              12 => [  "" => "Delayed_interest_income_buyback"],
-                                //              13 => [  "" => "Incentive_and_bonus"],
-                                                14 => ["Retrocesión de comisiones" => "Compensation"],
-                                //              15 => [  "" => "Disc/premium paid secondary market"],
-                                //              16 => [  "" => "Other 4 income"],
-                                //              17 => [  "" => "Recoveries"],
-                                                18 => ["Comisiones" => "Commission"],
-                                //              19 => [ "" => "Bank_charges",
-                                //              20 => [  "" => "Disc/premium_paid_secondary_market"],
-                                //              21 => [  "" => "Interest_payment_secondary_market_purchase"],
-                                //              22 => [  "" => "Currency_exchange_fee"],
-                                //              23 => [ "" => "Other_cost"],
-                                                24 => ["IVA sobre Comisiones" => "Tax_VAT"],
-                                //              25 => ["Tax: Income withholding tax"],
-                                //              26 => [  "" => "Write-off"],
-                                //              27 => [  "" => "Registration"],
-                                //              28 => [   "" => "Currency_exchange_transaction"],
-                                //              29 => [   "" => "Unknown_income"],
-                                //              30 => [  "" => "Unknown_cost"],
-                                //              31 => [  "" => "Unknown_concept"],
-                                                ]
-                            ],
-                    "functionName" => "getTransactionDetail",
-                ]
-            ],
-            "G" => [
-                [
-                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ]
-            ],
-            "H" => [
-                [
-                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ],
-            ]
         ]
     ];
 

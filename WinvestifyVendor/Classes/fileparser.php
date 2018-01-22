@@ -352,13 +352,30 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "disinvestment"
                 ],
+        
             101 => [
-                "detail" => "change_to_active_state",
+                "detail" => "change_to_active_state",       // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "activeStateChange",
-                "chars" => "AM_TABLE"                        // = Collect Amortization table
-                ]
+                "chars" => "AM_TABLE"                       // = Collect Amortization table
+                ],
+            102 => [
+                "detail" => "change_to_badDebt_state",      // Move an investment from ACTIVE to WRITTEN_OFF 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "badDebtStateChange",
+                ],
+            103 => [
+                "detail" => "change_to_cancelled_state",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "cancelledStateChange",
+                ]       
+        
+        
+        
+        
         ];
 
 protected $countries = [

@@ -52,28 +52,6 @@ class AppShell extends Shell {
     }
 
 
-     /**
-     * checks to see if jobs are waiting in the queue for processing
-     *
-     * @param int $presentStatus    status of job to be located
-     * @param int $limit            Maximum number of jobs to be pulled out of the queue
-     * @return array                List of pending jobs
-     *
-     */
-    public function checkJobs ($presentStatus, $limit) {
-
-        if (empty($this->Queue) ) {
-            $this->Queue = ClassRegistry::init('Queue');
-            echo __FUNCTION__ . " " . "Queue instance created\n";
-        }
-
-        $userAccess = 0;
-        $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
-        return $jobList;
-    }
-
-
-
     /**
      * Read the names in directory $dir of the files (FDQN) that fulfill the $typeOfFiles bitmap
      *
@@ -268,6 +246,26 @@ class AppShell extends Shell {
         return $list;
     }    
     
-    
-    
+    /**
+    * Returns every date between two dates as an array
+    * @param string $startDate the start of the date range
+    * @param string $endDate the end of the date range
+    * @param string $format DateTime format, default is Y-m-d
+    * @return array returns every date between $startDate and $endDate, formatted as "Y-m-d"
+    */
+    function createDateRange($startDate, $endDate, $format = "Ymd") {
+        $begin = new DateTime($startDate);
+        $end = new DateTime($endDate);
+
+        $interval = new DateInterval('P1D'); // 1 Day
+        $dateRange = new DatePeriod($begin, $interval, $end);
+
+        $range = [];
+        foreach ($dateRange as $date) {
+            $range[] = $date->format($format);
+        }
+
+        return $range;
+    }
+
 }

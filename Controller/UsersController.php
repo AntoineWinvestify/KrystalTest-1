@@ -294,7 +294,7 @@ public function registerPanelA() {
 	$locationData = $this->Session->read(locationData);
 	$countryCode = $locationData['country_code'];	
 	$validationResult = $this->User->createAccount($username, $password, $telephone, $countryCode);
-
+print_r($validationResult);
 	$error = ($validationResult[0]) ? false:true;							// basically inverting $result
 	$this->set("error", $error);	
 	$this->set('userData', $userData);	

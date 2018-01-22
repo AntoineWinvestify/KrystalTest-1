@@ -165,7 +165,7 @@ class p2pCompany {
     protected $valuesAmortizationTable;
     protected $callbacks;
     protected $originExecution;
-    
+    protected $tableStructure;
     
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
                                         "chunkSize" => 1,     
@@ -1418,15 +1418,14 @@ class p2pCompany {
     }
     
     /**
-     * Function to create all the amortization table by loan Id
+     * Function to save all the amortization table by loan Id as html
      */
     public function saveAmortizationTable() {
         foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
-            $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId .  "." . $this->typeFileAmortizationtable, $this->tempArray[$loanId]);
+            if (!empty($this->tempArray['tables'][$loanId])) {
+                $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId . "." . $this->typeFileAmortizationtable, $this->tempArray['tables'][$loanId]);
+            }
         }
-        /*foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
-        }*/
     }
     
     /**
@@ -2889,6 +2888,15 @@ FRAGMENT
         return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
     }
     
+    /**
+     * Function to set a table Structure for a company from database
+     * @param string $tableStructure It is the table structure to compare
+     */
+    function setTableStructure($tableStructure) {
+        $this->tableStructure = $tableStructure;
+    }
+
+
     
     /**
      * Function to create a new loanIds.json with the amortizationTables that failed
@@ -2910,14 +2918,15 @@ FRAGMENT
             fclose($idsJsonFile);
         }
         
-        if (empty($this->tempArray['errorTables'])) { $this->tempArray['errorTables'] = json_encode(array()); }
-            unlink($filePath);
-            $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
-            $jsonIds = json_encode($this->tempArray['errorTables']);
-            fwrite($idsJsonFile, $jsonIds);
-            fclose($idsJsonFile);
-        
-        exit;
+        if (empty($this->tempArray['errorTables'])) {
+            $this->tempArray['errorTables'] = json_encode(array());
+        }
+
+        unlink($filePath);
+        $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+        $jsonIds = json_encode($this->tempArray['errorTables']);
+        fwrite($idsJsonFile, $jsonIds);
+        fclose($idsJsonFile);
     }
 
 }
