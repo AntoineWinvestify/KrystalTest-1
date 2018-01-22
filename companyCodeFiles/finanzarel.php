@@ -205,8 +205,8 @@ class finanzarel extends p2pCompany {
                     "type" => "investment_fullLoanAmount",                // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
-                                "input3" => ".",
-                                "input4" => 16
+                                "input3" => ",",
+                                "input4" => 2
                                 ],
                     "functionName" => "getAmount",
                 ]
