@@ -153,13 +153,13 @@ class GearmanClientShell extends AppShell {
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $flow = constant("WIN_ERROR_" . $this->flowName);
-        $date = date("Ymd", strtotime($this->date-1));
+        $date = date("Ymd", strtotime($this->date));
         $path = $this->userReference[$queueId] . DS . $date . DS . $linkAccountId;
         print_r($this->userReference);
         $path = $partialPath . DS . $path;
         $folder = new Folder($path);
         $delete = false;
-        if ($flow < 8) {
+        if ($flow < WIN_ERROR_GEARMAN_FLOW3A) {
             if (!is_null($folder->path)) {
                 $delete = $folder->delete();
             }
@@ -186,7 +186,7 @@ class GearmanClientShell extends AppShell {
         $globalDestruction = false;
         unset($this->queueInfo[$queueId]['companiesInFlow']);
         foreach ($userResult as $linkaccountId => $result) {
-            if ($linkaccountId == 'global') {
+            if ($linkaccountId == WIN_STATUS_COLLECT_GLOBAL_ERROR) {
                 $globalDestruction = true;
                 break;
             }
@@ -324,8 +324,13 @@ class GearmanClientShell extends AppShell {
         foreach ($this->userResult as $queueId => $userResult) {
             $globalDestruction = false;
             unset($this->queueInfo[$queueId]['companiesInFlow']);
+            /*
+             * foreach to verify if there was an error in the worker collecting the data
+             * $linkaccountId if it's defined as global, there was a crash error in the worker
+             * $result it is true if everything was correct and false if there was an error
+             */
             foreach ($userResult as $linkaccountId => $result) {
-                if ($linkaccountId == 'global') {
+                if ($linkaccountId == WIN_STATUS_COLLECT_GLOBAL_ERROR) {
                     $globalDestruction = true;
                     break;
                 }
@@ -336,8 +341,21 @@ class GearmanClientShell extends AppShell {
                     }
                     continue;
                 }
+                else if ($result === WIN_STATUS_COLLECT_WARNING) {
+                    $dataStatus['nextStatus'] = $status;
+                    $dataStatus['restartStatus'] = $restartStatus;
+                    $dataStatus['errorStatus'] = $errorStatus;
+                    $this->requeueCompanyWithWarning($queueId, $linkaccountId, $dataStatus, count($userResult));
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                    continue;
+                }
                 $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
             }
+            /*
+             * When there is a globalDestruction, all content of the files are deleted
+             */
             if ($globalDestruction) {
                 foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
                     $this->deleteFolderByDateAndLinkaccountId($queueId, $userLinkaccountId);
@@ -394,6 +412,7 @@ class GearmanClientShell extends AppShell {
         $data["companiesInFlow"][0] = $linkaccountId;
         $userReference = $this->userReference[$queueId];
         $data["date"] = $this->queueInfo[$queueId]["date"];
+        $data["originExecution"] = $this->queueInfo[$queueId]['originExecution'];
         $newQueueId = null;
         if ($numberOfCompanies == 1) {
             $newQueueId = $queueId;
@@ -418,6 +437,42 @@ class GearmanClientShell extends AppShell {
         } 
         else {
             $data["newStatus"] = $errorStatus; //UNRECOVERED_ERROR_ENCOUNTERED;
+        }
+        return $data;
+    }
+    
+    public function requeueCompanyWithWarning($queueId, $linkaccountId, $status, $numberOfCompanies) {
+        $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_WARNING_" . $this->flowName);
+        $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "WARNING on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+        $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "WARNING on " . $this->flowName
+                . " with type of warning: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'];
+        $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
+        $data = [];
+        $newData = $this->getWarningStatus($queueId, $status['restartStatus'], $status['nextStatus']);
+        $data["numberTriesWarning"] = $newData["numberTriesWarning"];
+        $data["companiesInFlow"][0] = $linkaccountId;
+        $userReference = $this->userReference[$queueId];
+        $data["date"] = $this->queueInfo[$queueId]["date"];
+        $data["originExecution"] = $this->queueInfo[$queueId]['originExecution'];
+        $newQueueId = null;
+        if ($numberOfCompanies == 1) {
+            $newQueueId = $queueId;
+        }
+        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
+    }
+    
+    public function getWarningStatus($queueId, $restartStatus, $nextStatus) {
+        $data["newStatus"] = $restartStatus;
+        echo "There was a warning downloading data";
+        if (empty($this->queueInfo[$queueId]['numberTriesWarning'])) {
+            $data["numberTriesWarning"] = 1;
+        } 
+        else if ($this->queueInfo[$queueId]['numberTriesWarning'] == 1) {
+            $data['numberTriesWarning'] = 2;
+        } 
+        else {
+            $data["newStatus"] = $nextStatus; //UNRECOVERED_WARNING_ENCOUNTERED;CONTINUE EXECUTION 
+            $data['numberTriesWarning'] = 0;
         }
         return $data;
     }

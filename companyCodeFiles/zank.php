@@ -212,7 +212,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_investmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                      // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -505,6 +505,14 @@ class zank extends p2pCompany {
             "parserDataCallback" => [
                 "investment_typeOfInvestment" => "translateTypeOfInvestment",
                 "investment_statusOfLoan" => "translateLoanStatus"
+            ]
+        ],
+        "transactionFile" => [
+            "cleanDatesTempArray" => [
+                "values" => [
+                    "startDate",
+                    "finishDate"
+                ]
             ]
         ]
     ];

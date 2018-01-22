@@ -160,8 +160,10 @@ class ParseDataClientShell extends GearmanClientShell {
                             'controlVariableFile' => $controlVariableFile[0],
                             'files' => $files,
                             'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
+                            'finishDate' => $this->queueInfo[$queueId]['date'],
+                            'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId]
                 //            'actionOrigin' => $this->queueInfo[$job['Queue']['id']]['originExecution'],
-                            );
+                        );
                     }
                     debug($params);
 
