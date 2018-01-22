@@ -867,7 +867,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @param array $tempArray the array to clean
      * @param object $companyHandle It is the company instance
      * @param array $config Configuration array with values to use to delete
-     * @return null if config not exist or $startDate is empty
+     * @return null if $config not exist or $startDate is empty
      */
     public function cleanDatesTempArray(&$tempArray, $companyHandle, $config) {
         if (empty($config)) {
