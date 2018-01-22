@@ -537,6 +537,12 @@ class UserDataShell extends AppShell {
 // ONLY FOR TESTING
      public function calculateTechnicalState(&$transactionData, &$resultData) {
 
+/*
+  Technical states description:
+  INITIAL   : investment has started succesfully. No amortization has yet taken place
+  ACTIVE    : one or more amortizations have taken place
+  FINISHED  : the investment has finished, either succesfully or as writtenOff 
+ */
         $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
@@ -820,8 +826,9 @@ class UserDataShell extends AppShell {
     
     
     /**
-     *  Calculates the effect of a disinvestment of an investment which never matured to a real loan, i.e. it 
-     *  started with state "reserved" and never reached status "active".
+     *  Calculates the effect of a disinvestment of an investment which never matured to a real investment, i.e. it 
+     *  started with state "reserved" and never reached status "active". It basically means that the platform returns the
+     *  money which the investor had assigned to the "failed" investment
      *   
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -833,8 +840,8 @@ class UserDataShell extends AppShell {
     
     
     /**
-     *  Calculates the new state of a disinvestment of an investment.  It never matured to a real loan, i.e. it 
-     *  started with state "reserved" and never reached status "active".
+     *  Calculates the new state of a cancelled investment.  It never matured to a real investment, i.e. it 
+     *  started with state "reserved" and *never* reached status "active".
      *   
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -844,7 +851,36 @@ class UserDataShell extends AppShell {
         return WIN_LOANSTATUS_CANCELLED;
     }    
   
+ 
+    
+    /**
+     *  
+     *  Determines the writtenOff amount, which is to be stored in the variable WrittenOff
+     *
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large amount to be stored in writtenOff field
+     */
+    public function calculateBadDebt(&$transactionData, &$resultData) {
+        
+        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
+            return 0;
+        }
+        $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
+        
+        if (isset( $transactionData['amount'])) {           // We take the value as provided in the transaction record by the P2P
+            $tempOutstandingPrincipal = $transactionData['amount'];
+        }
+        else {
+            $tempOutstandingPrincipal = $resultData['investment']['investment_outstandingPrincipal'];
+        }
+        $resultData['investment']['investment_outstandingPrincipal'] = 0;
+        return $tempOutstandingPrincipal;
+    } 
 
+    
+    
+   
     
     
 }
@@ -892,12 +928,6 @@ class UserDataShell extends AppShell {
   if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
   $varName = $this->variablesConfig[53]['databaseName'];
   $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
-  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
-  $varName = $this->variablesConfig[53]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
   $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
   }
 

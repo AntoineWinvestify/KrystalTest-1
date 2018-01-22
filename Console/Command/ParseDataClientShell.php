@@ -73,7 +73,6 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     public function initDataAnalysisClient() {
-        $handle = new UserDataShell();
 
         $this->resetTestEnvironment();      // Temporary function
         $this->GearmanClient->addServers();
@@ -117,6 +116,14 @@ class ParseDataClientShell extends GearmanClientShell {
                     $queueId = $job['Queue']['id'];
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
                     print_r($this->queueInfo);
+                   
+                    
+                    
+                    $this->date = $this->queueInfo[$job['Queue']['id']]['date'];                // End date of collection period
+                    $this->startDate = $this->queueInfo[$job['Queue']['id']]['startDate'];      // Start date of collection period
+ //{"date":"20171030","companiesInFlow":["885"],"startDate":{"885":"20180111"}}                   
+                    
+                    $this->startDate = "20171026";
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
@@ -139,7 +146,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
                         $listOfActiveInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_ACTIVE);
-                        $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedaccount_id, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
+                        $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
                         
                         $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE. ".*", true);
 
@@ -256,7 +263,9 @@ $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
         $linkedaccountId = $platformData['linkedaccountId'];
-        $userReference = $platformData['userReference']; 
+        $userReference = $platformData['userReference'];
+        $startDate = $platformData['startDate'];
+        $finishDate = $platformData['finishDate'];
         $controlVariableFile =  $platformData['controlVariableFile'];                   // Control variables as supplied by P2P
         $controlVariableActiveInvestments = $platformData['activeInvestments'];         // Our control variable
 $tempMeasurements = array(
@@ -284,6 +293,33 @@ $tempMeasurements = array(
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
 
+        
+        
+        
+        
+// Deal with empty transaction record    
+        if (isset($platformData['parsingResultTransactions'])) {
+            if (count($platformData['parsingResultTransactions']) == 0) {
+
+            $movingDate = $startDate;
+            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+            echo "startDate = $startDate and finishDate = $finishDate\n";
+            do {
+                $newUserinvestmentData = $calculationClassHandle->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                $newUserinvestmentData['Userinvestmentdata']['date'] = $movingDate;
+                print_r($newUserinvestmentData);
+                $this->Userinvestmentdata->save($newUserinvestmentData, $validate = true);
+
+                $movingDate = date('Ymd', strtotime($movingDate . ' +1 day'));
+            }
+            while ($movingDate <= $finishDate);
+            }
+        }
+       
+    
+    
+    
+    
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
@@ -324,7 +360,6 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
 
             $filterConditions = array("linkedaccount_id" => $linkedaccountId);
             $database = $calculationClassHandle->getLatestTotals("Userinvestmentdata", $filterConditions);
-print_r($database);
 
             $this->Userinvestmentdata->create();
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
@@ -332,7 +367,7 @@ print_r($database);
             $database['Userinvestmentdata']['date'] = $dateKey;
             
             $database['configParms']['outstandingPrincipalRoundingParm'] = '0.00001';      // configuration parameter 
-            $database['measurements'] = $tempMeasurements;
+
             
             foreach ($dates as $keyDateTransaction => $dateTransaction) {           // read all *individual* transactions of a loanId per day
 
@@ -359,7 +394,7 @@ print_r($database);
                 
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
-                if ($keyDateTransactionNames[0] == "global") {               // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                if ($keyDateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
@@ -422,8 +457,6 @@ print_r($database);
                     $database['investment']['investment_secondaryMarketInvestment'] = 0;  
 
 //$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
-$database['measurements'][$keyDateTransaction]['decrements'] = 0;
-$database['measurements'][$keyDateTransaction]['increments'] = 0; 
 
 
                     $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
@@ -813,7 +846,6 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                     }
                 }
             }            
-            $tempMeasurements = $database['measurements'];
         }
 
         $controlVariables['myWallet'] = $database['Userinvestmentdata']['cashInPlatform'];      // Holds the *last* calculated value
@@ -840,7 +872,6 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
             'countNewAccountList' => count($STARTED_NEW_ACCOUNTS_LIST),
             'finished_duplicates_list' => $FINISHED_DUPLICATES_LIST,
             'countFinishedDuplicatesList' => count($FINISHED_DUPLICATES_LIST),
-            'measurements' => $tempMeasurements,
             'workingNewLoans' => $platformData['workingNewLoans'], 
             'countWorkingNewLoans' => count($platformData['workingNewLoans']),
             'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,

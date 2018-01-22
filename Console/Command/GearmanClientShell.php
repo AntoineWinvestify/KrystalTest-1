@@ -37,7 +37,8 @@ class GearmanClientShell extends AppShell {
     protected $userLinkaccountIds = [];
     protected $queueInfo = [];
     protected $gearmanErrors = [];
-    protected $date;
+    protected $date;            // End date of collection period, i.e. the date when the files were collected
+    protected $dateStart;       // Start date of collection period
     protected $flowName;
     protected $tempArray = [];
     

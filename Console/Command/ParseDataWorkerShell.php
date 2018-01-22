@@ -94,6 +94,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['listOfCurrentActiveInvestments']    => list of all active loans BEFORE this analysis     
      *      $data['linkedAccountId']['files'][filename1']           => Array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']
+     *      $data[$linkedAccountKey]['startDate'] = $data['startDate'];  => startDate of the reading period 
+     *      $data[$linkedAccountKey]['finishDate'] = $data['finishDate']; => end date of the reading period
 
      * @return array 
      *  The worker provides all error information to the Client according to the following format:  
@@ -235,9 +237,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['pfp'] = $platform;  
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-            $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile'];         
+            $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile']; 
+            $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
+            $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];             
             
- // THIS DEPENDS ON THE WORK DONE BY ANTONIO (SUPPORT OF VARIOUS SHEETS OF XLS FILE           &$investmentList,  
+            
             $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
             
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
@@ -265,72 +269,59 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
             $newLoans = array_unique($newLoans);
             $returnData[$linkedAccountKey]['newLoans'] = $newLoans;
-            unset( $newLoans);
-            
-  
-            
-           
-      
+            unset( $newLoans);          
             
             
-            
-            
+            if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {       
 // Detect if a loan has been deleted (i.e. NOT matured) or if it has changed state from "Reserved" to "Active
-            if (isset($data['listOfReservedInvestments']))  { 
-                foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
-                    $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
-                    if ($existsInActive) {
-                        if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
-                    //      $this->addNewArray(&$inputArray, $array, $arrayData )       // generate a statechange record
-                            $dateKeys = array_keys($totalParsingresultTransactions);
-                            $key = $dateKeys[count($dateKeys) - 1];
-                            $totalParsingresultTransactions[$loanId][100]['date'] = $key;
-                            $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
-                            $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";        
-                            continue;
+                if (isset($data['listOfReservedInvestments']))  { 
+                    foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
+                        $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
+                        if ($existsInActive) {
+                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+                        //      generate a statechange record, state is changed to "active"
+                                $dateKeys = array_keys($totalParsingresultTransactions);
+                                $key = $dateKeys[count($dateKeys) - 1];
+                                $totalParsingresultTransactions[$loanId][100]['date'] = $key;
+                                $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
+                                $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";
+                                continue;
+                            }
+                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                                continue;
+                            }
                         }
-                        if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                            continue;
-                        }
-                    }
-                    $existsInFinished = array_key_exists($loanId, $totalParsingresultExpiredInvestments);
-                    if ($existsInFinished) {
-                        if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
-                   //        addNewArray(&$inputArray, $array, $arrayData )     // generate a statechange record
-                            $dateKeys = array_keys($totalParsingresultTransactions);
-                            $key = $dateKeys[count($dateKeys) - 1];
-                            $totalParsingresultTransactions[$loanId][100]['date'] = $key;
-                            $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
-                            $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";                                
-                        continue;
-                        }
-                    }
-                    //modify disinvestment (add investment_loanId) transaction record and its index (=loanId)
-                    $this->array_keys_recursive($myArray, 4, "internal", "inversion");
-                    $foundArrays = $this->filteredArray;
-                    print_r($foundArrays);
 
-                    foreach ($foundArrays as $key => $levels) {
-                        $testingIndex = "";
-                        array_pop($levels);
 
-                        foreach ($levels as $level) {
-                           $testingIndex = $testingIndex . "['" . $level . "']";
-                        }
-                        $arrayString =  "\$myArray$testingIndex" ;
+                        //modify disinvestment (add investment_loanId) transaction record and its index (=loanId)
+                        // ALL THE LOANS IDS IN RESERVED WHICH CANNOT BE FOUND IN FINISHED OR ACTIVE (OR WRITTEN OFF) 
+                        // ARE CONSIDERED GHOST LOANS, OR CANCELLED. SO GENERATE STATECHANGE RECORD TODAY (FIRST DAY OF 
+                        // READING PERIOD
+                        $this->array_keys_recursive($myArray, 4, "investment_loanId", "global_");
+                        $foundArrays = $this->filteredArray;
+                        print_r($foundArrays);
 
-                        eval("\$result = &$arrayString;");
-                        print_r($result);
-                        if (!isset($result['investment_loanId'])) {
-                            $result['investment_loanId'] = $loanId;
-                            echo "Disinvestment found for LoanId = $loanId\n";
-        //                    eval("\$result2 = $arrayString;");
-        //                    print_r($result2);   
-                        }
-                    }     
-                }  
-            }     
+                        foreach ($foundArrays as $key => $levels) {
+                            $testingIndex = "";
+                            array_pop($levels);
 
+                            foreach ($levels as $level) {
+                                $testingIndex = $testingIndex . "['" . $level . "']";
+                            }
+                            $arrayString =  "\$myArray$testingIndex" ;
+
+                            eval("\$result = &$arrayString;");
+                            print_r($result);
+                            if (!isset($result['investment_loanId'])) {
+                                $result['investment_loanId'] = $loanId;
+                                echo "Disinvestment found for LoanId = $loanId\n";
+            //                    eval("\$result2 = $arrayString;");
+            //                    print_r($result2);   
+                            }
+                        }     
+                    }  
+                }     
+            }
           
 /*   
             $loanData[$date][$loanid]['0'][['date'] = ;
@@ -854,48 +845,6 @@ function array_keys_recursive(&$inputArray, $maxDepth, $searchKey, $searchValue,
         }
     }
 }  
- 
-    /**
-     * Add a new array to an existing array
-     * 
-     * @param  array    $inputArray     the array to walk
-     * @param  array    $array          the set of indices of the "new" array to introduce
-     * @param  string   $arraydata      The data of the new array to introduce 
-     * @return boolean
-     */
-function addNewArray(&$inputArray, $array, $arrayData){
-
-    if ($depth < $maxDepth) {
-        $depth++;
-        $keys = array_keys($inputArray);
-
-        foreach($keys as $key){
-            if ($this->tempDepth > $depth) {
-                $control = $this->tempDepth - $depth;
-                for ($i = 0; $i < $control; $i++)  {               
-                    array_pop($this->tempKey);
-                }    
-            }
-            $this->tempKey[] = $key;
-            $this->tempDepth = $depth;
-                
-            if(is_array($inputArray[$key])){
-                $arrayKeys[$key] = $this->array_keys_recursive($inputArray[$key], $maxDepth, $searchKey, $searchValue, $depth);
-            }
-            else {
-                if ($depth == $maxDepth) {
-                    if ($searchValue == $inputArray[$key] && $searchKey == $key){
-                        $this->filteredArray[] = $this->tempKey;
-                        array_pop($this->tempKey);
-                    }
-                    else {
-                        array_pop($this->tempKey);
-                    }
-                }
-            }
-        }
-    }
-} 
  
 
 
