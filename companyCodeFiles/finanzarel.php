@@ -838,7 +838,7 @@ class finanzarel extends p2pCompany {
                 }
                 $headerError = $this->compareHeader();
                 echo $this->compareHeader();
-                exit;
+                
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
