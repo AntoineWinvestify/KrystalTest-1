@@ -56,6 +56,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
     public function getAmortizationDataMulticurl($job) {
         $data = json_decode($job->workload(),true);
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        $this->Structure = ClassRegistry::init('Structure');
         $this->queueCurlFunction = "collectAmortizationTablesParallel";
         print_r($data);
         $queueCurlFunction = $this->queueCurlFunction;
@@ -64,6 +65,8 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         $i = 0;
         foreach ($data["companies"] as $linkedaccount) {
             $this->initCompanyClass($data, $i, $linkedaccount, WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
+            $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_AMORTIZATION_TABLE);
+            $this->newComp[$i]->setTableStructure($structure);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
             $i++;
         }
