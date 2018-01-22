@@ -371,10 +371,21 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "cancelledStateChange",
-                ]       
+                ],       
         
+            104 => [
+                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFundsWithImpactOutstandingPrincipal",
+                ],
         
-        
+             105 => [
+                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFundsNoImpactOutstandingPrincipal",
+                ]         
         
         ];
 

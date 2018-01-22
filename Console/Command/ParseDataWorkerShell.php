@@ -300,8 +300,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         $this->array_keys_recursive($myArray, 4, "investment_loanId", "global_");
                         $foundArrays = $this->filteredArray;
                         print_r($foundArrays);
-
-                        foreach ($foundArrays as $key => $levels) {
+                   //      check if the amount is the same as the amount in the ghost loan
+                   //     if same then read all array information, copy all to array with loanId and date
+                   //             delete old array
+                        foreach ($foundArrays as $key => $levels) {$totalParsingresultTransactions)
                             $testingIndex = "";
                             array_pop($levels);
 
@@ -318,7 +320,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             //                    eval("\$result2 = $arrayString;");
             //                    print_r($result2);   
                             }
-                        }     
+                        } 
+                        
+                        
                     }  
                 }     
             }
