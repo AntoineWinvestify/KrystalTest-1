@@ -59,10 +59,6 @@ class finanzarel extends p2pCompany {
     
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
         [
-            //iS THS REALLY NNEEDED?
-            "A" =>  [
-                    "name" => "transactionId"                                          // Winvestify standardized name
-            ],
             "D" =>  [
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
@@ -73,11 +69,11 @@ class finanzarel extends p2pCompany {
                 ] 
             ],
             "E" => [
-                    "type" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+                    "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
             ], 
             "F" => [// NOT FINISHED YET
                 [
-                    "name" => "transactionDetail",                                      // Winvestify standardized name   OK
+                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
                     "inputData" => [                                                    // List of all concepts that the platform can generate
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
@@ -98,7 +94,7 @@ class finanzarel extends p2pCompany {
             ],
             "G" => [
                 [
-                    "name" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
                                 "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
                                 "input3" => ",",                                        // and its content is the result of the "getAmount" method
@@ -118,6 +114,66 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
             ]
+        ],
+        [
+             "D" =>  [
+                [
+                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "inputData" => [
+                                "input2" => "D/M/Y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ] 
+            ],
+            "E" => [
+                "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+            ], 
+            "F" => [
+                [
+                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
+                    "inputData" => [                                                    // List of all concepts that the platform can generate
+                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                                    "input3" => [
+                                        0 => ["Intereses" => "Regular_gross_interest_income"],
+                                        1 => ["Efecto fallido" => ""]
+                                    ]
+                            ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "G" => [
+                [
+                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+        ],
+        [
+            "A" => [
+                [
+                    "type" => "investment_typeOfInvestment",                        
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => " ",                                // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ]
+            ],
+            "K" => [
+                [
+                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
+                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
+                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ]
         ]
     ];
     
@@ -136,7 +192,7 @@ class finanzarel extends p2pCompany {
                 "name" => "investment_typeOfInvestment"
             ],
             "E" => [
-                    "type" => "investment_fullLoanAmount",                                           
+                "name" => "investment_fullLoanAmount",                                           
             ], 
             "F" => [// NOT FINISHED YET
                 [
