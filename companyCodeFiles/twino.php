@@ -296,6 +296,10 @@ class twino extends p2pCompany {
         'N' => "Interest income, €",
         'O' => "Loan balance, €",
         'P' => "For sale, €");
+    
+    protected $tableStructure = '<table><tr><td>id</td><td>status</td><td>statusDetail</td><td>startDate</td><td>dueDate</td><td>closedDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>statusDetail</td><td>startDate</td><td>dueDate</td><td>closedDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>statusDetail</td><td>startDate</td><td>dueDate</td><td>closedDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>statusDetail</td><td>startDate</td><td>dueDate</td><td>closedDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>id</td><td>status</td><td>startDate</td><td>dueDate</td><td>openAmount</td><td>openPrincipal</td><td>openInterest</td><td>invoicedAmount</td><td>invoicedPrincipal</td><td>invoicedInterest</td><td>extensionsCount</td><td>delayed</td><td>performanceStatus</td></tr><tr><td>2478590</td><td>CLOSED</td><td>PAID</td><td>2017-9-25</td><td>2017-10-25</td><td>Array</td><td>0</td><td>0</td><td>0</td><td>111.26</td><td>100.71</td><td>10.55</td><td>0</td><td></td><td>PAID_IN_TIME</td></tr><tr><td>2478591</td><td>CLOSED</td><td>PAID</td><td>2017-10-26</td><td>2017-11-25</td><td>Array</td><td>0</td><td>0</td><td>0</td><td>111.26</td><td>101.55</td><td>9.71</td><td>0</td><td></td><td>PAID_IN_TIME</td></tr><tr><td>2478592</td><td>CLOSED</td><td>PAID</td><td>2017-11-26</td><td>2017-12-25</td><td>Array</td><td>0</td><td>0</td><td>0</td><td>111.26</td><td>102.4</td><td>8.86</td><td>0</td><td></td><td>PAID_IN_TIME</td></tr><tr><td>2478593</
+td><td>CLOSED</td><td>PAID</td><td>2017-12-26</td><td>2018-1-25</td><td>Array</td><td>0</td><td>0</td><td>0</td><td>111.25</td><td>103.25</td><td>8.01</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478594</td><td>OPEN</td><td>2018-1-26</td><td>2018-2-25</td><td>111.25</td><td>104.11</td><td>7.15</td><td>111.25</td><td>104.11</td><td>7.15</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478595</td><td>OPEN</td><td>2018-2-26</td><td>2018-3-25</td><td>111.25</td><td>104.98</td><td>6.28</td><td>111.25</td><td>104.98</td><td>6.28</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478596</td><td>OPEN</td><td>2018-3-26</td><td>2018-4-25</td><td>111.26</td><td>105.85</td><td>5.4</td><td>111.26</td><td>105.85</td><td>5.4</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478597</td><td>OPEN</td><td>2018-4-26</td><td>2018-5-25</td><td>111.25</td><td>106.73</td><td>4.52</td><td>111.25</td><td>106.73</td><td>4.52</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478598</td><td>OPEN</td><td>2018-5-26</td><td>2018-6-25</td><td>111.25</td><td>107.62</td><td>3.63</td><td>111.25</td><td>107.62</td><td>3.63</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478599</td><td>OPEN</td><td>2018-6-26</td><td>2018-7-25</td><td>111.25</td><td>108.52</td><td>2.74</td><td>111.25</td><td>108.52</td><td>2.74</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478600</td><td>OPEN</td><td>2018-7-26</td><td>2018-8-25</td><td>111.25</td><td>109.42</td><td>1.83</td><td>111.25</td><td>109.42</td><td>1.83</td><td>0</td><td></td><td>CURRENT</td></tr><tr><td>2478601</td><td>OPEN</td><td>2018-8-26</td><td>2018-9-25</td><td>111.25</td><td>110.33</td><td>0.92</td><td>111.25</td><td>110.33</td><td>0.92</td><td>0</td><td></td><td>CURRENT</td></tr></table>';
+    
 
     function __construct() {
         parent::__construct();
@@ -627,7 +631,8 @@ class twino extends p2pCompany {
             /////////////LOGIN
             case 0:
                 $this->loanTotalIds = $this->loanIds;
-                $this->loanIds = array_values($this->loanIds);
+                $this->loanKeys = array_keys($this->loanIds);
+                $this->loanIds = array_values($this->loanIds);                
                 $credentials['name'] = $this->user;
                 $credentials['password'] = $this->password;
                 //$credentials['googleAnalyticClientId'] = '1778227581.1503479723';
@@ -646,10 +651,10 @@ class twino extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $containers = $dom->getElementsByTagName('section');
-                $this->verifyNodeHasElements($containers);
+                /*$this->verifyNodeHasElements($containers);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
+                }*/
                 foreach ($containers as $container) {
                     $divs = $container->getElementsByTagName('div');
                     $this->verifyNodeHasElements($divs);
@@ -706,6 +711,15 @@ class twino extends p2pCompany {
                 }
                 //print_r($arrayAmortizationTable['scheduleItems']);
                 $table = $this->arrayToTableConversion($arrayAmortizationTable['scheduleItems']); //Sent an array and return a html table
+                $revision = $this->structureRevisionAmortizationTable($table,$this->tableStructure);
+                        if ($revision) {
+                            echo "Comparation ok";
+                            $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
+                            $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                        } else {
+                            echo 'Not so ok';
+                            $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                        }
                 $this->tempArray[$this->loanIds[$this->i - 1]] = $table;
                 echo "_-_-_-_-_-_-_-_table is : " . $table . "_-_-_-_-_-_-_-_";
 
@@ -714,6 +728,7 @@ class twino extends p2pCompany {
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
                 } else {
+                    //$this->verifyErrorAmortizationTable();
                     return $this->tempArray;
                     break;
                 }
@@ -826,6 +841,28 @@ class twino extends p2pCompany {
 
         $str = $this->doCompanyLogout();
         return true;
+    }
+
+    function structureRevisionAmortizationTable($node1, $node2) {
+
+        $dom1 = new DOMDocument();
+        $dom1->loadHTML($node1);
+
+        $dom2 = new DOMDocument();
+        $dom2->loadHTML($node2);
+
+        $dom1 = $this->cleanDomTagNotFirst($dom1, array(
+        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+
+
+        $dom2 = $this->cleanDomTagNotFirst($dom2, array(
+        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+
+
+        echo 'compare structure';
+        $structureRevision = $this->verifyDomStructure($dom1, $dom2);
+        echo $structureRevision;
+        return $structureRevision;
     }
 
 }

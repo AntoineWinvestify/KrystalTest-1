@@ -369,6 +369,69 @@ class bondora extends p2pCompany {
         'H' => 'BalanceAfterPayment'
     );
     
+    protected $tableStructure = '<table class="table" style="margin-top: 10px;"><tbody><tr><th colspan="2">Date</th>
+                                <th>Amount</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Late charge</th>
+                            </tr><tr class="past green"><td colspan="2">
+                                            07/01/2016
+                                        </td>
+                                    <td>
+                                        1.87&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.47&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        1.4&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr><tr class="past green"><td colspan="2">
+                                            08/02/2016
+                                        </td>
+                                    <td>
+                                        1.37&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.48&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.89&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr><tr class="past green"><td colspan="2">
+                                            07/03/2016
+                                        </td>
+                                    <td>
+                                        1.37&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.49&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.88&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr><tr class="past green"><td colspan="2">
+                                            06/04/2016
+                                        </td>
+                                    <td>
+                                        1.38&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.5&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                        0.88&acirc;&#130;&not;
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr></tbody></table>';
+    
     
     function __construct() {
         parent::__construct();
@@ -377,9 +440,7 @@ class bondora extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->unoconv = Unoconv\Unoconv::create();
-        
-        
+                      
         //$this->loanIdArray = array("6b3649c5-9a6b-4cee-ac05-a55500ef480a");
         //$this->maxLoans = count($this->loanIds);
 // Do whatever is needed for this subsclass
@@ -663,6 +724,7 @@ class bondora extends p2pCompany {
         
         switch ($this->idForSwitch) {
             case 0:
+                $this->unoconv = Unoconv\Unoconv::create();
                 $this->numberOfFiles = 0;
                 $this->investmentNumber = 0;
                 $this->transactionNumber = 0;
@@ -1102,8 +1164,8 @@ class bondora extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 $this->loanTotalIds = $this->loanIds;
-                $this->loanIds = array_values($this->loanIds);
-                $this->idForSwitch++;
+                $this->loanKeys = array_keys($this->loanIds);
+                $this->loanIds = array_values($this->loanIds);                $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
 
@@ -1153,8 +1215,7 @@ class bondora extends p2pCompany {
                 }
                 foreach ($spans as $span) {
                     echo $span->nodeValue . SHELL_ENDOFLINE;
-                    if (trim($span->nodeValue) == 'Account value') {
-                        echo 'Login ok' . SHELL_ENDOFLINE;
+                    if (trim($span->nodeValue) == 'Dashboard') {
                         $confirm = true;
                         break;
                     }
@@ -1210,6 +1271,15 @@ class bondora extends p2pCompany {
 
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
+                        $revision = $this->structureRevisionAmortizationTable($table,$this->tableStructure);
+                        if ($revision) {
+                            echo "Comparation ok";
+                            $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
+                            $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                        } else {
+                            echo 'Not so ok';
+                            $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                        }
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
@@ -1221,6 +1291,7 @@ class bondora extends p2pCompany {
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
                 } else {
+                    $this->verifyErrorAmortizationTable();
                     return $this->tempArray;
                 }
         }
@@ -1285,6 +1356,29 @@ class bondora extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         
+    }
+    
+    
+function structureRevisionAmortizationTable($node1, $node2) {
+
+        $dom1 = new DOMDocument();
+        $dom1->loadHTML($node1);
+
+        $dom2 = new DOMDocument();
+        $dom2->loadHTML($node2);
+
+        $dom1 = $this->cleanDomTagNotFirst($dom1, array(
+        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+
+
+        $dom2 = $this->cleanDomTagNotFirst($dom2, array(
+        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+
+
+        echo 'compare structure';
+        $structureRevision = $this->verifyDomStructure($dom1, $dom2);
+        echo $structureRevision;
+        return $structureRevision;
     }
 
 }
