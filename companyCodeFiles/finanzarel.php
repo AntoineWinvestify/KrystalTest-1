@@ -383,7 +383,37 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+        ],
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+        ],
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+        ]
+    ];
+    
+    protected $investmentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+        ],
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
 
