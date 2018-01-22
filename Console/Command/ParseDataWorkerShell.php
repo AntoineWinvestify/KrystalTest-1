@@ -138,8 +138,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             }
 
             $files = $data['files'];
-            $this->startDate = $data[$linkedAccountKey]['startDate'];
-            $this->finishDate = $data[$linkedAccountKey]['finishDate'];
+            $this->startDate = $data['startDate'];
+            $this->finishDate = $data['finishDate'];
             // First analyze the transaction file(s)
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
@@ -193,6 +193,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;
                         case WIN_FLOW_TRANSACTION_FILE:
                             $this->callbackInit($tempResult, $companyHandle, $callbacks["transactionFile"]);
+                            print_r($tempResult);
+                            exit;
                             $totalParsingresultTransactions = $tempResult;
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
@@ -432,7 +434,6 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
             echo __FUNCTION__ . " " . __LINE__ ;
             print_r($callbackFunctions);
         }
-        
         if (empty($callbackFunctions)) {
             return;
         }
@@ -878,9 +879,12 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         $rangeDates = $this->createDateRange($this->startDate, $this->finishDate);
         array_shift($rangeDates);
         array_push($rangeDates, $this->finishDate);
-        /******
-         * WE NEED TO DELETE DATES OUTSIDE THE RANGE
-         */
+        foreach ($tempArray as $keyDate => $data) {
+            $date = date("Ymd", strtotime($keyDate));
+            if (!in_array($date, $rangeDates)) {
+                unset($tempArray[$keyDate]);
+            }
+        }
     }
     
 }
