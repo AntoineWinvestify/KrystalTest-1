@@ -165,7 +165,7 @@ class p2pCompany {
     protected $valuesAmortizationTable;
     protected $callbacks;
     protected $originExecution;
-    
+    protected $tableStructure;
     
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
                                         "chunkSize" => 1,     
@@ -2887,6 +2887,16 @@ FRAGMENT
             
         }
     }
+    
+    /**
+     * Function to set a table Structure for a company from database
+     * @param string $tableStructure It is the table structure to compare
+     */
+    function setTableStructure($tableStructure) {
+        $this->tableStructure = $tableStructure;
+    }
+
+
 
 }
 
