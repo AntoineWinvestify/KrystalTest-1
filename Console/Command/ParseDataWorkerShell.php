@@ -599,14 +599,16 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
                     //An array is necessary 
                     $tempResult = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
                 }
-                $arrayByType[$i] = array_merge($arrayByType[$i], $tempResult);
+                $arrayByType[$i] = $arrayByType[$i] + $tempResult;
             }
             $this->callbackInit($arrayByType[$i], $companyHandle, $configParameters[$i]["callback"]);
             $i++;
         }
         if (!empty($orderParam)) {
-            if ($orderParam['fileConfigParam']['type'] == "merge") {
-                $tempResultOrdered = $this->joinArrayTogether($arrayByType, $orderParam);
+            if ($orderParam['fileConfigParam']['type'] == "joinTogether") {
+                //This function comes from the config parameter in the company
+                $function = $orderParam['fileConfigParam']['function'];
+                $tempResultOrdered = $this->$function($arrayByType, $orderParam);
             }
             else {
                 $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
@@ -627,6 +629,14 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @return array
      */
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
+        $config = array (
+            'offsetStart' => 0,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => "",
+            'changeCronologicalOrder' => 0
+        );
+        $this->myParser->cleanConfig($config);
         $this->myParser->setConfig($configParameters);
         $extension = $this->getExtensionFile($file);
         $tempResult = $this->myParser->analyzeFile($file, $parserConfigFile, $extension);     // if successfull analysis, result is an array with loanId's as index
@@ -650,7 +660,15 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      */
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
         $orderParam = array_shift($configParameters);
-        foreach ($configParameters as $key => $individualConfigParameters) {       
+        foreach ($configParameters as $key => $individualConfigParameters) {     
+            $config = array (
+                'offsetStart' => 0,
+                'offsetEnd'     => 0,
+                'separatorChar' => ";",
+                'sortParameter' => "",
+                'changeCronologicalOrder' => 0
+            );
+            $this->myParser->cleanConfig($config);
             $this->myParser->setConfig($individualConfigParameters);
             $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
             if (empty($tempResult)) {
@@ -697,18 +715,30 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @param array $array It is an array of arrays
      * @param array $orderParam With orderParams if needed
      */
-    public function joinArrayTogether($array, $orderParam) {
+    public function joinTwoDimensionArrayTogether($array, $orderParam) {
         $numberArrays = count($array);
         $fullArray = array_shift($array);
         foreach ($array as $arrayKey => $tempArray) {
             foreach ($tempArray as $dateKey => $dateArray) {
                 foreach ($dateArray as $loanIdKey => $loanId) {
-                    if (!empty($fullArray[$dateKey][$loanIdKey])) {
-                        foreach ($loanId as $keyVariable => $variable) {
-                            $fullArray[$dateKey][$loanIdKey][] = $variable;
-                        }
+                    foreach ($loanId as $keyVariable => $variable) {
+                        $fullArray[$dateKey][$loanIdKey][] = $variable;
                     }
                 }
+            }
+        }
+        return $fullArray;
+    }
+    
+    public function joinOneDimensionArrayTogether($array, $orderParam) {
+        $numberArrays = count($array);
+        $fullArray = array_shift($array);
+        foreach ($array as $arrayKey => $tempArray) {
+            foreach ($tempArray as $loanKeyId => $loanId) {
+                foreach ($loanId as $keyVariable => $variable) {
+                     $fullArray[$loanKeyId][] = $variable;
+                }
+               
             }
         }
         return $fullArray;
