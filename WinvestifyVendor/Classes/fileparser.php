@@ -99,6 +99,8 @@ class Fileparser {
                             );
 
     protected $errorData = array();                                 // Contains the information of the last occurred error
+    
+    protected $defaultFinishDate;
 
     protected $currencies = array(EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
@@ -1805,6 +1807,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $csv = fopen($filePath, "w+");   //Rewrite old csv
             fwrite($csv,$csvString);
             fclose($csv);
+    }
+    
+    function setDefaultFinishDate($defaultFinishDate) {
+        $defaultFinishDate = date("Y-m-d", strtotime($defaultFinishDate));
+        $this->defaultFinishDate = $defaultFinishDate;
+    }
+    
+    function getDefaultDate($input, $defaultValue) {
+        return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
     }
     
 }

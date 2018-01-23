@@ -116,6 +116,14 @@ class WinFormulas {
             "dateFinish" => "-1",
             "intervals" => "inclusive",
             "operation" => "add"
+        ],
+        "D" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
+            "intervals" => "inclusive",
+            "operation" => "substract"
         ]
     ];
     
@@ -229,6 +237,21 @@ class WinFormulas {
             "dateFinish" => "-1",
             "intervals" => "inclusive",
             "operation" => "add"
+        ],
+        "D" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_outstandingPrincipal",
+                    "userinvestmentdata_cashInPlatform",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
+            "intervals" => "inclusive",
+            "operation" => "substract"
         ]
     ];
     
@@ -297,6 +320,21 @@ class WinFormulas {
             "dateFinish" => [
                 "month" => "12",
                 "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "D" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "1",
+                "day" => "1"
             ],
             "intervals" => "inclusive",
             "operation" => "add"

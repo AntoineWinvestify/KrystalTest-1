@@ -143,7 +143,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             // First analyze the transaction file(s)
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
-
+            $this->myParser->setDefaultFinishDate($this->finishDate);
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
