@@ -80,10 +80,13 @@ class finanzarel extends p2pCompany {
                                         0 => ["Provisión de fondos" => "Cash_deposit"],
                                         1 => [ "Retirada de fondos" => "Cash_withdrawal"],
                                         2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
+                                        3 => ["Provisi?n de fondos" => "Cash_deposit"],
+                                        4 => ["Cargo por inversi?n en efecto" => "Primary_market_investment"],
                                         5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
                                         7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
                                         9 => ["Intereses de demora" => "Delayed_interest_income"],
                                         14 => ["Retrocesión de comisiones" => "Compensation"],
+                                        15 => ["Retrocesi?n de comisiones" => "Compensation"],
                                         18 => ["Comisiones" => "Commission"],
                                         24 => ["IVA sobre Comisiones" => "Tax_VAT"],
                                         29 => ["Retiro de fondos" => "Cash_withdrawal"]
@@ -135,7 +138,7 @@ class finanzarel extends p2pCompany {
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Intereses" => "Regular_gross_interest_income"],
-                                        1 => ["Efecto fallido" => ""]
+                                        1 => ["Efecto fallido" => "investment_writtenOff"]
                                     ]
                             ],
                     "functionName" => "getTransactionDetail",
@@ -143,7 +146,7 @@ class finanzarel extends p2pCompany {
             ],
             "G" => [
                 [
-                    "type" => "transactionDetail",                                           // This is an "empty variable name". So "type" is
+                    "type" => "amount",                                           // This is an "empty variable name". So "type" is
                     "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
                                 "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
                                 "input3" => ",",                                        // and its content is the result of the "getAmount" method
@@ -379,21 +382,35 @@ class finanzarel extends p2pCompany {
         ];
     
     protected $transactionConfigParms = [
-        [
+        "fileConfigParam" => [
+            "type" => "merge",
+            "sortParameter" => array("date","investment_loanId")
+        ],
+        0 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
             'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ],
-        [
+        1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
             'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+            'callback' => [
+                "cleanTempArray" => [
+                    "findValueInArray" => [
+                        "key" => "transactionDetail",
+                        "function" => "verifyNotEqual",
+                        "values" => ["Regular_gross_interest_income"],
+                        "valueDepth" => 2
+                    ]
+                ]
+            ]
         ],
-        [
+        2 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
