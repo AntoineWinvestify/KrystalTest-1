@@ -371,7 +371,6 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ]
-            
         ]
     ];
 
@@ -383,7 +382,8 @@ class finanzarel extends p2pCompany {
     
     protected $transactionConfigParms = [
         "fileConfigParam" => [
-            "type" => "merge",
+            "type" => "joinTogether",
+            "function" => "joinTwoDimensionArrayTogether",
             "sortParameter" => array("date","investment_loanId")
         ],
         0 => [
@@ -404,7 +404,7 @@ class finanzarel extends p2pCompany {
                     "findValueInArray" => [
                         "key" => "transactionDetail",
                         "function" => "verifyNotEqual",
-                        "values" => ["Regular_gross_interest_income"],
+                        "values" => ["Regular_gross_interest_income", "investment_writtenOff"],
                         "valueDepth" => 2
                     ]
                 ]
@@ -420,17 +420,42 @@ class finanzarel extends p2pCompany {
     ];
     
     protected $investmentConfigParms = [
-        [
+        "fileConfigParam" => [
+            "type" => "joinTogether",
+            "function" => "joinOneDimensionArrayTogether",
+            "sortParameter" => array("investment_loanId")
+        ],
+        0 => [
             'offsetStart' => 1,
-            'offsetEnd'     => 0,
+            'offsetEnd'     => 1,
             'separatorChar' => ";",
+            'debugEnd' => true,
             'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
         ],
-        [
+        1 => [
             'offsetStart' => 1,
-            'offsetEnd'     => 0,
+            'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId"),   // Used to "sort" the array and use $sortParameter as prime index.
+            'callback' => [
+                "cleanTempArray" => [
+                    "findValueInArray" => [
+                        "key" => "investment_originalLoanState",
+                        "function" => "verifyNotEqual",
+                        "values" => ["Fallida"],
+                        "valueDepth" => 2
+                    ]
+                ]
+            ]
+        ]
+    ];
+    
+    protected $callbacks = [
+        "investment" => [
+            "parserDataCallback" => [
+                "investment_typeOfInvestment" => "translateLoanType",
+                "investment_statusOfLoan" => "translateLoanStatus"
+            ]
         ]
     ];
 
@@ -1099,21 +1124,25 @@ class finanzarel extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-         $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper($inputData);
         switch ($inputData){
             case "FACTURA":
-                return WIN_TYPEOFLOAN_PERSONAL;
+                $type = WIN_TYPEOFLOAN_PERSONAL;
+                break;
+            case "PAGAR?":
+                $type = WIN_TYPEOFLOAN_PAGARE;
                 break;
             case "PAGARÉ":
-                return WIN_TYPEOFLOAN_PAGARE;
+                $type = WIN_TYPEOFLOAN_PAGARE;
                 break;
             case "PAGARÉ N.O.":
-                return WIN_TYPEOFLOAN_PAGARE;
+                $type = WIN_TYPEOFLOAN_PAGARE;
                 break; 
             case "CONFIRMING":
-                return WIN_TYPEOFLOAN_CONFIRMING;
+                $type = WIN_TYPEOFLOAN_CONFIRMING;
                 break;
         }
+        return $type;
 
     }
     
