@@ -607,9 +607,6 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         if (!empty($orderParam)) {
             if ($orderParam['fileConfigParam']['type'] == "merge") {
                 $tempResultOrdered = $this->joinArrayTogether($arrayByType, $orderParam);
-                print_r($tempResultOrdered);
-                echo "FINISED ORDERING";
-                exit;
             }
             else {
                 $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
@@ -618,9 +615,6 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         else {
             $tempResultOrdered = $arrayByType[0];
         }
-        print_r($tempResultOrdered);
-        echo "FINISED ORDERINerrrrrrrr fdfgfgsgfG";
-        exit;
         return $tempResultOrdered;
     }
     
