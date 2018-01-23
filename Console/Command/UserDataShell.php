@@ -835,7 +835,7 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestment(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
+        return $resultData['investment']['investment_myInvestment'];
     }   
     
     
@@ -878,10 +878,31 @@ class UserDataShell extends AppShell {
         return $tempOutstandingPrincipal;
     } 
 
+    /**
+     *  
+     *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets
+     *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large amount to be stored in reservedAssets field
+     */
+    public function calculateReservedSimple(&$transactionData, &$resultData) {
+        return WIN_LOANSTATUS_CANCELLED;
+    } 
     
-    
-   
-    
+    /**
+     *  
+     *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets. 
+     *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
+     *
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large amount to be stored in reservedAssets field
+     */  
+    public function calculateReservedComplex(&$transactionData, &$resultData) {
+        return WIN_LOANSTATUS_CANCELLED;
+    }    
     
 }
 

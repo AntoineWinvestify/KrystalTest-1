@@ -285,108 +285,35 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                 $totalParsingresultTransactions[$loanId][100]['date'] = $key;
                                 $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
                                 $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";
+                                unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
                             }
                             if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                                unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
-                            }
+                            } 
                         }
+                    }
+                    // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
 
+                    $this->array_keys_recursive($myArray, 4, "internalName", "disinvestment");
+                    $foundArrays = $this->getlevel();
+                    print_r($foundArrays);
+                    if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
+                        echo "some error occurred in PFP, but we will mark all Ghosts";
+                    }
 
-                        //modify disinvestment (add investment_loanId) transaction record and its index (=loanId)
-                        // ALL THE LOANS IDS IN RESERVED WHICH CANNOT BE FOUND IN FINISHED OR ACTIVE (OR WRITTEN OFF) 
-                        // ARE CONSIDERED GHOST LOANS, OR CANCELLED. SO GENERATE STATECHANGE RECORD TODAY (FIRST DAY OF 
-                        // READING PERIOD
-                        $this->array_keys_recursive($myArray, 4, "investment_loanId", "global_");
-                        $foundArrays = $this->filteredArray;
-                        print_r($foundArrays);
-                   //      check if the amount is the same as the amount in the ghost loan
-                   //     if same then read all array information, copy all to array with loanId and date
-                   //             delete old array
-                        foreach ($foundArrays as $key => $levels) {$totalParsingresultTransactions)
-                            $testingIndex = "";
-                            array_pop($levels);
-
-                            foreach ($levels as $level) {
-                                $testingIndex = $testingIndex . "['" . $level . "']";
-                            }
-                            $arrayString =  "\$myArray$testingIndex" ;
-
-                            eval("\$result = &$arrayString;");
-                            print_r($result);
-                            if (!isset($result['investment_loanId'])) {
-                                $result['investment_loanId'] = $loanId;
-                                echo "Disinvestment found for LoanId = $loanId\n";
-            //                    eval("\$result2 = $arrayString;");
-            //                    print_r($result2);   
-                            }
-                        } 
-                        
-                        
-                    }  
+                    foreach ($foundArrays as $key => $levels) {
+                        $loan = array_pop($data['listOfReservedInvestments']);
+                        $myArray[$levels[0]][$loan][$levels[2]] = $myArray[$levels[0]][$levels[1]][$levels[2]];
+                        $myArray[$levels[0]][$loan][0]['investment_loanId'] = $loan;
+                        unset($myArray[$levels[0]][$loan][0]['amount']);
+                        unset($myArray[$levels[0]][$levels[1]]);                       
+                    } 
                 }     
-            }
-          
-/*   
-            $loanData[$date][$loanid]['0'][['date'] = ;
-            $loanData[$date][$loanid]['0'][['investment_loanId'] = ;
-            $loanData[$date][$loanid]['0'][['internalName'] = ;
-            $loanData[$date][$loanid]['0'][['amount'] = ;        
+            }     
         }
         
-        [2017-02-01]
-                [1691352-01] => Array
-                      (
-                          [0] => Array
-                              (
-                                  [transaction_transactionId] => 197424741
-                           *      [date] => 2017-10-17
-                           *      [investment_loanId] => 1691352-01
-                                  [original_concept] => Investment principal increase 
-                           *      [internalName] => investment_myInvestment
-                           *      [amount] => 36.01
-                                  [transaction_balance] => 42.999158907555
-                                  [currency] => 1
-                              )
-
-                      )
-        
-            3 => [
-                "detail" => "Primary_market_investment",
-                "transactionType" => WIN_CONCEPT_TYPE_COST,
-                "account" => "Capital",
-                "type" => "investment_myInvestment",  
-                "chars" => "AM_TABLE"
-                ],
-*/           
-            
-            
-      
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
