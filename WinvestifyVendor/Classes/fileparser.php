@@ -776,7 +776,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
        
         $i = 0;
         $outOfRange = false;
-
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
@@ -843,7 +842,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
-                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];     
                     $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
@@ -856,13 +855,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 break;               
             }
             $i++;
+            
         }
-        
-    if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
-        return(array_reverse($tempArray));
-    }
-
-    return $tempArray;    
+        if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
+            return(array_reverse($tempArray));
+        }
+        return $tempArray;    
     }
 
 
@@ -964,7 +962,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     public function setConfig($configurations)  {
-
+        
         foreach ($configurations as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
@@ -1816,6 +1814,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     function getDefaultDate($input, $defaultValue) {
         return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
+    }
+    
+    public function cleanConfig($config) {
+        $this->config = $config;
     }
     
 }
