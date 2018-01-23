@@ -245,10 +245,12 @@ class loanbook extends p2pCompany {
             }
         }
 
-        $this->print_r2($this->investmentDeletedList);
-        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
-        echo 'Hidden: ' . SHELL_ENDOFLINE;
-        $this->print_r2($hiddenInvestments);
+        if($totalArray){
+            $this->print_r2($this->investmentDeletedList);
+            $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+            echo 'Hidden: ' . SHELL_ENDOFLINE;
+            $this->print_r2($hiddenInvestments);
+        }
 
         //$this->print_r2($totalArray);
         foreach ($totalArray as $key => $investment) { //Delete empy lines
