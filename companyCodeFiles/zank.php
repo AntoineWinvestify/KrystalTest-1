@@ -212,7 +212,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_investmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                      // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -391,7 +391,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",     
+                    "type" => "investment_originalState",     
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
@@ -506,10 +506,335 @@ class zank extends p2pCompany {
                 "investment_typeOfInvestment" => "translateTypeOfInvestment",
                 "investment_statusOfLoan" => "translateLoanStatus"
             ]
+        ],
+        "transactionFile" => [
+            "cleanDatesTempArray" => [
+                "values" => [
+                    "startDate",
+                    "finishDate"
+                ]
+            ]
         ]
     ];
+    
+        protected $investmentHeader = array(   
+        'A' => 'Fecha',
+        'B' => 'Préstamo',
+        'C' => 'Rentabilidad',
+        'D' => 'Plazo',
+        'E' => 'Inversión',
+        'F' => 'Capital amortizado',
+        'G' => 'Intereses ordinarios',
+        'H' => 'Intereses demora',
+        'I' => 'Comision',
+        'J' => 'Estado');
+    
+    protected $transactionHeader = array(
+        'A' => 'Fecha',
+        'B' => 'Tipo',
+        'C' => 'Cantidad',
+        'D' => 'Destino',
+        'E' => 'Saldo');
 
-
+    
+    protected $tableStructure = '<table id="parte" class="table table-hover"><tr><th>Cuota</th>
+                                                                <th class="info-tooltip">Fecha cobro <a href="#" data-toggle="tooltip" title="Fecha en la que se solicita el cobro al prestatario. Zank necesita 30 d&iacute;as despu&eacute;s para gestionar todos los cobros y enviarlos a tu monedero"><i class="fa fa-info-circle"></i></a></th>
+                                                                <th>Principal</th>
+                                                                <th>Intereses</th>
+                                                                <th>Mensualidad</th>
+                                                                <th>Comisi&oacute;n</th>
+                                                                <th>Intereses demora</th>
+                                                                <th>Estado</th>
+                                                                <th>Informaci&oacute;n</th>
+                                                            </tr><tr><td>INI</td>
+                                                                        <td>16/12/2015</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>1</td>
+                                                                        <td>01/01/2016</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td>0,37 &euro;</td>
+                                                                        <td>0,37 &euro;</td>
+                                                                        <td>-0,04 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>2</td>
+                                                                        <td>01/02/2016</td>
+                                                                        <td>1,76 &euro;</td>
+                                                                        <td>0,71 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,08 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>3</td>
+                                                                        <td>01/03/2016</td>
+                                                                        <td>1,79 &euro;</td>
+                                                                        <td>0,68 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,08 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>4</td>
+                                                                        <td>01/04/2016</td>
+                                                                        <td>1,81 &euro;</td>
+                                                                        <td>0,66 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,08 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>5</td>
+                                                                        <td>01/05/2016</td>
+                                                                        <td>1,84 &euro;</td>
+                                                                        <td>0,63 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,07 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>6</td>
+                                                                        <td>01/06/2016</td>
+                                                                        <td>1,87 &euro;</td>
+                                                                        <td>0,61 &euro;</td>
+                                                                        <td>2,53 &euro;</td>
+                                                                        <td>-0,07 &euro;</td>
+                                                                        <td>0,06 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>7</td>
+                                                                        <td>01/07/2016</td>
+                                                                        <td>1,89 &euro;</td>
+                                                                        <td>0,58 &euro;</td>
+                                                                        <td>2,50 &euro;</td>
+                                                                        <td>-0,07 &euro;</td>
+                                                                        <td>0,03 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>8</td>
+                                                                        <td>01/08/2016</td>
+                                                                        <td>1,92 &euro;</td>
+                                                                        <td>0,55 &euro;</td>
+                                                                        <td>2,63 &euro;</td>
+                                                                        <td>-0,07 &euro;</td>
+                                                                        <td>0,16 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>9</td>
+                                                                        <td>01/09/2016</td>
+                                                                        <td>1,95 &euro;</td>
+                                                                        <td>0,53 &euro;</td>
+                                                                        <td>2,60 &euro;</td>
+                                                                        <td>-0,06 &euro;</td>
+                                                                        <td>0,12 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>10</td>
+                                                                        <td>01/10/2016</td>
+                                                                        <td>1,97 &euro;</td>
+                                                                        <td>0,50 &euro;</td>
+                                                                        <td>2,57 &euro;</td>
+                                                                        <td>-0,06 &euro;</td>
+                                                                        <td>0,10 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>11</td>
+                                                                        <td>01/11/2016</td>
+                                                                        <td>2,00 &euro;</td>
+                                                                        <td>0,47 &euro;</td>
+                                                                        <td>2,53 &euro;</td>
+                                                                        <td>-0,06 &euro;</td>
+                                                                        <td>0,06 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>12</td>
+                                                                        <td>01/12/2016</td>
+                                                                        <td>2,03 &euro;</td>
+                                                                        <td>0,44 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,05 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>13</td>
+                                                                        <td>01/01/2017</td>
+                                                                        <td>2,06 &euro;</td>
+                                                                        <td>0,41 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,05 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>14</td>
+                                                                        <td>01/02/2017</td>
+                                                                        <td>2,09 &euro;</td>
+                                                                        <td>0,38 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,05 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>15</td>
+                                                                        <td>01/03/2017</td>
+                                                                        <td>2,12 &euro;</td>
+                                                                        <td>0,35 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,04 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>16</td>
+                                                                        <td>01/04/2017</td>
+                                                                        <td>2,15 &euro;</td>
+                                                                        <td>0,32 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,04 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>17</td>
+                                                                        <td>01/05/2017</td>
+                                                                        <td>2,18 &euro;</td>
+                                                                        <td>0,29 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,03 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>18</td>
+                                                                        <td>01/06/2017</td>
+                                                                        <td>2,21 &euro;</td>
+                                                                        <td>0,26 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,03 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>19</td>
+                                                                        <td>01/07/2017</td>
+                                                                        <td>2,24 &euro;</td>
+                                                                        <td>0,23 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,03 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>20</td>
+                                                                        <td>01/08/2017</td>
+                                                                        <td>2,27 &euro;</td>
+                                                                        <td>0,20 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,02 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>21</td>
+                                                                        <td>01/09/2017</td>
+                                                                        <td>2,30 &euro;</td>
+                                                                        <td>0,17 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,02 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota cobrada.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>22</td>
+                                                                        <td>01/10/2017</td>
+                                                                        <td>2,34 &euro;</td>
+                                                                        <td>0,14 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,02 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-encobro estados-cuotas">EC</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota En cobro.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>23</td>
+                                                                        <td>01/11/2017</td>
+                                                                        <td>2,37 &euro;</td>
+                                                                        <td>0,10 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,01 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label label-info estados-cuotas">DE</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota Devengandose.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>24</td>
+                                                                        <td>01/12/2017</td>
+                                                                        <td>2,40 &euro;</td>
+                                                                        <td>0,07 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,01 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label estados-cuotas" style="background-color: #aaaaaa;">PD</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota pendiente.
+                                                                                                                                                    </td>
+                                                                    </tr><tr><td>25</td>
+                                                                        <td>01/01/2018</td>
+                                                                        <td>2,44 &euro;</td>
+                                                                        <td>0,03 &euro;</td>
+                                                                        <td>2,47 &euro;</td>
+                                                                        <td>-0,00 &euro;</td>
+                                                                        <td>0,00 &euro;</td>
+                                                                        <td><span class="label estados-cuotas" style="background-color: #aaaaaa;">PD</span></td>
+                                                                                                                                                <td>
+                                                                                                                                                            Cuota pendiente.
+                                                                                                                                                    </td>
+                                                                    </tr></table>';
+    
+    
     
     function __construct() {
         parent::__construct();
@@ -1564,7 +1889,7 @@ class zank extends p2pCompany {
                 break;
             case 2:
                 //This is an error because we don't verify if we have entered
-                if ($str == 200 or $str == 103) {
+                if ($str == 200 or $str == 302) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
                     $this->doCompanyLoginMultiCurl($this->credentials);
@@ -1647,13 +1972,21 @@ class zank extends p2pCompany {
                 }
                 // goto page "MI CARTERA"
                 $url = array_shift($this->urlSequence) . $this->userId;
+                echo "investment url: " . $url;
                 $this->idForSwitch++;
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
@@ -1665,13 +1998,20 @@ class zank extends p2pCompany {
 
                 echo "Cash Flow Url: " . SHELL_ENDOFLINE;
                 echo $url;
-                $$this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
                 $this->idForSwitch++;
-                $this->getPFPFileMulticurl($url, null, false, false, $$this->fileName);  // load Webpage into a string variable so it can be parsed	
+                $this->getPFPFileMulticurl($url, null, false, false, $this->fileName);  // load Webpage into a string variable so it can be parsed	
                 break;
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1683,12 +2023,16 @@ class zank extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $divs = $dom->getElementsByTagName('div');
+                $this->verifyNodeHasElements($divs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 /*foreach($divs as $key => $div){
                     if($div->getAttribute('class') == 'panel-body'){
                         echo " " . $key . "=>" . $div->nodeValue . " ";
                     }
                 }*/
-                $this->tempArray['global']['activeInvestment'] = $ps[28]->nodeValue;
+                $this->tempArray['global']['activeInvestment'] = $divs[28]->nodeValue;
                 return $this->tempArray; 
         }
     }
@@ -1703,6 +2047,7 @@ class zank extends p2pCompany {
         switch ($this->idForSwitch) {
             case 0:
                 $this->loanTotalIds = $this->loanIds;
+                $this->loanKeys = array_keys($this->loanIds);
                 $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
@@ -1748,7 +2093,7 @@ class zank extends p2pCompany {
                 break;
             case 2:
                 //This is an error because we don't verify if we have entered
-                if ($str == 200 or $str == 103) {
+                if ($str == 200 or $str == 302) {
                     //echo "CODE 103 or 200 received, so do it again , OK <br>";
                     $this->idForSwitch++;
                     $this->doCompanyLoginMultiCurl($this->credentials);
@@ -1805,7 +2150,6 @@ class zank extends p2pCompany {
 
                 $index = 0;
                 $ps = $dom->getElementsByTagName('p');
-
                 $this->verifyNodeHasElements($ps);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
@@ -1819,7 +2163,7 @@ class zank extends p2pCompany {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . substr($this->loanIds[$this->i],1);
                 echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
@@ -1830,16 +2174,29 @@ class zank extends p2pCompany {
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                echo "Read table: ";
+               
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
-                    if ($table->getAttribute('id') == 'parte') {
+                    echo "Read table: ";
+                    if ($table->getAttribute('id') == 'parte' || $table->getAttribute('id') == 'todo') {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
+                        $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
+                        if ($revision) {
+                            echo "Comparation ok";
+                            $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
+                            $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                        } else {
+                            echo 'Not so ok';
+                            $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
+                        }
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
-                        echo $AmortizationTableString;
                     }
                 }
                 if ($this->i < $this->maxLoans) {
@@ -2066,6 +2423,31 @@ class zank extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         
+    }
+
+    function structureRevisionAmortizationTable($node1, $node2) {
+
+        $dom1 = new DOMDocument();
+        $dom1->loadHTML($node1);
+
+        $dom2 = new DOMDocument();
+        $dom2->loadHTML($node2);
+
+        $dom1 = $this->cleanDom($dom1, array(
+            array('typeSearch' => 'element', 'tag' => 'table')), array('id', 'style'));
+        $dom1 = $this->cleanDomTagNotFirst($dom1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+
+        $dom2 = $this->cleanDom($dom2, array(
+            array('typeSearch' => 'element', 'tag' => 'table')), array('id', 'style'));
+        $dom2 = $this->cleanDomTagNotFirst($dom2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+
+        
+        echo 'compare structure';
+        $structureRevision = $this->verifyDomStructure($dom1, $dom2);
+        echo $structureRevision;
+        return $structureRevision;
     }
 
 }
