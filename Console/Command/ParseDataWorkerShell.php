@@ -128,7 +128,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');    
         
         $platformData = json_decode($job->workload(), true);
-
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
@@ -583,8 +582,8 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $filesJoinedByParts = $this->joinFilesByParts($filesByType);
         //If exit this key in the array, it is a multi variable files data an it has that in the first key of the array
-        if (in_array("fileConfigParam")) {
-            $orderParam = array_slice($configParameters, 0);
+        if (array_key_exists("fileConfigParam", $configParameters)) {
+            $orderParam = array_slice($configParameters, 0,1);
         }
         $i = 0;
         $arrayByType = [];
@@ -602,14 +601,26 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
                 }
                 $arrayByType[$i] = array_merge($arrayByType[$i], $tempResult);
             }
+            $this->callbackInit($arrayByType[$i], $companyHandle, $configParameters[$i]["callback"]);
             $i++;
         }
         if (!empty($orderParam)) {
-            $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
+            if ($orderParam['fileConfigParam']['type'] == "merge") {
+                $tempResultOrdered = $this->joinArrayTogether($arrayByType, $orderParam);
+                print_r($tempResultOrdered);
+                echo "FINISED ORDERING";
+                exit;
+            }
+            else {
+                $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
+            }
         }
         else {
             $tempResultOrdered = $arrayByType[0];
         }
+        print_r($tempResultOrdered);
+        echo "FINISED ORDERINerrrrrrrr fdfgfgsgfG";
+        exit;
         return $tempResultOrdered;
     }
     
@@ -669,22 +680,44 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @return array
      */
     public function resultOrdering($tempArray, $orderParam) {
-        $countSortParameters = count($this->config['sortParameter']);
+        $countSortParameters = count($orderParam);
         switch ($countSortParameters) {
             case 1:
-                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                $sortParam1 = $tempArray[$i][$orderParam[0]];      
                 $tempArray[$sortParam1][] = $tempArray[$i];
                 unset($tempArray[$i]); 
             break; 
 
             case 2:
-                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
-                $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
+                $sortParam1 = $tempArray[$i][$orderParam[0]];
+                $sortParam2 = $tempArray[$i][$orderParam[1]];        
                 $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
                 unset($tempArray[$i]);
             break;               
         }
         return $tempArray;
+    }
+    
+    /**
+     * Join together two or more arrays with the same keys
+     * @param array $array It is an array of arrays
+     * @param array $orderParam With orderParams if needed
+     */
+    public function joinArrayTogether($array, $orderParam) {
+        $numberArrays = count($array);
+        $fullArray = array_shift($array);
+        foreach ($array as $arrayKey => $tempArray) {
+            foreach ($tempArray as $dateKey => $dateArray) {
+                foreach ($dateArray as $loanIdKey => $loanId) {
+                    if (!empty($fullArray[$dateKey][$loanIdKey])) {
+                        foreach ($loanId as $keyVariable => $variable) {
+                            $fullArray[$dateKey][$loanIdKey][] = $variable;
+                        }
+                    }
+                }
+            }
+        }
+        return $fullArray;
     }
     
     /**
