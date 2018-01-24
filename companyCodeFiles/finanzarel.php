@@ -760,11 +760,13 @@ class finanzarel extends p2pCompany {
                 }
                 print_r($controlVariablesArray);
                 
-                $this->tempArray['global']['myWallet'] = $controlVariablesArray[5];
+                
                 $this->tempArray['global']['outstandingPrincipal'] = $controlVariablesArray[2];
                 //$this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($controlVariablesArray[11]);
                 //Finanzarel doenst have number of investments
-                $this->tempArray['reservedFunds'] = $this->getMonetaryValue($controlVariablesArray[6]); //They call it "Inversion neta comprometida"
+                $this->tempArray['global']['reservedFunds'] = $this->getMonetaryValue($controlVariablesArray[6]); //They call it "Inversion neta comprometida"
+                $this->tempArray['global']['myWallet'] = $controlVariablesArray[5] - $this->tempArray['global']['reservedFunds'];
+                
                 
                 print_r($this->tempArray);
                 //Get the request to download the file
@@ -839,7 +841,7 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
-                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $this->fileName = "LoansExpired" . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->expiredLoansHeader;
                 $headers = array('Expect:');
                 
@@ -873,7 +875,6 @@ class finanzarel extends p2pCompany {
                 $this->numFileTransaction = 3;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$this->headerComparation = $this->investmentHeader;
-                $this->numFileInvestment++;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);

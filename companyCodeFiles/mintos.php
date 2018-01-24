@@ -596,8 +596,14 @@ class mintos extends p2pCompany {
             'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
             );
      
-    protected $transactionHeader = array('A' => 'Transaction ID', 'B' => 'Date', 'C' => 'Details', 'D' => 'Turnover',
-            'E' => 'Balance', 'F' => 'Currency'
+     
+    protected $transactionHeader = array(
+        'A' => 'Transaction ID', 
+        'B' => 'Date',
+        'C' => 'Details',
+        'D' => 'Turnover',
+        'E' => 'Balance', 
+        'F' => 'Currency'
             );
     
     
@@ -2617,7 +2623,9 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-       
+        $this->minEmptySize = 3109;
+        $this->maxEmptySize = 3110;
+        
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
         // Do whatever is needed for this subsclass
@@ -2800,6 +2808,7 @@ class mintos extends p2pCompany {
             case 4:
                 //$credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                  $this->headerComparation = $this->investmentHeader;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
@@ -2822,14 +2831,17 @@ class mintos extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 
-                /*
-                $this->headerComparation = $this->investmentHeader;
-                $headerError = $this->compareHeader();
-                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
-                    return $this->getError(__LINE__, __FILE__, $headerError);
-                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
-                }*/
+                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        $this->getError(__LINE__, __FILE__, $headerError);
+                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    }
+                } 
+                
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
@@ -2885,6 +2897,18 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                
+                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        $this->getError(__LINE__, __FILE__, $headerError);
+                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    }
+                } 
+                   
                 $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
