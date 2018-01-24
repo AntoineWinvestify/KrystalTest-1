@@ -68,6 +68,10 @@ class ParseDataClientShell extends GearmanClientShell {
         echo "Deleting Investmentslice\n";
  //       $this->Investmentslice = ClassRegistry::init('Investmentslice');
         $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
+        
+        echo "Deleting Globaltotalsdata\n";
+        $this->Globalcashflowdata = ClassRegistry::init('Globaltotalsdata');
+        $this->Globalcashflowdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
 
         return;
     }
