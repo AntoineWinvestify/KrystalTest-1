@@ -161,7 +161,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "transactionDetail",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "createReserverdFundsWithImpactOutstandingPrincipal",                                // 'input3' is NOT mandatory. 
+                                "input2" => "createReservedFunds",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ]
