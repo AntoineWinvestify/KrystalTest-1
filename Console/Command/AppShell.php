@@ -268,4 +268,33 @@ class AppShell extends Shell {
         return $range;
     }
 
+    
+    /**
+     * Gets the latest (=last entry in DB) data of a model table
+     * @param string    $model
+     * @param array     $filterConditions
+     *
+     * @return array with data
+     *          or false if $elements do not exist in two dimensional array
+     */
+    public function getLatestTotals($model, $filterConditions) {
+
+        $temp = $this->$model->find("first", array('conditions' => $filterConditions,
+            'order' => array($model . '.id' => 'desc'),
+            'recursive' => -1
+        ));
+
+        if (empty($temp)) {
+            return false;
+        }
+
+        foreach ($temp[$model] as $key => $item) {
+            $keyName = explode("_", $key);
+            if (strtoupper($model) <> strtoupper($keyName[0])) {
+                unset($temp[$model][$key]);
+            }
+        }
+        return $temp;
+    }   
+    
 }

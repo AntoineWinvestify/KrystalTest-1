@@ -323,7 +323,7 @@ class Fileparser {
                 "detail" => "Currency_exchange_transaction",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept30"
+                "type" => "currencyExchangeTransaction"
                 ],
             31 => [
                 "detail" => "Unknown_income",
@@ -351,13 +351,13 @@ class Fileparser {
                 ],        
         
   
- 
-    dfefault interest income should be in globalcashflow table
+ /*
+    default interest income should be in globalcashflow table
 
 30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
 Currency exchange fee	FX commission with Exchange Rate:    
     
-           
+  */         
         
         
         

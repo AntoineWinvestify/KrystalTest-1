@@ -106,8 +106,8 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
-    public function calculatePartialPrincipalRepayment() {
+    public function calculatePartialPrincipalBuyback() {
+        $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
         $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
             'fields' => array('paymenttotal_partialPrincipalRepayment'),
@@ -570,7 +570,6 @@ class UserDataShell extends AppShell {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
             return "INITIAL";               
         }       
-
         return "ACTIVE";                    
     }
     
@@ -588,33 +587,6 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /**
-     * Gets the latest (=last entry in DB) data of a model table
-     * @param string    $model
-     * @param array     $filterConditions
-     *
-     * @return array with data
-     *          or false if $elements do not exist in two dimensional array
-     */
-    public function getLatestTotals($model, $filterConditions) {
-
-        $temp = $this->$model->find("first", array('conditions' => $filterConditions,
-            'order' => array($model . '.id' => 'desc'),
-            'recursive' => -1
-        ));
-
-        if (empty($temp)) {
-            return false;
-        }
-
-        foreach ($temp[$model] as $key => $item) {
-            $keyName = explode("_", $key);
-            if (strtoupper($model) <> strtoupper($keyName[0])) {
-                unset($temp[$model][$key]);
-            }
-        }
-        return $temp;
-    }
 
     /* NOT YET  checck if the index is investment or payment
      * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]

@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -293,25 +293,6 @@ $tempMeasurements = array(
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
-        
-// Deal with empty transaction record    
-        if (isset($platformData['parsingResultTransactions'])) {
-            if (count($platformData['parsingResultTransactions']) == 0) {
-
-            $movingDate = $startDate;
-            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-            echo "startDate = $startDate and finishDate = $finishDate\n";
-            do {
-                $newUserinvestmentData = $calculationClassHandle->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                $newUserinvestmentData['Userinvestmentdata']['date'] = $movingDate;
-                print_r($newUserinvestmentData);
-                $this->Userinvestmentdata->save($newUserinvestmentData, $validate = true);
-
-                $movingDate = date('Ymd', strtotime($movingDate . ' +1 day'));
-            }
-            while ($movingDate <= $finishDate);
-            }
-        }
        
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
@@ -325,21 +306,6 @@ print_r($platformData['amortizationTablesOfNewLoans']);
     
     echo "FINISHED_ACCOUNT = $FINISHED_ACCOUNT   \n";
     echo "STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS \n"; 
-    
-$myArray = array ('finished' => $FINISHED_ACCOUNT,
-            'finished_list' => $FINISHED_ACCOUNT_LIST,
-            'countFinishedList' => count($FINISHED_ACCOUNT_LIST),
-            'started_new_accounts'  => $STARTED_NEW_ACCOUNTS,
-            'started_new_accounts_list' => $STARTED_NEW_ACCOUNTS_LIST,
-            'countNewAccountList' => count($STARTED_NEW_ACCOUNTS_LIST),
-            'finished_duplicates_list' => $FINISHED_DUPLICATES_LIST,
-            'countFinishedDuplicatesList' => count($FINISHED_DUPLICATES_LIST),
-            'measurements' => $tempMeasurements,
-            'workingNewLoans' => $platformData['workingNewLoans'], 
-            'countWorkingNewLoans' => count($platformData['workingNewLoans']),
-            'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
-        );
-    file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
     exit;
 }
 
@@ -827,6 +793,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
 
             if (!empty($database['globaltotalsdata'])) {
                 $database['globaltotalsdata']['userinvestmentdata_id'] = $userInvestmentDataId;
+                $database['globaltotalsdata']['linkedaccount_id'] = $linkedaccountId;
                 $database['globaltotalsdata']['date'] = $dateKey;
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globaltotalsdata Data... ";               
                 $this->Globaltotalsdata->create();

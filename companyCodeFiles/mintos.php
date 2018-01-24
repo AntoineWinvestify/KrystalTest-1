@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -116,7 +117,9 @@ class mintos extends p2pCompany {
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
                                             13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
-                                            14 => ["Client withdrawal" => "Cash_withdrawal"]
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+                                            16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
                                             ]                      
                             ],
                     "functionName" => "getTransactionDetail",
@@ -154,7 +157,9 @@ class mintos extends p2pCompany {
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
                                             13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
-                                            14 => ["Client withdrawal" => "Cash_withdrawal"]
+                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+                                            16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
                                             ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
