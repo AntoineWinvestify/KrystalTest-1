@@ -2822,15 +2822,19 @@ class mintos extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 
-                /*
-                $this->headerComparation = $this->investmentHeader;
-                $headerError = $this->compareHeader();
-                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
-                    return $this->getError(__LINE__, __FILE__, $headerError);
-                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
-                }*/
-                
+                if (filesize($this->getFolderPFPFile() . DS . $this->fileName) !== 265851) {
+                    $this->headerComparation = $this->investmentHeader;
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    }
+                } else{
+                    echo 'meh';
+                    exit;
+                }
+
                 if(empty($this->tempUrl['transactionPage'])){                 
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
                     //Url preparation for download multiple tramsaction files

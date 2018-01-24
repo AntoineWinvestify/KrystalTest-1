@@ -653,7 +653,7 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
-                $this->fileName = "expiredLoans" . "." . $this->typeFileInvestment;
+                $this->fileName = "LoansExpired" . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->expiredLoansHeader;
                 $headers = array('Expect:');
                 
@@ -687,7 +687,6 @@ class finanzarel extends p2pCompany {
                 $this->numFileTransaction = 3;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 //$this->headerComparation = $this->investmentHeader;
-                $this->numFileInvestment++;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
