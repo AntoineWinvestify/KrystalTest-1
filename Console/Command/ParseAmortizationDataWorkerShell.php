@@ -34,7 +34,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('collectamortizationtablesFileFlow', array($this, 'collectamortizationtablesFileFlow'));   
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseAmortizationDataworker starting to listen to data from its Client\n";
         while($this->GearmanWorker->work());
     }
     
@@ -57,7 +57,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
      *                      array with all errorData related to occurred error
      */   
     public function collectamortizationtablesFileFlow($job) {
-
+ $timeStart = time();  
         $platformData = json_decode($job->workload(), true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -65,31 +65,33 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($platformData);
         }
+
         $i = 0;
         $tempArray = array();
         foreach ($platformData as $linkedAccountKey => $data) {
-            //$platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
              if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
-            // Deal first with the transaction file(s)
-            print_r($data);
+
             $files = $data['files'];
             $extensionFile = null;
+         
             foreach ($files as $file) {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Amortization table File\n";
                 } 
                 $parserConfig = $companyHandle->getParserConfigAmortizationTableFile();
-                $loanId = $this->myParser->getLoanIdFromFile($file);
+                $IdInformation = $this->getIdInformationFromFile($file);
+                $loanId = $IdInformation[0] . "_" . $IdInformation[1];
                 if (empty($extensionFile)) {
                     $extensionFile = $this->getExtensionFile($file);
                 }
-                $this->myParser->setConfig($companyHandle->getParserAmortizationConfigParms());
+                $configParameters = $companyHandle->getParserAmortizationConfigParms();
+                $this->myParser->setConfig($configParameters[0]);
                 $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig, $extensionFile);
-                echo "tempResult" . $loanId . "\n";
-                print_r($tempArray);
+                echo "tempResult " . $loanId . "\n";
+                $i++;
             }
             if (empty($tempArray[$linkedAccountKey])) {
                 $data['statusCollect'][$linkedAccountKey] = "0";
@@ -99,13 +101,18 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                 $data['statusCollect'][$linkedAccountKey] = "1";
             }
         }
+ 
         $data['tempArray'] = $tempArray;
         $data['errors'] = $errors;
-        print_r($tempArray);
+
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of ParseAmortizationDataWorker");
             print_r($data);
         }
+        
+        print_r(array_keys($tempArray[0]));
+$timeStop = time();
+echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
         return json_encode($data);
     }
     

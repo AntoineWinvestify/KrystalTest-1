@@ -30,7 +30,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Queue', 'Payment', 'Investment', 'Amortizationtable');  
+    public $uses = array('Queue', 'Amortizationtable');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -59,7 +59,12 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             if (Configure::read('debug')) {
                 $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
             }
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, $jobsInParallel);
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE),
+                                                  WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE,
+                                                $jobsInParallel);            
+                        
+            
+            
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
@@ -73,8 +78,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
-                    echo "Subdiiiiiiir";
-                    print_r($subDir);
+
                     $i = 0;
                     foreach ($subDir[0] as $subDirectory) {
                         $tempName = explode("/", $subDirectory);
@@ -91,11 +95,13 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         }
                         $dirs = new Folder($subDirectory);
                         $nameCompany = $dirs->findRecursive();
+
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
-                        $tempPfpName = explode("/", $nameCompany[0]);
+                        $tempPfpName = explode("/", $allFiles[0]);
+
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
                         echo "pfp = " . $pfp . "\n";
-                        print_r($allFiles);
+
                         $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
                         $i++;
                         //$files = $this->readFilteredFiles($allFiles, TRANSACTION_FILE + INVESTMENT_FILE);
@@ -103,14 +109,16 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         $params[$linkedAccountId] = array('queue_id' => $job['Queue']['id'],
                             'pfp' => $pfp,
                             'userReference' => $job['Queue']['queue_userReference'],
-                            'files' => $allFiles);
+                            'files' => $allFiles
+                                );
                         
                         echo "PARAM TOTAL";
-                        print_r($params);
                     }
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
                 $this->GearmanClient->runTasks();
+                
+                
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
@@ -137,24 +145,19 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
     }
     
     /**
-     * Function to save all the amortization tables on DB per user and per linkaccount
+     * Function to save all the amortization tables in DB per user and per linked account
      */
     public function saveAmortizationtablesToDB() {
-        $loanIds = [];
-        foreach ($this->tempArray as $queuekey => $tempArray) {
-            foreach ($tempArray as $data) {
-                foreach ($data as $loanId => $value) {
-                    $loanIds[] = $loanId;
-                }
+$timeStart = time();
+
+        foreach ($this->tempArray as $tempArray) {
+            foreach ($tempArray as $amortizationData) {
+                $this->Amortizationtable->saveAmortizationtable($amortizationData);
             }
         }
-        $this->Investment = ClassRegistry::init('Investment');
-        $investmentIds = $this->Investment->getInvestmentIdByLoanId($loanIds);
-        foreach ($this->tempArray as $queuekey => $tempArray) {
-            foreach ($tempArray as $linkaccount => $linkaccountData) {
-                $this->Amortizationtable->saveAmortizationtable($linkaccountData, $investmentIds);
-            }
-        }
+$timeStop = time();
+echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";        
     }
+
     
 }

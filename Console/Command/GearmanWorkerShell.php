@@ -89,6 +89,7 @@ class GearmanWorkerShell extends AppShell {
             }
             else if ($this->queueCurlFunction == "collectAmortizationTablesParallel") {
                 $this->newComp[$info["companyIdForQueue"]]->saveAmortizationTable();
+                $this->newComp[$info["companyIdForQueue"]]->verifyErrorAmortizationTable();
             }
             $this->logoutOnCompany($info["companyIdForQueue"], $str);
             if ($info["typeOfRequest"] == "LOGOUT") {
@@ -179,5 +180,36 @@ class GearmanWorkerShell extends AppShell {
             //echo "\n fatal error code : " . E_ERROR . "\n";
             $this->error_handler(E_ERROR);
         }
+    }
+    
+    public function initCompanyClass($data, $i, $linkedaccount, $typeUrlSequence) {
+        echo "<br>******** Executing the loop **********<br>";
+        $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
+        echo "companyId = " . $this->companyId[$i] . " <br>";
+        $companyConditions = array('Company.id' => $this->companyId[$i]);
+        $result[$i] = $this->Company->getCompanyDataList($companyConditions);
+        $this->newComp[$i] = $this->companyClass($result[$i][$this->companyId[$i]]['company_codeFile']); // create a new instance of class zank, comunitae, etc.
+        $this->newComp[$i]->defineConfigParms($result[$i][$this->companyId[$i]]);  // Is this really needed??
+        $this->newComp[$i]->setClassForQueue($this);
+        $this->newComp[$i]->setQueueId($data["queue_id"]);
+        $this->newComp[$i]->setBaseUrl($result[$i][$this->companyId[$i]]['company_url']);
+        $this->newComp[$i]->setCompanyName($result[$i][$this->companyId[$i]]['company_codeFile']);
+        $this->newComp[$i]->setUserReference($data["queue_userReference"]);
+        $this->newComp[$i]->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($this->companyId[$i], $typeUrlSequence);
+        $this->newComp[$i]->setDateInit($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']);
+        $this->newComp[$i]->setDateFinish($data["date"]);
+        $this->newComp[$i]->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
+        $this->newComp[$i]->setUrlSequenceBackup($urlSequenceList);  // It is a backup if something fails
+        $this->newComp[$i]->setOriginExecution($data['originExecution']);
+        $this->newComp[$i]->generateCookiesFile();
+        $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
+        $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
+        $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
+        $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
+        $configurationParameters = array('tracingActive' => true,
+            'traceID' => $data["queue_userReference"],
+        );
+        $this->newComp[$i]->defineConfigParms($configurationParameters);
     }
 }

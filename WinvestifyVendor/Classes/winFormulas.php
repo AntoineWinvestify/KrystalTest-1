@@ -29,38 +29,34 @@ class WinFormulas {
     
     protected $variablesFormula_A = [
         "A" => [
-            [
-                "type" => "userinvestmentdata_totalGrossIncome",
-                "table" => "Userinvestmentdata",
-                "dateInit" => "-366",
-                "dateFinish" => "-1",
-                "intervals" => "inclusive"
-            ],
-            [
-                "type" => "userinvestmentdata_totalLoansCost",
-                "table" => "Userinvestmentdata",
-                "operation" => "substract",
-                "dateInit" => "-366",
-                "dateFinish" => "-1",
-                "intervals" => "inclusive"
-            ]
+            "type" => "userinvestmentdata_totalGrossIncome",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
         ],
         "B" => [
-            [
-                "type" => "userinvestmentdata_outstandingPrincipal",
-                "table" => "userinvestmentdata",
-                "operation" => "add",
-                "dateInit" => "-366",
-                "dateFinish" => "-1",
-                "intervals" => "inclusive"
-            ]
+            "type" => "userinvestmentdata_totalLoansCost",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive"
         ]
     ];
     
     protected $configFormula_A = [
+        "functionName" => "stepByStep",
         "steps" => [
             ["A"],
-            ["B", "divide"],
+            ["B", "substract"],
+            ["C", "divide"],
             [1, "add"],
             [365, "pow"],
             [1, "substract"]
@@ -68,6 +64,66 @@ class WinFormulas {
         "result" => [
             "type" => "userinvestmentdata_netAnualReturnPast12Months",
             "table" => "Userinvestmentdata"
+        ]
+    ];
+    
+    protected $variablesFormula_netAnnualReturn_xirr = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-1",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "D" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
+            "intervals" => "inclusive",
+            "operation" => "substract"
         ]
     ];
     
@@ -122,6 +178,166 @@ class WinFormulas {
                 ],
                 "intervals" => "inclusive"
             ]
+        ]
+    ];
+    
+    protected $variablesFormula_netAnnualTotalFundsReturn_xirr = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_outstandingPrincipal",
+                    "userinvestmentdata_cashInPlatform",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-1",
+            "dateFinish" => "-1",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "D" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_outstandingPrincipal",
+                    "userinvestmentdata_cashInPlatform",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ]
+    ];
+    
+    protected $variablesFormula_netAnnualPastReturn_xirr = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",
+                    "globaltotalsdata_delayedInterestIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_capitalRepaymentPerDay",
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
+                    "globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "D" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
         ]
     ];
     
@@ -188,13 +404,8 @@ class WinFormulas {
     }
     
     public function getFormulaParams($type) {
-        
-        switch($type) {
-            case "formula_A":
-                return $this->variablesFormula_A;
-            case "formula_B":
-                return $this->variablesFormula_B;
-        }
+        $variableName = "variablesFormula_" . $type;  
+        return $this->$variableName;
     }
     
     public function getFormula($type) {
@@ -205,73 +416,6 @@ class WinFormulas {
             case "formula_B":
                 return $this->configFormula_B;
         }
-    }
-    
-    public function getSumOfValue($modelName, $value, $linkedaccountId, $dateInit, $dateFinish) {
-        /*$total = $this->RequestedItem->find('all', 
-                    array(
-                        array(
-                            'fields' => array(
-                                'sum(Model.cost * Model.quantity)   AS ctotal'
-                                ), 'conditions'=>array(
-                                        'RequestedItem.purchase_request_id'=>$this->params['named']['po_id']
-                                    )
-                            )
-                        )
-                );
-        
-        $virtualFields = array('total' => 'SUM(Model.cost * Model.quantity)');
-        $total = $this->RequestedItem->find('all', array(array('fields' => array('total'), 'conditions'=>array('RequestedItem.purchase_request_id'=>$this->params['named']['po_id']))));
-        
-        $this->Member->Point->virtualFields['total'] = 'SUM(Point.points)';
-        $totalPoints = $this->Member->Point->find('all', array('fields' => array('total')));*/
-        
-        //get sum of value depending on another field with cakephp
-        //http://discourse.cakephp.org/t/how-to-sum-value-according-to-other-column-value-in-cakephp/1314/3
-        //https://book.cakephp.org/2.0/en/models/virtual-fields.html
-        
-        
-        $model = ClassRegistry::init($modelName);
-        
-        echo "value is $value \n";
-        echo "dateInit is $dateInit";
-        echo "dateFinish is $dateFinish";
-        
-        
-        $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
-        $sumValue  =  $model->find('list',array(
-                'fields' => array('linkedaccount_id', $value . '_sum'),
-                'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "linkedaccount_id" => $linkedaccountId
-                )
-            )
-        );
-        return $sumValue;
-        
-    }
-    
-    public function getSumOfValueByUserReference($modelName, $value, $userReference, $dateInit, $dateFinish) {
-        $model = ClassRegistry::init($modelName);
-        
-        echo "value is $value \n";
-        echo "dateInit is $dateInit";
-        echo "dateFinish is $dateFinish";
-        
-        
-        $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
-        $sumValue  =  $model->find('list',array(
-                'fields' => array('userinvestmentdata_investorIdentity', $value . '_sum'),
-                'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "userinvestmentdata_investorIdentity" => $userReference
-                )
-            )
-        );
-        return $sumValue;
-        
     }
     
 }

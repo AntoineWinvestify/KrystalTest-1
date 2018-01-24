@@ -45,7 +45,8 @@ class Dashboard2sController extends AppController {
 
     var $name = 'Dashboard2s';
     var $helpers = array('Html', 'Js');
-    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount","Investment");
+    public $components = array('DataTable');
+    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment");
 
     function beforeFilter() {
 
@@ -55,7 +56,7 @@ class Dashboard2sController extends AppController {
     /**
      * [AJAX call]
      * 	Read the data of all active investments that belong to a linked account
-     * @throws FatalErrorException Error when you access winouth ajax
+     * @throws FatalErrorException Error when you access without ajax
      */
     function getDashboard2SinglePfpData() {
 
@@ -65,7 +66,6 @@ class Dashboard2sController extends AppController {
         }
         //echo 1;
         //$executionStartTime = microtime(true);
-
         //Request data
         $linkedAccount = $this->request->data['id']; //Link account id
         $logo = $this->request->data['logo']; //Pfp Logo
@@ -91,35 +91,73 @@ class Dashboard2sController extends AppController {
         $this->set('defaultedInvestments', $defaultedInvestments);
         //Get and set range
         $this->set('defaultedRange', $this->Investment->getDefaultedByOutstanding($linkedAccount));
-
-        $executionEndTime = microtime(true);
-        //echo $executionEndTime - $executionStartTime;
     }
 
     /**
      * [AJAX call]
-     * Get active loans of a linked account
-     * @throws FatalErrorException Error when you access winouth ajax
+     * Get defaulted loans for data table with server side pagination
+     */
+    function ajaxDataTableDefaultedInvestments($linkedAccount) {
+
+        $this->autoRender = false;
+
+        $this->Investment->virtualFields = array(
+            'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+        );
+
+        $this->paginate = array(
+            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
+            'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.investment_paymentStatus >" => 90, "Investment.linkedaccount_id" => $linkedAccount),
+        );
+
+
+        $this->DataTable->mDataProp = true;
+
+        $investments = $this->DataTable->getResponse(null, 'Investment');
+        $recordNumber = count($investments['aaData']);
+        echo json_encode($investments);
+    }
+
+    /**
+     * [AJAX call]
+     * Get defaulted loans for data table with server side pagination
+     */
+    function ajaxDataTableActiveInvestments($linkedAccount) {
+
+        $this->autoRender = false;
+
+        $this->Investment->virtualFields = array(
+            'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+        );
+        $this->paginate = array(
+            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
+            'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.linkedaccount_id" => $linkedAccount),
+        );
+        $this->DataTable->mDataProp = true;
+
+        $investments = $this->DataTable->getResponse(null, 'Investment');
+        echo json_encode($investments);
+    }
+
+    /**
+     * [AJAX call]
+     * Get active loans view for datatables.
+     * @throws FatalErrorException Error when you access without ajax
      */
     function getActiveLoans() {
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
-
-        $linkedAccount = $this->request->data['id']; //Link account id
-        $activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-
-        if (!empty($activeInvestments)) {
-            $this->set('activeInvestments', [1, $activeInvestments]);
-        } else {
-            $this->set('activeInvestments', [1, "Not active loans found"]);
-        }
     }
 
     /**
      * [AJAX call]
-     * Get defaulted loans of a linked account
+     * Get active Defaulted view for datatables.
      * @throws FatalErrorException Error when you access winouth ajax
      */
     function getDefaultedLoans() {
@@ -127,25 +165,15 @@ class Dashboard2sController extends AppController {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
         }
-
-        $linkedAccount = $this->request->data['id']; //Link account id
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
-
-        if (!empty($defaultedInvestments)) {
-            $this->set('defaultedInvestments', [1, $defaultedInvestments]);
-        } else {
-            $this->set('defaultedInvestments', [1, "Not defaulted loans found"]);
-        }
     }
 
     /**
      * Global dashboard view
      */
-     function dashboardOverview(){
-          $this->layout = 'azarus_private_layout';
-     }
-     
-    
+    function dashboardOverview() {
+        $this->layout = 'azarus_private_layout';
+    }
+
     function dashboardOverviewData() {
 
         if (!$this->request->is('ajax')) {
@@ -167,10 +195,15 @@ class Dashboard2sController extends AppController {
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
+
+        /* $global['netAnnualTotal'] = 0;
+          $global['netAnnual12Months'] = 0;
+          $global['netAnnualReturnLastYear'] = 0; */
+
         $i = 0;
         //$global['netDeposits'] = 0; 
         foreach ($allInvestment as $globalKey => $individualPfpData) {
-            if(empty($individualPfpData)){
+            if (empty($individualPfpData)) {
                 unset($allInvestment[$globalKey]);
                 continue;
             }
@@ -213,7 +246,7 @@ class Dashboard2sController extends AppController {
                         break;
                     case "userinvestmentdata_totalNetDeposits":
                         //get global net deposits:
-                        $global['netDeposits'] = $global['netDeposits'] + $individualData;
+                        $global['netDeposits'] = bcadd($global['netDeposits'], $individualData, 16);
                         break;
                 }
             }
@@ -268,33 +301,33 @@ class Dashboard2sController extends AppController {
                     case "1-7":
                         $value = ($defaultedRange["1-7"] * $defaultedRange["total"]) / 100;
                         $globalValue["1-7"] = $globalValue["1-7"] + $value;
-                        $globalRange["1-7"] = round(($globalValue["1-7"] / $globalTotal) * 100, 2);
+                        $globalRange["1-7"] = round(($globalValue["1-7"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case "8-30":
                         $value = ($defaultedRange["8-30"] * $defaultedRange["total"]) / 100;
                         $globalValue["8-30"] = $globalValue["8-30"] + $value;
-                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, 2);
+                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case "31-60":
                         $value = ($defaultedRange["31-60"] * $defaultedRange["total"]) / 100;
                         $globalValue["31-60"] = $globalValue["31-60"] + $value;
-                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, 2);
+                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case "61-90":
                         $value = ($defaultedRange["61-90"] * $defaultedRange["total"]) / 100;
                         $globalValue["61-90"] = $globalValue["61-90"] + $value;
-                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, 2);
+                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                     case ">90":
                         $value = ($defaultedRange[">90"] * $defaultedRange["total"]) / 100;
                         $globalValue[">90"] = $globalValue[">90"] + $value;
-                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, 2);
+                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
                         break;
                 }
             }
         }
 
-        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] - $globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], 2));
+        $globalRange["current"] = abs(round(100 - $globalRange["1-7"] - $globalRange["8-30"] - $globalRange["31-60"] - $globalRange["61-90"] - $globalRange[">90"], WIN_SHOW_DECIMAL));
         return $globalRange;
     }
 

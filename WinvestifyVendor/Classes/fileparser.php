@@ -16,8 +16,8 @@
  * 
  * 
  * @author
- * @version 0.8
- * @date  2017-11-20
+ * @version 0.9.0
+ * @date  2017-12-27
  * @package
  *
  *
@@ -27,14 +27,11 @@
  * This class parses the transaction/investments files etc by using a configuration file which is 
  * provided by each companyCodeFile. The result is returned in an array
  * 
- * 
- * 
  * 2017-10-15           version 0.2
  * support of configuration parameters 'offsetStart' and 'offsetEnd'
  * 
  * 2017-10-24           version 0.3
  * Added function to parse a html file
- * 
  * 
  * 2017-10-26           version 0.3
  * Due to use of bc-math functionality, the amounts are now ordinary string with the decimal point
@@ -45,10 +42,8 @@
  * 2017-11-09           Version 0.4
  * Amount and currency bug fixing.
  * 
- * 
  * 2017-11-10           version 0.5
  * Updated function extractDataFromString with an extra parameter
- * 
  * 
  * 2017-11-11           version 0.6
  * Functions getDefaultValue and getCountry added
@@ -62,16 +57,22 @@
  * 2017-11-20           version 0.8
  * Added a new function "getConceptChars"; 
  * 
- * 
  * 2017-11-28           version0.8.1
  * New function, generateId, for generating a "random (unique)identifier" if cell is empty
  * Cell data is cleaned before sending it as '$input' to a function
  * Added configurations for Zank
  * New configuration parameter (changeCronologicalOrder)
  * 
- * 
  * 2017-12-07
  * rectified an error in saveExcelToArray. Error was related to removing an item at random
+ * 
+ * 2017-12-27           version 0.9.0
+ * method setConfig: take the extra index level into account
+ * 
+ * 2018-01-02           version 0.9.1
+ * A new characteric, REPAYMENT,  was added to the $transactionDetails array
+ * 
+ * 
  * 
  * Pending:
  * chunking, csv file check
@@ -98,6 +99,8 @@ class Fileparser {
                             );
 
     protected $errorData = array();                                 // Contains the information of the last occurred error
+    
+    protected $defaultFinishDate;
 
     protected $currencies = array(EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
@@ -137,8 +140,8 @@ class Fileparser {
                             );   
  // Possible lables that can be applied to each concept are:
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
- //                 an already existing loan if a extra participation is bought.
- // LOAN_FINISHED   => The last payment on a loan has happened and the loan is fully repaid and finished
+ //                     an already existing loan if a extra participation is bought
+ // REPAYMENT       => An amortization payment has taken place
  /*
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
@@ -175,7 +178,8 @@ class Fileparser {
                 "detail" => "Capital_repayment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "Capital",
-                "type" => "payment_capitalRepayment"                      
+                "type" => "payment_capitalRepayment",
+                "chars" => "REPAYMENT"                   
                 ],
             6 => [
                 "detail" => "Partial_principal_repayment",
@@ -249,7 +253,6 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "concept17"  
                 ],
-
             19 => [
                 "detail" => "Recoveries",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
@@ -281,10 +284,10 @@ class Fileparser {
                 "type" => "concept23"
                 ],           
             24 => [
-                "detail" => "currency_exchange_fee",
+                "detail" => "Payment_currency_exchange_fee",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept24"
+                "type" => "payment_currencyExchangeFee"
                 ],
             25 => [
                 "detail" => "currency_fluctuation_negative",
@@ -308,7 +311,7 @@ class Fileparser {
                 "detail" => "Write-off",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept28"
+                "type" => "investment_writtenOff"
                 ],
             29 => [
                 "detail" => "Registration",
@@ -339,7 +342,71 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "concept33"
-                ]
+                ], 
+            34 => [
+                "detail" => "Default interest income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "DefaultInterestIncome"
+                ],        
+        
+  
+ 
+    dfefault interest income should be in globalcashflow table
+
+30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
+Currency exchange fee	FX commission with Exchange Rate:    
+    
+           
+        
+        
+        
+        
+            // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
+            // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
+            // matured into a real loan
+            100 => [
+                "detail" => "Disinvestment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestment"
+                ],
+        
+            101 => [
+                "detail" => "change_to_active_state",       // Move an investment from PRE-ACTIVE to ACTIVE
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "activeStateChange",
+                "chars" => "AM_TABLE"                       // = Collect Amortization table
+                ],
+            102 => [
+                "detail" => "change_to_badDebt_state",      // Move an investment from ACTIVE to WRITTEN_OFF 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "badDebtStateChange",
+                ],
+            103 => [
+                "detail" => "change_to_cancelled_state",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "cancelledStateChange",
+                ],       
+        
+            104 => [
+                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFunds",
+                ],
+        
+    /*         105 => [
+                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFundsNoImpactCashInPlatform",
+                ]  
+     */       
+        
         ];
 
 protected $countries = [
@@ -596,7 +663,7 @@ protected $countries = [
         
         
     function __construct() {
-        echo "starting parser\n";
+        //echo "starting parser\n";
     }
     
     /**
@@ -608,11 +675,16 @@ protected $countries = [
      *         false in case an error occurred
      */
     public function analyzeFile($file, $configuration, $extension) {
-        
         switch($extension) {
             case "xlsx":
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . "analyzing xlsx file";
+                }
+                $tempArray = $this->analyzeFileExcel($file, $configuration);
+                break;
+            case "xls":
+                if (Configure::read('debug')) {
+                    echo __FUNCTION__ . " " . __LINE__ . "analyzing xls file";
                 }
                 $tempArray = $this->analyzeFileExcel($file, $configuration);
                 break;
@@ -734,7 +806,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
        
         $i = 0;
         $outOfRange = false;
-
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
@@ -801,7 +872,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
-                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];     
                     $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
@@ -814,13 +885,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 break;               
             }
             $i++;
+            
         }
-        
-    if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
-        return(array_reverse($tempArray));
-    }
-
-    return $tempArray;    
+        if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
+            return(array_reverse($tempArray));
+        }
+        return $tempArray;    
     }
     
     public function getFirstRow($file, $configParam) {
@@ -890,7 +960,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Returns the quotient * 100 of a division. This represents the %
-     * an unknown "payment" concept was found.
+     * 
      * @param   string  $input   Content of row
      * @param   int     $divident
      * @param   int     $divisor
@@ -967,6 +1037,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     public function setConfig($configurations)  {
+        
         foreach ($configurations as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
@@ -1472,6 +1543,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $trs = $dom->getElementsByTagName('tr');
         $tempArray = [];
         $i = 0;
+
         foreach ($trs as $tr) {
             if ($i == $this->config['offsetStart']) {
                 break;
@@ -1479,7 +1551,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $tr->parentNode->removeChild($tr);
             $i++;
         }
-        
+
         $trsNumber = $trs->length - 1;
         for ($i = $trsNumber; $i > $trsNumber-$this->config['offsetEnd']; $i--) {
             $tr = $trs[$i]->parentNode->lastChild;
@@ -1492,13 +1564,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $keyTr = 0;
             $outOfRange = false;
             foreach ($parserConfig as $key => $value) {
-                echo "value";
-                print_r($value);
+ //               echo "value";
+//                print_r($value);
                 $previousKey = $i - 1;
                 $currentKey = $i;
                 $valueTd = trim($tds[$key]->nodeValue);
-                echo "tdValue";
-                print_r($valueTd);
+//                echo "tdValue";
+//                print_r($valueTd);
                 if (array_key_exists("name", $value)) {      // "name" => .......
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $valueTd .  "'; ";
@@ -1511,7 +1583,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                         }
                         else {
                             foreach ($userFunction["inputData"] as $keyInputData => $input) {   // read "input data from config file
-                                print_r($input);
+//                                print_r($input);
                                 if (!is_array($input)) {        // Only check if it is a "string" value, i.e. not an array
                                     if (stripos ($input, "#previous.") !== false) {
                                         if ($previousKey == -1) {
@@ -1529,13 +1601,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                             }
                         }
                         array_unshift($userFunction['inputData'], $valueTd);       // Add cell content to list of input parameters
-                        print_r($userFunction['inputData']);
+ //                       print_r($userFunction['inputData']);
                         if ($outOfRange == false) {
                             $tempResult = call_user_func_array(array($this,
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']
                                     );
-                            print_r($tempResult);
+//                            print_r($tempResult);
                             if (is_array($tempResult)) {
                                 $userFunction = $tempResult;
                                 $tempResult = $tempResult[0];
@@ -1692,5 +1764,140 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             break;
         }
     }
+    
+    
+    /**
+     * Get the header for compare.
+     * 
+     * @param type $file
+     * @param type $configParam
+     * @return type
+     */
+    public function getFirstRow($file, $configParam) {
+        $this->config = $configParam;
+        $extension = $this->getExtensionFile($file);
+        $inputType = $this->getInputFileType($extension);
+        if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
+            $data = $this->convertExcelMultiSheetByParts($file, $inputType);
+            echo "HEADER IS: ";
+            print_r($data);
 
+            return $data;
+        } else { //Simple sheet
+            $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
+            echo "HEADER IS: ";
+            print_r(array_filter($data[1]));
+            return $data[1];
+        }
+    }
+      
+     /**
+     * Function to get the extension of a file
+     * @param string $filePath FQDN of the file to analyze
+     * @return string It is the extension of the file
+     */
+    public function getExtensionFile($file) {              
+        $file = new File($file);
+        $extension = $file->ext();            
+        return $extension;
+    }
+    
+    
+    public function getInputFileType($extension) {
+        
+        switch($extension) {
+            case "xlsx":
+                $inputType = "Excel2007";
+                break;
+            case "csv":
+                $inputType = "CSV";
+                break;
+        }
+        return $inputType;
+    }
+    
+    function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        if (empty($chunkInit)) {
+            $chunkInit = 1;
+        }
+        if (empty($chunkSize)) {
+            $chunkSize = 500;
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        if($inputFileType == 'CSV'){
+            echo $this->config['separatorChar'];
+            $objReader->setDelimiter($this->config['separatorChar']);            
+            $this->clearCsv($filePath);
+        }
+        /**  Create a new Instance of our Read Filter  **/
+        $chunkFilter = new readFilterWinvestify();
+        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+        $chunkFilter->setRows($chunkInit,$chunkSize);
+        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+        $objReader->setReadFilter($chunkFilter);
+     
+        $objPHPExcel = $objReader->load($filePath);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        echo "sheetDAta <br>";   
+        foreach($sheetData as $key => $value){
+            if(empty($value)){
+                unset($sheetData[$key]);
+            }
+        }
+        var_dump($sheetData);
+        return $sheetData;
+    }
+
+    function convertExcelMultiSheetByParts($filePath, $inputFileType) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        $worksheetNames = $objReader->listWorksheetNames($filePath);
+        foreach($this->config as $sheet){
+            if (in_array($sheet['sheetName'], $worksheetNames)) {
+                /**  Create a new Instance of our Read Filter  **/
+               $chunkFilter = new readFilterWinvestify();
+               /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+               $chunkFilter->setRows($sheet['chunkInit'],$sheet['chunkSize']);
+               /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+               $objReader->setReadFilter($chunkFilter);
+               
+               //Read this sheet
+               $objReader->setLoadSheetsOnly($sheet['sheetName']);
+               
+               $objPHPExcel = $objReader->load($filePath);
+               $sheetData[] = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+           }
+        }
+        var_dump($sheetData);
+        return $sheetData;
+    }
+    
+    function clearCsv($filePath) {
+            //WE MUST CLEAR CSV OF SPECIAL CHARACTERS
+            $csv = fopen($filePath, "r");
+            $csvString = mb_convert_encoding(fread($csv, filesize($filePath)), "UTF-8"); //Convert special characters
+            fclose($csv);
+            $csv = fopen($filePath, "w+");   //Rewrite old csv
+            fwrite($csv,$csvString);
+            fclose($csv);
+    }
+    
+    function setDefaultFinishDate($defaultFinishDate) {
+        $defaultFinishDate = date("Y-m-d", strtotime($defaultFinishDate));
+        $this->defaultFinishDate = $defaultFinishDate;
+    }
+    
+    function getDefaultDate($input, $defaultValue) {
+        return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
+    }
+    
+    public function cleanConfig($config) {
+        $this->config = $config;
+    }
+    
 }

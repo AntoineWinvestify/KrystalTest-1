@@ -209,8 +209,29 @@ class AppController extends Controller {
             CROWD_REAL_ESTATE => __('R.E.'),
             SOCIAL => __('SOCIAL')
         );
+        
         $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
 
+        $this->tooltipSinglePfpData = array(
+           "Zank" => __('zank tooltip'),
+           "Comunitae" => __('comunitae tooltip'),
+           "Growly" => __('growly tooltip'),
+           "MyTripleA" => __('mytriplea tooltip'),
+           "Arboribus" => __('arboribus tooltip'),
+           "Loanbook" => __('loanbook tooltip'),
+           "eCrowdInvest" => __('ecrowd tooltip'),
+           "Circulantis" => __('circulantis tooltip'),
+           "Colectual" => __('colectual tooltip'),
+           "Lendix" => __('lendix tooltip'),
+           "Bondora" => __('bondora tooltip'),
+           "Mintos" => __('mintos tooltip'),
+           "Twino" => __('twino tooltip'),
+           "Finanzarel" => __('finanzarel tooltip'),
+           "Finbee" => __('finbee tooltip'),
+        );
+        
+        $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
+        
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"

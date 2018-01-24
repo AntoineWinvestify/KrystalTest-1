@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -17,8 +16,14 @@
  *
  * @author 
  * @version 0.2
- * @date
+ * @date 2017-12-22
  * @package
+ * 
+ * 
+ * 
+ * Pending:
+ * methods to read the next payment date, next payment amount and numberOfPaymentDelay
+ * 
  */
 class UserDataShell extends AppShell {
 
@@ -102,7 +107,7 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
 
-    public function consolidatePartialPrincipalRepayment() {
+    public function calculatePartialPrincipalRepayment() {
         $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
             'fields' => array('paymenttotal_partialPrincipalRepayment'),
@@ -389,7 +394,6 @@ class UserDataShell extends AppShell {
      *  @return string
      * 34
      */
-
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -459,8 +463,8 @@ class UserDataShell extends AppShell {
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string
-     * 67
+     *  @return string      amount expressed as a string
+     * 
      */
 
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
@@ -468,12 +472,12 @@ class UserDataShell extends AppShell {
     }
 
     /*
-     *  @param  FILE            FQDN of the file to analyze
-     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
-     *  @return string
-     * 43
+     *  Get the amount which corresponds to the "Regular Gross Interest Incomel" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      amount expressed as a string
+     * 
      */
-
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -490,7 +494,7 @@ class UserDataShell extends AppShell {
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB 
      * @return int         number of active loans
-     * $tempMeasurements = $database['Measurements'];
+     * 
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
         $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
@@ -516,7 +520,7 @@ class UserDataShell extends AppShell {
             }
      //   }
 
-        if ($resultData['investment']['investment_new'] == YES) {
+        if ($resultData['investment']['investment_new'] == YES) {            //CHECK THE StatusOfLoan field instead
             $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] = $resultData['measurements'][$transactionData['investment_loanId']]['winTechNewLoanCounting'] + 1;
             $resultData['measurements'][$transactionData['investment_loanId']]['increments'][] = 'NO';
             $resultData['measurements'][$transactionData['investment_loanId']]['technicalState'][] = 
@@ -532,7 +536,13 @@ class UserDataShell extends AppShell {
     
 // ONLY FOR TESTING
      public function calculateTechnicalState(&$transactionData, &$resultData) {
-         
+
+/*
+  Technical states description:
+  INITIAL   : investment has started succesfully. No amortization has yet taken place
+  ACTIVE    : one or more amortizations have taken place
+  FINISHED  : the investment has finished, either succesfully or as writtenOff 
+ */
         $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
@@ -540,37 +550,37 @@ class UserDataShell extends AppShell {
 
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
-        }
+        }       
+ 
+// the following is perhaps not needed
+        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            return "FINISHED";             
+        }    
+        
         if ($tempOutstandingPrincipal == 0) {
-            return "FINISHED";              // represents a decrement
+            if ($resultData['investment']['investment_technicalStateTemp'] <> 'FINISHED') {
+                $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
+                return "FINISHED";              
+            }
         }        
         
-        if ($resultData['investment']['investment_new'] == YES) {
-            return "INITIAL";               // represents an increment
+        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
+            $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
+            return "INITIAL";               
         }       
 
-        if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
-            return "FINISHED";              // return current value numberOfActiveInvestments
-        }
-        return "ACTIVE";                    // return current value numberOfActiveInvestments
-        
-//        $resultData['investment']['technicalState'] = "UNDEFINED";
+        return "ACTIVE";                    
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
+ 
     
     /*
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string
+     *  @return string      amount expressed as a string
      * 55
      */
 
@@ -610,7 +620,7 @@ class UserDataShell extends AppShell {
      * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     * @return string      the string representation of a large integer
+     * @return string      amount expressed as a string
      */
 
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {
@@ -790,7 +800,102 @@ class UserDataShell extends AppShell {
     
     
     
-   
+    /* NOT FINISHED YET. Only taking into account the simple model of Mintos, 1 investment and 1 investmentSlice
+     *  
+     * If more slices, then the paidInstalments is the same for all slices
+     * 
+     *  Get the amount which corresponds to the "paidInstalments" concept. 
+     * 
+     *  It can distinguish on an per investmentSlice base, i.e. each investmentslice can have their own amortization table
+     *  with its own repayment amount.
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculatePaidInstalments(&$transactionData, &$resultData) {
+        $resultData['investment']['investment_paidInstalments']++;
+        return $resultData['investment']['investment_paidInstalments']; 
+    }          
+    
+    
+    /**
+     *  Calculates the effect of a disinvestment of an investment which never matured to a real investment, i.e. it 
+     *  started with state "reserved" and never reached status "active". It basically means that the platform returns the
+     *  money which the investor had assigned to the "failed" investment
+     *   
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a float
+     */
+    public function calculateDisinvestment(&$transactionData, &$resultData) {
+        return $resultData['investment']['investment_myInvestment'];
+    }   
+    
+    
+    /**
+     *  Calculates the new state of a cancelled investment.  It never matured to a real investment, i.e. it 
+     *  started with state "reserved" and *never* reached status "active".
+     *   
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculateCancellationState(&$transactionData, &$resultData) {
+        return WIN_LOANSTATUS_CANCELLED;
+    }    
+  
+ 
+    
+    /**
+     *  
+     *  Determines the writtenOff amount, which is to be stored in the variable WrittenOff
+     *
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large amount to be stored in writtenOff field
+     */
+    public function calculateBadDebt(&$transactionData, &$resultData) {
+        
+        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
+            return 0;
+        }
+        $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
+        
+        if (isset( $transactionData['amount'])) {           // We take the value as provided in the transaction record by the P2P
+            $tempOutstandingPrincipal = $transactionData['amount'];
+        }
+        else {
+            $tempOutstandingPrincipal = $resultData['investment']['investment_outstandingPrincipal'];
+        }
+        $resultData['investment']['investment_outstandingPrincipal'] = 0;
+        return $tempOutstandingPrincipal;
+    } 
+
+    /**
+     *  
+     *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets
+     *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large amount to be stored in reservedAssets field
+     */
+    public function calculateReservedSimple(&$transactionData, &$resultData) {
+        return WIN_LOANSTATUS_CANCELLED;
+    } 
+    
+    /**
+     *  
+     *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets. 
+     *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
+     *
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large amount to be stored in reservedAssets field
+     */  
+    public function calculateReservedComplex(&$transactionData, &$resultData) {
+        return WIN_LOANSTATUS_CANCELLED;
+    }    
     
 }
 
@@ -837,12 +942,6 @@ class UserDataShell extends AppShell {
   if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
   $varName = $this->variablesConfig[53]['databaseName'];
   $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
-  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // next payment date (39)
-  $varName = $this->variablesConfig[53]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateNextPaymentDate($database);
   $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
   }
 

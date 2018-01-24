@@ -55,7 +55,23 @@ class Investmentslice extends AppModel
     );
 
 
-
+    public $belongsTo = array(
+        'Investment' => array(
+            'className' => 'Investment',
+            'foreignKey' =>  'investment_id'
+        )
+    );   
+    
+    public $hasMany = array(
+        'Amortizationtable' => array(
+            'className' => 'Amortizationtable',
+            'foreignKey' => 'investmentslice_id',
+            'fields' => '',
+            'order' => '',
+        ),
+    );   
+    
+    
     /** NOT YET TESTED
      * Creates a new slice for a loan.
      *        

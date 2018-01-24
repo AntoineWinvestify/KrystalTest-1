@@ -48,65 +48,67 @@
 class finbee extends p2pCompany {
     
     protected $valuesTransaction = [
-        "A" => [
-            [
-                "type" => "date", // Winvestify standardized name  OK
-                "inputData" => [
-                    "input2" => "Y-M-D",
-                ],
-                "functionName" => "normalizeDate",
-            ]
-        ],
-        "B" => [
-            [
-                    "type" => "investment_loanId",                              // Winvestify standardized name   OK
-                    "inputData" => [                                            // trick to get the complete cell data as purpose
-                                "input2" => "from ",                        // May contain trailing spaces
-                                "input3" => " for",
-                                "input4" => 0                                  // 'input3' is mandatory. If not found then return "global_xxxxxx"
-                            ],
-                    "functionName" => "extractDataFromString",
+        [
+            "A" => [
+                [
+                    "type" => "date", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "Y-M-D",
+                    ],
+                    "functionName" => "normalizeDate",
+                ]
             ],
-            [
-                "type" => "transactionDetail", // Winvestify standardized name   OK
-                "inputData" => [// List of all concepts that the platform can generate
-                    // format ["concept string platform", "concept string Winvestify"]
-                    "input2" => [
-                        0 => ["Deposit" => "Cash_deposit"], // OK
-                        1 => ["Loan disbursal" => "Primary_market_investment"],
-                        2 => ["Principal repayment from" => "Capital_repayment"], //OK
-                        3 => ["Interest payment from" => "Regular_gross_interest_income"], //
-                        4 => ["Secondary market difference for" => "Income_secondary_market"], // For seller
-                        5 => ["Secondary market difference for" => "Cost_secondary_market"], // for buyer
-                        6 => ["Withdrawal" => "Cash_withdrawal"],
-                        7 => ["Interest payment to" => "Interest_payment_secondary_market_purchase"]
-                    ]
+            "B" => [
+                [
+                        "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                        "inputData" => [                                            // trick to get the complete cell data as purpose
+                                    "input2" => "from ",                        // May contain trailing spaces
+                                    "input3" => " for",
+                                    "input4" => 0                                  // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                                ],
+                        "functionName" => "extractDataFromString",
                 ],
-                "functionName" => "getTransactionDetail",
-            ]
-        ],
-        "D" => [
-            [
-                "type" => "amount",                                     // This is *mandatory* field which is required for the 
-                "inputData" => [                                        // "transactionDetail"
-                            "input2" => "",                             // and which BY DEFAULT is a Winvestify standardized variable name.
-                            "input3" => ".",                            // and its content is the result of the "getAmount" method
-                            "input4" => 2
-                            ],
-                "functionName" => "getAmount",
-            ]
-        ],
-        "F" => [
-            [
-                "type" => "transaction_balance",                            // Winvestify standardized name
-                "inputData" => [
-                            "input2" => "",
-                            "input3" => ".",
-                            "input4" => 2
-                            ],
-                "functionName" => "getAmount",
-            ]
-        ],   
+                [
+                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "inputData" => [// List of all concepts that the platform can generate
+                        // format ["concept string platform", "concept string Winvestify"]
+                        "input2" => [
+                            0 => ["Deposit" => "Cash_deposit"], // OK
+                            1 => ["Loan disbursal" => "Primary_market_investment"],
+                            2 => ["Principal repayment from" => "Capital_repayment"], //OK
+                            3 => ["Interest payment from" => "Regular_gross_interest_income"], //
+                            4 => ["Secondary market difference for" => "Income_secondary_market"], // For seller
+                            5 => ["Secondary market difference for" => "Cost_secondary_market"], // for buyer
+                            6 => ["Withdrawal" => "Cash_withdrawal"],
+                            7 => ["Interest payment to" => "Interest_payment_secondary_market_purchase"]
+                        ]
+                    ],
+                    "functionName" => "getTransactionDetail",
+                ]
+            ],
+            "D" => [
+                [
+                    "type" => "amount",                                     // This is *mandatory* field which is required for the 
+                    "inputData" => [                                        // "transactionDetail"
+                                "input2" => "",                             // and which BY DEFAULT is a Winvestify standardized variable name.
+                                "input3" => ".",                            // and its content is the result of the "getAmount" method
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "F" => [
+                [
+                    "type" => "transaction_balance",                            // Winvestify standardized name
+                    "inputData" => [
+                                "input2" => "",
+                                "input3" => ".",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],   
+        ]
         
     ];
     
@@ -368,6 +370,151 @@ class finbee extends p2pCompany {
         
     );
 
+    
+    protected $investmentHeader = array(
+        0 => array(
+            'A' => "Loan request",
+            'B' => "Borrower",
+            'C' => "Purpose",
+            'D' => "Amount (€)",
+            'E' => "Term",
+            'F' => "Int rate",
+            'G' => "Type",
+            'H' => "Loan status"
+        ),
+        1 => array(
+            'A' => "ID",
+            'B' => "Loan date",
+            'C' => "Borrower",
+            'D' => "Term",
+            'E' => "Rate",
+            'F' => "Loan amount (€)",
+            'G' => "Principal repaid (€)",
+            'H' => "Interest received (€)",
+            'I' => "% repaid",
+            'J' => "Arrears (€)",
+            'K' => "Type"
+        ),
+        2 => array(
+            'A' => "Loan request",
+            'B' => "Borrower",
+            'C' => "Purpose",
+            'D' => "Amount (€)",
+            'E' => "Int rate",
+            'F' => "Type"
+        ),
+        3 => array(
+            'A' => "ID",
+            'B' => "Loan request",
+            'C' => "Borrower",
+            'D' => "Purpose",
+            'E' => "Amount (€)",
+            'F' => "Type"
+        ),
+        4 => array(
+            'A' => "Loan ID",
+            'B' => "Sell request date",
+            'C' => "Reserve price<br>±%",
+            'D' => "Buy now price<br>±%",
+            'E' => "Borrower",
+            'F' => "Sold to",
+            'G' => "Sold date",
+            'H' => "New loan ID",
+            'I' => "Profit Loss",
+            'J' => "Acc Int (€)",
+            'K' => "Deal price (€)",
+            'L' => "Fees paid (€)",
+            'M' => "Final price (€)"
+        ),
+        5 => array(
+            'A' => "Loan ID",
+            'B' => "Seller",
+            'C' => "Sell request date",
+            'D' => "Resv. price <br>±%",
+            'E' => "Buy now price<br>±%",
+            'F' => "Borrower",
+            'G' => "Bought date",
+            'H' => "Profit Loss",
+            'I' => "Acc Int (€)",
+            'J' => "Deal price (€)",
+            'K' => "Fees paid (€)",
+            'L' => "Final price (€)",
+            'M' => "New loan ID",
+            'N' => "New loan amount (€)"
+        )
+    );
+    
+    protected $compareHeaderInvestmentConfigParam = array(
+        0 => array(
+            'chunkInit' => 1,
+            'chunkSize' => 1,
+            'sheetName' => 'Active Loans'
+        ),
+        1 => array(
+            'chunkInit' => 1,
+            'chunkSize' => 1,
+            'sheetName' => 'Active Loan Slices'
+        ),
+        2 => array(
+            'chunkInit' => 1,
+            'chunkSize' => 1,
+            'sheetName' => 'Completed Loans'
+        ),
+        3 => array(
+            'chunkInit' => 1,
+            'chunkSize' => 1,
+            'sheetName' => 'Completed Loan Parts'
+        ),
+        4 => array(
+            'chunkInit' => 1,
+            'chunkSize' => 1,
+            'sheetName' => 'Sold Loan Parts'
+        ),
+        5 => array(
+            'chunkInit' => 1,
+            'chunkSize' => 1,
+            'sheetName' => 'Bought Loan Parts'
+        ),
+    );
+    
+    protected $investment2Header = array(    
+        'A' => 'Loan ID',
+        'B' => 'Sell request date',
+        'C' => 'Reserve price<br>±%',
+        'D' => 'Buy Now price<br>±%',
+        'E' => 'Borrower',
+        'F' => 'Sold to /<br>bought from',
+        'G' => 'Sold date',
+        'H' => 'New loan ID',
+        'I' => 'Profit loss',
+        'J' => 'Acc Int',
+        'K' => 'Deal price',
+        'L' => 'Fees paid',
+        'M' => 'Final price',
+    );
+    protected $compareHeaderInvestment2ConfigParam = array(
+        'chunkInit' => 1,
+        'chunkSize' => 2,
+        'fromColumn' => 'A',
+        'toColumn' => 'O'
+    );
+    
+    
+    protected $transactionHeader = array(
+        'A' => 'Date',
+        'B' => 'Narrative',
+        'C' => 'Description',
+        'D' => 'Paid in',
+        'E' => 'Paid out',
+        'F' => 'Balance',
+        'G' => 'bid ID',
+    );
+    
+    protected $compareHeaderTransactionConfigParam = array(
+        'chunkInit' => 1,
+        'chunkSize' => 1,
+    );
+
     function __construct() {
         $this->i = 0;
         $this->typeFileTransaction = "xlsx";
@@ -399,6 +546,10 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 $this->verifyNodeHasElements($inputs);
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
@@ -457,7 +608,10 @@ class finbee extends p2pCompany {
 
                 $confirm = false;
                 $as = $dom->getElementsByTagName('a');
-
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $key => $a) {
                     echo $key . " " . $a->nodeValue;
                     if (trim($a->nodeValue) == 'My Lending Account') {
@@ -483,6 +637,7 @@ class finbee extends p2pCompany {
                 break;
             case 4:
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
@@ -490,11 +645,19 @@ class finbee extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $this->compareHeaderConfigParam = $this->compareHeaderInvestmentConfigParam;
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    $this->getError(__LINE__, __FILE__, $headerError);
+                }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
                 $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->copyFile($file, $newFile);
-                $fileName = $this->nameFileControlVariables . $this->typeFileControlVariables; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->fileName = $this->nameFileControlVariables . $this->typeFileControlVariables; //$this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
@@ -504,6 +667,8 @@ class finbee extends p2pCompany {
                 }
                 $this->numFileInvestment++;
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                                $this->headerComparation = $this->investment2Header;
+
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url, false, false, false, $this->fileName);
                 break;
@@ -511,7 +676,16 @@ class finbee extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                $this->compareHeaderConfigParam = $this->compareHeaderInvestment2ConfigParam;
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    $this->getError(__LINE__, __FILE__, $headerError);
+                }
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
                 $this->idForSwitch++;
                 $headersJson = '["accept-language: en-US,en;q=0.8"]';
                 $headers = json_decode($headersJson,true);
@@ -520,6 +694,14 @@ class finbee extends p2pCompany {
             case 8:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                $this->compareHeaderConfigParam = $this->compareHeaderTransactionConfigParam;
+                $headerError = $this->compareHeader();
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 return $this->tempArray;
         }
@@ -534,6 +716,8 @@ class finbee extends p2pCompany {
         switch ($this->idForSwitch) {
             //LOGIN
             case 0:
+                $this->loanTotalIds = $this->loanIds;
+                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
@@ -544,6 +728,10 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
 
                 $inputs = $dom->getElementsByTagName('input');
+                $this->verifyNodeHasElements($inputs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__);
                 }
@@ -601,7 +789,10 @@ class finbee extends p2pCompany {
 
                 $confirm = false;
                 $as = $dom->getElementsByTagName('a');
-
+                $this->verifyNodeHasElements($as);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($as as $key => $a) {
                     echo $key . " " . $a->nodeValue;
                     if (trim($a->nodeValue) == 'My Lending Account') {
@@ -644,10 +835,18 @@ class finbee extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 echo "Read table: ";
                 $tables = $dom->getElementsByTagName('table');
+                $this->verifyNodeHasElements($tables);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
                 foreach ($tables as $table) {
 
                     if ($table->getAttribute('class') == 'table mb-none table-no-more') {
                         $trs = $dom->getElementsByTagName('tr');
+                        $this->verifyNodeHasElements($trs);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
                         $AmortizationHeaderTable = new DOMDocument();
                         $cloneHeader = $trs[0]->cloneNode(TRUE); //Clone the table header
                     }

@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 /**
  * +-----------------------------------------------------------------------------+
@@ -145,7 +145,9 @@ class p2pCompany {
     protected $nameFileAmortizationTableList = WIN_FLOW_AMORTIZATION_TABLE_ARRAY . ".json";
     protected $nameFileControlVariables = WIN_FLOW_CONTROL_FILE;
     protected $numFileTransaction = 1;
+    protected $numPartFileTransaction = 1;
     protected $numFileInvestment = 1;
+    protected $numPartFileInvestment = 1;
     protected $numFileExpiredLoan = 1;
     protected $numFileAmortizationtable = 1;
     protected $companyName;
@@ -163,6 +165,11 @@ class p2pCompany {
     protected $valuesAmortizationTable;
     protected $callbacks;
     protected $originExecution;
+    protected $tableStructure;
+    
+    protected $compareHeaderConfigParam = array( "chunkInit" => 1,
+                                        "chunkSize" => 1,     
+                                        );
     
     //Number of days for each company download. Only some pfp uses it.
     protected $period = 365;
@@ -1402,7 +1409,7 @@ class p2pCompany {
      * @return string It is the path that will contain the files
      */
     public function getFolderPFPFile() {
-        $date = date("Ymd", strtotime($this->dateFinish-1));
+        $date = date("Ymd", strtotime($this->dateFinish));
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
         $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
@@ -1411,11 +1418,13 @@ class p2pCompany {
     }
     
     /**
-     * Function to create all the amortization table by loan Id
+     * Function to save all the amortization table by loan Id as html
      */
     public function saveAmortizationTable() {
-        foreach ($this->tempArray as $key => $tempArray) {
-            $this->saveFilePFP("amortizationtable_" . $key . "." . $this->typeFileAmortizationtable, $tempArray);
+        foreach ($this->loanTotalIds as $slideIdKey => $loanId) {
+            if (!empty($this->tempArray['tables'][$loanId])) {
+                $this->saveFilePFP("amortizationtable_" . $slideIdKey . "_" . $loanId . "." . $this->typeFileAmortizationtable, $this->tempArray['tables'][$loanId]);
+            }
         }
     }
     
@@ -1697,8 +1706,8 @@ class p2pCompany {
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
-        echo "urls: ";
-        print_r($this->urlSequence);
+        /*echo "urls: ";
+        print_r($this->urlSequence);*/
         
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -1710,7 +1719,6 @@ class p2pCompany {
         }
         if ($credentials !== false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
-            //echo $pfpBaseUrl;
         }
         
         if ($headers !== false && empty($headers)) {
@@ -1827,8 +1835,8 @@ class p2pCompany {
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if( $this->numberOfFiles == 0){
             $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
-            if(date($this->dateInitPeriod) < date($dateMin)){
-                $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
+            if(date($this->dateInitPeriod) <= date($dateMin)){
+                $this->dateInitPeriod = date('Ymd',strtotime($dateMin)); //Condition for dont go a previus date than $dateMin;
             }
             $this->dateFinishPeriod = date('Ymd',strtotime($this->dateFinish));
             //echo 'Date ' . $this->dateInitPeriod . " " . $this->dateFinishPeriod;
@@ -1842,10 +1850,13 @@ class p2pCompany {
             }
             $this->numberOfFiles++;
          }
+         /*echo "aassassa" . $this->dateInitPeriod . "_" . $dateMin;
+         echo "dasfs" . date("Ymd", $this->dateInitPeriod);
+         echo "jljhka" . date("Ymd",$dateMin);*/
         if(date($this->dateInitPeriod) > date($dateMin)){
             return true;   //Continue period download
         }
-        else{
+        else {
             return false;  //End period download
         }
     }
@@ -2082,6 +2093,17 @@ class p2pCompany {
             $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);
             foreach ($nodes as $node) {
                 $node->parentNode->removeChild($node);
+            }
+        }
+        return $dom;
+    }
+
+    function cleanDomTagNotFirst($dom, $elementsToDelete) { //CLEAR A TAG
+        foreach ($elementsToDelete as $element) {
+            $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);           
+            foreach ($nodes as $key=>$node) {
+                if($key === 0) continue;
+                    $node->parentNode->removeChild($node);
             }
         }
         return $dom;
@@ -2840,6 +2862,94 @@ FRAGMENT
         return $created;
     }
     
+    /*     * Function to compare header of the downloaded file of the pfps.
+     * 
+     * @return boolean true if header is different, false if is the same.
+     */
+
+    public function compareHeader() {
+
+        $pathVendor = Configure::read('winvestifyVendor');
+        include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
+        $this->myParser = new Fileparser();
+        $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
+
+        if (!empty(array_diff($this->headerComparation, $data)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
+                return $this->compareMulti();
+            } else {
+                return $this->compareSimple();
+            }
+        }
+        echo "OK";
+        return false;
+    }
+
+    public function compareSimple() {
+        foreach ($this->headerComparation as $key => $value) {
+            if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                echo "fatal error";
+                return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
+            }
+        }
+        echo "Warning";
+        return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+
+    public function compareMulti() {
+        foreach ($this->headerComparation as $sheetHeader) {
+            foreach ($sheetHeader as $key => $value) {
+                if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
+                    echo "fatal error";
+                    return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
+                }
+            }
+        }
+        echo "Warning";
+        return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
+    }
+    
+    /**
+     * Function to set a table Structure for a company from database
+     * @param string $tableStructure It is the table structure to compare
+     */
+    function setTableStructure($tableStructure) {
+        $this->tableStructure = $tableStructure;
+    }
+
+
+    
+    /**
+     * Function to create a new loanIds.json with the amortizationTables that failed
+     * and rename the old file loanIds to oldIdsLoan
+     */
+    public function verifyErrorAmortizationTable() {
+        $path = $this->getFolderPFPFile();
+        $oldFilePath = $path . DS . "oldLoanIds.json";
+        $filePath = $path . DS . "loanIds.json";
+        echo "goods";
+        print_r($this->tempArray['correctTables']);
+        echo "bads";
+        print_r($this->tempArray['errorTables']);
+
+        if (!empty($this->tempArray['correctTables'])) {
+            $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
+            $jsonIds = json_encode($this->tempArray['correctTables']);
+            fwrite($idsJsonFile, $jsonIds);
+            fclose($idsJsonFile);
+        }
+        
+        if (empty($this->tempArray['errorTables'])) {
+            $this->tempArray['errorTables'] = json_encode(array());
+        }
+
+        unlink($filePath);
+        $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+        $jsonIds = json_encode($this->tempArray['errorTables']);
+        fwrite($idsJsonFile, $jsonIds);
+        fclose($idsJsonFile);
+    }
+
 }
 ?>
 

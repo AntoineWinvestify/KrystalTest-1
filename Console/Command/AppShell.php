@@ -52,31 +52,6 @@ class AppShell extends Shell {
     }
 
 
-
-     /**
-     * checks to see if jobs are waiting in the queue for processing
-     *
-     * @param int $presentStatus    status of job to be located
-     * @param int $limit            Maximum number of jobs to be pulled out of the queue
-     * @return array                List of pending jobs
-     *
-     */
-    public function checkJobs ($presentStatus, $limit) {
-
-        if (empty($this->Queue) ) {
-            $this->Queue = ClassRegistry::init('Queue');
-            echo __FUNCTION__ . " " . "Queue instance created\n";
-        }
-
-        $userAccess = 0;
-        $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
-        return $jobList;
-    }
-
-
-
-
-
     /**
      * Read the names in directory $dir of the files (FDQN) that fulfill the $typeOfFiles bitmap
      *
@@ -106,12 +81,12 @@ class AppShell extends Shell {
 
     
     /**
-     * checks if an element with value $element exists in a two dimensional array
+     * Checks if an element with value $element exists in a two dimensional array
      * @param type $element
      * @param type $array
      *
      * @return array with data
-     *          or false of $elements does not exist in two dimensional array
+     *          or false of $element does not exist in two dimensional array
      */
     public function in_multiarray($element, $array) {
         while (current($array) !== false) {
@@ -128,23 +103,18 @@ class AppShell extends Shell {
     }    
     
     
-    
-    
-    
-    
-    
 
     /**
      * Read the names in a list of files (FDQN) that fulfill the $typeOfFiles bitmap
      *
-     * @param array $fileNameList   list of filesnames to be analyzed
+     * @param array $fileNameList   list of filenames to be analyzed
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
      *                              INVESTMENT_FILE, TRANSACTION_TABLE_FILE, CONTROL_FILE, ....
      * @return array  $approveFileNameList    list of FQDN filenames
      */
     function readFilteredFiles($fileNameList,  $typeOfFiles) {
         $approvedFileNameList = array();
-// start temp
+
         $knownFileTypesNames = array (
             WIN_FLOW_TRANSACTION_FILE => "transaction",
             WIN_FLOW_EXTENDED_TRANSACTION_FILE => "extendentransaction",
@@ -195,7 +165,7 @@ class AppShell extends Shell {
         return $extension;
     }
     
-    /**
+    /** CAN BE DELETED, IT IS NOT USED AND 
      * Function to get the loanId from the file name of one amortization table
      * @param string $filePath It is the path to the file
      * @return string It is the loanId
@@ -205,8 +175,97 @@ class AppShell extends Shell {
         $name = $file->name();
         $nameSplit = explode("_", $name);
         $loanId = $nameSplit[1];
+        echo "loanId = $loanId\n";
+        print_r($nameSplit);
+        exit;
         return $loanId;
     }
         
-        
+    /** 
+     * Function to get the loanId from the file name of an amortization table
+     * @param   string  $filePath   It is the full path to the file
+     * @return  array               [0] contains investmentslice_id
+     *                              [1] contains the loanId
+     */
+    public function getIdInformationFromFile($filePath) {
+        $file = new File($filePath, false);
+        $name = $file->name();
+        $nameSplit = explode("_", $name);
+        return array_slice($nameSplit, 1, 2);
+    } 
+    
+    
+    /**
+     * Get the list of all active investments for a P2P as identified by the
+     * linkedaccount identifier.
+     * Take into account that an investment can have 1 or more investmentslices.
+     *
+     * @param int $linkedaccount_id    linkedaccount reference
+     * @return array
+     *
+     */
+    public function getListActiveInvestments($linkedaccount_id) {
+        $this->Investment = ClassRegistry::init('Investment');
+        $filterConditions = array(
+            'linkedaccount_id' => $linkedaccount_id,
+            "investment_statusOfloan" => WIN_LOANSTATUS_ACTIVE,
+        );
+
+        $investmentListResult = $this->Investment->find("all", array("recursive" => -1,
+            "conditions" => $filterConditions,
+            "fields" => array("id", "investment_loanId"),
+        ));
+
+        $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
+        return $list;
+    }    
+    
+    /**
+     * Get the list of all investments with status = $status for a P2P as identified by the
+     * linkedaccount identifier.
+     * Take into account that an investment can have 1 or more investmentslices.
+     *
+     * @param int $linkedaccount_id    linkedaccount reference
+     * @param   int $status          The status of the investment
+     * @return array
+     *
+     */
+    public function getLoanIdListOfInvestments($linkedaccount_id, $status) {
+        $this->Investment = ClassRegistry::init('Investment');
+        $filterConditions = array(
+            'linkedaccount_id' => $linkedaccount_id,
+            "investment_statusOfloan" => $status,
+        );
+
+        $investmentListResult = $this->Investment->find("all", array("recursive" => -1,
+            "conditions" => $filterConditions,
+            "fields" => array("id", "investment_loanId"),
+        ));
+
+        $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
+        return $list;
+    }    
+    
+    /**
+    * Returns every date between two dates as an array
+    * @param string $startDate the start of the date range
+    * @param string $endDate the end of the date range
+    * @param string $format DateTime format, default is Y-m-d
+    * @return array returns every date between $startDate and $endDate, formatted as "Y-m-d"
+    */
+    function createDateRange($startDate, $endDate, $format = "Ymd") {
+        $begin = new DateTime($startDate);
+        $end = new DateTime($endDate);
+
+        $interval = new DateInterval('P1D'); // 1 Day
+        $dateRange = new DatePeriod($begin, $interval, $end);
+
+        $range = [];
+        foreach ($dateRange as $date) {
+            $range[] = $date->format($format);
+        }
+
+        return $range;
+    }
+
 }

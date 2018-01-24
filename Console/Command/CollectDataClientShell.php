@@ -56,13 +56,18 @@ class CollectDataClientShell extends GearmanClientShell {
         $companyTypes = $this->Company->find('list', array(
             'fields' => array('Company.company_typeAccessTransaction')
         ));
-        $this->date = date("Ymd");
+        $this->date = date("Ymd", strtotime("-1 day"));
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
             if (Configure::read('debug')) {
                 $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
-            }
-            $pendingJobs  = $this->checkJobs(WIN_QUEUE_STATUS_START_COLLECTING_DATA, $jobsInParallel);
+            } 
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA),
+                                                  WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA,
+                                                $jobsInParallel);
+            print_r($pendingJobs);            
+            
+            
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
@@ -73,12 +78,7 @@ class CollectDataClientShell extends GearmanClientShell {
                 foreach ($pendingJobs as $job) {
                     $queueInfo = json_decode($job['Queue']['queue_info'], true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
-                    if (empty($this->queueInfo[$job['Queue']['id']]['date'] )) {
-                        $this->queueInfo[$job['Queue']['id']]['date'] = $this->date;
-                    }
-                    else {
-                        $this->date = $this->queueInfo[$job['Queue']['id']]['date'];
-                    }
+                    $this->getFinishDate($job);
                     $jobInvestor = $this->Investor->find("first", array('conditions' =>
                         array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
                         'fields' => 'id',
@@ -102,7 +102,6 @@ class CollectDataClientShell extends GearmanClientShell {
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";
-                    print_r($linkedaccountsResults);
                     //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
                 $userLinkedaccounts = [];
@@ -122,8 +121,8 @@ class CollectDataClientShell extends GearmanClientShell {
                                 //that we are going to collect inside the variables companiesInFlow
                                 $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
-                            //After verify that a folder doesn't exist, 
-                            //we verify that companiesInFlow doesn't exist neither
+                            $this->getStartDate($linkedaccount);
+                            
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
@@ -135,7 +134,6 @@ class CollectDataClientShell extends GearmanClientShell {
                         print_r($this->queueInfo[$job['Queue']['id']]['companiesInFlow']);
                     }
                     
-
                 }
                 
                 if (Configure::read('debug')) {
@@ -199,5 +197,31 @@ class CollectDataClientShell extends GearmanClientShell {
         }
     }
     
+    /**
+     * Function to initiate startDate in queueInfo variable
+     * @param array $linkedaccount Array that contains everything about the linkedaccount
+     */
+    public function getStartDate($linkedaccount) {
+        //We set null startDate
+        $this->queueInfo[$job['Queue']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
+        $startDate = date("Ymd", strtotime($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']));
+        //If lastAccessed is null, strtotime will put 19700101 so we don't want that date
+        if ($startDate != "19700101") {
+            $this->queueInfo[$job['Queue']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = $startDate;
+        }
+    }
+    
+    /**
+     * Function to initiate finishDate in queueInfo variable
+     * @param array $job Array that contains everything about the request
+     */
+    public function getFinishDate($job) {
+        if (empty($this->queueInfo[$job['Queue']['id']]['date'] )) {
+            $this->queueInfo[$job['Queue']['id']]['date'] = $this->date;
+        }
+        else {
+            $this->date = $this->queueInfo[$job['Queue']['id']]['date'];
+        }
+    }
     
 }

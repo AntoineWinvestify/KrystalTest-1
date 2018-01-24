@@ -53,7 +53,7 @@ class MarketplaceShell extends AppShell {
 
         foreach ($companyList as $companyId) {
             $this->Configuration->writeConfigParameter('lastScannedCompany', $companyId);
-            $structure = $this->Structure->getStructure($companyId, 1);
+            $structure = $this->Structure->getStructure($companyId, WIN_STRUCTURE_MARKETPLACE);
 
             if ($this->args[0] == 1) {
                 $this->cronMarketPlaceLoop($companyId, $structure);
