@@ -303,6 +303,12 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual[0]['JoinCells']);
     }
     
+    public function testDefaultDate() {
+        $expected = date("Y-m-d");
+        $actual = $this->testAction("/cases/testDefaultDate");
+        $this->assertEquals($expected, $actual[0]['Defaultdate']);
+    }
+    
     public function tearDown() {
         parent::tearDown();
         unset($this->Hello);

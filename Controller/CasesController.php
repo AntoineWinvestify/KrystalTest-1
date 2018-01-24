@@ -30,7 +30,8 @@ class CasesController extends AppController {
         $this->Auth->allow(array('testDivision', 'testParserAnalyze', 'testParserAnalyzeAndConfig', 'testParserConfig', 'testParserConfigFormat1'
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
-            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 'testChronoOrder', "testAnalyzeJson", "testConcepts", "testJoinCell"
+            'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 'testChronoOrder', "testAnalyzeJson", "testConcepts", "testJoinCell",
+            "testDefaultDate"
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCaseTransaction.xlsx';
@@ -1409,13 +1410,13 @@ class CasesController extends AppController {
             ],
             "C" => [
                 ["type" => "JoinCells",
-                "inputData" => [
-                    "input2" => "_",
-                    "input3" => FIFO,
-                    "input4" => "#current.cellA",
-                    "input5" => "#current.cellB"
-                ],
-                "functionName" => "joinDataCells",]
+                    "inputData" => [
+                        "input2" => "_",
+                        "input3" => FIFO,
+                        "input4" => "#current.cellA",
+                        "input5" => "#current.cellB"
+                    ],
+                    "functionName" => "joinDataCells",]
             ],
         ];
 
@@ -1428,6 +1429,31 @@ class CasesController extends AppController {
         $tempResult = $myParser->analyzeFile($this->TransactionfilePath, $parserConfig, "xlsx");
 
         print_r($tempResult);
+        return $tempResult;
+    }
+
+    public function testDefaultDate() {
+        
+        $parserConfig = [
+            "C" => [
+                ["type" => "Defaultdate", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "D/M/Y",
+                    ],
+                    "functionName" => "getDefaultDate",
+                ]
+            ]
+        ];
+        $myParser = new Fileparser();
+        $myParser->setDefaultFinishDate(date("Y/m/d"));
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+        $this->print_r2($tempResult);
         return $tempResult;
     }
 

@@ -352,10 +352,10 @@ class Fileparser {
         
   
  
-    dfefault interest income should be in globalcashflow table
+    /*dfefault interest income should be in globalcashflow table
 
 30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    
+Currency exchange fee	FX commission with Exchange Rate:    */
     
            
         
@@ -893,15 +893,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return $tempArray;    
     }
     
-    public function getFirstRow($file, $configParam) {
+    /*public function getFirstRow($file, $configParam) {
         $extension = $this->getExtensionFile($file);
         $inputType = $this->getInputFileType($extension);
         $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
         print_r($data[1]);
         return $data[1];
-    }
+    }*/
     
-    function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
+    /*function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
         if (empty($inputFileType)) {
             $inputFileType = "Excel2007";
         }
@@ -914,20 +914,20 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
         
         /**  Create a new Instance of our Read Filter  **/
-        $chunkFilter = new readFilterWinvestify();
+        //$chunkFilter = new readFilterWinvestify();
         /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
-        $chunkFilter->setRows($chunkInit,$chunkSize);
+        //$chunkFilter->setRows($chunkInit,$chunkSize);
         /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
-        $objReader->setReadFilter($chunkFilter);
+        /*$objReader->setReadFilter($chunkFilter);
         
         $objPHPExcel = $objReader->load($filePath);
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         echo "sheetDAta <br>";
         var_dump($sheetData);
         return $sheetData;
-    }
+    }*/
     
-    public function getInputFileType($extension) {
+    /*public function getInputFileType($extension) {
         
         switch($extension) {
             case "xlsx":
@@ -935,7 +935,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 break;
         }
         return $inputType;
-    }
+    }*/
    
 
 
