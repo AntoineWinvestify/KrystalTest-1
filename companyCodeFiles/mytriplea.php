@@ -384,7 +384,7 @@ class mytriplea extends p2pCompany {
 
                 $headers = $row->getElementsByTagName('header');
                 foreach ($headers as $header) {
-                    $tempArray['marketplace_purpose'] = trim($header->nodeValue);
+                    $tempArray['marketplace_purpose'] = utf8_decode(trim($header->nodeValue));
                 }
 
                 $li = $row->getElementsByTagName('li');
