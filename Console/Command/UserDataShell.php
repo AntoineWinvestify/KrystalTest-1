@@ -107,7 +107,7 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
 
-    public function consolidatePartialPrincipalRepayment() {
+    public function calculatePartialPrincipalRepayment() {
         $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
             'fields' => array('paymenttotal_partialPrincipalRepayment'),
@@ -463,8 +463,8 @@ class UserDataShell extends AppShell {
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string
-     * 67
+     *  @return string      amount expressed as a string
+     * 
      */
 
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
@@ -472,12 +472,12 @@ class UserDataShell extends AppShell {
     }
 
     /*
-     *  @param  FILE            FQDN of the file to analyze
-     *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
-     *  @return string
-     * 43
+     *  Get the amount which corresponds to the "Regular Gross Interest Incomel" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      amount expressed as a string
+     * 
      */
-
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
@@ -494,7 +494,7 @@ class UserDataShell extends AppShell {
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB 
      * @return int         number of active loans
-     * $tempMeasurements = $database['Measurements'];
+     * 
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
         $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
@@ -574,20 +574,13 @@ class UserDataShell extends AppShell {
         return "ACTIVE";                    
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
+ 
     
     /*
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string
+     *  @return string      amount expressed as a string
      * 55
      */
 
@@ -627,7 +620,7 @@ class UserDataShell extends AppShell {
      * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
      * @param  array       array with the current transaction data
      * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     * @return string      the string representation of a large integer
+     * @return string      amount expressed as a string
      */
 
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {

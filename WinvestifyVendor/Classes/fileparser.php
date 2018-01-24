@@ -251,7 +251,6 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "concept17"  
                 ],
-
             19 => [
                 "detail" => "Recoveries",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
@@ -283,10 +282,10 @@ class Fileparser {
                 "type" => "concept23"
                 ],           
             24 => [
-                "detail" => "currency_exchange_fee",
+                "detail" => "Payment_currency_exchange_fee",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept24"
+                "type" => "payment_currencyExchangeFee"
                 ],
             25 => [
                 "detail" => "currency_fluctuation_negative",
@@ -310,7 +309,7 @@ class Fileparser {
                 "detail" => "Write-off",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept28"
+                "type" => "investment_writtenOff"
                 ],
             29 => [
                 "detail" => "Registration",
@@ -342,6 +341,24 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "concept33"
                 ], 
+            34 => [
+                "detail" => "Default interest income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "DefaultInterestIncome"
+                ],        
+        
+  
+ 
+    dfefault interest income should be in globalcashflow table
+
+30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
+Currency exchange fee	FX commission with Exchange Rate:    
+    
+           
+        
+        
+        
         
             // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
             // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment

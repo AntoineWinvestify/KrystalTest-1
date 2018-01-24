@@ -159,10 +159,9 @@ class ParseDataClientShell extends GearmanClientShell {
                             'userReference' => $job['Queue']['queue_userReference'],
                             'controlVariableFile' => $controlVariableFile[0],
                             'files' => $files,
-                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
-                            'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId]
-                //            'actionOrigin' => $this->queueInfo[$job['Queue']['id']]['originExecution'],
+                            'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
+                            'actionOrigin' => $this->queueInfo[$job['Queue']['id']]['originExecution'],
                         );
                     }
                     debug($params);
@@ -294,10 +293,6 @@ $tempMeasurements = array(
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
-
-        
-        
-        
         
 // Deal with empty transaction record    
         if (isset($platformData['parsingResultTransactions'])) {
@@ -318,10 +313,6 @@ $tempMeasurements = array(
             }
         }
        
-    
-    
-    
-    
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
