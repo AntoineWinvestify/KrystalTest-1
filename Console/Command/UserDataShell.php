@@ -912,6 +912,76 @@ class UserDataShell extends AppShell {
         //investment.investment_remainingDuration
     }
     
+    /**
+     * Get the amount which corresponds to the "principalAndInterestPayment" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculatePrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * Get the amount which corresponds to the "partialPrincipalAndInterestPayment" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculatePartialPrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateOfCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+        if (!isset($resultData['payment']['payment_principalAndInterestPayment'])) {
+            return;
+        }
+        if (empty($resultData['payment']['payment_capitalRepayment'])) {
+            $capitalRepayment = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
+            $resultData['payment']['payment_capitalRepayment'] = $capitalRepayment;
+            $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
+        }
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+            $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
+            $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
+        }
+        
+        $resultData['payment']['payment_principalAndInterestPayment'] = 0;
+    }
+    
+    /**
+     * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateOfPartialCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+        if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
+            return;
+        }
+        
+        if (empty($resultData['payment']['payment_partialCapitalRepayment'])) {
+            $capitalRepayment = bcsub($resultData['payment']['payment_partialPrincipalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
+            $resultData['payment']['payment_partialPrincipalRepayment'] = $capitalRepayment;
+            $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
+        }
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+            $regularGrossInterest = bcsub($resultData['payment']['payment_partialPrincipalAndInterestPayment'], $resultData['payment']['payment_partialPrincipalRepayment'], 16);
+            $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
+            $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
+        }
+        //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
+    }
+    
 }
 
 /*
