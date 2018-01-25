@@ -239,7 +239,7 @@ class Fileparser {
                 "detail" => "Compensation",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept15"    
+                "type" => "payment_compensation"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -348,7 +348,13 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "DefaultInterestIncome"
-                ],        
+                ],     
+            35 => [
+                "detail" => "Partial_principal_and_interest_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Mix",
+                "type" => "payment_partialPrincipalAndInterestPayment"
+                ],
         
   
  
