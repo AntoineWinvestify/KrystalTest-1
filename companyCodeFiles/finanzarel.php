@@ -90,7 +90,7 @@ class finanzarel extends p2pCompany {
                                         2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
                                         3 => ["Provisi?n de fondos" => "Cash_deposit"],
                                         4 => ["Cargo por inversi?n en efecto" => "Primary_market_investment"],
-                                        5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
+                                        5 => ["Abono por cobro parcial de efecto" => "Partial_principal_and_interest_payment"],
                                         7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
                                         9 => ["Intereses de demora" => "Delayed_interest_income"],
                                         14 => ["Retrocesión de comisiones" => "Compensation"],
