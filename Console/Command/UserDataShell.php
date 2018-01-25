@@ -46,38 +46,33 @@ class UserDataShell extends AppShell {
      * 
      * @param  array       array with the calculated control variables for today's readout
      * @param  array       array with the control variables as provided by platform
-     * @return boolean     true / false
+     * @return integer     0 OK
+     *                     integer: Error Number
      * 
      */
 
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
-        $result = false;
-        $error = true;
+        $error = 0;
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
                     if ($internalControlVariables['myWallet'] <> $externalControlVariables) {
-                        $error = true;
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;
                     }
                     break;
                 case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
                     if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables) {
-                        $error = true;
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;
                     }
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
                     if ($internalControlVariables['activeInvestments'] <> $externalControlVariables) {
-                        $error = true;
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_ACTIVE_INVESTMENTS;
                     }
                     break;
             }
-        }
-        if ($error == true) {
-            return false;
-        } else {
-            //generate application error
-            return true;
-        }
+        }          
+        return $error;
     }
 
     public function consolidatePlatformData(&$database) {

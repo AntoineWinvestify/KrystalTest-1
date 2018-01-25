@@ -145,8 +145,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $newComp->setFileType($result[$companyId]['company_typeFileTransaction'], $result[$companyId]['company_typeFileInvestment']);
             $newComp->setCompanyName($result[$companyId]['company_codeFile']);
             $newComp->setUserReference($data["queue_userReference"]);
-            $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);
-            
+            $newComp->setLinkAccountId($linkedaccount['Linkedaccount']['id']);           
             $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_MY_INVESTMENTS_SEQUENCE);
             $newComp->setUrlSequence($urlSequenceList);  // provide all URLs for this sequence
             $configurationParameters = array('tracingActive' => false,

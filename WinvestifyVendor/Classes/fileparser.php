@@ -1740,8 +1740,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
     }
       
-     /**
+    /**
      * Function to get the extension of a file
+     * 
      * @param string $filePath FQDN of the file to analyze
      * @return string It is the extension of the file
      */
@@ -1848,5 +1849,18 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     public function cleanConfig($config) {
         $this->config = $config;
     }
-    
+
+
+    /**
+     * Function to manipulate a number
+     * Example:
+     *  21.903 _> 2090
+     * @param string $filePath FQDN of the file to analyze
+     * @return string It is the extension of the file
+     */
+    public function handleNumber($input, $multiplyFactor, $decimals) {
+        $tempInput = preg_replace("/,/", '.', $input);
+        $temp = bcmul($tempInput, $multiplyFactor, $decimals);
+        return $temp;
+    }    
 }

@@ -244,9 +244,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
             $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];             
             
-            
-            $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
-            
+          
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                 echo "action = account linking\n";

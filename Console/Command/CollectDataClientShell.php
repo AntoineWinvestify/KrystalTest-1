@@ -50,7 +50,10 @@ class CollectDataClientShell extends GearmanClientShell {
         }
 
         $inActivityCounter++;                                           // Gearman client 
-        $jobsInParallel = 1;
+ 
+        Configure::load('p2pGestor.php', 'default');
+        $jobsInParallel = Configure::read('dashboard2JobsInParallel');     
+        
         $this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $companyTypes = $this->Company->find('list', array(
@@ -65,6 +68,7 @@ class CollectDataClientShell extends GearmanClientShell {
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA),
                                                   WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA,
                                                 $jobsInParallel);
+            echo "printing pendingJobs\n";
             print_r($pendingJobs);            
             
             
@@ -101,7 +105,6 @@ class CollectDataClientShell extends GearmanClientShell {
                             );
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-                    echo "linkAccount \n";
                     //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
                 $userLinkedaccounts = [];
@@ -121,7 +124,7 @@ class CollectDataClientShell extends GearmanClientShell {
                                 //that we are going to collect inside the variables companiesInFlow
                                 $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
-                            $this->getStartDate($linkedaccount);
+                            $this->getStartDate($linkedaccount, $job);
                             
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
@@ -197,7 +200,7 @@ class CollectDataClientShell extends GearmanClientShell {
      * Function to initiate startDate in queueInfo variable
      * @param array $linkedaccount Array that contains everything about the linkedaccount
      */
-    public function getStartDate($linkedaccount) {
+    public function getStartDate($linkedaccount, $job) {
         //We set null startDate
         $this->queueInfo[$job['Queue']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
         $startDate = date("Ymd", strtotime($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']));

@@ -339,7 +339,7 @@ class p2pCompany {
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
 
         // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 300);
 
         // Do not check the SSL certificates
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -422,7 +422,7 @@ class p2pCompany {
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
 
         // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 300);
 
         // Do not check the SSL certificates
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -515,7 +515,7 @@ class p2pCompany {
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
 
         // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 300);
 
         // Do not check the SSL certificates
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -632,7 +632,7 @@ class p2pCompany {
         curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 30);
 
         // Execute the cURL request for a maximum of 50 seconds
-        curl_setopt($curl, CURLOPT_TIMEOUT, 100);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 300);
 
         // Do not check the SSL certificates
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -709,7 +709,7 @@ class p2pCompany {
                 ->set(CURLOPT_FAILONERROR, true)
                 ->set(CURLOPT_RETURNTRANSFER, true)
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
-                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_TIMEOUT, 300)
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
@@ -804,7 +804,7 @@ class p2pCompany {
                 ->set(CURLOPT_FAILONERROR, true)
                 ->set(CURLOPT_RETURNTRANSFER, true)
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
-                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_TIMEOUT, 300)
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name)
@@ -900,7 +900,7 @@ class p2pCompany {
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_TIMEOUT, 300)
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
@@ -1409,9 +1409,8 @@ class p2pCompany {
      * @return string It is the path that will contain the files
      */
     public function getFolderPFPFile() {
-        $date = date("Ymd", strtotime($this->dateFinish));
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
+        $date = date("Ymd", strtotime($this->dateFinish));       
+        $partialPath = Configure::read('dashboard2Files');
         $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
         $pathCreated = $this->createFolder($path, $partialPath);
         return $pathCreated;
@@ -1727,10 +1726,10 @@ class p2pCompany {
         }
 
         $this->errorInfo = $url;
-        echo "File name is " . $fileName;
+        echo "===========================> File name is " . $fileName;
         
         $pathCreated = $this->getFolderPFPFile();
-        //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
+        echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
             //$path = $partialPath . DS . $path;
             //echo "The path is " . $partialPath . $path;

@@ -50,7 +50,7 @@ class Userinvestmentdata extends AppModel {
             "conditions" => array("investor_id" => $investorIdentityId),
             "fields" => array("id"),
         ));
-        
+
         //print_r($linkedAccountsId);
         
         //Get last Userinvestmentdata table row for a linked account id
@@ -60,10 +60,11 @@ class Userinvestmentdata extends AppModel {
             $resultInvestorData[] = $this->find("first", array("recursive" => -1,
                 "conditions" => array("linkedaccount_id" => $linkedAccountId['Linkedaccount']['id']),
                 "fields" => array("*"),
-                "order" => "created DESC",
+                "order" => "date DESC",
             ));
             
         }
+
         //print_r($resultInvestorData);
         return $resultInvestorData;
     }

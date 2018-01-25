@@ -225,13 +225,12 @@ class zank extends p2pCompany {
                
             "C" => [
                 [
-                    "type" => "investment_expectAnnualYield",                   // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                   // Winvestify standardized name   OK
                     "inputData" => [
-                                "input2" => "",
-                                "input3" => ",",
-                                "input4" => 4
+                                "input2" => "100",
+                                "input3" => 0
                                 ],
-                    "functionName" => "getAmount",
+                    "functionName" => "handleNumber",
                 ]                                           
             ], 
             "D" =>  [
@@ -322,14 +321,13 @@ class zank extends p2pCompany {
                
             "C" => [
                 [
-                    "type" => "investment_expectAnnualYield",                   // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                   // Winvestify standardized name   OK
                     "inputData" => [
-                                "input2" => "",
-                                "input3" => ",",
-                                "input4" => 4
+                                "input2" => "100",
+                                "input3" => 0
                                 ],
-                    "functionName" => "getAmount",
-                ]                                           
+                    "functionName" => "handleNumber",
+                ]                                         
             ], 
             "D" =>  [
                 "name" => "investment_originalDuration"
