@@ -63,13 +63,21 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/Y",
+                                "input2" => "D/M/y",
                                 ],
                     "functionName" => "normalizeDate",
                 ] 
             ],
             "E" => [
-                    "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+                [
+                    "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "-",                                // May contain trailing spaces
+                                "input3" => "",
+                                "input4" => 2                                   // 'input3' is mandatory. With mandatory 2 If found then return "global_xxxxxx"
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
             ], 
             "F" => [// NOT FINISHED YET
                 [
@@ -78,7 +86,7 @@ class finanzarel extends p2pCompany {
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Provisión de fondos" => "Cash_deposit"],
-                                        1 => [ "Retirada de fondos" => "Cash_withdrawal"],
+                                        1 => ["Retirada de fondos" => "Cash_withdrawal"],
                                         2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
                                         3 => ["Provisi?n de fondos" => "Cash_deposit"],
                                         4 => ["Cargo por inversi?n en efecto" => "Primary_market_investment"],
@@ -123,7 +131,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/Y",
+                                "input2" => "D/M/y",
                                 ],
                     "functionName" => "normalizeDate",
                 ] 
