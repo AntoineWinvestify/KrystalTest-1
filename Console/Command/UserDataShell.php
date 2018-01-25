@@ -107,7 +107,8 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
 
-    public function calculatePartialPrincipalRepayment() {
+    public function calculatePartialPrincipalBuyback() {
+        $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
         $sum = 0;
         $listResult = $this->Paymenttotal->find('list', array(
             'fields' => array('paymenttotal_partialPrincipalRepayment'),
@@ -896,6 +897,20 @@ class UserDataShell extends AppShell {
     public function calculateReservedComplex(&$transactionData, &$resultData) {
         return WIN_LOANSTATUS_CANCELLED;
     }    
+    
+    /*
+     *  Get the amount which corresponds to the "commission paid" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     * 17
+     */
+
+    public function calculateCommissionPaid(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+        //investment.investment_remainingDuration
+    }
     
 }
 
