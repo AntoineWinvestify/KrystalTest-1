@@ -1,4 +1,4 @@
- <?php
+<?php
 
 /**
  * +-----------------------------------------------------------------------------+
@@ -81,15 +81,16 @@
  */
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 //Configure::load('constants'); //Load all global constants
-
 //require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'Reader' . DS . 'IReadFilterWinvestify.php'));
+
 use Browser\Casper;
 
 //require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'php-bondora-api-master' . DS . 'bondoraApi.php');
 class p2pCompany {
+
     //Variable to use in this method
     // MarketplacesController
 
@@ -159,20 +160,18 @@ class p2pCompany {
     protected $casperObject;
     //Variables for amortization tables
     protected $loanIds = [];
-    
     protected $valuesTransaction;
-    protected $valuesInvestment;  
+    protected $valuesInvestment;
     protected $valuesAmortizationTable;
     protected $callbacks;
     protected $originExecution;
     protected $tableStructure;
-    
-    protected $compareHeaderConfigParam = array( "chunkInit" => 1,
-                                        "chunkSize" => 1,     
-                                        );
-    
+    protected $compareHeaderConfigParam = array("chunkInit" => 1,
+        "chunkSize" => 1,
+    );
     //Number of days for each company download. Only some pfp uses it.
     protected $period = 365;
+
     /**
      *
      * Prepare all the default data of the class and its subclasses
@@ -270,13 +269,14 @@ class p2pCompany {
         return $this->testConfig;
     }
 
-    /*  
+    /*
      *  Function used by both the investors and the admin user for obtaining marketplace data
      * 	Enter the Webpage of the user's portal
      * 	@param string 		$url	The url is read from the urlSequence array, i.e. contents of first element
      * 	@return	string		$str	html string
      *
      */
+
     function doCompanyLogin(array $loginCredentials) {
 
 
@@ -365,7 +365,6 @@ class p2pCompany {
         return $str;
     }
 
-    
     function doCompanyLoginRequestPayload($payload) {
 
 
@@ -603,9 +602,9 @@ class p2pCompany {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-        
+
         if (!empty($credentials)) {
-                foreach ($credentials as $key => $value) {
+            foreach ($credentials as $key => $value) {
                 $postItems[] = $key . '=' . $value;
             }
             $postString = implode('&', $postItems);
@@ -658,7 +657,7 @@ class p2pCompany {
         return($str);
     }
 
-    /** 
+    /**
      *  Function used by both the investors and the admin user for obtaining marketplace data
      *  It is the version used with multicurl
      * 	Enter the Webpage of the user's portal
@@ -681,7 +680,7 @@ class p2pCompany {
                 return $str;
             }
         }
-        
+
         $request = new \cURL\Request();
         // check if extra headers have to be added to the http message  
         if (!empty($this->headers)) {
@@ -689,18 +688,17 @@ class p2pCompany {
                     ->set(CURLOPT_HTTPHEADER, $this->headers);
             unset($this->headers);   // reset fields
         }
-        if(!empty($loginCredentials)) {
+        if (!empty($loginCredentials)) {
             if ($payload) {
                 $postString = $loginCredentials;
                 $request->getOptions()
-                            ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            }
-            else {
+                        ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            } else {
                 $postString = http_build_query($loginCredentials);
-            }    
+            }
             $request->getOptions()
-                ->set(CURLOPT_POSTFIELDS, $postString);
-        } 
+                    ->set(CURLOPT_POSTFIELDS, $postString);
+        }
 
         $request->getOptions()
                 ->set(CURLOPT_URL, $url)
@@ -721,7 +719,7 @@ class p2pCompany {
             "idForSwitch" => $this->idForSwitch,
             "typeOfRequest" => "LOGIN"
         ];
-        
+
         $request->_page = json_encode($info);
         // Add the url to the queue
         $this->classContainer->addRequestToQueueCurls($request);
@@ -732,7 +730,7 @@ class p2pCompany {
      * 	Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * 	
      */
-    
+
     /**
      * Leave the Webpage of the user's portal. The url is read from the urlSequence array, i.e. contents of first element
      * It is the multicurl version that add the request to a queue
@@ -794,7 +792,7 @@ class p2pCompany {
             "idForSwitch" => $this->idForSwitch,
             "typeOfRequest" => "LOGOUT"
         ];
-        
+
         $request->_page = json_encode($info);
 
         $request->getOptions()
@@ -820,7 +818,7 @@ class p2pCompany {
      *  @param string $credentials The credentials used to connect to the url provided
      *  @param boolean $payload If payload is true, then, the credentials are json type
      */
-    function getCompanyWebpageMultiCurl($url = null,$credentials = null, $payload = null) {
+    function getCompanyWebpageMultiCurl($url = null, $credentials = null, $payload = null) {
 
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
@@ -829,7 +827,7 @@ class p2pCompany {
         echo 'The url is: ' . $url;
         $this->errorInfo = $url;
 
-        print_r($this->headers); 
+        print_r($this->headers);
         if (!empty($this->testConfig['active']) == true) {  // test system active, so read input from prepared files
             if (!empty($this->testConfig['siteReadings'])) {
                 $currentScreen = array_shift($this->testConfig['siteReadings']);
@@ -846,20 +844,19 @@ class p2pCompany {
         }
 
         $request = new \cURL\Request();
-        
-        if(!empty($credentials)) {
+
+        if (!empty($credentials)) {
             if ($payload == true) {
                 $postString = $credentials;
                 $request->getOptions()
-                            ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-            }
-            else {
+                        ->set(CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+            } else {
                 $postString = http_build_query($credentials);
-            }    
+            }
             $request->getOptions()
-                ->set(CURLOPT_POSTFIELDS, $postString);
+                    ->set(CURLOPT_POSTFIELDS, $postString);
         }
-        
+
 
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
@@ -875,14 +872,14 @@ class p2pCompany {
 
             unset($this->headers);   // reset fields
         }
-        
+
         //$request->_page = $this->idForQueue . ";" . $this->idForSwitch . ";WEBPAGE";
         $info = [
             "companyIdForQueue" => $this->idForQueue,
             "idForSwitch" => $this->idForSwitch,
             "typeOfRequest" => "WEBPAGE"
         ];
-        
+
         $request->_page = json_encode($info);
         $request->getOptions()
                 // Set the file URL to fetch through cURL
@@ -906,8 +903,6 @@ class p2pCompany {
                 ->set(CURLOPT_SSL_VERIFYPEER, false)
                 ->set(CURLOPT_COOKIEFILE, $this->cookiesDir . '/' . $this->cookies_name) // important
                 ->set(CURLOPT_COOKIEJAR, $this->cookiesDir . '/' . $this->cookies_name); // Important
-                
-                
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
 
@@ -931,6 +926,7 @@ class p2pCompany {
      * 	@param	integer	$conditionRow	Row that must have value 0 or 1 in order to add the value of $contentRow to $value
      * 	@return integer	$value			accumulative value of all items in $contentrow. Value in €cents
      */
+
     function getCurrentAccumulativeRowValue($amortizationTable, $date, $dateFormat, $dateRow, $contentRow, $conditionRow) {
         $total = 0;
 
@@ -1083,6 +1079,7 @@ class p2pCompany {
      * @param string $class It is the class which is used to search the elements
      * @return node It is all the elements that coincide with the class
      */
+
     public function getElementsByClass($dom, $class) {
         $dom_xpath = new DOMXPath($dom);
         $element = $dom_xpath->query("//*[contains(concat(' ', normalize-space(@class), ' '), ' $class ')]");
@@ -1376,7 +1373,7 @@ class p2pCompany {
         $this->createCookiesFile($nameFileCookies);
         return $nameFileCookies;
     }
-    
+
     /**
      * Create the cookies folder if not exists 
      * @param string $name It is the name for the folder
@@ -1393,8 +1390,7 @@ class p2pCompany {
         $folderCreated = false;
         if (!file_exists($dir)) {
             $folderCreated = mkdir($dir, 0770, true);
-        }
-        else {
+        } else {
             $folderCreated = true;
         }
         if ($folderCreated) {
@@ -1403,7 +1399,7 @@ class p2pCompany {
             return null;
         }
     }
-    
+
     /**
      * Function to create the folder that will contain all the transaction, investment, etc data
      * @return string It is the path that will contain the files
@@ -1412,11 +1408,11 @@ class p2pCompany {
         $date = date("Ymd", strtotime($this->dateFinish));
         $configPath = Configure::read('files');
         $partialPath = $configPath['investorPath'];
-        $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName ;
+        $path = $this->userReference . DS . $date . DS . $this->linkAccountId . DS . $this->companyName;
         $pathCreated = $this->createFolder($path, $partialPath);
         return $pathCreated;
     }
-    
+
     /**
      * Function to save all the amortization table by loan Id as html
      */
@@ -1427,7 +1423,7 @@ class p2pCompany {
             }
         }
     }
-    
+
     /**
      * Function to save a file of a PFP
      * @param string $fileName It is the file name with the extension
@@ -1442,7 +1438,7 @@ class p2pCompany {
         fwrite($fp, $data);
         fclose($fp);
     }
-    
+
     /**
      * Function to delete the directory passed as argument including its files
      * @param string $dir It is the path of the directory
@@ -1451,7 +1447,7 @@ class p2pCompany {
         if (empty($dir)) {
             $dir = $this->getFolderPFPFile();
         }
-        
+
         $types[0] = $this->typeFileTransaction;
         $types[1] = $this->typeFileInvestment;
         $types[2] = $this->typeFileAmortizationtable;
@@ -1460,20 +1456,19 @@ class p2pCompany {
                 unset($types[$key]);
             }
         }
-        
+
         foreach ($types as $type) {
-            foreach(glob($dir . '/*' . "." . $type) as $file) { 
+            foreach (glob($dir . '/*' . "." . $type) as $file) {
                 if (is_dir($file)) {
                     rrmdir($file);
-                } 
-                else {
+                } else {
                     unlink($file);
                 }
-            } 
+            }
         }
-        rmdir($dir); 
+        rmdir($dir);
     }
-    
+
     /**
      * Function to verify that a file has more than 0 bytes
      * @param string $path It is the path that contains the file
@@ -1490,7 +1485,6 @@ class p2pCompany {
         }
         return $fileHasSize;
     }
-
 
     /**
      * Create the cookies file inside the directory selected with the permissions selected
@@ -1567,22 +1561,21 @@ class p2pCompany {
             $this->tempArray['global']['error']['subtypeErrorId'] = $typeErrorId;
             if (!empty($error)) {
                 $this->tempArray['global']['error']['subtypeErrorId'] = $this->getErrorCurlType($error->getCode());
-            }  
+            }
             //$this->tempArray['global']['error']['typeOfError'] = "";
             //$this->tempArray['global']['error']['detailedErrorInformation'] = "";
             $this->tempArray['global']['error']['line'] = $line;
             $this->tempArray['global']['error']['file'] = $file;
             $this->tempArray['global']['error']['urlsequenceUrl'] = $this->errorInfo;
-        }
-        else {
+        } else {
             $this->tempArray = $this->setErrorOldUserinvestmentdata($line, $file, $typeSequence, $error);
         }
         return $this->tempArray;
     }
-    
+
     public function getErrorCurlType($code) {
         $subtypeError = WIN_ERROR_FLOW_CURL;
-        switch($code) {
+        switch ($code) {
             case 3:
                 $subtypeError = WIN_ERROR_FLOW_URLSEQUENCE;
                 break;
@@ -1591,7 +1584,7 @@ class p2pCompany {
         }
         return $subtypeError;
     }
-    
+
     public function setErrorOldUserinvestmentdata($line, $file, $typeSequence = null, $error = null) {
         $newLine = "\n";
         if (!empty($typeSequence)) {
@@ -1602,7 +1595,7 @@ class p2pCompany {
             $errorRequest = "$newLine The error code of the request: " . $error->getCode()
                     . "$newLine The error message of the request: " . $error->getMessage();
         }
-        
+
         $errorDetailed = "An error has ocurred with the data on the line " . $line . $newLine . " and the file " . $file
                 . ". The queueId is " . $this->queueId['Queue']['id']
                 . ". The error was caused in the urlsequence: " . $this->errorInfo
@@ -1611,15 +1604,15 @@ class p2pCompany {
         $company = "marketplace";
         $position = stripos($file, 'companyCodeFiles');
         if ($position !== false) {
-            $substring = substr($file, $position+17);
+            $substring = substr($file, $position + 17);
             $company = explode(".", $substring)[0];
         }
         $dirFile = dirname(__FILE__);
         $this->logToFile("errorCurl", $this->tempArray['global']['error'], $dirFile);
-        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' .  $this->companyName,$errorDetailed, $line, $file, $this->errorInfo, WIN_ERROR_USER_INVESTMENT_DATA);
+        $this->classContainer->Applicationerror->saveAppError('ERROR Userinvestmentdata: detected in PFP id: ' . $this->companyName, $errorDetailed, $line, $file, $this->errorInfo, WIN_ERROR_USER_INVESTMENT_DATA);
         return $this->tempArray;
     }
-    
+
     /**
      * 	borrowed from "http://guid.us/"
      * 	Generates a GUID
@@ -1694,7 +1687,7 @@ class p2pCompany {
         }
         return $posFinal;
     }
-    
+
     /**
      * Function to download a file with multicurl
      * If the referer, credentials or headers are null, it will used from urlSequence, if false, it is not used
@@ -1706,9 +1699,9 @@ class p2pCompany {
      */
     public function getPFPFileMulticurl($url = null, $referer = null, $credentials = null, $headers = null, $fileName = null) {
 
-        /*echo "urls: ";
-        print_r($this->urlSequence);*/
-        
+        /* echo "urls: ";
+          print_r($this->urlSequence); */
+
         if (empty($url)) {
             $url = array_shift($this->urlSequence);
             //echo $pfpBaseUrl;
@@ -1720,15 +1713,15 @@ class p2pCompany {
         if ($credentials !== false && empty($credentials)) {
             $credentials = array_shift($this->urlSequence);
         }
-        
+
         if ($headers !== false && empty($headers)) {
             $headersJson = array_shift($this->urlSequence);
-            $headers = json_decode($headersJson,true);
+            $headers = json_decode($headersJson, true);
         }
 
         $this->errorInfo = $url;
         echo "File name is " . $fileName;
-        
+
         $pathCreated = $this->getFolderPFPFile();
         //echo 'Saving in: ' . $path . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
@@ -1738,8 +1731,8 @@ class p2pCompany {
             echo "Cannot create folder \n";
             //We should implement a method to fail
         }
-        
-        
+
+
         $this->fp = fopen($pathCreated . DS . $fileName, 'w');
         if (!$this->fp) {
             echo "Couldn't created the file \n";
@@ -1761,7 +1754,7 @@ class p2pCompany {
         }
 
         $request = new \cURL\Request();
-        
+
         if ($this->config['postMessage'] == true) {
             $request->getOptions()
                     ->set(CURLOPT_POST, true);
@@ -1781,16 +1774,16 @@ class p2pCompany {
             "idForSwitch" => $this->idForSwitch,
             "typeOfRequest" => "DOWNLOADFILE"
         ];
-        
+
         $request->_page = json_encode($info);
-        
-        if($credentials){
+
+        if ($credentials) {
             //set data to be posted
             $request->getOptions()
                     //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_POSTFIELDS, $credentials);
         }
-        
+
         $request->getOptions()
                 // Set the file URL to fetch through cURL
                 ->set(CURLOPT_URL, $url)
@@ -1818,7 +1811,7 @@ class p2pCompany {
         //Add the request to the queue in the classContainer controller
         $this->classContainer->addRequestToQueueCurls($request);
     }
-    
+
     /**
      * Download multiple files betwen two dates given a period.
      * Need for companies that take too long to download the historical, like bondora.
@@ -1827,40 +1820,38 @@ class p2pCompany {
      * @param int $datePeriod Duration of each period in days.
      * @return boolean
      */
-    public function downloadTimePeriod($dateMin, $datePeriod){         
+    public function downloadTimePeriod($dateMin, $datePeriod) {
 
-        if(empty($dateMin)){
+        if (empty($dateMin)) {
             $dateMin = "20090101";
         }
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
-        if( $this->numberOfFiles == 0){
-            $this->dateInitPeriod =  date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
-            if(date($this->dateInitPeriod) <= date($dateMin)){
-                $this->dateInitPeriod = date('Ymd',strtotime($dateMin)); //Condition for dont go a previus date than $dateMin;
+        if ($this->numberOfFiles == 0) {
+            $this->dateInitPeriod = date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
+            if (date($this->dateInitPeriod) <= date($dateMin)) {
+                $this->dateInitPeriod = date('Ymd', strtotime($dateMin)); //Condition for dont go a previus date than $dateMin;
             }
-            $this->dateFinishPeriod = date('Ymd',strtotime($this->dateFinish));
+            $this->dateFinishPeriod = date('Ymd', strtotime($this->dateFinish));
             //echo 'Date ' . $this->dateInitPeriod . " " . $this->dateFinishPeriod;
-            $this->numberOfFiles++; 
-        }
-        else {
-            $this->dateFinishPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -1 . " days"));//Next finish date will we the previous day of the last Init date
+            $this->numberOfFiles++;
+        } else {
+            $this->dateFinishPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -1 . " days")); //Next finish date will we the previous day of the last Init date
             $this->dateInitPeriod = date("Ymd", strtotime($this->dateInitPeriod . " " . -$datePeriod . " days"));
-            if(date($this->dateInitPeriod) < date($dateMin)){
+            if (date($this->dateInitPeriod) < date($dateMin)) {
                 $this->dateInitPeriod = date($dateMin); //Condition for dont go a previus date than $dateMin;
             }
             $this->numberOfFiles++;
-         }
-         /*echo "aassassa" . $this->dateInitPeriod . "_" . $dateMin;
-         echo "dasfs" . date("Ymd", $this->dateInitPeriod);
-         echo "jljhka" . date("Ymd",$dateMin);*/
-        if(date($this->dateInitPeriod) > date($dateMin)){
-            return true;   //Continue period download
         }
-        else {
+        /* echo "aassassa" . $this->dateInitPeriod . "_" . $dateMin;
+          echo "dasfs" . date("Ymd", $this->dateInitPeriod);
+          echo "jljhka" . date("Ymd",$dateMin); */
+        if (date($this->dateInitPeriod) > date($dateMin)) {
+            return true;   //Continue period download
+        } else {
             return false;  //End period download
         }
     }
-  
+
     /**
      * Transform an array amortization table to a html structure with <table> tag
      * array stricture
@@ -1881,7 +1872,7 @@ class p2pCompany {
      */
     function arrayToTableConversion($rows) {
         ob_start();
-        
+
         echo "<table>";
         foreach ($rows as $row) {
             echo "<tr>";
@@ -1900,10 +1891,10 @@ class p2pCompany {
         echo "</table>";
 
         $table = ob_get_clean();
-        
+
         return $table;
     }
-    
+
     /**
      * Compares two dom structures., attributes name and length 
      * 
@@ -1920,8 +1911,8 @@ class p2pCompany {
 
         //echo 'We have' . $node1->nodeName . ' and ' . $node2->nodeName . HTML_ENDOFLINE;
         //We verify if nodes has attributes
-        if(!$node1 && !$node2){
-            return  $this->sameStructure;
+        if (!$node1 && !$node2) {
+            return $this->sameStructure;
         }
         if ($node1->hasAttributes() && $node2->hasAttributes() && $this->sameStructure) {
             $node1Attr = $node1->attributes;
@@ -1980,50 +1971,50 @@ class p2pCompany {
                 $limitChildren = $childrenNode1->length;
 
                 for ($i = 0; $i < $limitChildren; $i++) {
-                    
-                    /*echo 'Children node 1: ' . $i . HTML_ENDOFLINE;
-                    var_dump($childrenNode1[$i]);
-                    echo 'Children node 2: ' . $i . HTML_ENDOFLINE;
-                    var_dump($childrenNode2[$i]);*/
-                                                
-                    if($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text"){ //Delete text nodes
-                        if($childrenNode1[$i]->nodeName == "#text"){
+
+                    /* echo 'Children node 1: ' . $i . HTML_ENDOFLINE;
+                      var_dump($childrenNode1[$i]);
+                      echo 'Children node 2: ' . $i . HTML_ENDOFLINE;
+                      var_dump($childrenNode2[$i]); */
+
+                    if ($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text") { //Delete text nodes
+                        if ($childrenNode1[$i]->nodeName == "#text") {
                             //echo 'Deleting text from node 1' . HTML_ENDOFLINE;
                             $childrenNode1[$i]->parentNode->removeChild($childrenNode1[$i]);
-                            array_values($childrenNode1);     
+                            array_values($childrenNode1);
                         }
-                        if($childrenNode2[$i]->nodeName == "#text"){
+                        if ($childrenNode2[$i]->nodeName == "#text") {
                             //echo 'Deleting text from node 2' . HTML_ENDOFLINE;           
-                            $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);      
+                            $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);
                             array_values($childrenNode2);
                         }
                         $i--;
                         continue;
                     }
 
-                    if($childrenNode1[$i]->nodeName == "#comment" || $childrenNode2[$i]->nodeName == "#comment"){ //Delete comment nodes  
+                    if ($childrenNode1[$i]->nodeName == "#comment" || $childrenNode2[$i]->nodeName == "#comment") { //Delete comment nodes  
                         //echo 'comment finded in i=' . $i . HTML_ENDOFLINE;
-                        if($childrenNode1[$i]->nodeName == "#comment"){
+                        if ($childrenNode1[$i]->nodeName == "#comment") {
                             //echo 'Deleting comment from node 1' . HTML_ENDOFLINE;
                             $childrenNode1[$i]->parentNode->removeChild($childrenNode1[$i]);
-                            array_values($childrenNode1);     
+                            array_values($childrenNode1);
                         }
-                        if($childrenNode2[$i]->nodeName == "#comment"){
+                        if ($childrenNode2[$i]->nodeName == "#comment") {
                             //echo 'Deleting comment from node 2' . HTML_ENDOFLINE;           
-                            $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);      
+                            $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);
                             array_values($childrenNode2);
                         }
                         $i--;
                         continue;
                     }
-                                        
+
                     if (!$childrenNode1[$i] && $childrenNode2[$i]) { //First we verify if node exist
                         echo 'Node1 doesnt exist, child' . $i . ': <br>';
                         echo 'parent => ' . $childrenNode1[$i]->parentNode->nodeName . ' of ' . $childrenNode1[$i]->nodeName . ' value ' . $childrenNode1[$i]->nodeValue . '<br>';
-                        echo 'parent => '  . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';
+                        echo 'parent => ' . $childrenNode2[$i]->parentNode->nodeName . ' of ' . $childrenNode2[$i]->nodeName . ' value ' . $childrenNode2[$i]->nodeValue . '<br>';
 
                         $this->sameStructure = false;
-                    } else if($childrenNode1[$i] && !$childrenNode2[$i]){
+                    } else if ($childrenNode1[$i] && !$childrenNode2[$i]) {
                         echo 'Node2 doesnt exist, child' . $i . ': <br>';
                         echo $childrenNode1[$i]->parentNode->nodeName . ' ' . $childrenNode1[$i]->nodeName . ' is 1' . $childrenNode1[$i]->nodeValue . '<br>';
                         echo $childrenNode2[$i]->parentNode->nodeName . ' ' . $childrenNode2[$i]->nodeName . ' is 2' . $childrenNode2[$i]->nodeValue . '<br>';
@@ -2037,13 +2028,13 @@ class p2pCompany {
 
                     $this->verifyDomStructure($childrenNode1[$i], $childrenNode2[$i], $uniquesElement, $limit);
                 }
-            } /*else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
-                echo 'Node has attr error 2';
-                $this->sameStructure = false;
-            } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
-                echo 'Node has attr error 2';
-                $this->sameStructure = false;
-            }*/
+            } /* else if (!$node1->hasChildNodes() && $node2->hasChildNodes()) {
+              echo 'Node has attr error 2';
+              $this->sameStructure = false;
+              } else if ($node1->hasChildNodes() && !$node2->hasChildNodes()) {
+              echo 'Node has attr error 2';
+              $this->sameStructure = false;
+              } */
         }
         return $this->sameStructure;
     }
@@ -2111,10 +2102,11 @@ class p2pCompany {
 
     function cleanDomTagNotFirst($dom, $elementsToDelete) { //CLEAR A TAG
         foreach ($elementsToDelete as $element) {
-            $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);           
-            foreach ($nodes as $key=>$node) {
-                if($key === 0) continue;
-                    $node->parentNode->removeChild($node);
+            $nodes = $this->getElementsToClean($dom, $element["typeSearch"], $element["tag"], $element['attr'], $element["value"]);
+            foreach ($nodes as $key => $node) {
+                if ($key === 0)
+                    continue;
+                $node->parentNode->removeChild($node);
             }
         }
         return $dom;
@@ -2146,7 +2138,7 @@ class p2pCompany {
         }
         return $elements;
     }
-     
+
     /**
      * 
      * 
@@ -2298,25 +2290,24 @@ class p2pCompany {
         }
         return [$structureRevision, $break, $type];
     }
-    
-    
+
     /**
      * Search in the pfp marketplace the winvestify marketplace loan id. If we find it we can delete from the array.
      * The array will contain the deleted/hidden invesment that we cant update from the pfp marketplace.
      * @param array $loanReferenceList loan reference id list that we have in our marketplace
      * @param array $investment single investment that we compare
      */
-    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList,$investment){  
-         foreach($loanReferenceList as $key => $winvestifyMarketplaceLoanId){
-            if($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']){
+    public function marketplaceLoanIdWinvestifyPfpComparation($loanReferenceList, $investment) {
+        foreach ($loanReferenceList as $key => $winvestifyMarketplaceLoanId) {
+            if ($winvestifyMarketplaceLoanId == $investment['marketplace_loanReference']) {
                 echo 'Loan finded, deleting from array' . HTML_ENDOFLINE;
-                unset($loanReferenceList[$key]); 
+                unset($loanReferenceList[$key]);
             }
         }
-        
+
         return $loanReferenceList;
     }
-    
+
     /**
      * Function to get the stream open when we download a file
      * @return function fopen It is the stream opened when download a file
@@ -2324,7 +2315,7 @@ class p2pCompany {
     public function getFopen() {
         return $this->fp;
     }
-    
+
     /**
      * Function to set the stream open or close
      * @param fopen $fp It is the stream fopen
@@ -2332,7 +2323,7 @@ class p2pCompany {
     public function setFopen($fp) {
         $this->fp = $fp;
     }
-    
+
     /**
      * Function to get the extension for the files downloaded for a PFP company
      * @return string It is the extension of the file
@@ -2349,7 +2340,7 @@ class p2pCompany {
         $this->typeFileTransaction = $typeFileTransaction;
         $this->typeFileInvestment = $typeFileInvestment;
     }
-    
+
     function setTypeFileTransaction($typeFileTransaction) {
         $this->typeFileTransaction = $typeFileTransaction;
     }
@@ -2361,7 +2352,7 @@ class p2pCompany {
     function setTypeFileAmortizationtable($typeFileAmortizationtable) {
         $this->typeFileAmortizationtable = $typeFileAmortizationtable;
     }
-    
+
     /**
      * Function to get the base url of a PFP company
      * @return string It is the base url
@@ -2409,7 +2400,7 @@ class p2pCompany {
     function setCompanyName($companyName) {
         $this->companyName = $companyName;
     }
-    
+
     /**
      * Function to get the linkaccount id of the petition
      * @return integer It is the linkaccount id
@@ -2425,7 +2416,7 @@ class p2pCompany {
     function setLinkAccountId($linkAccountId) {
         $this->linkAccountId = $linkAccountId;
     }
-    
+
     /**
      * Function to get all the loanIds which amortization table will be downloaded
      * @return array Contain all the loan ids
@@ -2458,7 +2449,7 @@ class p2pCompany {
     function setDateFinish($dateFinish) {
         $this->dateFinish = $dateFinish;
     }
-    
+
     function setOriginExecution($originExecution) {
         $this->originExecution = $originExecution;
     }
@@ -2467,30 +2458,14 @@ class p2pCompany {
         return $this->callbacks;
     }
 
-            
-    
+    /**
+     * 
+     * 
+     * Callback functions required for Dashboard 2. The companycodeFile class can override these methods
+     * 
+     */
 
-    
-
-
-
-
-
-
-
-
-
-/** 
- * 
- * 
- * Callback functions required for Dashboard 2. The companycodeFile class can override these methods
- * 
- */
-
-    
-    
-    
-    /** 
+    /**
      * Callback function for Dashboard 2.  
      * The companycodeFile class can override these methods.
      * These callback also exist in case the platform does not support xls/csv file download and the information
@@ -2504,13 +2479,12 @@ class p2pCompany {
      * @param array $fileContentArray    The array which contains the result of the parsing of the downloaded file
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
-     */   
+     */
     public function fileAnalyzed($fileName, $typeOfFile, array &$fileContentArray) {
         return true;
     }
 
-
-    /** 
+    /**
      * Callback function for Dashboard 2.  
      * The system is ready to construct the list of new amortization tables to be downloaded. The default
      * algorithm is to go through the list of indices of $fileContents( = loanId) and check one by one if an entry 
@@ -2522,13 +2496,12 @@ class p2pCompany {
      * @param string $typeOfFile    the type of file was analyzed, CASHFLOW_FILE, INVESTMENT_FILE, TRANSACTIONTABLE_FILE,.etc.etc
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
      * @return  array   list of loanId's to be downloaded
-     */ 
-    public function beforeAmortizationlist(array $fileContent){
-         return ;   
+     */
+    public function beforeAmortizationlist(array $fileContent) {
+        return;
     }
 
-    
-    /** 
+    /**
      * Callback function for Dashboard 2.  
      * The system has constructed the list of amortization tables to be downloaded. 
      * This callback is only called if one or more amortizationtable(s) need(s) to be downloaded. 
@@ -2537,13 +2510,12 @@ class p2pCompany {
      * 
      * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
      * @return ??
-     */ 
-    public function afterAmortizationlist(array $amortizationTables){
-         return ;   
-    }    
-    
+     */
+    public function afterAmortizationlist(array $amortizationTables) {
+        return;
+    }
 
-    /** 
+    /**
      * Callback function for Dashboard 2.  
      * All the amortization tables have been downloaded and analyzed and are available in array $amortizationTables. 
      * No processing of the table(s) has yet been done.
@@ -2552,11 +2524,10 @@ class p2pCompany {
      *                                     the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
-     */ 
+     */
     public function amortizationTablesDownloaded(array $amortizationTables) {
         return true;
     }
-
 
     /** PROBABLY NOT NEEDED
      * Callback function for Dashboard 2. 
@@ -2566,12 +2537,12 @@ class p2pCompany {
      * @param string $loanStatus    Contains the data of the amortization tables. Main index is the loanId
      * @return  boolean true    All OK, continue with execution
      *                  false   Error Detected, Stop execution 
-     */ 
+     */
     public function normalizeLoanStatus($loanStatus) {
         return $loanStatus;
     }
 
-    /** 
+    /**
      * Callback function for Dashboard 2. 
      * The main flow loops through all new loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan rate 
@@ -2579,12 +2550,12 @@ class p2pCompany {
      * @param string    Contains the data of the amortization tables. Main index is the loanId
      * @return  integer     Loan rate as defined by Winvestify
      *                 
-     */ 
+     */
     public function normalizeLoanRate($loanRate) {
         return $loanRate;
     }
 
-    /** 
+    /**
      * Callback function for Dashboard 2.  
      * The main flow loops through all the active loans in which the investor has invested during this data reading period
      * and will calculate the Winvestify normalized loan duration 
@@ -2593,16 +2564,13 @@ class p2pCompany {
      *                                  the loanId
      * @return  array $duration  $duration['value']
      *                           $duration['unit']   
-     */ 
+     */
     public function normalizeLoanDuration($durationString) {
- 
-        return ;
+
+        return;
     }
 
-
-       
-    
-    /** 
+    /**
      * Callback functions required for Dashboard 2. 
      * The table was downloaded in pdf format and its content is available as pure text. This must be converted to
      * html <table> format
@@ -2611,16 +2579,15 @@ class p2pCompany {
      *                                  the loanId
      * @return  boolean  true   All Ok
      *                   false  An error has occurred during the processing
-     */ 
+     */
     public function amortizationTableDownloaded($contentsString) {
-        
-    
-        
-        return ;
-    }    
-    
-    
-    /** 
+
+
+
+        return;
+    }
+
+    /**
      * Callback functions required for Dashboard 2. 
      * The amortization table has been analyzed 
      * 
@@ -2628,35 +2595,32 @@ class p2pCompany {
      *                                  the loanId
      * @return  boolean  true   All Ok
      *                   false  An error has occurred during the processing 
-     */ 
+     */
     public function amortizationTableAnalyzed(array $table) {
-        return ;
-    }    
-  
-    
-    /** 
+        return;
+    }
+
+    /**
      * Read transaction configuration file
      *     
      * @return  array with configuration parameters
      *              getParserConfigTransactionFile
-     */    
+     */
     public function getParserConfigTransactionFile() {
         return $this->valuesTransaction;
     }
-  
-    
-    /** 
+
+    /**
      * Read extended transaction configuration file
      *     
      * @return  array with configuration parameters
      *              
-     */    
+     */
     public function getParserConfigExtendedTransactionFile() {
         return $this->valuesExtendedTransaction;
-    }    
-    
-    
-     /** 
+    }
+
+    /**
      * Read investment configuration file
      *     
      * @return  array with configuration parameters
@@ -2665,8 +2629,8 @@ class p2pCompany {
     public function getParserConfigInvestmentFile() {
         return $this->valuesInvestment;
     }
-    
-    /** 
+
+    /**
      * Read expiredloan configuration file
      *     
      * @return  array with configuration parameters
@@ -2674,61 +2638,59 @@ class p2pCompany {
      */
     public function getParserConfigExpiredLoanFile() {
         return $this->valuesExpiredLoan;
-    }   
-    
-    /** 
+    }
+
+    /**
      * Read amortizationtable configuration file
      *     
      * @return  array with configuration parameters
      * 
-     */    
+     */
     public function getParserConfigAmortizationTableFile() {
         return $this->valuesAmortizationTable;
-    }  
-    
-    
-    /** 
+    }
+
+    /**
      * Read configuration parameters for the transaction configuration
      *     
      * @return  array with configuration parameters
      * 
-     */    
+     */
     public function getParserTransactionConfigParms() {
         return $this->transactionConfigParms;
     }
 
-    /** 
+    /**
      * Read configuration parameters for the extended transaction configuration
      *     
      * @return  array with configuration parameters
      * 
-     */    
+     */
     public function getParserExtendedTransactionConfigParms() {
         return $this->extendedTransactionConfigParms;
     }
 
-    /** 
+    /**
      * Read configuration parameters for the expiredLoan configuration
      *     
      * @return  array with configuration parameters
      * 
-     */             
+     */
     public function getParserExpiredLoanConfigParms() {
         return $this->expiredLoanConfigParms;
-    }    
-    
-    
-    /** 
+    }
+
+    /**
      * Read configuration parameters for the investment configuration
      *     
      * @return  array with configuration parameters
      * 
-     */    
+     */
     public function getParserInvestmentConfigParms() {
         return $this->investmentConfigParms;
     }
-    
-    /** 
+
+    /**
      * Read configuration parameters for the amortizationtable configuration
      *     
      * @return  array with configuration parameters
@@ -2736,13 +2698,8 @@ class p2pCompany {
      */
     public function getParserAmortizationConfigParms() {
         return $this->amortizationConfigParms;
-    }     
-    
-    
-    
-    
-    
-    
+    }
+
     /**
      * Function to start the casper object
      * @param string $url It is the url where casper open initially
@@ -2758,7 +2715,7 @@ class p2pCompany {
         // navigate to login web page
         $this->casperObject->start($url);
     }
-    
+
     /**
      * Function to wait for an element to appear for a determined time when open a url 
      * @param string $element It is the element to wait for
@@ -2767,26 +2724,26 @@ class p2pCompany {
     public function casperWaitSelector($element, $time) {
         $this->casperObject->waitForSelector($element, $time);
     }
-    
+
     /**
      * Function to fill a form
      * @param string $element It is the form element
      * @param array $fillFormArray They are all the elements which needed to be filled
      * @param boolean $submit If it's true, the form is filled and submitted
      */
-    public function casperFillForm ($element, $fillFormArray, $submit = false) {
+    public function casperFillForm($element, $fillFormArray, $submit = false) {
         $this->casperObject->fillForm(
                 $element, $fillFormArray, $submit);
     }
-    
+
     /**
      * Function to click an element
      * @param string $element It is the element to click
      */
-    public function casperClick ($element) {
+    public function casperClick($element) {
         $this->casperObject->click($element);
     }
-    
+
     /**
      * Function to insert a fragment with casperjs code when the wrapper do not give options to accomplish our way in
      * @param FRAGMENT $fragment It is the casperjs code inside a FRAGMENT code
@@ -2797,7 +2754,7 @@ $fragment
 FRAGMENT
         );
     }
-    
+
     /**
      * Function to wait for a determined amount of time
      * @param integer $time It is the time we wait in microseconds 
@@ -2805,18 +2762,18 @@ FRAGMENT
     public function casperWait($time) {
         $this->casperObject->wait($time);
     }
-    
+
     /**
      * Function to run the code we wrote
      */
     public function casperRun() {
         $this->casperObject->run();
     }
-    
+
     public function casperSendKey($input, $str) {
         $this->casperObject->sendKeys($input, $str);
     }
-    
+
     /**
      * Function to return the content of the webpage on that moment
      * @return string It is the content of the url at the moment we call the function
@@ -2824,7 +2781,7 @@ FRAGMENT
     public function casperGetContent() {
         return $this->casperObject->getCurrentPageContent();
     }
-    
+
     public function casperDownloadFile() {
         //Needed to read documentation
         //https://stackoverflow.com/questions/32697172/download-csv-after-clicking-link-using-casperjs
@@ -2832,7 +2789,7 @@ FRAGMENT
         //https://stackoverflow.com/questions/16144252/downloading-a-file-that-comes-as-an-attachment-in-a-post-request-response-in-pha/31124037#31124037
         //http://docs.casperjs.org/en/latest/modules/casper.html#download
     }
-    
+
     public function copyFile($file, $newFile) {
         $created = true;
         if (!copy($file, $newFile)) {
@@ -2840,7 +2797,7 @@ FRAGMENT
         }
         return $created;
     }
-    
+
     /*     * Function to compare header of the downloaded file of the pfps.
      * 
      * @return boolean true if header is different, false if is the same.
@@ -2887,7 +2844,7 @@ FRAGMENT
         echo "Warning";
         return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
     }
-    
+
     /**
      * Function to set a table Structure for a company from database
      * @param string $tableStructure It is the table structure to compare
@@ -2896,39 +2853,36 @@ FRAGMENT
         $this->tableStructure = $tableStructure;
     }
 
-
-    
     /**
      * Function to create a new loanIds.json with the amortizationTables that failed
      * and rename the old file loanIds to oldIdsLoan
      */
     public function verifyErrorAmortizationTable() {
-        $path = $this->getFolderPFPFile();
-        $oldFilePath = $path . DS . "oldLoanIds.json";
-        $filePath = $path . DS . "loanIds.json";
+
         echo "goods";
         print_r($this->tempArray['correctTables']);
         echo "bads";
         print_r($this->tempArray['errorTables']);
 
-        if (!empty($this->tempArray['correctTables'])) {
-            $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
-            $jsonIds = json_encode($this->tempArray['correctTables']);
+        if (!empty($this->tempArray['errorTables'])) {
+            $path = $this->getFolderPFPFile();
+            $oldFilePath = $path . DS . "oldLoanIds.json";
+            $filePath = $path . DS . "loanIds.json";
+
+            if (!empty($this->tempArray['correctTables'])) {
+                $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
+                $jsonIds = json_encode($this->tempArray['correctTables']);
+                fwrite($idsJsonFile, $jsonIds);
+                fclose($idsJsonFile);
+            }
+
+            unlink($filePath);
+            $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+            $jsonIds = json_encode($this->tempArray['errorTables']);
             fwrite($idsJsonFile, $jsonIds);
             fclose($idsJsonFile);
         }
-        
-        if (empty($this->tempArray['errorTables'])) {
-            $this->tempArray['errorTables'] = json_encode(array());
-        }
-
-        unlink($filePath);
-        $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
-        $jsonIds = json_encode($this->tempArray['errorTables']);
-        fwrite($idsJsonFile, $jsonIds);
-        fclose($idsJsonFile);
     }
-
 }
 ?>
 

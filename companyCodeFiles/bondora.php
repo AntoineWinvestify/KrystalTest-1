@@ -372,68 +372,7 @@ class bondora extends p2pCompany {
         'H' => 'BalanceAfterPayment'
     );
     
-    protected $tableStructure = '<table class="table" style="margin-top: 10px;"><tbody><tr><th colspan="2">Date</th>
-                                <th>Amount</th>
-                                <th>Principal</th>
-                                <th>Interest</th>
-                                <th>Late charge</th>
-                            </tr><tr class="past green"><td colspan="2">
-                                            07/01/2016
-                                        </td>
-                                    <td>
-                                        1.87&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.47&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        1.4&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr><tr class="past green"><td colspan="2">
-                                            08/02/2016
-                                        </td>
-                                    <td>
-                                        1.37&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.48&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.89&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr><tr class="past green"><td colspan="2">
-                                            07/03/2016
-                                        </td>
-                                    <td>
-                                        1.37&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.49&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.88&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr><tr class="past green"><td colspan="2">
-                                            06/04/2016
-                                        </td>
-                                    <td>
-                                        1.38&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.5&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                        0.88&acirc;&#130;&not;
-                                    </td>
-                                    <td>
-                                    </td>
-                                </tr></tbody></table>';
+   
     
     
     function __construct() {
@@ -1294,7 +1233,6 @@ class bondora extends p2pCompany {
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
                     break;
                 } else {
-                    $this->verifyErrorAmortizationTable();
                     return $this->tempArray;
                 }
         }
