@@ -159,10 +159,9 @@ class ParseDataClientShell extends GearmanClientShell {
                             'userReference' => $job['Queue']['queue_userReference'],
                             'controlVariableFile' => $controlVariableFile[0],
                             'files' => $files,
-                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
-                            'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId]
-                //            'actionOrigin' => $this->queueInfo[$job['Queue']['id']]['originExecution'],
+                            'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
+                            'actionOrigin' => $this->queueInfo[$job['Queue']['id']]['originExecution'],
                         );
                     }
                     debug($params);
@@ -294,10 +293,6 @@ $tempMeasurements = array(
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
-
-        
-        
-        
         
 // Deal with empty transaction record    
         if (isset($platformData['parsingResultTransactions'])) {
@@ -318,10 +313,6 @@ $tempMeasurements = array(
             }
         }
        
-    
-    
-    
-    
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
@@ -495,7 +486,7 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
                         break;
                     }   
                 } 
-                else {  // Already an existing loan
+                else {  // Already a loan which exists in our database, can be in any state
                     $filterConditions = array("investment_loanId" => $keyDateTransaction,
                                                 "linkedaccount_id" => $linkedaccountId);
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
@@ -504,8 +495,8 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
                         "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan"));
  
                     $investmentId = $tempInvestmentData[0]['Investment']['id'];
-                    if (empty($investmentId)) {         // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
-                                                        // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
+                    if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
+                                                    // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
 
 echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
 echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";

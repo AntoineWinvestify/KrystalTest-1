@@ -99,6 +99,8 @@ class Fileparser {
                             );
 
     protected $errorData = array();                                 // Contains the information of the last occurred error
+    
+    protected $defaultFinishDate;
 
     protected $currencies = array(EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
@@ -251,7 +253,6 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "concept17"  
                 ],
-
             19 => [
                 "detail" => "Recoveries",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
@@ -283,10 +284,10 @@ class Fileparser {
                 "type" => "concept23"
                 ],           
             24 => [
-                "detail" => "currency_exchange_fee",
+                "detail" => "Payment_currency_exchange_fee",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept24"
+                "type" => "payment_currencyExchangeFee"
                 ],
             25 => [
                 "detail" => "currency_fluctuation_negative",
@@ -310,7 +311,7 @@ class Fileparser {
                 "detail" => "Write-off",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept28"
+                "type" => "investment_writtenOff"
                 ],
             29 => [
                 "detail" => "Registration",
@@ -342,6 +343,24 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "concept33"
                 ], 
+            34 => [
+                "detail" => "Default interest income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "DefaultInterestIncome"
+                ],        
+        
+  
+ 
+    dfefault interest income should be in globalcashflow table
+
+30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
+Currency exchange fee	FX commission with Exchange Rate:    
+    
+           
+        
+        
+        
         
             // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
             // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
@@ -371,10 +390,22 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "cancelledStateChange",
-                ]       
+                ],       
         
+            104 => [
+                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFunds",
+                ],
         
-        
+    /*         105 => [
+                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFundsNoImpactCashInPlatform",
+                ]  
+     */       
         
         ];
 
@@ -774,7 +805,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
        
         $i = 0;
         $outOfRange = false;
-
         foreach ($rowDatas as $rowData) {
             foreach ($values as $key => $value) {
                 $previousKey = $i - 1;
@@ -841,7 +871,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
-                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                    $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];     
                     $tempArray[$sortParam1][] = $tempArray[$i];
                     unset($tempArray[$i]); 
                 break; 
@@ -854,13 +884,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 break;               
             }
             $i++;
+            
         }
-        
-    if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
-        return(array_reverse($tempArray));
-    }
-
-    return $tempArray;    
+        if ($this->config['changeCronologicalOrder'] == YES) {                      // inverse the order of the records
+            return(array_reverse($tempArray));
+        }
+        return $tempArray;    
     }
 
 
@@ -962,7 +991,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     public function setConfig($configurations)  {
-
+        
         foreach ($configurations as $configurationKey => $configuration) {
             $this->config[$configurationKey] = $configuration;          // avoid deleting already specified config parameters
         }
@@ -1805,6 +1834,19 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $csv = fopen($filePath, "w+");   //Rewrite old csv
             fwrite($csv,$csvString);
             fclose($csv);
+    }
+    
+    function setDefaultFinishDate($defaultFinishDate) {
+        $defaultFinishDate = date("Y-m-d", strtotime($defaultFinishDate));
+        $this->defaultFinishDate = $defaultFinishDate;
+    }
+    
+    function getDefaultDate($input, $defaultValue) {
+        return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
+    }
+    
+    public function cleanConfig($config) {
+        $this->config = $config;
     }
     
 }

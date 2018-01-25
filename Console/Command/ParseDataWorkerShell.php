@@ -128,7 +128,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');    
         
         $platformData = json_decode($job->workload(), true);
-
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
@@ -143,7 +142,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             // First analyze the transaction file(s)
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
-
+            $this->myParser->setDefaultFinishDate($this->finishDate);
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
@@ -289,104 +288,35 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                 $totalParsingresultTransactions[$loanId][100]['date'] = $key;
                                 $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
                                 $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";
+                                unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
                             }
                             if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                                unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
-                            }
+                            } 
                         }
+                    }
+                    // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
 
+                    $this->array_keys_recursive($myArray, 4, "internalName", "disinvestment");
+                    $foundArrays = $this->getlevel();
+                    print_r($foundArrays);
+                    if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
+                        echo "some error occurred in PFP, but we will mark all Ghosts";
+                    }
 
-                        //modify disinvestment (add investment_loanId) transaction record and its index (=loanId)
-                        // ALL THE LOANS IDS IN RESERVED WHICH CANNOT BE FOUND IN FINISHED OR ACTIVE (OR WRITTEN OFF) 
-                        // ARE CONSIDERED GHOST LOANS, OR CANCELLED. SO GENERATE STATECHANGE RECORD TODAY (FIRST DAY OF 
-                        // READING PERIOD
-                        $this->array_keys_recursive($myArray, 4, "investment_loanId", "global_");
-                        $foundArrays = $this->filteredArray;
-                        print_r($foundArrays);
-
-                        foreach ($foundArrays as $key => $levels) {
-                            $testingIndex = "";
-                            array_pop($levels);
-
-                            foreach ($levels as $level) {
-                                $testingIndex = $testingIndex . "['" . $level . "']";
-                            }
-                            $arrayString =  "\$myArray$testingIndex" ;
-
-                            eval("\$result = &$arrayString;");
-                            print_r($result);
-                            if (!isset($result['investment_loanId'])) {
-                                $result['investment_loanId'] = $loanId;
-                                echo "Disinvestment found for LoanId = $loanId\n";
-            //                    eval("\$result2 = $arrayString;");
-            //                    print_r($result2);   
-                            }
-                        }     
-                    }  
+                    foreach ($foundArrays as $key => $levels) {
+                        $loan = array_pop($data['listOfReservedInvestments']);
+                        $myArray[$levels[0]][$loan][$levels[2]] = $myArray[$levels[0]][$levels[1]][$levels[2]];
+                        $myArray[$levels[0]][$loan][0]['investment_loanId'] = $loan;
+                        unset($myArray[$levels[0]][$loan][0]['amount']);
+                        unset($myArray[$levels[0]][$levels[1]]);                       
+                    } 
                 }     
-            }
-          
-/*   
-            $loanData[$date][$loanid]['0'][['date'] = ;
-            $loanData[$date][$loanid]['0'][['investment_loanId'] = ;
-            $loanData[$date][$loanid]['0'][['internalName'] = ;
-            $loanData[$date][$loanid]['0'][['amount'] = ;        
+            }     
         }
         
-        [2017-02-01]
-                [1691352-01] => Array
-                      (
-                          [0] => Array
-                              (
-                                  [transaction_transactionId] => 197424741
-                           *      [date] => 2017-10-17
-                           *      [investment_loanId] => 1691352-01
-                                  [original_concept] => Investment principal increase 
-                           *      [internalName] => investment_myInvestment
-                           *      [amount] => 36.01
-                                  [transaction_balance] => 42.999158907555
-                                  [currency] => 1
-                              )
-
-                      )
-        
-            3 => [
-                "detail" => "Primary_market_investment",
-                "transactionType" => WIN_CONCEPT_TYPE_COST,
-                "account" => "Capital",
-                "type" => "investment_myInvestment",  
-                "chars" => "AM_TABLE"
-                ],
-*/           
-            
-            
-      
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-        }
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
@@ -583,8 +513,8 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     public function getMultipleFilesData($filesByType, $parserConfigFile, $configParameters) {
         $filesJoinedByParts = $this->joinFilesByParts($filesByType);
         //If exit this key in the array, it is a multi variable files data an it has that in the first key of the array
-        if (in_array("fileConfigParam")) {
-            $orderParam = array_slice($configParameters, 0);
+        if (array_key_exists("fileConfigParam", $configParameters)) {
+            $orderParam = array_slice($configParameters, 0,1);
         }
         $i = 0;
         $arrayByType = [];
@@ -600,12 +530,20 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
                     //An array is necessary 
                     $tempResult = $this->getMultipleSheetData($file, $parserConfigFile[$i], $configParameters[$i]);
                 }
-                $arrayByType[$i] = array_merge($arrayByType[$i], $tempResult);
+                $arrayByType[$i] = $arrayByType[$i] + $tempResult;
             }
+            $this->callbackInit($arrayByType[$i], $companyHandle, $configParameters[$i]["callback"]);
             $i++;
         }
         if (!empty($orderParam)) {
-            $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
+            if ($orderParam['fileConfigParam']['type'] == "joinTogether") {
+                //This function comes from the config parameter in the company
+                $function = $orderParam['fileConfigParam']['function'];
+                $tempResultOrdered = $this->$function($arrayByType, $orderParam);
+            }
+            else {
+                $tempResultOrdered = $this->resultOrdering($arrayByType, $orderParam);
+            }
         }
         else {
             $tempResultOrdered = $arrayByType[0];
@@ -622,6 +560,14 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @return array
      */
     public function getSimpleSheetData($file, $parserConfigFile, $configParameters) {
+        $config = array (
+            'offsetStart' => 0,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => "",
+            'changeCronologicalOrder' => 0
+        );
+        $this->myParser->cleanConfig($config);
         $this->myParser->setConfig($configParameters);
         $extension = $this->getExtensionFile($file);
         $tempResult = $this->myParser->analyzeFile($file, $parserConfigFile, $extension);     // if successfull analysis, result is an array with loanId's as index
@@ -645,7 +591,15 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      */
     public function getMultipleSheetData($file, $parserConfigFile, $configParameters) {
         $orderParam = array_shift($configParameters);
-        foreach ($configParameters as $key => $individualConfigParameters) {       
+        foreach ($configParameters as $key => $individualConfigParameters) {     
+            $config = array (
+                'offsetStart' => 0,
+                'offsetEnd'     => 0,
+                'separatorChar' => ";",
+                'sortParameter' => "",
+                'changeCronologicalOrder' => 0
+            );
+            $this->myParser->cleanConfig($config);
             $this->myParser->setConfig($individualConfigParameters);
             $tempResult[] = $this->myParser->analyzeFileBySheetName($file, $parserConfigFile[$key]);     // if successfull analysis, result is an array with loanId's as index
             if (empty($tempResult)) {
@@ -669,22 +623,56 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @return array
      */
     public function resultOrdering($tempArray, $orderParam) {
-        $countSortParameters = count($this->config['sortParameter']);
+        $countSortParameters = count($orderParam);
         switch ($countSortParameters) {
             case 1:
-                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];      
+                $sortParam1 = $tempArray[$i][$orderParam[0]];      
                 $tempArray[$sortParam1][] = $tempArray[$i];
                 unset($tempArray[$i]); 
             break; 
 
             case 2:
-                $sortParam1 = $tempArray[$i][$this->config['sortParameter'][0]];
-                $sortParam2 = $tempArray[$i][$this->config['sortParameter'][1]];        
+                $sortParam1 = $tempArray[$i][$orderParam[0]];
+                $sortParam2 = $tempArray[$i][$orderParam[1]];        
                 $tempArray[$sortParam1][$sortParam2][] = $tempArray[$i];
                 unset($tempArray[$i]);
             break;               
         }
         return $tempArray;
+    }
+    
+    /**
+     * Join together two or more arrays with the same keys
+     * @param array $array It is an array of arrays
+     * @param array $orderParam With orderParams if needed
+     */
+    public function joinTwoDimensionArrayTogether($array, $orderParam) {
+        $numberArrays = count($array);
+        $fullArray = array_shift($array);
+        foreach ($array as $arrayKey => $tempArray) {
+            foreach ($tempArray as $dateKey => $dateArray) {
+                foreach ($dateArray as $loanIdKey => $loanId) {
+                    foreach ($loanId as $keyVariable => $variable) {
+                        $fullArray[$dateKey][$loanIdKey][] = $variable;
+                    }
+                }
+            }
+        }
+        return $fullArray;
+    }
+    
+    public function joinOneDimensionArrayTogether($array, $orderParam) {
+        $numberArrays = count($array);
+        $fullArray = array_shift($array);
+        foreach ($array as $arrayKey => $tempArray) {
+            foreach ($tempArray as $loanKeyId => $loanId) {
+                foreach ($loanId as $keyVariable => $variable) {
+                     $fullArray[$loanKeyId][] = $variable;
+                }
+               
+            }
+        }
+        return $fullArray;
     }
     
     /**

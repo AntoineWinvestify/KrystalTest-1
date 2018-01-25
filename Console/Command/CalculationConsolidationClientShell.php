@@ -142,10 +142,10 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                
                 // before calling the method you should download all amortization tables and store them in the database (Flow 3A and 3B)
  echo "Calling consolidateData\n";
-    //            $this->consolidateData($params);
+                $this->consolidateData($params);
  echo "Calling consolidatePaymentDelay\n";               
                 $this->consolidatePaymentDelay($params);
-                exit;
+                
                 $this->verifyStatus(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, "Amortization tables succesfully stored", WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
 
 
@@ -207,14 +207,14 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 
     /** FLOW 3C
      * This method writes the 'nextPaymentDateTech' in the investment object. 
-     * This is done for ** the loanIds/loanslices whose amortization tables
-     * are stored in the directory currently under processing. These files are of
-     * format amortizationtable_[investmentslice_id][loanId].html 
+     * This is done for the loanIds/loanslices whose amortization tables
+     * are stored in the directory currently under processing. 
+     * These files are of format:  amortizationtable_[investmentslice_id][loanId].html 
      * example: amortizationtable_120665_13730-01.html
      * 
      * Check each of them and writes the next payment date in the investment table.
      * 
-     *  @param  $array          Array which holds the list of identifiers of the active loans
+     *  @param  $array          Array which holds global data of the P2P
      *
      *  @return boolean 
      *
@@ -233,7 +233,7 @@ $timeStart = time();
                 $loanDataId[] = $nameIdData;
             }
 
-            foreach ($loanDataId as $loanId) { // chunking is required
+            foreach ($loanDataId as $loanId) { 
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
@@ -241,7 +241,7 @@ $timeStart = time();
                                                                            'recursive' => 1)
                                                                         );
 
-                $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search bsckwards in amortization table
+                $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
 
                 foreach ($reversedData as $table) {
                     if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE || 
@@ -272,7 +272,7 @@ echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      * This method scans through *ALL* active loans per P2P of an investor and calculates the number of days of 
      * payment delay. The result is written in the investment model object.
      *  
-     *  @param  $array      Array which holds the list of identifiers of the active loans
+     *  @param  $array      Array which holds global data of the P2P
      *  @return boolean
      *
      */
@@ -282,8 +282,6 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
- //print_r($linkedAccount);
-         
             $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
                                                       'linkedaccount_id'  => $linkedAccountKey
                                               ));
@@ -304,7 +302,6 @@ $timeStart = time();
                 if (count($result) < $limit) {          // No more results available
                     $controlIndex = 1;
                 }
- //              print_r($result);
                 
                 $today = strtotime($linkedAccount['finishDate']);
                 
@@ -332,5 +329,4 @@ $timeStop = time();
 echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         return true;
     }    
-     
 }
