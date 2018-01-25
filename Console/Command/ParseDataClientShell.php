@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -320,7 +320,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2017-0 7-23"){ 
+if ($dateKey == "2016-01- 12"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -343,7 +343,7 @@ $myArray = array ('finished' => $FINISHED_ACCOUNT,
             'countWorkingNewLoans' => count($platformData['workingNewLoans']),
             'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
         );
-    file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
+    file_put_contents("/home/antoiba/controlData6.json", json_encode(($myArray)));
     exit;
 }
 
@@ -648,7 +648,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 }   
                 
 // Now start consolidating of the results on investment level and per day                
-                $internalVariableToHandle = array(37, 10004);
+                $internalVariableToHandle = array(10014, 10015, 37, 10004);
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
