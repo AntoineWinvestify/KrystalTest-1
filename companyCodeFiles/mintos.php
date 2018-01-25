@@ -596,7 +596,13 @@ class mintos extends p2pCompany {
             'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
             );
      
-     
+      protected $expiredLoansHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
+            'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 
+            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Term', 'L' => 'Payments Received', 'M' => 'Status', 
+            'N' => 'Buyback Guarantee', 'O' => 'My Investments', 'P' => 'Date of Purchase' , 'Q' => 'Received Payments', 
+            'R' => 'Outstanding Principal', 'S' => 'Amount in Secondary Market', 'T' => 'Price', 'U' => 'Discount/Premium', 
+            'V' => 'Currency', 'W' => 'Finished');
+      
     protected $transactionHeader = array(
         'A' => 'Transaction ID', 
         'B' => 'Date',
@@ -823,6 +829,8 @@ class mintos extends p2pCompany {
                 }
                 
                 $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                                echo 'sizzzzzeeeee:     ' . $size;
+
                 if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
@@ -831,6 +839,8 @@ class mintos extends p2pCompany {
                         $this->getError(__LINE__, __FILE__, $headerError);
                         //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                     }
+                } else {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
                 } 
                 
                 
@@ -890,6 +900,7 @@ class mintos extends p2pCompany {
                 }
                 
                 $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                echo 'sizzzzzeeeee:     ' . $size;
                 if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
@@ -898,9 +909,12 @@ class mintos extends p2pCompany {
                         $this->getError(__LINE__, __FILE__, $headerError);
                         //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                     }
+                } else {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
                 } 
                    
                 $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->headerComparation = $this->expiredLoansHeader;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
@@ -920,6 +934,21 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                                echo 'sizzzzzeeeee:     ' . $size;
+
+                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        $this->getError(__LINE__, __FILE__, $headerError);
+                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    }
+                } else {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                } 
+                
                 $this->idForSwitch++;     
             case 9:
                 $this->idForSwitch++;          
