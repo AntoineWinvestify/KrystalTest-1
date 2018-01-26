@@ -224,14 +224,17 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                     }
- */
+ */ 
                 }
                 else {               // error occurred while analyzing a file. Report it back to Client
                     $returnData[$linkedAccountKey]['error'][] = $tempResult['error'];
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                 }
-            }
+            } 
             
+
+            
+//print_r($totalParsingresultTransactions);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
@@ -243,7 +246,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile']; 
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
             $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];             
-            
+//print_r($returnData[$linkedAccountKey]);            
           
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {

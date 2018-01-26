@@ -759,7 +759,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *  @return array           $parsedData
      *          false in case an error occurred
      */
-    public function analyzeFileJson($file, $configuration) {
+    public function analyzeFileJson($file, $configuration) {        
         $fileString = file_get_contents($file);
         $data = json_decode($fileString, true);
         return $this->saveExcelToArray($data, $configuration, $this->config["offsetStart"]);
@@ -776,7 +776,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return array $temparray the data after the parsing process.
      *
      */
-    private function saveExcelToArray(&$rowDatas, $values, $totalRows) {
+    private function saveExcelToArray(&$rowDatas, $values, $totalRows) {     
         $tempArray = [];
         $maxRows = count($rowDatas);
 
@@ -814,7 +814,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
-                    eval($tempString);
+                    eval($tempString);                   
                 }
                 else {          // "type" => .......
                     foreach ($value as $myKey => $userFunction ) {
@@ -848,14 +848,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']);
 
-                            if (is_array($tempResult)) {
+                            if (is_array($tempResult)) {                                
                                 $userFunction = $tempResult;
                                 $tempResult = $tempResult[0];
                             }
 
                             // Write the result to the array with parsing result. The first index is written
                             // various variables if $tempResult is an array
-                            if (!empty($tempResult)) {
+                            if (!empty($tempResult)) {                             
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
                                 eval($tempString);
@@ -866,8 +866,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                         }
                     }
                 }
-            }
-          
+            } 
+
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
@@ -1316,9 +1316,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
+
             foreach ($this->transactionDetails as $key => $detail) { 
-                $position = strpos($input, $configItemKey );
-                if ($position !== false) {                   
+                $position = mb_strpos($input, $configItemKey, 0, "UTF-8");
+                if ($position !== false) {   
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
                         $found = YES;
