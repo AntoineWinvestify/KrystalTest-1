@@ -253,8 +253,8 @@ class loanbook extends p2pCompany {
         $this->loanArray;
         $this->UserLoansId = array();
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
-            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
-            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
+            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Loan Type', 'I' => 'Payment time',
+            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration', 'N' => 'URL ID');
         $this->typeFileTransaction = "xlsx";
         $this->typeFileInvestment = "json";
         //$this->typeFileExpiredLoan = "xlsx";
@@ -1081,7 +1081,7 @@ class loanbook extends p2pCompany {
                     }
                     foreach ($divs as $div) {
                         if ($div->getAttribute('id') == 'lb_cartera_data_2') {
-                            $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
+                            $this->tempArray['global']['activeInvestments'] = filter_var(trim($div->nodeValue), FILTER_SANITIZE_NUMBER_INT);
                             echo $div->nodeValue;
                         }
                     }              
@@ -1176,7 +1176,7 @@ class loanbook extends p2pCompany {
                 break;
             case 8:
                 //echo $str;
-                $this->loanArray[$this->j]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
+                
 
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -1195,9 +1195,11 @@ class loanbook extends p2pCompany {
                     switch ($key) {
                         case 7:
                             $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
+                            $this->loanArray[$this->j]['A'] = explode("(", $str[2])[1]; //Loan Location
                             $this->loanArray[$this->j]['B'] = $str[0]; //Loan Purpose
                             $this->loanArray[$this->j]['C'] = $str[1]; //Loan Price target
                             $this->loanArray[$this->j]['D'] = explode("(", $str[2])[0]; //Loan Location
+                            
                             break;
                         case 8:
                             $str = explode(" ", trim($div->nodeValue));
@@ -1229,9 +1231,6 @@ class loanbook extends p2pCompany {
                                 case 3:
                                     $this->loanArray[$this->j]['H'] = trim($td->nodeValue); //Type
                                     break;
-                                /* case 7:
-                                  $this->loanArray[$this->j]['H'] = trim($td->nodeValue); //Loan Type
-                                  break; */
                                 case 9:
                                     $this->loanArray[$this->j]['I'] = trim($td->nodeValue); //Frecuencia pago
                                     break;
@@ -1248,6 +1247,7 @@ class loanbook extends p2pCompany {
                                     $str = array_values(array_unique(explode(" ", trim($td->nodeValue))));
                                     print_r($str);
                                     $this->loanArray[$this->j]['M'] = trim($str[2]); //Duration
+                                    $this->loanArray[$this->j]['N'] = $this->UserLoansId[$this->j - 1]; //A is loan id
                                     break;
 
                                 //case 21 SECTOR
@@ -1255,6 +1255,7 @@ class loanbook extends p2pCompany {
                         }
                         
                     }
+                    break;
                 }
 
                 print_r($this->loanArray);

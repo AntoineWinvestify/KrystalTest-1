@@ -562,7 +562,7 @@ class bondora extends p2pCompany {
 
                 $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
-                if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                if ((explode("/", $this->dateInitBondora)[2] == '2008')) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
                 }
 
@@ -607,7 +607,7 @@ class bondora extends p2pCompany {
 
                 $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
-                if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                if ((int) explode("/", $this->dateInitBondora)[2] == '2008') { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
                 }
 
@@ -666,6 +666,7 @@ class bondora extends p2pCompany {
         
         switch ($this->idForSwitch) {
             case 0:
+                set_time_limit(0);
                 $this->unoconv = Unoconv\Unoconv::create();
                 $this->numberOfFiles = 0;
                 $this->investmentNumber = 0;
@@ -673,6 +674,8 @@ class bondora extends p2pCompany {
                 $this->timerInvestment = 0;
                 $this->timerTransaction = 0;
                 $this->idForSwitch++;
+                $this->waitInvestment = false;
+                $this->waitTransaction = false;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
 
@@ -786,32 +789,40 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
-                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
-                $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
-                if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
-                    $this->dateInitBondora = '01/01/2009';
-                }
+                if(!$this->waitInvestment){
+                    $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
+                    $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
+                    echo "weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee " .  $this->dateInitBondora;
+                    print_r(explode("/", $this->dateInitBondora));
 
-                if ($this->investmentNumber === 0) { //max date is yesterday
-                    $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
-                } else {
-                    $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
-                }
+                    if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                        $this->dateInitBondora = '01/01/2009';
+                        $continue = true;
+                    }
 
-                $waitInvestment = false;
+                    if ($this->investmentNumber === 0) { //max date is yesterday
+                        $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
+                    } else {
+                        $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
+                    }
+                }
+                
+               
                 echo "Search this: init-" . $this->dateInitBondora . "     finish-" . $this->dateFinishBondora;
                 //Search investment report
                 foreach ($trs as $tr) { //Search the report
                     echo $tr->nodeValue . SHELL_ENDOFLINESHELL_ENDOFLINE;
-                    if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, "Please refresh your browser after a few minutes.")) { //If the report is not genrated yet, wait.-
+                    if (strpos($tr->nodeValue, "nvestments list") && strpos($tr->nodeValue, "lease refresh your browser after a few minutes.")) { //If the report is not genrated yet, wait.-
                         echo 'waiting report';
                         sleep(10);
                         $this->timerInvestment++;
-                        $waitInvestment = true;
+                        $this->waitInvestment = true;
                         break;
-                    } else if (strpos($tr->nodeValue, "Investments list") && strpos($tr->nodeValue, $this->dateInitBondora) && strpos($tr->nodeValue, $this->dateFinishBondora)) { //Search if we have the invesment in the reports
+                    } else if (strpos($tr->nodeValue, "nvestments list") && strpos($tr->nodeValue, $this->dateInitBondora) && strpos($tr->nodeValue, $this->dateFinishBondora)) { //Search if we have the invesment in the reports
                         echo 'Investment found';
+                        $this->waitInvestment = false;
                         $urls = $tr->getElementsByTagName('a');
+                        $this->timerInvestment = 0;
                         $this->verifyNodeHasElements($urls);
                         if (!$this->hasElements) {
                             return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
@@ -829,7 +840,7 @@ class bondora extends p2pCompany {
                     }
                 }
 
-                if ($waitInvestment == true) { //Wait the report generation
+                if ($this->waitInvestment == true) { //Wait the report generation
                     if ($this->timerInvestment > 12) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
@@ -871,14 +882,14 @@ class bondora extends p2pCompany {
                 
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
-                }
-                
-               
+                }                  
                 $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
                 $headerError = $this->compareHeader();
                 if($headerError){
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                
+                
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
@@ -899,29 +910,34 @@ class bondora extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
 
-                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
-                $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
-                if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
-                    $this->dateInitBondora = '01/01/2009';
+                if(!$this->waitTransaction){
+                    $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
+                    $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
+                    if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
+                        $this->dateInitBondora = '01/01/2009';
+                        $continue = true;
+                    }
+
+                    if ($this->transactionNumber === 0) {
+                        $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
+                    } else {
+                        $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
+                    } 
                 }
 
-                if ($this->transactionNumber === 0) {
-                    $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod . " " . -1 . " days"));
-                } else {
-                    $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
-                }
-
-                echo 'search: init-' . $this->dateInitBondora . "         finish-" . $this->dateFinishBondora;
-                $waitTransaction = false;
+                echo 'search: init-' . $this->dateInitBondora . "         finish-" . $this->dateFinishBondora;               
                 foreach ($trs as $tr) {
                     echo $tr->nodeValue . SHELL_ENDOFLINE;
-                    if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, "Please refresh your browser after a few minutes.")) {
+                    if (strpos($tr->nodeValue, "ccount statement") && strpos($tr->nodeValue, "lease refresh your browser after a few minutes.")) {
                         echo 'waiting report';
                         sleep(10);
                         $this->timerTransaction++;
-                        $waitTransaction = true;
+                        $this->waitTransaction = true;
+                        $searchTransactions = true;
                         break;
                     } else if (strpos($tr->nodeValue, "Account statement") && strpos($tr->nodeValue, $this->dateInitBondora) && strpos($tr->nodeValue, $this->dateFinishBondora)) {
+                        $this->timerTransaction = 0;
+                        $this->waitTransaction = false;
                         $urls = $tr->getElementsByTagName('a');
                         $this->verifyNodeHasElements($urls);
                         if (!$this->hasElements) {
@@ -940,8 +956,8 @@ class bondora extends p2pCompany {
                     }
                 }
 
-                if ($waitTransaction == true) {
-                    if ($this->timerTransaction > 6) {
+                if ($this->waitTransaction == true) {
+                    if ($this->timerTransaction > 12) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     $this->idForSwitch = 5;
@@ -1019,18 +1035,20 @@ class bondora extends p2pCompany {
              * Extra cases to generate the report if the user delete it before we download it.
              */
             case 9:
+                echo 'more waiting';
                 sleep(10);
+                $this->waitInvestment = true;
                 $this->idForSwitch = 4;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
             case 10:
+                echo 'more waiting';
                 sleep(10);
+                $this->waitTransaction = true;
                 $this->idForSwitch = 6;
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['reportUrl']);
                 break;
             case 11:
-
-                echo "file not found";
 
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
@@ -1064,6 +1082,7 @@ class bondora extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['generateReport'], $credentials);
                 break;
             case 12:
+                
                 $dom = new DOMDocument;  //Check if works
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;

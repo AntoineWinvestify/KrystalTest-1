@@ -352,10 +352,10 @@ class Fileparser {
         
   
  
-    dfefault interest income should be in globalcashflow table
+    /*dfefault interest income should be in globalcashflow table
 
 30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    
+Currency exchange fee	FX commission with Exchange Rate:    */
     
            
         

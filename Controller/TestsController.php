@@ -69,7 +69,11 @@ class TestsController extends AppController {
         echo 'Inicio';
 
         $unoconv = Unoconv\Unoconv::create();
-        $unoconv->transcode('/home/eduardo/transaction_1_1.xlsx', 'xlsx', 'test.xlsx');
+        echo APP .  "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS . 'test.xlsx';
+        $meh = fopen (APP .  "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS . 'test.xlsx', "r+");
+        echo fread($meh);
+         //$unoconv->transcode('\home ' . DS . 'eduardo' . DS . 'Downloads' . DS . 'testmenor.xlsx', 'pdf','\home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'testmenorConvertido.pdf');
+        $unoconv->transcode(APP . "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS  . 'test.xlsx', 'pdf', APP . "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS  . 'testConvertido.pdf');
 
         echo 'Fin';
     }
