@@ -1186,11 +1186,11 @@ class loanbook extends p2pCompany {
                 $top = $this->getElements($dom, 'div', 'class', 'loantop')[0];
                 
                 //COMPARE STRUCTURE
-                $nodeClone = $top->cloneNode(TRUE);   
+                $nodeClone = $top->cloneNode(TRUE);    //Get the node
                 $nodeTop = new DOMDocument();
-                $nodeTop->appendChild($nodeTop->importNode($nodeClone,TRUE));
-                $nodeTopString = $nodeTop->saveHTML();
-                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0], $nodeTopString);
+                $nodeTop->appendChild($nodeTop->importNode($nodeClone,TRUE)); //Save the node in a dom element
+                $nodeTopString = $nodeTop->saveHTML(); //We need to convert the dom node to string
+                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0], $nodeTopString); //Compare structure with db
                 
                 if(!$topRevision){           
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
@@ -1235,11 +1235,12 @@ class loanbook extends p2pCompany {
                     if ($table->getAttribute("id") == "table-1") {
                         
                         //COMPARE STRUCTURE
-                        $nodeClone = $table->cloneNode(TRUE);   
+                        $nodeClone = $table->cloneNode(TRUE);   //Get the node
                         $nodeTable = new DOMDocument();
-                        $nodeTable->appendChild($nodeTable->importNode($nodeClone,TRUE));
-                        $nodeTableString = $nodeTable->saveHTML();
-                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString);                                           
+                        $nodeTable->appendChild($nodeTable->importNode($nodeClone,TRUE)); //Save the node in a dom element
+                        $nodeTableString = $nodeTable->saveHTML(); //We need to convert the dom node to string
+                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString); //Compare structure   with db  
+                        
                          if(!$tableRevision){
                             return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                         }
@@ -1447,6 +1448,7 @@ class loanbook extends p2pCompany {
 
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
+                        //Compare structure
                         $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
                         if ($revision) {
                             echo "Comparation ok";
@@ -1719,6 +1721,12 @@ class loanbook extends p2pCompany {
     }
     
     
+    /**
+     * Compare amortization table structure from loanbook
+     * @param string $node1
+     * @param string $node2
+     * @return boolean
+     */
     function structureRevisionAmortizationTable($node1, $node2) {
         $dom1 = new DOMDocument();
         $dom1->loadHTML($node1);
@@ -1751,6 +1759,13 @@ class loanbook extends p2pCompany {
         return $structureRevision;
     }
     
+    
+    /**
+     * Compare one of the structures from loanbook investments
+     * @param string $node1
+     * @param string $node2
+     * @return boolean
+     */
     function structureLoanTop($node1, $node2) {
         $dom1 = new DOMDocument();
         $dom1->loadHTML($node1);
@@ -1772,13 +1787,19 @@ class loanbook extends p2pCompany {
         $dom2 = $this->cleanDomTag($dom2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'i')));
 
-
         echo 'compare structure';
         $structureRevision = $this->verifyDomStructure($dom1, $dom2);
         echo $structureRevision;
         return $structureRevision;
     }
     
+    
+    /**
+     * Compare one of the structures from loanbook investments
+     * @param string $node1
+     * @param string $node2
+     * @return boolean
+     */
     function structureLoanTable($node1, $node2) {
         $dom1 = new DOMDocument();
         $dom1->loadHTML($node1);
@@ -1803,13 +1824,6 @@ class loanbook extends p2pCompany {
                 ), array('class', 'src', 'title', 'data-original-title', 'style', 'href'));
         $dom2 = $this->cleanDomTag($dom2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'i')));
-
-
-        var_dump($dom1);
-        echo "///////////////////";
-        var_dump($dom2);
-        
-        
         
         echo 'compare structure';
         $structureRevision = $this->verifyDomStructure($dom1, $dom2);
