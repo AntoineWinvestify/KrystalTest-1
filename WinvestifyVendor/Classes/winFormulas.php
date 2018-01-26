@@ -337,7 +337,7 @@ class WinFormulas {
                 "day" => "1"
             ],
             "intervals" => "inclusive",
-            "operation" => "add"
+            "operation" => "substract"
         ]
     ];
     

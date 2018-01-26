@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -73,6 +73,10 @@ class ParseDataClientShell extends GearmanClientShell {
         echo "Deleting Investmentslice\n";
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
         $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
+        
+        echo "Deleting Globaltotalsdata\n";
+        $this->Globalcashflowdata = ClassRegistry::init('Globaltotalsdata');
+        $this->Globalcashflowdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
 
         return;
     }
@@ -304,7 +308,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2017-0 7-23"){ 
+if ($dateKey == "2016-01- 12"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -617,7 +621,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 }   
                 
 // Now start consolidating of the results on investment level and per day                
-                $internalVariableToHandle = array(37, 10004);
+                $internalVariableToHandle = array(10014, 10015, 37, 10004);
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
