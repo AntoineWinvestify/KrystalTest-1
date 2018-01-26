@@ -146,7 +146,12 @@ class finanzarel extends p2pCompany {
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Intereses" => "Regular_gross_interest_income"],
-                                        1 => ["Efecto fallido" => "investment_writtenOff"]
+                                        1 => ["Efecto fallido" => "Write-off"],
+                                        2 => ["Inversi?n en efecto" => "dummy_concept"],
+                                        3 => ["Amortizaci?n de efecto" => "dummy_concept"],
+                                        4 => ["Efecto retrasado" => "dummy_concept"],
+                                        5 => ["Amortizaci?n parcial de efecto" => "dummy_concept"],
+                                        6 => ["Efecto Impagado" => "dummy_concept"]
                                     ]
                             ],
                     "functionName" => "getTransactionDetail",
