@@ -121,7 +121,7 @@ class CollectDataClientShell extends GearmanClientShell {
                                 //that we are going to collect inside the variables companiesInFlow
                                 $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
-                            $this->getStartDate($linkedaccount);
+                            $this->getStartDate($linkedaccount, $job['Queue']['id']);
                             
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
@@ -197,13 +197,13 @@ class CollectDataClientShell extends GearmanClientShell {
      * Function to initiate startDate in queueInfo variable
      * @param array $linkedaccount Array that contains everything about the linkedaccount
      */
-    public function getStartDate($linkedaccount) {
+    public function getStartDate($linkedaccount, $queueId) {
         //We set null startDate
-        $this->queueInfo[$job['Queue']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
+        $this->queueInfo[$queueId]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
         $startDate = date("Ymd", strtotime($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']));
         //If lastAccessed is null, strtotime will put 19700101 so we don't want that date
         if ($startDate != "19700101") {
-            $this->queueInfo[$job['Queue']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = $startDate;
+            $this->queueInfo[$queueId]['startDate'][$linkedaccount['Linkedaccount']['id']] = $startDate;
         }
     }
     
