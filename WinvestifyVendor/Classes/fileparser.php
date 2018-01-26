@@ -239,7 +239,7 @@ class Fileparser {
                 "detail" => "Compensation",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "payment_compensation"    
+                "type" => "globalcashflowdata_platformCompensation"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -403,6 +403,12 @@ Currency exchange fee	FX commission with Exchange Rate:
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
+                ],
+            105 => [
+                "detail" => "dummy_concept",    // This is a dummy concept
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "dummy",
                 ],
         
     /*         105 => [
