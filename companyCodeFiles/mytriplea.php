@@ -400,7 +400,7 @@ class mytriplea extends p2pCompany {
                     }
 
                     if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
-                        $tempArray['marketplace_sector'] = $contentCheckedAttribute;
+                        $tempArray['marketplace_sector'] = utf8_decode($contentCheckedAttribute);
                     }
 
                     if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
