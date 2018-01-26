@@ -1909,7 +1909,7 @@ class p2pCompany {
         $this->sameStructure;
         $repeatedStructureFound = false;
 
-        //echo 'We have' . $node1->nodeName . ' and ' . $node2->nodeName . HTML_ENDOFLINE;
+        echo 'We have' . $node1->nodeName . ' and ' . $node2->nodeName . HTML_ENDOFLINE;
         //We verify if nodes has attributes
         if (!$node1 && !$node2) {
             return $this->sameStructure;
@@ -1925,9 +1925,9 @@ class p2pCompany {
                     $valueAttrNode1 = $node1Attr[$i]->nodeValue;
                     $valueAttrNode2 = $node2Attr[$i]->nodeValue;
 
-                    /* echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                      echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                       echo $nameAttrNode1 . '=>' . $valueAttrNode1 . '<br>';
-                      echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>'; */
+                      echo $nameAttrNode2 . '=>' . $valueAttrNode2 . '<br>';
 
                     if ($nameAttrNode1 != $nameAttrNode2) {
                         echo 'Node attr name error';
@@ -1948,10 +1948,10 @@ class p2pCompany {
                     }
                 }
             } else if ($node1Attr->length != $node2Attr->length) {
-                /* echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
+                echo $node1->tagName . ' / ' . $node2->tagName . '<br>';
                   echo $node1Attr->length . '<br>';
                   echo $node2Attr->length . '<br>';
-                  echo 'Node attr length error'; */
+                  echo 'Node attr length error';
                 $this->sameStructure = false;
             }
         } else if ($node1->hasAttributes() && !$node2->hasAttributes()) {
@@ -1972,19 +1972,19 @@ class p2pCompany {
 
                 for ($i = 0; $i < $limitChildren; $i++) {
 
-                    /* echo 'Children node 1: ' . $i . HTML_ENDOFLINE;
+                    echo 'Children node 1: ' . $i . HTML_ENDOFLINE;
                       var_dump($childrenNode1[$i]);
                       echo 'Children node 2: ' . $i . HTML_ENDOFLINE;
-                      var_dump($childrenNode2[$i]); */
+                      var_dump($childrenNode2[$i]);
 
                     if ($childrenNode1[$i]->nodeName == "#text" || $childrenNode2[$i]->nodeName == "#text") { //Delete text nodes
                         if ($childrenNode1[$i]->nodeName == "#text") {
-                            //echo 'Deleting text from node 1' . HTML_ENDOFLINE;
+                            echo 'Deleting text from node 1' . HTML_ENDOFLINE;
                             $childrenNode1[$i]->parentNode->removeChild($childrenNode1[$i]);
                             array_values($childrenNode1);
                         }
                         if ($childrenNode2[$i]->nodeName == "#text") {
-                            //echo 'Deleting text from node 2' . HTML_ENDOFLINE;           
+                            echo 'Deleting text from node 2' . HTML_ENDOFLINE;           
                             $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);
                             array_values($childrenNode2);
                         }
@@ -1993,14 +1993,14 @@ class p2pCompany {
                     }
 
                     if ($childrenNode1[$i]->nodeName == "#comment" || $childrenNode2[$i]->nodeName == "#comment") { //Delete comment nodes  
-                        //echo 'comment finded in i=' . $i . HTML_ENDOFLINE;
+                        echo 'comment finded in i=' . $i . HTML_ENDOFLINE;
                         if ($childrenNode1[$i]->nodeName == "#comment") {
-                            //echo 'Deleting comment from node 1' . HTML_ENDOFLINE;
+                            echo 'Deleting comment from node 1' . HTML_ENDOFLINE;
                             $childrenNode1[$i]->parentNode->removeChild($childrenNode1[$i]);
                             array_values($childrenNode1);
                         }
                         if ($childrenNode2[$i]->nodeName == "#comment") {
-                            //echo 'Deleting comment from node 2' . HTML_ENDOFLINE;           
+                            echo 'Deleting comment from node 2' . HTML_ENDOFLINE;           
                             $childrenNode2[$i]->parentNode->removeChild($childrenNode2[$i]);
                             array_values($childrenNode2);
                         }
