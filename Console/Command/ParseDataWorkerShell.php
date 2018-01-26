@@ -208,6 +208,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             }
                             break;                            
                     }
+                    unset($tempResult);
                     
 /*
                     try {
