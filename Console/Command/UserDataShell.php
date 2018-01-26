@@ -933,6 +933,26 @@ class UserDataShell extends AppShell {
     }
     
     /**
+     * Get the amount which corresponds to the "loanCompensation" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateLoanCompensation(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * Get the amount which corresponds to the "Platform Compensation" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculatePlatformCompensation(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
      * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
      * 
      *  @param  array       array with the current transaction data
