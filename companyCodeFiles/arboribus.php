@@ -284,11 +284,19 @@ class arboribus extends p2pCompany {
             $tempArray['marketplace_loanReference'] = $loanId;
 
             $divs = $dom->getElementsByTagName('div');
+            $this->verifyNodeHasElements($divs);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }
             foreach ($divs as $key => $div) {
 
                 //Progress and ammount
                 if ($div->getAttribute('class') == 'price-and-percent clearfix') {
                     $subDivs = $dom->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($subDivs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
                     foreach ($subDivs as $subKey => $subDiv) {
                         echo $subKey . " => " . $subDiv->nodeValue . HTML_ENDOFLINE;
                         switch ($subKey) {
@@ -308,6 +316,10 @@ class arboribus extends p2pCompany {
                 //Investment Info
                 if ($key == 0) {
                     $lis = $dom->getElementsByTagName('li');
+                    $this->verifyNodeHasElements($lis);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
                     foreach ($lis as $subKey => $li) {
                         echo "Li => " . $subKey . " => " . $li->nodeValue . HTML_ENDOFLINE;
                         switch ($subKey) {

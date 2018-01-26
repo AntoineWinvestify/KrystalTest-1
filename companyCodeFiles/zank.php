@@ -395,8 +395,16 @@ class zank extends p2pCompany {
             $dom->loadHTML($str);
 
             $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
+            $this->verifyNodeHasElements($container);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }
             foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
+                $this->verifyNodeHasElements($subdivs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
                 foreach($subdivs as $subkey => $subdiv){
                   echo 'Div: ' . HTML_ENDOFLINE;
                   echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
