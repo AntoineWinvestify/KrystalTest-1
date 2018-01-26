@@ -244,186 +244,6 @@ class loanbook extends p2pCompany {
                                             "F" => "Nombre de la Operación",
                                         );
     
-    protected $arrayLoanStructure = array(
-        0 => "<div class='loantop'>
-    <div class='col-md-12 col-xs-12'>
-        <div class='row'>
-            <!--<div class='col-md-7 col-xs-7'>-->
-            <div class='col-xs-12 col-md-7'>
-                <div class='row'>
-                    <div class='col-md-3 col-xs-3' style='width:22%;'>
-                        <img class='img-polaroid' src='/loan/companyimage/472'>
-                    </div>
-                    <div class='col-md-9 col-xs-9' style='width:73%;'>
-                        <div class='loantop-left-top'>
-                            <div class='loantop-left-top-businessname'>Centro de enseñanza primaria, 75.000 €, Cataluña (CM-1410)</div>
-                            Centro de enseñanza primaria                        </div>
-                        <ul class='loantop-lista'>
-                            <li>Otra educación n.c.o.p.</li>
-                            <li>Cataluña</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <!--<div class='col-md-5 col-xs-5'>-->
-            <div class='col-xs-12 col-md-5'>
-                <div class='row margin-top-30'>
-
-                    
-                    <!--<div class='col-md-2 col-xs-2' style='width:8%;'></div>-->
-
-                    <!--<div class='col-md-2 col-xs-2' style='width:22%; padding-left: 3px;'>-->
-                    <div class='col-xs-3'>
-                        <p style='border-radius:0' id='micuenta-loantop-rating' class='micuenta-loantop-rating mp_rating_color_item_aless'>
-                            <span title='' data-original-title='Buen nivel de solvencia de la empresa'>
-                                A-                            </span>
-                                                    </p>
-                    </div>
-                    <!--<div class='col-md-3 col-xs-3 text-align-center' style='width:27%;'>-->
-                    <div class='col-xs-3 text-align-center'>
-                        <div class='loantop-quantity'>
-                                                        6,88%                                                        <i title='' class='fa fa-lock orange' style='font-size: 50%; top: -43px;left: 43px;position:relative;cursor: pointer' data-original-title='Esta subasta es de tipo fijo; las ofertas sólo se pueden hacer con el tipo objetivo.'></i>                        </div>
-                        <div class='td-titles loantop-quantity-title'>
-                            <span title='' data-original-title='Este TAE es el tipo de interés efectivo calculado a la fecha de inicio del crédito. El TAE final será ligeramente más alto para los inversores que compran participaciones en el crédito después de su fecha de inicio.'>TAE inicial</span>
-                        </div>
-                    </div>
-                    <!--<div class='col-md-3 col-xs-3' style='width:18%;'>-->
-                    <div class='col-xs-3'>
-                        <div style='background-color: #4CC583' class='loantop-feature-circle'></div>
-                        <div class='td-titles'>
-                            Estado                        </div>
-                    </div>
-                    <!--<div class='col-md-3 col-xs-3 text-align-center' style='width:25%;'>-->
-                    <div class='col-xs-3 text-align-center' style='padding-left: 0;'>
-                        <div class='loantop-quantity'>
-                            222                            <span class='loantop-quantity-smalltxt'>
-                                días                            </span>
-                        </div>
-                        <div class='td-titles loantop-quantity-title'>
-                            Plazo<br>restante                        </div>
-                    </div>
-                </div>
-                <div class='row'>
-                    <div style='color:#4CC583; font-style: italic; margin-right: 20px; text-align: right; padding: 10px;'>
-                                                <hr class='visible-xs'>
-                        <span><i aria-hidden='true' class='fa fa-check'></i></span>
-                        Ya tiene una exposición de 26 € con esta empresa y/o vinculadas                                                                                            
-                    </div>
-                </div>
-
-
-                <!-- resp-2017 -->
-                <div class='row' style='margin-top: 5px;'>
-
-                                        <!--<h3 class='block-header'>
-                        Este crédito en el marketplace                    </h3>
-                    <div id='loan-load-marketplace-content' style='padding:15px;border-bottom:1px solid #E7E7E7;border-right:1px solid #E7E7E7;border-left:1px solid #E7E7E7;'>
-                        <div class='row'>
-                            <div class='col-md-8 col-xs-8'>-->
-                    <div class='col-xs-12'>
-                                <p>Actualmente, este crédito no se encuentra disponible para la participación de nuestros inversores.</p>
-                    </div>
-                            <!--</div>
-                        </div>
-                    </div>-->
-                                        
-                </div> <!-- row -->
-
-            </div>
-
-
-        </div>
-    </div>
-</div>",
-        1 => "<table style='border:1px solid #E7E7E7;width:100%;' id='table-1'>
-                        <tbody>
-                            <tr class=''>
-                                <td style='width:156px;'>
-                                    <h4 class='to-uppercase block-title'>Crédito:</h4>
-                                </td>
-                                <td style='width:156px;' class='loan-load-sidebar-text-right-column'>En curso (EXISTENTE)</td>
-                            </tr>
-                            <tr class=''>
-                                <!--<td>Tipo de crédito</td>-->
-                                <td><a href='/loan/contractype/472' class='link-table' data-modal='modal' data-containerwidth='1000'>Tipo de crédito</a></td>
-                                <td class='loan-load-sidebar-text-right-column'>
-                                                                            Préstamo                                                                    </td>
-                            </tr>
-                            <tr class=''>
-                                <td>Importe</td>
-                                <td class='loan-load-sidebar-text-right-column'>75.000 €</td>
-                            </tr>
-                            <tr class=''>
-                                <td>
-                                    Colateral                                </td>
-                                <td class='loan-load-sidebar-text-right-column'>Personal y corporativo</td>
-                            </tr>
-                            <tr class=''>
-                                <td>Pagos</td>
-                                <td class='loan-load-sidebar-text-right-column'>Trimestral</td>
-                            </tr>
-                            <tr class=''>
-                                <td>Tipo de interés nominal</td>
-                                <td class='loan-load-sidebar-text-right-column'>6,50%</td>
-                            </tr>
-                            <tr>
-                                <td>Rating</td>
-                                <td>
-                                    <div class='loan-load-sidebar-doublecol-left margin-top-bottom-10'>
-                                        <strong class='blue display-block'>
-                                        LoanBook                                        </strong>
-A-                                    </div>
-                                    <div class='loan-load-sidebar-doublecol-right margin-top-bottom-10'>
-                                        <!-- <a href='/pdf/InformaCM-1410.pdf'>-->
-                                        <strong class='blue display-block'>
-                                        Externo                                        </strong>
-14/20<!--</a> -->
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr class=''>
-                                <td>Fecha inicio</td>
-                                <td class='loan-load-sidebar-text-right-column'>
-                                    27-10-2016                                </td>
-                            </tr>
-                            <tr class=''>
-                                <td>Pagos remanentes</td>
-                                <td class='loan-load-sidebar-text-right-column'>
-                                    3 de 8                                </td>
-                            </tr>
-                            <tr>
-                                <td>Duración</td>
-                                <td>
-                                    <div class='loan-load-sidebar-doublecol-left margin-top-bottom-10'>
-                                        <strong class='blue display-block'>
-                                        Inicial                                        </strong>
-679 días                                    </div>
-                                    <div class='loan-load-sidebar-doublecol-right margin-top-bottom-10'>
-                                        <strong class='blue display-block'>
-                                        Restante                                        </strong>
-222 días                                    </div>
-                                </td>
-                            </tr>
-                                                        <tr class=''>
-                                <td><h4 class='to-uppercase block-title'>Prestatario:</h4></td>
-                                <td></td>
-                            </tr>
-                                                        <tr class=''>
-                                <td>Sector</td>
-                                <td class='loan-load-sidebar-text-right-column'>Otra educación n.c.o.p.</td>
-                            </tr>  
-                            <tr class=''>
-                                <td>Ubicación</td>
-                                <td class='loan-load-sidebar-text-right-column'>Cataluña</td>
-                            </tr>  
-                            <tr>
-                                <td>Años existencia empresa</td>
-                                <td class='loan-load-sidebar-text-right-column'>4</td>
-                            </tr>
-                        </tbody>
-                    </table>",
-    );
-
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -1141,6 +961,7 @@ A-                                    </div>
                   signin		Login
                   username	antoine.de.poorter@gmail.com
                  */
+                $this->arrayLoanStructure = json_decode($this->tableStructure,true);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
@@ -1355,7 +1176,8 @@ A-                                    </div>
             case 8:
                 //echo $str;
                 
-
+                $topRevision = false;
+                $tableRevision = false;
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
@@ -1370,10 +1192,8 @@ A-                                    </div>
                 $nodeTopString = $nodeTop->saveHTML();
                 $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0], $nodeTopString);
                 
-                if(!$topRevision){
-                    // ERROR DE ESTRUCTURA
-                } else {
-                    echo "Structure Ok";
+                if(!$topRevision){           
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 
                 $divs = $top->getElementsByTagName('div');
@@ -1407,10 +1227,7 @@ A-                                    </div>
 
                 $tables = $dom->getElementsByTagName('table');
                 $this->verifyNodeHasElements($tables);
-                
-                
-                
-                
+                             
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
@@ -1422,8 +1239,11 @@ A-                                    </div>
                         $nodeTable = new DOMDocument();
                         $nodeTable->appendChild($nodeTable->importNode($nodeClone,TRUE));
                         $nodeTableString = $nodeTable->saveHTML();
-                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString);
-                                           
+                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString);                                           
+                         if(!$tableRevision){
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
+                        
                         $tds = $table->getElementsByTagName('td');
                         $this->verifyNodeHasElements($tds);
                         if (!$this->hasElements) {
@@ -1995,7 +1815,6 @@ A-                                    </div>
         $structureRevision = $this->verifyDomStructure($dom1, $dom2);
         echo $structureRevision;
         
-        exit;
         return $structureRevision;
     }
     
