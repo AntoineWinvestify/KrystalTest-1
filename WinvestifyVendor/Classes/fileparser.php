@@ -1841,7 +1841,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     function setDefaultFinishDate($defaultFinishDate) {
         $defaultFinishDate = date("Y-m-d", strtotime($defaultFinishDate));
         $this->defaultFinishDate = $defaultFinishDate;
-    }
+    } 
     
     function getDefaultDate($input, $defaultValue) {
         return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
