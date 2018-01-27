@@ -146,6 +146,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_TRANSACTION_FILE] = $dirs->findRecursive(WIN_FLOW_TRANSACTION_FILE . ".*", true);
                         $files[WIN_FLOW_INVESTMENT_FILE] = $dirs->findRecursive(WIN_FLOW_INVESTMENT_FILE . ".*", true);
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
+                        $files[WIN_FLOW_CONTROL_FILE] = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE . ".*", true);
                         $listOfActiveInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_ACTIVE);
                         $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
                         
@@ -158,7 +159,6 @@ class ParseDataClientShell extends GearmanClientShell {
                             'listOfCurrentActiveInvestments' => $listOfActiveInvestments,
                             'listOfReservedInvestments' => $listOfReservedInvestments,
                             'userReference' => $job['Queue']['queue_userReference'],
-                            'controlVariableFile' => $controlVariableFile[0],
                             'files' => $files,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
                             'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
@@ -270,6 +270,10 @@ $timeStart = time();
         $userReference = $platformData['userReference'];
         $startDate = $platformData['startDate'];
         $finishDate = $platformData['finishDate'];
+        
+ //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
+        
+        
         $controlVariableFile =  $platformData['controlVariableFile'];                   // Control variables as supplied by P2P
         $controlVariableActiveInvestments = $platformData['activeInvestments'];         // Our control variable
 $tempMeasurements = array(

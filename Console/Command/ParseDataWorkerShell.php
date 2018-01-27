@@ -110,7 +110,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId'][‘parsingResultInvestments'] 
      *      $data['linkedAccountId']['activeInvestments']
      *      $data['linkedAccountId']['linkedaccountId']
-     *      $data['linkedAccountId']['controlVariableFile']
+     *      $data['linkedAccountId']['parsingResultControlVariables']
      *      * 
 
      *
@@ -143,6 +143,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
             $this->myParser->setDefaultFinishDate($this->finishDate);
+            
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
@@ -168,6 +169,14 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         $parserConfigFile = $companyHandle->getParserConfigExtendedTransactionFile();
                         $configParameters = $companyHandle->getParserExtendedTransactionConfigParms();
                         break; 
+                        
+                    case WIN_FLOW_CONTROL_FILE:
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing ControlVariables file \n";
+                        } 
+                        $parserConfigFile = $companyHandle->getParserConfigControlVariablesFile();
+                        $configParameters = $companyHandle->getParserControlVariablesConfigParms();
+                        break;                         
                     case WIN_FLOW_EXPIRED_LOAN_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
@@ -176,8 +185,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
-
+echo __FILE__. " " . __LINE__ . "\n";   
+//print_r($parserConfigFile);
+//print_r($configParameters);
+print_r($filesByType[0]);
                 if (count($filesByType) === 1) {
+echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
                     $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
                 } 
                 else if (count($filesByType) > 1) {
@@ -196,6 +209,10 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
+                            break;
+                        case WIN_FLOW_CONTROL_FILE:
+                            
+                            $totalParsingresultControlVariables = $tempResult;                         
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
@@ -234,9 +251,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             
 
             
+print_r($totalParsingresultControlVariables);
 //print_r($totalParsingresultTransactions);
+
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
+            $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
             $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
             $returnData[$linkedAccountKey]['actionOrigin'] = $data['actionOrigin'];
@@ -323,7 +343,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
        
-        echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
+        echo "\nNumber of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
 
@@ -331,7 +351,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
 echo "Done\n";
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
-
+exit;
         return json_encode($data);
     }       
         
@@ -490,10 +510,9 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @param array $configParameters Configuration parameters
      * @return array
      */
-    public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo __LINE__ . "Dealing with file $file\n";  
+    public function getSimpleFileData($file, $parserConfigFile, $configParameters) { 
         //We need to pass the 0 value of the array because every company has a two-dimensional array starting with the value 0
-        if (!empty($configParameters[0]['offsetStart'])) {
+        if (isset($configParameters[0]['offsetStart'])) {
             $tempResult = $this->getSimpleSheetData($file, $parserConfigFile[0], $configParameters[0]);
         }
         else {

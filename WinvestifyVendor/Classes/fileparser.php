@@ -305,7 +305,7 @@ class Fileparser {
                 "detail" => "Tax_income_withholding_tax",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept27"
+                "type" => "payment_incomeWithholdingTax"
                 ],
             28 => [
                 "detail" => "Write-off",
@@ -802,7 +802,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
             array_pop($rowDatas);
         }
-       
+   
         $i = 0;
         $outOfRange = false;
         foreach ($rowDatas as $rowData) {
@@ -862,11 +862,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                             }
                         }
                         else {
-                            $outOfRange = false;        // reset
+                             $outOfRange = false;        // reset
                         }
                     }
                 }
-            } 
+            }  
 
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
@@ -1318,7 +1318,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $configItem = $item[$configItemKey];
 
             foreach ($this->transactionDetails as $key => $detail) { 
-                $position = mb_strpos($input, $configItemKey, 0, "UTF-8");
+                $position = strpos($input, $configItemKey);
                 if ($position !== false) {   
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
@@ -1855,13 +1855,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Function to manipulate a number
      * Example:
-     *  21.903 _> 2090
-     * @param string $filePath FQDN of the file to analyze
-     * @return string It is the extension of the file
+     *  21.903 -> 2090
+     * @param string $input             The number to manipulate. It is assumed that only a *number* is received,
+     *                                  with or without a "," or "."
+     * @param string $multiplyFactor    The factor which shall be used to multiply the input
+     * @param string $decimals          The (maximum) number of decimals that the end result may have
+     * @return  string                  The manipulated number as a string
      */
     public function handleNumber($input, $multiplyFactor, $decimals) {
-        $tempInput = preg_replace("/,/", '.', $input);
-        $temp = bcmul($tempInput, $multiplyFactor, $decimals);
+        $cleanInput = trim(preg_replace('/\,/', '.', $input));
+        $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    
 }

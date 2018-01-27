@@ -163,10 +163,12 @@ class p2pCompany {
     protected $valuesTransaction;
     protected $valuesInvestment;  
     protected $valuesAmortizationTable;
+    protected $valuesControlVariables;     
+    
     protected $callbacks;
     protected $originExecution;
     protected $tableStructure;
-    
+   
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
                                         "chunkSize" => 1,     
                                         );
@@ -2928,6 +2930,28 @@ FRAGMENT
         fclose($idsJsonFile);
     }
 
+  
+    
+    /** 
+     * Read ControlVariables configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserControlVariablesConfigParms() {
+        return $this->controlVariablesConfigParms;
+    }     
+    
+
+    /** 
+     * Read ConfigControlVariables configuration file
+     *     
+     * @return  array with configuration parameters
+     * 
+     */
+    public function getParserConfigControlVariablesFile()  {
+        return $this->valuesControlVariables;
+    }   
 }
 ?>
 
