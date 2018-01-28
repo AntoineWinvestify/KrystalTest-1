@@ -308,7 +308,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2017-0 7-23"){ 
+if ($dateKey == "2014-11-17"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -340,7 +340,10 @@ print_r($platformData['amortizationTablesOfNewLoans']);
 
             
             foreach ($dates as $keyDateTransaction => $dateTransaction) {           // read all *individual* transactions of a loanId per day
-
+ //foreach ($dateTransaction as $transactionKey => $transactionData) { 
+ //    print_r
+ //}
+ //
 //if ($keyDateTransaction == "29016-01") {   
  //   echo "Reached LoanId $keyDateTransaction, so quitting\n ";
  //   continue;
@@ -366,13 +369,23 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
                 if ($keyDateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     // cycle through all individual fields of the transaction record
+ echo "-------------------\n";
+ //print_r($dateTransaction);
+ echo "+++++++++++++++++\n";
+ 
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
+ echo "$$$$$$$$$$$$$$$$$\n";
+ print_r($transaction);
+ echo "@@@@@@@@@@@@@@@@@@@@@@\n";
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
-                        }
+                        }  
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
-                        if (!empty($tempResult)) {
+//$transactionData['conceptChars']
+echo "tempResult = \n";
+ print_r($tempResult);
+ echo "End of tempresult\n";
+                        if (!empty($tempResult)) {                            
                             unset($result);
                             $functionToCall = $tempResult['function'];
                             $dataInformation = explode(".", $tempResult['databaseName']);
@@ -506,6 +519,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+print_r($transactionData);
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected

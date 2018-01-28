@@ -184,8 +184,15 @@ class zank extends p2pCompany {
                                 "input3" => "rand",                   
                                 ],
                     "functionName" => "generateId",
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
                 ]
-            ]
+            ]           
         ]
     ];
 

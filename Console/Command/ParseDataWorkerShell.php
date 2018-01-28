@@ -252,8 +252,8 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
 
             
 print_r($totalParsingresultControlVariables);
-//print_r($totalParsingresultTransactions);
-
+print_r($totalParsingresultTransactions['2014-09-19']);
+print_r($totalParsingresultTransactions['2015-08-02']);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
@@ -351,7 +351,7 @@ print_r($totalParsingresultControlVariables);
 echo "Done\n";
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
-exit;
+
         return json_encode($data);
     }       
         
