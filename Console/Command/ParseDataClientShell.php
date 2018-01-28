@@ -370,21 +370,28 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                 if ($keyDateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     // cycle through all individual fields of the transaction record
  echo "-------------------\n";
- //print_r($dateTransaction);
+ print_r($dateTransaction);
+ /*
+  * 
+  * here I can do 
+  *  if ($dateTransaction[$conceptChars == "AM_TABLE") {
+  *     do something special..BEFORE doing the normal global things for each field
+  * 
+  * }
+  * 
+  */
  echo "+++++++++++++++++\n";
  
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
  echo "$$$$$$$$$$$$$$$$$\n";
  print_r($transaction);
- echo "@@@@@@@@@@@@@@@@@@@@@@\n";
+ echo "\n@@@@@@@@@@@@@@@@@@@@@@\n";
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }  
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
 //$transactionData['conceptChars']
-echo "tempResult = \n";
- print_r($tempResult);
- echo "End of tempresult\n";
+
                         if (!empty($tempResult)) {                            
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -519,7 +526,6 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
-print_r($transactionData);
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected

@@ -538,27 +538,7 @@ class mintos extends p2pCompany {
                 ]
         ]
     ];
-      
-    protected $callbacks = [
-        "investment" => [
-            "parserDataCallback" => [
-                "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
-                "investment_loanType" => "translateLoanType",
-                "investment_amortizationMethod" => "translateAmortizationMethod",  
-                "investment_statusOfLoan" => "translateOriginalLoanState"
-            ]
-        ],
-        "expiredLoan" => [
-            "parserDataCallback" => [
-                "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
-                "investment_loanType" => "translateLoanType",
-                "investment_amortizationMethod" => "translateAmortizationMethod",  
-                "investment_statusOfLoan" => "translateOriginalLoanState"
-            ]
-        ]
-    ];
     
- 
     
     protected $transactionConfigParms = [
         [
@@ -592,6 +572,72 @@ class mintos extends p2pCompany {
             'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
         ]
     ]; 
+    
+    
+     protected $valuesControlVariables = [
+        [
+        "myWallet" => [
+            [
+                "type" => "myWallet",                                           // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        "activeInvestments" => [
+            [
+                "type" => "activeInvestments",                                  // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "1",
+                    "input3" => "0",
+                ],
+                "functionName" => "handleNumber",
+            ]
+        ],  
+        "outstandingPrincipal" => [
+            [
+                "type" => "outstandingPrincipal",                               // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        ]
+    ];      
+    
+    protected $controlVariablesConfigParms = [
+        [
+            'offsetStart' => 0,
+            'offsetEnd' => 0,
+        ]
+    ];
+    
+    protected $callbacks = [
+        "investment" => [
+            "parserDataCallback" => [
+                "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+                "investment_loanType" => "translateLoanType",
+                "investment_amortizationMethod" => "translateAmortizationMethod",  
+                "investment_statusOfLoan" => "translateOriginalLoanState"
+            ]
+        ],
+        "expiredLoan" => [
+            "parserDataCallback" => [
+                "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
+                "investment_loanType" => "translateLoanType",
+                "investment_amortizationMethod" => "translateAmortizationMethod",  
+                "investment_statusOfLoan" => "translateOriginalLoanState"
+            ]
+        ]
+    ];
+    
+    
     
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',

@@ -483,6 +483,55 @@ class zank extends p2pCompany {
         ]
     ];
     
+    
+    
+    
+    
+ 
+    protected $valuesControlVariables = [
+        [
+        "myWallet" => [
+            [
+                "type" => "myWallet",                                           // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        "activeInvestments" => [
+            [
+                "type" => "activeInvestments",                                  // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "1",
+                    "input3" => "0",
+                ],
+                "functionName" => "handleNumber",
+            ]
+        ],
+        "outstandingPrincipal" => [
+            [
+                "type" => "outstandingPrincipal",                               // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        ]
+    ];      
+    
+    protected $controlVariablesConfigParms = [
+        [
+            'offsetStart' => 0,
+            'offsetEnd' => 0,
+        ]
+    ];   
+    
     protected $callbacks = [
         "investment" => [
             "cleanTempArray" => [

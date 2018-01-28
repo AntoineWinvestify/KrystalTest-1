@@ -217,7 +217,7 @@ class loanbook extends p2pCompany {
  
     protected $valuesControlVariables = [
         [
-        "1" => [
+        "myWallet" => [
             [
                 "type" => "myWallet",                                           // Winvestify standardized name   OK
                 "inputData" => [
@@ -228,7 +228,7 @@ class loanbook extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
-        "2" => [
+        "activeInvestments" => [
             [
                 "type" => "activeInvestments",                                  // Winvestify standardized name  OK
                 "inputData" => [
@@ -237,18 +237,8 @@ class loanbook extends p2pCompany {
                 ],
                 "functionName" => "handleNumber",
             ]
-        ],
+        ],  
         "outstandingPrincipal" => [
-            [
-                "type" => "outstandingPrincipalNEW",                               // Winvestify standardized name  OK
-                "inputData" => [
-                    "input2" => "10",
-                    "input3" => "1",
-                ],
-                "functionName" => "handleNumber",
-            ],
-        ],    
-        "3" => [
             [
                 "type" => "outstandingPrincipal",                               // Winvestify standardized name  OK
                 "inputData" => [
