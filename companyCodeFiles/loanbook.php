@@ -242,11 +242,10 @@ class loanbook extends p2pCompany {
             [
                 "type" => "outstandingPrincipalNEW",                               // Winvestify standardized name  OK
                 "inputData" => [
-                    "input2" => "",
-                    "input3" => ",",
-                    "input4" => 16
+                    "input2" => "10",
+                    "input3" => "1",
                 ],
-                "functionName" => "getAmount",
+                "functionName" => "handleNumber",
             ],
         ],    
         "3" => [
