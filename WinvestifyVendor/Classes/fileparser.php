@@ -1875,6 +1875,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *                                  with or without a "," or "."
      * @param string $multiplyFactor    The factor which shall be used to multiply the input
      * @param string $decimals          The (maximum) number of decimals that the end result may have
+     * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
     public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
