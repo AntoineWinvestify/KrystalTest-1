@@ -1878,7 +1878,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return  string                  The manipulated number as a string
      */
     public function handleNumber($input, $multiplyFactor, $decimals) {
-        $cleanInput = trim(preg_replace('/\,/', '.', $input));
+        $cleanInput = preg_replace("/[^0-9,.]/", "",$input);
         $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    

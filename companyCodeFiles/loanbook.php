@@ -311,7 +311,8 @@ class loanbook extends p2pCompany {
         $this->UserLoansId = array();
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
             'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Loan Type', 'I' => 'Payment time',
-            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration', 'N' => 'URL ID');
+            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration', 'N' => 'URL ID',
+            '0' => 'Status color');
         $this->typeFileTransaction = "xlsx";
         $this->typeFileInvestment = "json";
         //$this->typeFileExpiredLoan = "xlsx";
@@ -1126,7 +1127,7 @@ class loanbook extends p2pCompany {
                     }
                     foreach ($spans as $span) {
                         if ($span->getAttribute('class') == 'lb_main_menu_bold') {
-                            $this->tempArray['global']['myWallet'] = floatval(str_replace(',', '.', str_replace('.', '', $span->nodeValue )));
+                            $this->tempArray['global']['myWallet'] = trim($span->nodeValue);
                             echo $this->tempArray['global']['myWallet'];
                             break; //myWallet is only the first span
                         }
@@ -1144,7 +1145,7 @@ class loanbook extends p2pCompany {
                         }
                     }              
                     $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                    $this->tempArray['global']['outstandingPrincipal'] = floatval(str_replace(',', '.', str_replace('.', '', $outstanding))); //$this->getMonetaryValue($spans[0]->nodeValue);
+                    $this->tempArray['global']['outstandingPrincipal'] = trim($outstanding); //$this->getMonetaryValue($spans[0]->nodeValue);
                 }
                 
                 print_r($this->tempArray);
@@ -1262,12 +1263,12 @@ class loanbook extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($divs as $key => $div) {
-                    echo 'Entro ' . $key;
+                   // echo 'Entro ' . $key;
                     //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
                     switch ($key) {
                         case 7:
                             $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
-                            $this->loanArray[$this->j]['A'] = str_replace(")","",explode("(", $str[2])[1]); //Loan Location
+                            $this->loanArray[$this->j]['A'] = str_replace(")","",explode("(", $str[2])[1]); //Loan Id
                             $this->loanArray[$this->j]['B'] = $str[0]; //Loan Purpose
                             $this->loanArray[$this->j]['C'] = $str[1]; //Loan Price target
                             $this->loanArray[$this->j]['D'] = explode("(", $str[2])[0]; //Loan Location
@@ -1280,8 +1281,17 @@ class loanbook extends p2pCompany {
                         case 12:
                             $this->loanArray[$this->j]['F'] = trim($div->nodeValue); //Initial TAE
                             break;
+                        case 15:
+                            $color = trim($div->getAttribute('style'));
+                            if(strpos($color, "#4CC583") !== false){
+                                 $this->loanArray[$this->j]['O'] = "Green"; //Estado
+                            } else {
+                                 $this->loanArray[$this->j]['O'] = "Yellow";//Estado
+                            }
+                            break;                           
                         case 18:
                             $this->loanArray[$this->j]['G'] = explode(" ", trim($div->nodeValue))[0]; //Time left
+                            break;
                     }
                 }
 
