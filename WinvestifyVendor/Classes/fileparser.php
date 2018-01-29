@@ -1877,8 +1877,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $decimals          The (maximum) number of decimals that the end result may have
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals) {
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
         $cleanInput = preg_replace("/[^0-9,.]/", "",$input);
+        if($separator === "."){
+           $cleanInput =  str_replace(",", "", $cleanInput);
+        } 
+        else if($separator === ","){
+           $cleanInput =  str_replace(",", ".", str_replace(".", "",$cleanInput));
+        }
         $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    
