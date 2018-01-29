@@ -303,54 +303,6 @@ class loanbook extends p2pCompany {
                                             "F" => "Nombre de la Operación",
                                         );
     
-    
-    protected $tableStructure = '<table id="paymentsTable" class="table scrollTable sortable tablesorter-table tablesorter-default"><thead style="width: 100%;"><tr class="success alternateRow detail tablesorter-headerRow" style="border-top: 3px solid #eee;"><th class="cell-left titulo impar tablesorter-header" style="width:110px;">&ETH;&iexcl;&Atilde;&sup3;digo</th>
-            <th class="cell-left titulo par sorttable_numeric tablesorter-header" style="width:160px;">Nombre</th>
-            <th class="cell-center titulo impar sorttable_numeric tablesorter-header" style="width:135px;">Fecha</th>
-            <th class="cell-center titulo par sorttable_numeric tablesorter-header" style="width:185px;text-align: center">Estado</th>
-            <th class="cell-center titulo impar sorttable_numeric tablesorter-header" style="width:150px;">Capital</th>
-            <th class="cell-center titulo par sorttable_numeric tablesorter-header" style="width:130px;">Intereses</th>
-        </tr></thead><tbody style="height: 300px;"><tr class="detail"><td class="cell-left" style="width:100px;">CM-1410</td>
-                        <td class="cell-left" style="width:140px;">
-                            <a class="" href="/loan/load/472" target="_blank">
-                                JOAN ROCA 1953 SL                            </a>
-                        </td>
-                        <td class="cell-center" data-value="1520290800" style="width:115px;">06-03-2018</td>
-                        <td class="cell-center" style="width:155px;font-size: 18px;">
-                                                                                <i id="green" title="Pendiente" style="color:#ccc" class="fa fa-circle">Pendiente</i>
-                                                                            </td>
-                        <td class="cell-center" style="width:130px;">8,57 &acirc;&#130;&not;</td>
-                        <td class="cell-center" style="width:110px;">0,43 &acirc;&#130;&not;</td>
-                    </tr><tr class="detail"><td class="cell-left" style="width:100px;">CM-1410</td>
-                        <td class="cell-left" style="width:140px;">
-                            <a class="" href="/loan/load/472" target="_blank">
-                                JOAN ROCA 1953 SL                            </a>
-                        </td>
-                        <td class="cell-center" data-value="1528236000" style="width:115px;">06-06-2018</td>
-                        <td class="cell-center" style="width:155px;font-size: 18px;">
-                                                                                <i id="green" title="Pendiente" style="color:#ccc" class="fa fa-circle">Pendiente</i>
-                                                                            </td>
-                        <td class="cell-center" style="width:130px;">8,57 &acirc;&#130;&not;</td>
-                        <td class="cell-center" style="width:110px;">0,29 &acirc;&#130;&not;</td>
-                    </tr><tr class="detail"><td class="cell-left" style="width:100px;">CM-1410</td>
-                        <td class="cell-left" style="width:140px;">
-                            <a class="" href="/loan/load/472" target="_blank">
-                                JOAN ROCA 1953 SL                            </a>
-                        </td>
-                        <td class="cell-center" data-value="1536184800" style="width:115px;">06-09-2018</td>
-                        <td class="cell-center" style="width:155px;font-size: 18px;">
-                                                                                <i id="green" title="Pendiente" style="color:#ccc" class="fa fa-circle">Pendiente</i>
-                                                                            </td>
-                        <td class="cell-center" style="width:130px;">8,57 &acirc;&#130;&not;</td>
-                        <td class="cell-center" style="width:110px;">0,15 &acirc;&#130;&not;</td>
-                    </tr></tbody><tfoot><tr class="total2"><td class="cell-center" style="width:160px;font-weight:bold;padding: 0 !important;"><strong>Total pendiente de recibir</strong></td>
-            <td class="cell-center" style="width:110px;font-weight:bold"><strong>&nbsp;</strong></td>
-            <td class="cell-center" style="width:110px;font-weight:bold"><strong>&nbsp;</strong></td>
-            <td class="cell-center" style="width:125px;font-weight:bold"><strong>&nbsp;</strong></td>
-            <td class="cell-center" style="width:135px;font-weight:bold">25,71 &acirc;&#130;&not;</td>
-            <td class="cell-center" style="width:105px;font-weight:bold">0,86 &acirc;&#130;&not;</td>
-        </tr></tfoot></table>';
-    
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -358,8 +310,8 @@ class loanbook extends p2pCompany {
         $this->loanArray;
         $this->UserLoansId = array();
         $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
-            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
-            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
+            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Loan Type', 'I' => 'Payment time',
+            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration', 'N' => 'URL ID');
         $this->typeFileTransaction = "xlsx";
         $this->typeFileInvestment = "json";
         //$this->typeFileExpiredLoan = "xlsx";
@@ -1068,6 +1020,7 @@ class loanbook extends p2pCompany {
                   signin		Login
                   username	antoine.de.poorter@gmail.com
                  */
+                $this->arrayLoanStructure = json_decode($this->tableStructure,true);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
@@ -1186,7 +1139,7 @@ class loanbook extends p2pCompany {
                     }
                     foreach ($divs as $div) {
                         if ($div->getAttribute('id') == 'lb_cartera_data_2') {
-                            $this->tempArray['global']['activeInvestments'] = trim($div->nodeValue);
+                            $this->tempArray['global']['activeInvestments'] = filter_var(trim($div->nodeValue), FILTER_SANITIZE_NUMBER_INT);
                             echo $div->nodeValue;
                         }
                     }              
@@ -1281,14 +1234,27 @@ class loanbook extends p2pCompany {
                 break;
             case 8:
                 //echo $str;
-                $this->loanArray[$this->j]['A'] = $this->UserLoansId[$this->j - 1]; //A is loan id
-
+                
+                $topRevision = false;
+                $tableRevision = false;
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
                 $top = $this->getElements($dom, 'div', 'class', 'loantop')[0];
+                
+                //COMPARE STRUCTURE
+                $nodeClone = $top->cloneNode(TRUE);    //Get the node
+                $nodeTop = new DOMDocument();
+                $nodeTop->appendChild($nodeTop->importNode($nodeClone,TRUE)); //Save the node in a dom element
+                $nodeTopString = $nodeTop->saveHTML(); //We need to convert the dom node to string
+                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0], $nodeTopString); //Compare structure with db
+                
+                if(!$topRevision){           
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                }
+                
                 $divs = $top->getElementsByTagName('div');
                 $this->verifyNodeHasElements($divs);
                 if (!$this->hasElements) {
@@ -1300,9 +1266,11 @@ class loanbook extends p2pCompany {
                     switch ($key) {
                         case 7:
                             $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
+                            $this->loanArray[$this->j]['A'] = str_replace(")","",explode("(", $str[2])[1]); //Loan Location
                             $this->loanArray[$this->j]['B'] = $str[0]; //Loan Purpose
                             $this->loanArray[$this->j]['C'] = $str[1]; //Loan Price target
                             $this->loanArray[$this->j]['D'] = explode("(", $str[2])[0]; //Loan Location
+                            
                             break;
                         case 8:
                             $str = explode(" ", trim($div->nodeValue));
@@ -1318,11 +1286,24 @@ class loanbook extends p2pCompany {
 
                 $tables = $dom->getElementsByTagName('table');
                 $this->verifyNodeHasElements($tables);
+                             
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($tables as $table) {
                     if ($table->getAttribute("id") == "table-1") {
+                        
+                        //COMPARE STRUCTURE
+                        $nodeClone = $table->cloneNode(TRUE);   //Get the node
+                        $nodeTable = new DOMDocument();
+                        $nodeTable->appendChild($nodeTable->importNode($nodeClone,TRUE)); //Save the node in a dom element
+                        $nodeTableString = $nodeTable->saveHTML(); //We need to convert the dom node to string
+                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString); //Compare structure   with db  
+                        
+                         if(!$tableRevision){
+                            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                        }
+                        
                         $tds = $table->getElementsByTagName('td');
                         $this->verifyNodeHasElements($tds);
                         if (!$this->hasElements) {
@@ -1334,9 +1315,6 @@ class loanbook extends p2pCompany {
                                 case 3:
                                     $this->loanArray[$this->j]['H'] = trim($td->nodeValue); //Type
                                     break;
-                                /* case 7:
-                                  $this->loanArray[$this->j]['H'] = trim($td->nodeValue); //Loan Type
-                                  break; */
                                 case 9:
                                     $this->loanArray[$this->j]['I'] = trim($td->nodeValue); //Frecuencia pago
                                     break;
@@ -1353,6 +1331,7 @@ class loanbook extends p2pCompany {
                                     $str = array_values(array_unique(explode(" ", trim($td->nodeValue))));
                                     print_r($str);
                                     $this->loanArray[$this->j]['M'] = trim($str[2]); //Duration
+                                    $this->loanArray[$this->j]['N'] = $this->UserLoansId[$this->j - 1]; //A is loan id
                                     break;
 
                                 //case 21 SECTOR
@@ -1360,6 +1339,7 @@ class loanbook extends p2pCompany {
                         }
                         
                     }
+                    break;
                 }
 
                 print_r($this->loanArray);
@@ -1527,6 +1507,7 @@ class loanbook extends p2pCompany {
 
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
+                        //Compare structure
                         $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
                         if ($revision) {
                             echo "Comparation ok";
@@ -1799,6 +1780,12 @@ class loanbook extends p2pCompany {
     }
     
     
+    /**
+     * Compare amortization table structure from loanbook
+     * @param string $node1
+     * @param string $node2
+     * @return boolean
+     */
     function structureRevisionAmortizationTable($node1, $node2) {
         $dom1 = new DOMDocument();
         $dom1->loadHTML($node1);
@@ -1830,6 +1817,81 @@ class loanbook extends p2pCompany {
         echo $structureRevision;
         return $structureRevision;
     }
+    
+    
+    /**
+     * Compare one of the structures from loanbook investments
+     * @param string $node1
+     * @param string $node2
+     * @return boolean
+     */
+    function structureLoanTop($node1, $node2) {
+        $dom1 = new DOMDocument();
+        $dom1->loadHTML($node1);
+
+        $dom2 = new DOMDocument();
+        $dom2->loadHTML($node2);
+
+        $dom1 = $this->cleanDom($dom1, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'span'),
+                ), array('class', 'src', 'title', 'data-original-title', 'style', ));
+        $dom1 = $this->cleanDomTag($dom1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'i')));
+
+        $dom2 = $this->cleanDom($dom2, array(
+            array('typeSearch' => 'element', 'tag' => 'img'),
+            array('typeSearch' => 'element', 'tag' => 'span'),
+                ), array('class', 'src', 'title', 'data-original-title', 'style', ));
+        $dom2 = $this->cleanDomTag($dom2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'i')));
+
+        echo 'compare structure';
+        $structureRevision = $this->verifyDomStructure($dom1, $dom2);
+        echo $structureRevision;
+        return $structureRevision;
+    }
+    
+    
+    /**
+     * Compare one of the structures from loanbook investments
+     * @param string $node1
+     * @param string $node2
+     * @return boolean
+     */
+    function structureLoanTable($node1, $node2) {
+        $dom1 = new DOMDocument();
+        $dom1->loadHTML($node1);
+
+        $dom2 = new DOMDocument();
+        $dom2->loadHTML($node2);
+
+       $dom1 = $this->cleanDom($dom1, array(
+            array('typeSearch' => 'element', 'tag' => 'table'),
+            array('typeSearch' => 'element', 'tag' => 'td'),
+           array('typeSearch' => 'element', 'tag' => 'tr'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+                ), array('class', 'src', 'title', 'data-original-title', 'style', 'href'));
+        $dom1 = $this->cleanDomTag($dom1, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'i')));
+
+        $dom2 = $this->cleanDom($dom2, array(
+            array('typeSearch' => 'element', 'tag' => 'table'),
+            array('typeSearch' => 'element', 'tag' => 'td'),
+            array('typeSearch' => 'element', 'tag' => 'tr'),
+            array('typeSearch' => 'element', 'tag' => 'a'),
+                ), array('class', 'src', 'title', 'data-original-title', 'style', 'href'));
+        $dom2 = $this->cleanDomTag($dom2, array(
+            array('typeSearch' => 'tagElement', 'tag' => 'i')));
+        
+        echo 'compare structure';
+        $structureRevision = $this->verifyDomStructure($dom1, $dom2);
+        echo $structureRevision;
+        
+        return $structureRevision;
+    }
+    
 
 }
+
 

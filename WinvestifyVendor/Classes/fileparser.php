@@ -239,7 +239,7 @@ class Fileparser {
                 "detail" => "Compensation",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept15"    
+                "type" => "globalcashflowdata_platformCompensation"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -348,16 +348,20 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "DefaultInterestIncome"
-                ],        
+                ],     
+            35 => [
+                "detail" => "Partial_principal_and_interest_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Mix",
+                "type" => "payment_partialPrincipalAndInterestPayment"
+                ],
         
   
  /*
     default interest income should be in globalcashflow table
 
 30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    
-    
-  */         
+Currency exchange fee	FX commission with Exchange Rate:    */        
         
         
         
@@ -397,6 +401,12 @@ Currency exchange fee	FX commission with Exchange Rate:
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
+                ],
+            105 => [
+                "detail" => "dummy_concept",    // This is a dummy concept
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "dummy",
                 ],
         
     /*         105 => [
@@ -1376,9 +1386,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string    $input      It is the string in which we search the information
      * @param string    $search     The character to search. 
      * @param string    $separator  The separator character
-     * @param int       $mandatory  Indicates if it is mandatory that $search exists. If it does not exist 
-     *                              then the function will return a string of format "global_xxxxxx" with 
-     *                              xxxxxx being a random number
+     * @param int       $mandatory  Indicates if it is mandatory that $search exists. 
+     *                              If mandatory is 1 and it does not exist then the function will return 
+     *                              a string of format "global_xxxxxx" with xxxxxx being a random number
+     *                              If mandatory is 2 and it does exists, then the function will return 
+     *                              a string of format "global_xxxxxx" with xxxxxx being a random number
      * @return string   $extractedString    The value we were looking for
      *
      */
@@ -1386,6 +1398,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
         $position = stripos($input, $search);
         if ($position !== false) {  // == TRUE
+            if ($mandatory == 2){    
+                return "global_" . mt_rand();
+            }
             $start = $position;
             $length = strlen($search);
         }

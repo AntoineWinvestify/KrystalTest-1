@@ -63,13 +63,21 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/Y",
+                                "input2" => "D/M/y",
                                 ],
                     "functionName" => "normalizeDate",
                 ] 
             ],
             "E" => [
-                    "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+                [
+                    "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "-",                                // May contain trailing spaces
+                                "input3" => "",
+                                "input4" => 2                                   // 'input3' is mandatory. With mandatory 2 If found then return "global_xxxxxx"
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
             ], 
             "F" => [// NOT FINISHED YET
                 [
@@ -78,11 +86,11 @@ class finanzarel extends p2pCompany {
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Provisión de fondos" => "Cash_deposit"],
-                                        1 => [ "Retirada de fondos" => "Cash_withdrawal"],
+                                        1 => ["Retirada de fondos" => "Cash_withdrawal"],
                                         2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
                                         3 => ["Provisi?n de fondos" => "Cash_deposit"],
                                         4 => ["Cargo por inversi?n en efecto" => "Primary_market_investment"],
-                                        5 => ["Abono por cobro parcial de efecto" => "Partial_principal_repayment"],
+                                        5 => ["Abono por cobro parcial de efecto" => "Partial_principal_and_interest_payment"],
                                         7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
                                         9 => ["Intereses de demora" => "Delayed_interest_income"],
                                         14 => ["Retrocesión de comisiones" => "Compensation"],
@@ -123,7 +131,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/Y",
+                                "input2" => "D/M/y",
                                 ],
                     "functionName" => "normalizeDate",
                 ] 
@@ -138,7 +146,12 @@ class finanzarel extends p2pCompany {
                                                                                         // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Intereses" => "Regular_gross_interest_income"],
-                                        1 => ["Efecto fallido" => "investment_writtenOff"]
+                                        1 => ["Efecto fallido" => "Write-off"],
+                                        2 => ["Inversi?n en efecto" => "dummy_concept"],
+                                        3 => ["Amortizaci?n de efecto" => "dummy_concept"],
+                                        4 => ["Efecto retrasado" => "dummy_concept"],
+                                        5 => ["Amortizaci?n parcial de efecto" => "dummy_concept"],
+                                        6 => ["Efecto Impagado" => "dummy_concept"]
                                     ]
                             ],
                     "functionName" => "getTransactionDetail",
@@ -161,7 +174,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "transactionDetail",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "createReserverdFundsWithImpactOutstandingPrincipal",                                // 'input3' is NOT mandatory. 
+                                "input2" => "createReservedFunds",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ]
