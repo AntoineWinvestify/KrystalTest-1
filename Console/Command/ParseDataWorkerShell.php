@@ -224,14 +224,17 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                     }
- */
+ */ 
                 }
                 else {               // error occurred while analyzing a file. Report it back to Client
                     $returnData[$linkedAccountKey]['error'][] = $tempResult['error'];
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                 }
-            }
+            } 
             
+
+            
+//print_r($totalParsingresultTransactions);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
@@ -243,10 +246,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile']; 
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
             $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];             
-            
-            
-            $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
-            
+//print_r($returnData[$linkedAccountKey]);            
+          
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                 echo "action = account linking\n";
@@ -646,14 +647,26 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @param array $array It is an array of arrays
      * @param array $orderParam With orderParams if needed
      */
-    public function joinTwoDimensionArrayTogether($array, $orderParam) {
+    public function joinTwoDimensionArrayTogether($arrays, $orderParam) {
         $numberArrays = count($array);
-        $fullArray = array_shift($array);
-        foreach ($array as $arrayKey => $tempArray) {
-            foreach ($tempArray as $dateKey => $dateArray) {
-                foreach ($dateArray as $loanIdKey => $loanId) {
-                    foreach ($loanId as $keyVariable => $variable) {
-                        $fullArray[$dateKey][$loanIdKey][] = $variable;
+        $dates = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $keyDate => $value) {
+                if (!in_array($keyDate, $dates)) {
+                    $dates[] = $keyDate;
+                }
+            }
+        }
+        sort($dates);
+        $fullArray = [];
+        //$fullArray = array_shift($arrays);
+        $i = 0;
+        foreach ($dates as $date) {
+            $value = null;
+            foreach ($arrays as $arrayKey => $array) {
+                foreach ($array[$date] as $loanIdKey => $loanData) {
+                    foreach ($loanData as $key => $data) {
+                        $fullArray[$date][$loanIdKey][] = $data;
                     }
                 }
             }
@@ -661,8 +674,28 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         return $fullArray;
     }
     
-    public function joinOneDimensionArrayTogether($array, $orderParam) {
-        $numberArrays = count($array);
+    public function joinOneDimensionArrayTogether($arrays, $orderParam) {
+        
+        $loanIds = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $keyLoanId => $value) {
+                if (!in_array($keyLoanId, $loanIds)) {
+                    $loanIds[] = $keyLoanId;
+                }
+            }
+        }
+        $fullArray = [];
+        $i = 0;
+        foreach ($loanIds as $loanId) {
+            $value = null;
+            foreach ($arrays as $arrayKey => $array) {
+                foreach ($array[$loanId] as $Key => $loanData) {
+                    $fullArray[$loanId][] = $loanData;
+                }
+            }
+        }
+        
+        /*$numberArrays = count($array);
         $fullArray = array_shift($array);
         foreach ($array as $arrayKey => $tempArray) {
             foreach ($tempArray as $loanKeyId => $loanId) {
@@ -671,7 +704,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
                 }
                
             }
-        }
+        }*/
         return $fullArray;
     }
     

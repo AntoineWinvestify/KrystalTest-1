@@ -49,31 +49,6 @@ public function main() {
 
 
 
-
-/*
-CALl IT FROM THE CMD LINE AS FOLLOWS:
-
-antoine@rohan:/var/www/app/vendors/shells$ ./../cakeshell  backup -cli /usr/bin/php -console /var/www/cake/console -app /var/www/app    
-
-
-*/
-
-public function testing() {
-	echo "this is the test script running \n";
-	$serial_result = "Antoine de Poorter";
-//	$fhandle = fopen("/home/antoine/testname.txt", "a+");
- 	$fhandle = fopen("testname.txt", "a+");
-	fwrite($fhandle, $serial_result);
-	fclose($fhandle);
-	
-}
-
-
-
-
-
-
-
 /**
 * Cycles through ALL the groups with the flag activeSchoolYear = 1 and will create
 * a new classlog record and its associated attendance records. The latter ones are also linked to

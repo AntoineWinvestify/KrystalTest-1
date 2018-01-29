@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -65,14 +65,23 @@ class ParseDataClientShell extends GearmanClientShell {
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
 
+        echo "Deleting Globaltotalsdata\n";
+        $this->Globaltotalsdata = ClassRegistry::init('Globaltotalsdata');
+        $this->Globaltotalsdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
+
+ 
         echo "Deleting Investmentslice\n";
- //       $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');
         $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
+        
+        echo "Deleting Globaltotalsdata\n";
+        $this->Globalcashflowdata = ClassRegistry::init('Globaltotalsdata');
+        $this->Globalcashflowdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
 
         return;
     }
 
-    public function initDataAnalysisClient() {
+    public function initClient() {
 
         $this->resetTestEnvironment();      // Temporary function
         $this->GearmanClient->addServers();
@@ -117,13 +126,9 @@ class ParseDataClientShell extends GearmanClientShell {
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
                     print_r($this->queueInfo);
                    
-                    
-                    
                     $this->date = $this->queueInfo[$job['Queue']['id']]['date'];                // End date of collection period
                     $this->startDate = $this->queueInfo[$job['Queue']['id']]['startDate'];      // Start date of collection period
- //{"date":"20171030","companiesInFlow":["885"],"startDate":{"885":"20180111"}}                   
-                    
-                    $this->startDate = "20171026";
+
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
@@ -259,6 +264,8 @@ class ParseDataClientShell extends GearmanClientShell {
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
+        
+        
 ini_set('memory_limit','2048M');      
 $timeStart = time();
         $calculationClassHandle = new UserDataShell();
@@ -293,30 +300,15 @@ $tempMeasurements = array(
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
+ 
         
-// Deal with empty transaction record    
-        if (isset($platformData['parsingResultTransactions'])) {
-            if (count($platformData['parsingResultTransactions']) == 0) {
-
-            $movingDate = $startDate;
-            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-            echo "startDate = $startDate and finishDate = $finishDate\n";
-            do {
-                $newUserinvestmentData = $calculationClassHandle->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                $newUserinvestmentData['Userinvestmentdata']['date'] = $movingDate;
-                print_r($newUserinvestmentData);
-                $this->Userinvestmentdata->save($newUserinvestmentData, $validate = true);
-
-                $movingDate = date('Ymd', strtotime($movingDate . ' +1 day'));
-            }
-            while ($movingDate <= $finishDate);
-            }
-        }
-       
+  $this->arrayToExcel($platformData['parsingResultTransactions'], "/home/antoine/testingExcel.xls"); 
+         
+        
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2017-0 7-23"){ 
+if ($dateKey == "2016-01- 12"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -325,21 +317,6 @@ print_r($platformData['amortizationTablesOfNewLoans']);
     
     echo "FINISHED_ACCOUNT = $FINISHED_ACCOUNT   \n";
     echo "STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS \n"; 
-    
-$myArray = array ('finished' => $FINISHED_ACCOUNT,
-            'finished_list' => $FINISHED_ACCOUNT_LIST,
-            'countFinishedList' => count($FINISHED_ACCOUNT_LIST),
-            'started_new_accounts'  => $STARTED_NEW_ACCOUNTS,
-            'started_new_accounts_list' => $STARTED_NEW_ACCOUNTS_LIST,
-            'countNewAccountList' => count($STARTED_NEW_ACCOUNTS_LIST),
-            'finished_duplicates_list' => $FINISHED_DUPLICATES_LIST,
-            'countFinishedDuplicatesList' => count($FINISHED_DUPLICATES_LIST),
-            'measurements' => $tempMeasurements,
-            'workingNewLoans' => $platformData['workingNewLoans'], 
-            'countWorkingNewLoans' => count($platformData['workingNewLoans']),
-            'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
-        );
-    file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
     exit;
 }
 
@@ -644,7 +621,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 }   
                 
 // Now start consolidating of the results on investment level and per day                
-                $internalVariableToHandle = array(37, 10004);
+                $internalVariableToHandle = array(10014, 10015, 37, 10004);
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -827,6 +804,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
 
             if (!empty($database['globaltotalsdata'])) {
                 $database['globaltotalsdata']['userinvestmentdata_id'] = $userInvestmentDataId;
+                $database['globaltotalsdata']['linkedaccount_id'] = $linkedaccountId;
                 $database['globaltotalsdata']['date'] = $dateKey;
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globaltotalsdata Data... ";               
                 $this->Globaltotalsdata->create();
@@ -845,33 +823,22 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
         $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']; // Holds the last calculated value
 
         $fileString = file_get_contents($controlVariableFile);         // must be a json file
-
         $externalControlVariables = json_decode($fileString, true);     // Read control variables as supplied by p2p 
         echo "Consolidation Phase 2, checking control variables\n";        
  //       print_r($externalControlVariables);
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, $externalControlVariables);
-        if ($controlVariablesCheck == false) {
-            
-            
+        if ($controlVariablesCheck > 0) { // mismatch detected
+            // STILL TO FINISH
+            $errorData['line'] = __LINE__; 
+            $errorData['file'] = __FILE__;
+            $errorData['urlsequenceUrl'] = "";
+            $errorData['subtypeErrorId']; //It is the subtype of the error
+            $errorData['typeOfError']; //It is the type of error or the summary of the detailed information of the error
+            $errorData['detailedErrorInformation']; //It is the detailed information of the error
+            $errorData['typeErrorId']; //It is the principal id of the error           
+            $this->saveGearmanError($errorData);
         }
        
-echo "FINISHED_ACCOUNT = $FINISHED_ACCOUNT   \n";
-echo "STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS \n"; 
-$myArray = array ('finished' => $FINISHED_ACCOUNT,
-            'finished_list' => $FINISHED_ACCOUNT_LIST,
-            'countFinishedList' => count($FINISHED_ACCOUNT_LIST),
-            'started_new_accounts'  => $STARTED_NEW_ACCOUNTS,
-            'started_new_accounts_list' => $STARTED_NEW_ACCOUNTS_LIST,
-            'countNewAccountList' => count($STARTED_NEW_ACCOUNTS_LIST),
-            'finished_duplicates_list' => $FINISHED_DUPLICATES_LIST,
-            'countFinishedDuplicatesList' => count($FINISHED_DUPLICATES_LIST),
-            'workingNewLoans' => $platformData['workingNewLoans'], 
-            'countWorkingNewLoans' => count($platformData['workingNewLoans']),
-            'errorDeletingWorkingNewloans' => $errorDeletingWorkingNewloans,
-        );
-file_put_contents("/home/antoine/controlData6.json", json_encode(($myArray)));
-       
-
         $calculationClassHandle->consolidatePlatformData($database);
         // remove duplicates from the 'newLoans'AND remove all loans whose loanId/slice are in expiredLoans
 $timeStop = time();
@@ -999,6 +966,46 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         return;
     } 
 
+  
+    
+    
+    
+    
+    
+    
+     function arrayToExcel($array, $excelName) {
+        /*$array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
+        $excelName = "prueba";*/
+        $keyArray = array();
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+        foreach ($array as $key => $val) {
+            $keyArray[] = $key;
+        }
+
+        $filter = null;
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle($excelName);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+                ->fromArray($keyArray, NULL, 'A1')
+                ->fromArray($array, NULL, 'A2');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($excelName);
+        echo "FILE $excelName has been written\n";
+
+    }   
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 }
