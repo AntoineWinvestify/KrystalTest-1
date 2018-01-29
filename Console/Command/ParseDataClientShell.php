@@ -371,11 +371,22 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                     // cycle through all individual fields of the transaction record
  echo "-------------------\n";
  print_r($dateTransaction);
- /*
-  * 
-  * here I can do 
-  *  if ($dateTransaction[$conceptChars == "AM_TABLE") {
-  *     do something special..BEFORE doing the normal global things for each field
+ 
+
+ // This could be  Ghost loan (from Zank). Let's check the investments and expired_loans to see if 
+ // a reference exists to the loan and, if succesfull, assign the loanId. 
+                    if ($dateTransaction[$conceptChars] == "AM_TABLE") {        // new investment
+                        $investments = $this->searchInvestmentArrays($dateTransaction[0]);
+                        if (!empty($investments)) {
+                            
+                            
+                            
+             //               do something, like preparing shadowdatabase
+                        }
+                    }
+                    
+/*     do something special..BEFORE doing the normal global things for each field
+                    }
   * 
   * }
   * 
@@ -383,15 +394,10 @@ print_r($platformData['amortizationTablesOfNewLoans']);
  echo "+++++++++++++++++\n";
  
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
- echo "$$$$$$$$$$$$$$$$$\n";
- print_r($transaction);
- echo "\n@@@@@@@@@@@@@@@@@@@@@@\n";
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }  
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-//$transactionData['conceptChars']
-
                         if (!empty($tempResult)) {                            
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -1019,13 +1025,36 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     }   
     
     
-    
-    
-    
-    
-    
-    
-    
+     /** 
+     *  searches in the investments and expired_loans for an *investment* done on 
+     *  the date as defined in the dateTransaction array. Also the amount is checked
+     * 
+     *  The result can be 0, 1 or many arrays of loans
+     * 
+     *  @param  array   array with the current transaction data
+     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @return 
+     *                  
+     */   
+    function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments) {  
+
+        $foundInvestments = array();
+        foreach ($investments as $investment) {
+            if ($transaction['date'] == $investment['investment_myInvestmentDate']) {
+                if (($transaction['amount']) == $investment['investment_myInvestment']) {
+                    $foundInvestments[] = $investment;
+                }                
+            }   
+        }
+        foreach ($expiredInvestments as $expiredInvestments) {
+            if (($transaction['date']) == $expiredLoan['investment_myInvestmentDate']) {
+                if (($transaction['amount']) == $expiredLoan['investment_myInvestment']) {
+                    $foundInvestments[] = $expiredInvestments;
+                }                
+            }   
+        }   
+        return $foundInvestments;
+    }    
     
     
 }
