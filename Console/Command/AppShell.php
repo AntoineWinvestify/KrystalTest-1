@@ -297,4 +297,16 @@ class AppShell extends Shell {
         return $temp;
     }   
     
+    public function checkIfScripIsRunning($scriptName) {
+        $output = shell_exec('ps -C php -f');
+        echo $output . "\n\n";
+        if (strpos($output, "CollectDataClient")!== false) { 
+            echo "He morido";
+
+            die;
+        }
+        echo "NO He morido";
+        die;
+    }
+    
 }
