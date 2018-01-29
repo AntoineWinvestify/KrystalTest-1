@@ -95,6 +95,17 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
+        /*print_r($returnData);
+        
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "PHPExcel/PHPExcel/Calculation";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'Financial.php');
+        $financialClass = new PHPExcel_Calculation_Financial;
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        }
+        
+        print_r($returnData);
+        exit;*/
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }

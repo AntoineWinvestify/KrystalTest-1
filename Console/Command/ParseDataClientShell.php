@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
 
@@ -306,7 +306,7 @@ $tempMeasurements = array(
         $this->Payment = ClassRegistry::init('Payment');
  
         
-  $this->arrayToExcel($platformData['parsingResultTransactions'], "/home/antoine/testingExcel.xls"); 
+  //$this->arrayToExcel($platformData['parsingResultTransactions'], "/home/antoine/testingExcel.xls"); 
          
         
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
