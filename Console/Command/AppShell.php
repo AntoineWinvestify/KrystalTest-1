@@ -297,16 +297,25 @@ class AppShell extends Shell {
         return $temp;
     }   
     
-    public function checkIfScripIsRunning($scriptName) {
+    /**
+     * Function to check if a client is running, if it is not running, the function started it
+     * 
+     * @param string $this->args[0] | $scriptName It is the name of the client that will be checked
+     */
+    public function checkIfScripIsRunning() {
+        $scriptName = $this->args[0];
         $output = shell_exec('ps -C php -f');
         echo $output . "\n\n";
-        if (strpos($output, "CollectDataClient")!== false) { 
-            echo "He morido";
-
+        if (strpos($output, $scriptName . " initClient") === false) { 
+            $command = "/var/www/html/cake_branch/app/Console/Command/../cake $scriptName initClient";
+            echo "Not found, init client";
+            shell_exec($command);
+        }
+        else {
+            echo "Found client";
+            echo "\n DIE \n";
             die;
         }
-        echo "NO He morido";
-        die;
     }
     
 }
