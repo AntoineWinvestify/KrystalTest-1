@@ -353,6 +353,8 @@ echo "Done\n";
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
 
+
+    print_r($data);
         return json_encode($data);
     }       
         

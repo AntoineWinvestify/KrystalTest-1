@@ -152,6 +152,9 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
+        if (isset($resultData['investment']['investment_disinvestment'])) {
+            $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
+        }
         return $result;
     }
 
@@ -796,7 +799,9 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestment(&$transactionData, &$resultData) {
-        return $resultData['investment']['investment_myInvestment'];
+        $investment = $resultData['investment']['investment_myInvestment'];
+        $resultData['investment']['investment_myInvestment'] = 0;
+        return -$investment;
     }   
     
     
@@ -969,6 +974,26 @@ class UserDataShell extends AppShell {
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
     
+    /**
+     * Get the amount which corresponds to the "payment_taxVAT" concept
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    public function calculatePaymentTax(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    /**
+     * Get the amount which corresponds to the "payment_incomeWithholdingTax" concept
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    public function calculateIncomeWithholdingTax(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
 }
 
 /*
