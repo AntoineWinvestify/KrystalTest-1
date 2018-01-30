@@ -306,8 +306,8 @@ class AppShell extends Shell {
         $scriptName = $this->args[0];
         $output = shell_exec('ps -C php -f');
         echo $output . "\n\n";
-        if (strpos($output, $scriptName . " initClient") === false) { 
-            $command = "/var/www/html/cake_branch/app/Console/Command/../cake $scriptName initClient";
+        if (strpos($output, $scriptName . " initClient") === false) {
+            $command = __DIR__ . DS . ".." . DS . "cake " . $scriptName . " initClient";
             echo "Not found, init client";
             shell_exec($command);
         }
