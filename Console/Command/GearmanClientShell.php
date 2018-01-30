@@ -273,16 +273,18 @@ class GearmanClientShell extends AppShell {
         $userAccess = 0;
 
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
-    
-        $tempData = array();
-        foreach ($jobList as $job) {
-            $jobListId = $job['Queue']['id'];
-            $tempData[] = array('id' => $jobListId,
-                              'queue_status' => $newStatus
-                              );
-        }
+        if (!empty($jobList)) {
+            $tempData = array();
+            foreach ($jobList as $job) {
+                $jobListId = $job['Queue']['id'];
+                $tempData[] = array('id' => $jobListId,
+                                  'queue_status' => $newStatus
+                                  );
+            }
 
-        $this->Queue->saveMany($tempData, array('validate' => true));
+            $this->Queue->saveMany($tempData, array('validate' => true));
+        }
+        
         return $jobList;
     }    
     
