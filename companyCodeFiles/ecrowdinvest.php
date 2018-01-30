@@ -199,16 +199,18 @@ class ecrowdinvest extends p2pCompany {
                 break;
             }
         }
-    
-        echo 'To delete';
-        print_r($this->investmentDeletedList);
-        $deletedInvestment = $this->deleteInvestment($this->investmentDeletedList);
-        echo 'totalpremerge';
-        print_r($totalArray);
-        if(!empty($deletedInvestment)){
-            $totalArray = array_merge($totalArray,$deletedInvestment);
-            echo 'total:';
-            $this->print_r2($totalArray);       
+        
+        if ($totalArray != false) {
+            echo 'To delete';
+            print_r($this->investmentDeletedList);
+            $deletedInvestment = $this->deleteInvestment($this->investmentDeletedList);
+            echo 'totalpremerge';
+            print_r($totalArray);
+            if (!empty($deletedInvestment)) {
+                $totalArray = array_merge($totalArray, $deletedInvestment);
+                echo 'total:';
+                $this->print_r2($totalArray);
+            }
         }
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
@@ -412,39 +414,46 @@ class ecrowdinvest extends p2pCompany {
 
                 //We need remove this attribute directly from the div tag(the father)
         $node1->removeAttribute('class');
-        $node1->removeAttribute('Style');
+        $node1->removeAttribute('style');
         $node2->removeAttribute('class');
-        $node2->removeAttribute('Style');
+        $node2->removeAttribute('style');
 
+        
+        $node1 = $this->cleanDomTag($node1, array(  
+            array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
+            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'img', 'attr' => 'rel', 'value' => 'popover2'),
+        ));
         
         $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width', 'style', 'rel'));
 
                 
         $node1 = $this->cleanDom($node1, array( //Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
-                ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
+            array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('class', 'style', 'data-toggle', 'data-placement', 'data-trigger', 'data-content', 'title', 'data-original-title', 'aria-valuenow'));
 
-        $node1 = $this->cleanDomTag($node1, array(  
+       
+        $node2 = $this->cleanDomTag($node2, array(   
             array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
             array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'img', 'attr' => 'rel', 'value' => 'popover2'),
         ));
         
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
-             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
+            array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width', 'style'));
         
         $node2 = $this->cleanDom($node2, array( //Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
                 ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
         
-        $node2 = $this->cleanDomTag($node2, array(   
-            array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
-            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
-        ));
+        
         
         
         $structureRevision = $this->verifyDomStructure($node1, $node2);

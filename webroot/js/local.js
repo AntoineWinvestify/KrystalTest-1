@@ -441,17 +441,19 @@ app.visual = {
         var correctForm = true;
         return true;
     },
+    
     checkFormRegistrationD: function () {
         var correctForm = true;
         $(".errorInputMessage").hide(); // remove all error texts
         $(".editRegistrationData input").removeClass("redBorder"); // remove ALL redborders
 
         var investor,
-                p2p,
-                p2b,
-                invoiceTrading,
-                crowdHouser;
+                p2p = 0,
+                p2b = 0,
+                invoiceTrading = 0,
+                crowdRealEstate = 0;
         investor = $('input[name="accreditedInvestor"]:checked').val();
+        
         if (typeof investor == 'undefined') {
             console.log("Define type of user");
             $(".ErrorInvestor").find(".errorMessage").html(TEXTOS.T15); // "select 1 option" warning
@@ -459,40 +461,27 @@ app.visual = {
             correctForm = false;
         }
 
-
-
         if ($('#ContentPlaceHolder_P2PInvestment').is(":checked")) {
-            p2p = $('#ContentPlaceHolder_P2PInvestment:checkbox:checked').val();
-        } else {
-            p2p = 0;
+            p2p = 1;
         }
-
         if ($('#ContentPlaceHolder_P2BInvestment').is(":checked")) {
-            p2b = $('#ContentPlaceHolder_P2BInvestment:checkbox:checked').val();
-        } else {
-            p2b = 0;
-        }
-
+            p2b = 1;
+        }       
         if ($('#ContentPlaceHolder_InvoiceTrading').is(":checked")) {
-            invoiceTrading = $('#ContentPlaceHolder_InvoiceTrading:checkbox:checked').val();
-        } else {
-            invoiceTrading = 0;
+            invoiceTrading = 1;
         }
-
-        if ($('#ContentPlaceHolder_CrowdHouser').is(":checked")) {
-            crowdHouser = $('#ContentPlaceHolder_CrowdHouser:checkbox:checked').val();
-        } else {
-            crowdHouser = 0;
+        if ($('#ContentPlaceHolder_CrowdRealEstate').is(":checked")) {
+            crowdRealEstate = 1;
         }
-
-        if ((p2b + p2p + invoiceTrading + crowdHouser) === 0) {
-            console.log("Show error text");
+        
+        if ((p2b + p2p + invoiceTrading + crowdRealEstate) == 0) {
             $(".ErrorPlatformSelection").find(".errorMessage").html(TEXTOS.T12); // "Select at least one warning
             $(".ErrorPlatformSelection").fadeIn();
             correctForm = false;
         }
         return correctForm;
     },
+    
     checkFormRegistrationE: function () {
         return correctForm;
     },

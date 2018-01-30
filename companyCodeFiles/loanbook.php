@@ -245,10 +245,12 @@ class loanbook extends p2pCompany {
             }
         }
 
-        $this->print_r2($this->investmentDeletedList);
-        $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
-        echo 'Hidden: ' . SHELL_ENDOFLINE;
-        $this->print_r2($hiddenInvestments);
+        if($totalArray){
+            $this->print_r2($this->investmentDeletedList);
+            $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+            echo 'Hidden: ' . SHELL_ENDOFLINE;
+            $this->print_r2($hiddenInvestments);
+        }
 
         //$this->print_r2($totalArray);
         foreach ($totalArray as $key => $investment) { //Delete empy lines
@@ -288,17 +290,29 @@ class loanbook extends p2pCompany {
             $tempArray['marketplace_loanReference'] = $loanId;
 
             $divs = $this->getElements($dom, 'div', 'class', 'row');
+            /*$this->verifyNodeHasElements($divs);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }*/
             /* foreach ($divs as $keyDiv => $div) {
               echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
               } */
             $subdivs = $divs[6]->getElementsByTagName('div');
+            /*$this->verifyNodeHasElements($subdivs);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }*/
             /* foreach ($subdivs as $keyDiv => $div) {
               echo "DIV VALUE: " . $keyDiv . " " . $div->nodeValue . HTML_ENDOFLINE;
               } */
             $tempArray['marketplace_rating'] = preg_replace('/\s*/m', '', $subdivs[0]->nodeValue);
             $tempArray['marketplace_interestRate'] = $this->getPercentage($subdivs[2]->nodeValue);
-            $tempArray['marketplace_timeLeft'] = trim(explode(" ", trim($this->$subdivs[8]->nodeValue))[0]);
+            $tempArray['marketplace_timeLeft'] = trim(explode(" ", trim($subdivs[8]->nodeValue))[0]);
             $progress = $this->getElementsByClass($dom, "progress-bar");
+            /*$this->verifyNodeHasElements($progress);
+            if (!$this->hasElements) {
+               return $this->getError(__LINE__, __FILE__);
+            }*/
             if (!empty($progress)) {
                 $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($progress[0]->nodeValue);
                                 $tempArray['marketplace_status'] = REJECTED;
@@ -309,6 +323,10 @@ class loanbook extends p2pCompany {
 
             $table = $dom->getElementById("table-1");
             $tds = $table->getElementsByTagName('td');
+            /*$this->verifyNodeHasElements($tds);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }*/
             foreach ($tds as $keyTd => $td) {
                 //echo "TD VALUE: " . $keyTd . " " . $td->nodeValue . HTML_ENDOFLINE;
                 switch ($keyTd) {
