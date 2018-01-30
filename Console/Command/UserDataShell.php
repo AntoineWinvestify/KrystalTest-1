@@ -127,7 +127,7 @@ class UserDataShell extends AppShell {
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
-
+        echo "/////////////////////////////////////";
         if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
         }
@@ -155,6 +155,7 @@ class UserDataShell extends AppShell {
         if (isset($resultData['investment']['investment_disinvestment'])) {
             $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
         }
+        print_r($resultData['investment']['investment_disinvestment']);
         return $result;
     }
 
@@ -800,7 +801,7 @@ class UserDataShell extends AppShell {
      */
     public function calculateDisinvestment(&$transactionData, &$resultData) {
         $investment = $resultData['investment']['investment_myInvestment'];
-        $resultData['investment']['investment_myInvestment'] = 0;
+        
         return -$investment;
     }   
     
@@ -971,6 +972,7 @@ class UserDataShell extends AppShell {
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
+         print_r($resultData);
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
     
@@ -994,6 +996,8 @@ class UserDataShell extends AppShell {
     public function calculateIncomeWithholdingTax(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
+    
+   
 }
 
 /*

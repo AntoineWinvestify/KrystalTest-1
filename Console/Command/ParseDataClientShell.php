@@ -300,7 +300,7 @@ $tempMeasurements = array(
  //           echo "regular update\n";
             $platformData['workingNewLoans'] = $platformData['newLoans'];
         } 
-      
+
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
@@ -312,7 +312,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2014-11-17"){ 
+if ($dateKey == "2019-03-13"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -445,7 +445,7 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                     $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$keyDateTransaction][0];
                     $loanStatus = WIN_LOANSTATUS_FINISHED;
                 }
-  
+                
                 if (in_array($keyDateTransaction, $platformData['workingNewLoans'])) {          // check if loanId is new
                     $arrayIndex = array_search($keyDateTransaction, $platformData['workingNewLoans']);
                     if ($arrayIndex !== false) {        // Deleting the array from new loans list
@@ -500,7 +500,7 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                         "investment_priceInSecondaryMarket" , "investment_outstandingPrincipal", "investment_totalGrossIncome",
                         "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
                         "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan"));
- 
+
                     $investmentId = $tempInvestmentData[0]['Investment']['id'];
                     if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
                                                     // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
@@ -536,6 +536,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                    
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected
@@ -547,7 +548,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                                     else {      // Take the default one
                                         $sliceIdentifier = $transactionData['investment_loanId'];
                                 }
-                                
+                                echo __FILE__ . " " . __LINE__ . "\n";
                                 $sliceIdExists = array_search ($sliceIdentifier, $platformData['newLoans']);
                                 if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
                                     $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
@@ -556,13 +557,17 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                         }
                     }
                     
+                    echo __FILE__ . " " . __LINE__ . "\n";
 //print_r($transactionData);
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // read all transaction concepts
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
+                        print_r($tempResult);
+                        echo '-----------------------------';
+                        print_r($transactionDataKey);
+                        echo __FILE__ . " " . __LINE__ . "\n";
                         if (!empty($tempResult)) {
                             unset($result);
                             
@@ -572,6 +577,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
                             $dbVariableName = $dataInformation[1];
+                            
 echo "index = " . $tempResult['internalIndex'] . " \n";
                             echo "Execute calculationfunction: $functionToCall\n";
                             if (!empty($functionToCall)) { 
@@ -647,20 +653,27 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                 }
                             }        
                         }
-                    }                           
+                    }       
+                    
+
+                    
                 }   
-                
+                    
 // Now start consolidating of the results on investment level and per day                
-                $internalVariableToHandle = array(10014, 10015, 37, 10004);
+                $internalVariableToHandle = array(10015, 37, 10004);
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
                     echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1].  "\n";
  //                   print_r($this->variablesConfig[$item]); 
-                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);   
+                    
+                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                    print_r($database);
+                    echo 'ddddddddddddddddddd';
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {
-                            $database[$dbTable][$transactionDataKey] = 0;
+                            echo "\n" . $transactionDataKey . "\n";
+                            $database[$varName[0]][$varName[1]] = 0;
                         }
                         $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                     } else {
@@ -689,6 +702,8 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10004 ){
 //  print_r($database['payment']);
                 
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
+                
+                    
 //               if ($database['investment']['investment_new'] == YES) {
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
@@ -715,8 +730,9 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10004 ){
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
                         }
                     }
+                    
                 }
-
+                
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
                 $database['payment']['investment_id'] = $investmentId;
                 $database['payment']['date'] = $dateKey;

@@ -168,7 +168,7 @@ class loanbook extends p2pCompany {
     protected $valuesInvestment = [
         [
             "A" => [
-                "name" => "loanId"                                              // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "B" => [
                 "name" => "investment_debtor",                                  // Winvestify standardized name  OK
