@@ -302,7 +302,7 @@ class AppShell extends Shell {
      * 
      * @param string $this->args[0] | $scriptName It is the name of the client that will be checked
      */
-    public function checkIfScripIsRunning() {
+    public function checkIfScriptIsRunning() {
         $scriptName = $this->args[0];
         $output = shell_exec('ps -C php -f');
         echo $output . "\n\n";
