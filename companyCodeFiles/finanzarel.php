@@ -95,8 +95,8 @@ class finanzarel extends p2pCompany {
                                         9 => ["Intereses de demora" => "Delayed_interest_income"],
                                         14 => ["Retrocesión de comisiones" => "Compensation"],
                                         15 => ["Retrocesi?n de comisiones" => "Compensation"],
+                                        16 => ["IVA sobre Comisiones" => "Tax_VAT"],
                                         18 => ["Comisiones" => "Commission"],
-                                        24 => ["IVA sobre Comisiones" => "Tax_VAT"],
                                         29 => ["Retiro de fondos" => "Cash_withdrawal"]
                                     ]
                             ],
