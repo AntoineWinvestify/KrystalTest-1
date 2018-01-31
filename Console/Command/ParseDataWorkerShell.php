@@ -250,10 +250,12 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
             } 
             
 
-            
-print_r($totalParsingresultControlVariables);
-print_r($totalParsingresultTransactions['2014-09-19']);
-print_r($totalParsingresultTransactions['2015-08-02']);
+//print_r($totalParsingresultInvestments);   
+//print_r($totalParsingresultExpiredInvestments); 
+//print_r($totalParsingresultTransactions['2014-09-19']);
+//print_r($totalParsingresultTransactions['2014-09-22']);
+//print_r($totalParsingresultTransactions['2014-07-10']);
+//print_r($totalParsingresultTransactions['2014-07-15']);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
@@ -302,7 +304,7 @@ print_r($totalParsingresultTransactions['2015-08-02']);
                     foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
                         $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
                         if ($existsInActive) {
-                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+                            if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                         //      generate a statechange record, state is changed to "active"
                                 $dateKeys = array_keys($totalParsingresultTransactions);
                                 $key = $dateKeys[count($dateKeys) - 1];

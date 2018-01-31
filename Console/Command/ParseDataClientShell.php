@@ -48,7 +48,7 @@ class ParseDataClientShell extends GearmanClientShell {
     public function resetTestEnvironment() {
         //return;
         echo "Deleting Investment\n";
-        $this->Investment->deleteAll(array('Investment.id >' => 10121), false);
+        $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
         echo "Deleting Paymenttotal\n";
         $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
@@ -208,6 +208,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($mapResult == true) { 
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
                             if (!empty($newLoans)) {
+                                echo "WRITING LOANIDS\n";
                       //          $controlVariableFile =  $platformData['controlVariableFile'];
                                 file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
@@ -305,14 +306,11 @@ $tempMeasurements = array(
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
  
-        
-  $this->arrayToExcel($platformData['parsingResultTransactions'], "/home/antoine/testingExcel.xls"); 
-         
-        
-        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
-echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2014-11-17"){ 
+        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
+echo "\ndateKey = $dateKey \n";
+
+if ($dateKey == "201 5-01-21"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -330,73 +328,64 @@ print_r($platformData['amortizationTablesOfNewLoans']);
 
 // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
-            unset($database);              // Start with a clean shadow database
-
+            unset ($database);              // Start with a clean shadow database
+            unset ($investmentListToCheck);
+            unset ($loanStatus);
             $filterConditions = array("linkedaccount_id" => $linkedaccountId);
             $database = $calculationClassHandle->getLatestTotals("Userinvestmentdata", $filterConditions);
 
             $this->Userinvestmentdata->create();
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
-            $database['Userinvestmentdata']['date'] = $dateKey;
-            
+            $database['Userinvestmentdata']['date'] = $dateKey; 
             $database['configParms']['outstandingPrincipalRoundingParm'] = '0.00001';      // configuration parameter 
-
-            
+    
             foreach ($dates as $keyDateTransaction => $dateTransaction) {           // read all *individual* transactions of a loanId per day
- //foreach ($dateTransaction as $transactionKey => $transactionData) { 
- //    print_r
- //}
- //
-//if ($keyDateTransaction == "29016-01") {   
- //   echo "Reached LoanId $keyDateTransaction, so quitting\n ";
- //   continue;
- //   echo "Exiting\n";
-  //  $timeStop = time();
- //   echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart); 
-//   exit;
-//} 
-/*
-                if (isset($dateTransaction[0]['conceptChars'])) {                       // To get rid of PHP warning
-                    if ($dateTransaction[0]['conceptChars'] == "+* ") {
-                    // If the loanId does not correspond to a brand new loan, then it is a extra participation in an 
-                    // exiting loan, so new amortizationtable must be collected
-                        $platformData['newLoans'][] =  $dateTransaction[0]['investment_loanId'];  // or the id for the loan slice....
-                        $database['investment']['investment_sliceIdentifier'] = "XXXY55";  //TO BE DECIDED WHERE THIS ID COMES FROM   
-                    }
-                } 
- */            
-//                $database['investment']['investment_new'] = NO;
-                echo "\nkeyDateTransaction = $keyDateTransaction \n";
-                
-                // special procedure for platform related transactions, i.e. when we don't have a real loanId
-                $keyDateTransactionNames = explode("_", $keyDateTransaction);
-                if ($keyDateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
-                    // cycle through all individual fields of the transaction record
- echo "-------------------\n";
- print_r($dateTransaction);
- 
 
- // This could be  Ghost loan (from Zank). Let's check the investments and expired_loans to see if 
- // a reference exists to the loan and, if succesfull, assign the loanId. 
-                    if ($dateTransaction[$conceptChars] == "AM_TABLE") {        // new investment
-                        $investments = $this->searchInvestmentArrays($dateTransaction[0]);
-                        if (!empty($investments)) {
-                            
-                            
-                            
-             //               do something, like preparing shadowdatabase
+/*
+ * if ($keyDateTransaction == "29016-01") {   
+        echo "Reached LoanId $keyDateTransaction, so quitting\n ";
+        continue;
+        echo "Exiting\n";
+        $timeStop = time();
+        echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart); 
+        exit;
+} 
+*/ 
+              
+// Do some pre-processing in order to see if a *global* loanId really is a global loanId, i.e. 
+// convert the global loanId to a real loanId, this works for new investments only  
+                $keyDateTransactionNames = explode("_", $keyDateTransaction);
+                if ($keyDateTransactionNames[0] == "global") {                      
+                    if ($dateTransaction[0]['conceptChars'] === "AM_TABLE") {        // new investment
+     // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
+     // a reference exists to the loan and, if succesfull, assign the loanId.
+                        $ghostInvestment = $this->searchInvestmentArrays($dateTransaction[0], 
+                                                                    $platformData['parsingResultInvestments'], 
+                                                                    $platformData['parsingResultExpiredInvestments']);
+                        if (!empty($ghostInvestment)) {
+                            switch ($ghostInvestment[0]['investment_statusOfLoan']) {
+                                case WIN_LOANSTATUS_FINISHED:
+                                case WIN_LOANSTATUS_CANCELLED:
+                                case WIN_LOANSTATUS_WRITTEN_OFF:
+                                    $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                    break;
+                                case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                                case WIN_LOANSTATUS_ACTIVE: 
+                                    $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                    break;
+                            }
+         
+                            $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
                         }
                     }
-                    
-/*     do something special..BEFORE doing the normal global things for each field
-                    }
-  * 
-  * }
-  * 
-  */
- echo "+++++++++++++++++\n";
- 
+                }
+                
+                // special procedure for platform related transactions, i.e. when we don't have a real loanId
+                $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
+
+                if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                    // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
@@ -405,8 +394,15 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                         if (!empty($tempResult)) {                            
                             unset($result);
                             $functionToCall = $tempResult['function'];
-                            $dataInformation = explode(".", $tempResult['databaseName']);
+                            if (isset($tempResult['globalDatabaseName']))   {  
+                                $dataInformation = explode(".", $tempResult['globalDatabaseName']);
+                            }
+                            else {
+                                $dataInformation = explode(".", $tempResult['databaseName']);
+                            }
                             $dbTable = $dataInformation[0];
+                            $dbTableField = $dataInformation[1];
+
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
 
@@ -418,36 +414,37 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                                 }                                
 
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                    $database[$dbTable][$transactionDataKey] = bcadd($database[$dbTable][$transactionDataKey], $result, 16);
+                                    $database[$dbTable][$dbTableField] = bcadd($database[$dbTable][$dbTableField], $result, 16);
                                 } 
                                 else {
-                                    $database[$dbTable][$transactionDataKey] = $result;
+                                    $database[$dbTable][$dbTableField] = $result;
                                 }
                             } 
                             else {
-                                $database[$dbTable][$transactionDataKey] = $transaction;
+                                echo "=====> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
+                                $database[$dbTable][$dbTableField] = $result;
                             }
                         }
                     }
                     continue;
                 }
  
-                echo "---------> ANALYZING NEXT LOAN ------- with data = $keyDateTransaction\n";
+                echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction[0]['investment_loanId'] . "\n";
 
-                if (isset($platformData['parsingResultInvestments'][$keyDateTransaction])) {
+                if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
                     echo "THIS IS AN ACTIVE LOAN\n";
-                    $investmentListToCheck = $platformData['parsingResultInvestments'][$keyDateTransaction][0];
+                    $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
                     $loanStatus = WIN_LOANSTATUS_ACTIVE;
                 }
 
-                if (isset($platformData['parsingResultExpiredInvestments'][$keyDateTransaction])) {
+                if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
                     echo "THIS IS AN ALREADY EXPIRED LOAN\n";
-                    $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$keyDateTransaction][0];
+                    $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                     $loanStatus = WIN_LOANSTATUS_FINISHED;
                 }
-  
-                if (in_array($keyDateTransaction, $platformData['workingNewLoans'])) {          // check if loanId is new
-                    $arrayIndex = array_search($keyDateTransaction, $platformData['workingNewLoans']);
+                if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])) {          // check if loanId is new
+                    $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
+                    echo "FOUND in Newloans\n";
                     if ($arrayIndex !== false) {        // Deleting the array from new loans list
                         unset($platformData['workingNewLoans'][$arrayIndex]);
                     }
@@ -494,7 +491,7 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                     }   
                 } 
                 else {  // Already a loan which exists in our database, can be in any state
-                    $filterConditions = array("investment_loanId" => $keyDateTransaction,
+                    $filterConditions = array("investment_loanId" => $dateTransaction[0]['investment_loanId'] ,
                                                 "linkedaccount_id" => $linkedaccountId);
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
                         "investment_priceInSecondaryMarket" , "investment_outstandingPrincipal", "investment_totalGrossIncome",
@@ -505,8 +502,8 @@ print_r($platformData['amortizationTablesOfNewLoans']);
                     if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
                                                     // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
 
-echo "THE LOAN WITH ID $keyDateTransaction IS A ZOMBIE LOAN\n";
-echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table\n";
+echo "THE LOAN WITH ID " . $dateTransaction[0]['investment_loanId']  . " IS A ZOMBIE LOAN\n";
+echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and putting its state to WIN_LOANSTATUS_ACTIVE\n";
                         $loanStatus = WIN_LOANSTATUS_ACTIVE;        // So amortization data is collected
  //                       $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
@@ -606,12 +603,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                                 $result, 16); 
 //echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
                                 }
-
-                              
-                                
-                                
-                                
-                                
+   
                                 if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
                                     if (in_array("REPAYMENT", $conceptChars)) {    
                                         $this->repaymentReceived($transactionData, $database); 
@@ -620,12 +612,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                 else {
                                     // Store the information so it can be processed in flow 3B
                                 }
-                                
-                                
-                                
-                                
-                                
-                                
+                                            
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
                                     $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
@@ -652,6 +639,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 
 // Now start consolidating of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004);
+
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -660,7 +648,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     $result = $calculationClassHandle->$functionToCall($transactionData, $database);   
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {
-                            $database[$dbTable][$transactionDataKey] = 0;
+                            $database[$varName[0]][$varName[1]] = 0;
                         }
                         $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                     } else {
@@ -678,12 +666,8 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10004 ){
         }add debug code
     }
 }
-*/                    
-                    
-                    
-                    
-                }                 
-  
+*/                      
+                }                  
                 echo "printing relevant part of database\n";
 //  print_r($database['investment']);
 //  print_r($database['payment']);
@@ -858,14 +842,15 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
  //       print_r($externalControlVariables);
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, $externalControlVariables);
         if ($controlVariablesCheck > 0) { // mismatch detected
+            echo "CONTROL VARIABLES CHECK DOES NOT PASS\n";
             // STILL TO FINISH
             $errorData['line'] = __LINE__; 
             $errorData['file'] = __FILE__;
             $errorData['urlsequenceUrl'] = "";
-            $errorData['subtypeErrorId']; //It is the subtype of the error
-            $errorData['typeOfError']; //It is the type of error or the summary of the detailed information of the error
-            $errorData['detailedErrorInformation']; //It is the detailed information of the error
-            $errorData['typeErrorId']; //It is the principal id of the error           
+            $errorData['subtypeErrorId'];                   //It is the subtype of the error
+            $errorData['typeOfError'];              //It is the type of error or the summary of the detailed information of the error
+            $errorData['detailedErrorInformation'];         //It is the detailed information of the error
+            $errorData['typeErrorId'];                      //It is the principal id of the error           
             $this->saveGearmanError($errorData);
         }
        
@@ -873,7 +858,7 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
         // remove duplicates from the 'newLoans'AND remove all loans whose loanId/slice are in expiredLoans
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
-
+print_r($platformData['amortizationTablesOfNewLoans']);
         return true;
     }
     
@@ -894,7 +879,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     
     
     
-    /**
+    /**is needed for partial payments???
      *  Deals with all the actions of a repayment of a loan. This is BEFORE ANYTHING has been
      *  changed in the database by the main flow
      * 
@@ -1030,34 +1015,39 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     
     
      /** 
-     *  searches in the investments and expired_loans for an *investment* done on 
+     *  Searches in the investments and expired_investment arrays for an *investment* done on 
      *  the date as defined in the dateTransaction array. Also the amount is checked
-     * 
-     *  The result can be 0, 1 or many arrays of loans
+     *  and investments without the mark: "InvestmentAlreadyDetected"
+     *  The result can be 0 or 1 array with investment information
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return 
+     *  @return array
      *                  
      */   
     function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments) {  
 
-        $foundInvestments = array();
-        foreach ($investments as $investment) {
-            if ($transaction['date'] == $investment['investment_myInvestmentDate']) {
-                if (($transaction['amount']) == $investment['investment_myInvestment']) {
-                    $foundInvestments[] = $investment;
+        foreach ($investments as $investmentKey => $investment) {
+            if ($transaction['date'] == $investment[0]['investment_myInvestmentDate']) {  
+                if (($transaction['amount']) == $investment[0]['investment_myInvestment']) {
+                    if ($investments[$investmentKey][0]['InvestmentAlreadyDetected'] <> YES) {
+                        $investments[$investmentKey][0]['InvestmentAlreadyDetected'] = YES;
+                        return $investment;
+                    }
                 }                
             }   
         }
-        foreach ($expiredInvestments as $expiredInvestments) {
-            if (($transaction['date']) == $expiredLoan['investment_myInvestmentDate']) {
-                if (($transaction['amount']) == $expiredLoan['investment_myInvestment']) {
-                    $foundInvestments[] = $expiredInvestments;
+        foreach ($expiredInvestments as $investmentKey => $expiredInvestment) {
+            if (($transaction['date']) == $expiredInvestment[0]['investment_myInvestmentDate']) {
+                if (($transaction['amount']) == $expiredInvestment[0]['investment_myInvestment']) {
+                    if ($expiredInvestments[$investmentKey][0]['InvestmentAlreadyDetected'] <> YES) {
+                        $expiredInvestments[$investmentKey][0]['InvestmentAlreadyDetected'] = YES;
+                        return $expiredInvestment;
+                    }
                 }                
             }   
-        }   
-        return $foundInvestments;
+        }
+        return null;
     }    
     
     

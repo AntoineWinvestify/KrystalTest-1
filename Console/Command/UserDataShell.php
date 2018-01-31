@@ -468,7 +468,7 @@ class UserDataShell extends AppShell {
     }
 
     /*
-     *  Get the amount which corresponds to the "Regular Gross Interest Incomel" concept
+     *  Get the amount which corresponds to the "Regular Gross Interest Income" concept
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
@@ -477,7 +477,7 @@ class UserDataShell extends AppShell {
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
+      
     /*
      * Calculates the number of active investments. Various investments in the same loan 
      * are counted as 1 investment
@@ -865,20 +865,7 @@ class UserDataShell extends AppShell {
         return WIN_LOANSTATUS_CANCELLED;
     }    
     
-    /*
-     *  Get the amount which corresponds to the "commission paid" concept 
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      the string representation of a large integer
-     * 17
-     */
-
-    public function calculateCommissionPaid(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
-        //investment.investment_remainingDuration
-    }
-    
+  
     /**
      * Get the amount which corresponds to the "principalAndInterestPayment" concept 
      * 
@@ -968,6 +955,21 @@ class UserDataShell extends AppShell {
         }
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
+    
+    /*
+     *  Get the amount which corresponds to the "commission paid" concept.
+     *  Note that this is both the in case a transaction record contains a loanId or not
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      amount expressed as a string
+     * 
+     */
+    public function calculateCommissionPaid(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    
     
 }
 

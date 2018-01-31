@@ -118,7 +118,28 @@ class loanbook extends p2pCompany {
                         "input4" => 2
                     ],
                     "functionName" => "getAmount",
-                ]
+                ],
+                
+                [
+                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "inputData" => [// List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
+                        "input2" => [
+                            0 => ["Provisión de Fondos" => "Cash_deposit"],
+                            1 => ["Retirada de Fondos" => "Cash_withdrawal"],
+                            2 => ["Participación en préstamo" => "Primary_market_investment"],
+                            3 => ["Participación en préstamo" => "Disinvestment"],
+                            3 => ["Pago de capital" => "Capital_repayment"],
+                            4 => ["Pago Intereses Brutos" => "Regular_gross_interest_income"],
+                            5 => ["Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
+                            6 => ["Compensación por incidencia administrativa" => "Compensation"],
+                            7 => ["Comisión pago por tarjeta" => "Bank_charges"],
+                            8 => ["Participación en pagaré" => "Primary_market_investment"],
+                            9 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
+                        ]
+                    ],
+                    "functionName" => "getComplexTransactionDetail",
+                ]                
+                
             ],           
             "E" =>  [                    
                  [
