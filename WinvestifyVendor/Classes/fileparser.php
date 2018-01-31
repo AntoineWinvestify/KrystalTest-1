@@ -299,7 +299,7 @@ class Fileparser {
                 "detail" => "Tax_VAT",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept26"
+                "type" => "payment_taxVAT"
                 ],
             27 => [
                 "detail" => "Tax_income_withholding_tax",
