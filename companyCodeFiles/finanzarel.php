@@ -1165,6 +1165,28 @@ class finanzarel extends p2pCompany {
         echo 'Downloaded';
     }
     
+    /**
+     * Get amortization tables of user investments
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
+     */
+    function collectAmortizationTablesParallel($str = null) {
+        
+        switch ($this->idForSwitch) {
+            case 0:
+                $this->myParser = new Fileparser();
+                $folder = $this->getFolderPFPFile();
+                $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                echo $file;
+                $this->myParser->setConfig($this->investmentConfigParms[0]);
+                $info = $this->myParser->analyzeFile($file ,$this->valuesInvestment, $this->typeFileInvestment);
+                break;
+        }
+        
+        
+        
+    }
+    
     
     public function companyUserLogout($url = null) {
         $this->doCompanyLogout(); //logout
