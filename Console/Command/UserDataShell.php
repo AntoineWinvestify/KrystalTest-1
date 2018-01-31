@@ -920,6 +920,16 @@ class UserDataShell extends AppShell {
     }
     
     /**
+     * Get the amount which corresponds to the "tax VAT" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateTaxVAT(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
      * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
      * 
      *  @param  array       array with the current transaction data
@@ -979,6 +989,39 @@ class UserDataShell extends AppShell {
     public function calculateGlobalTotalPartialPrincipalRepaymentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_partialPrincipalRepayment']);    
     }    
+    
+    /*
+     *  Calculates the sum of the payment concept "DelayedInterestIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalDelayedInterestIncomePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_delayedInterestIncome']);    
+    } 
+    
+    /*
+     *  Calculates the sum of the payment concept "Commission Paid" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_commissionPaid']);    
+    } 
+    
+    /*
+     *  Calculates the sum of the payment concept "Tax VAT" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotaltaxVATPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_taxVAT']);    
+    } 
     
 }
 
