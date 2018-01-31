@@ -84,7 +84,11 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
             }
+            /*print_r($values);
+            exit;*/
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+            //print_r($dataMergeByDate);
+            //exit;
             //$dataMergeByDate = $this->returnDataPreformat();
         }
         $returnData = null;
@@ -103,9 +107,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
-        
+        */
         print_r($returnData);
-        exit;*/
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
@@ -124,7 +127,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
             //$dataMergeByDate = $this->returnDataPreformat();
         }
-        print_r($dataMergeByDate);
+        //print_r($dataMergeByDate);
         $returnData = null;
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
@@ -148,13 +151,13 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 foreach ($variables as $variableKey => $variable) {
                     $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
-                    $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+                    $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
                 }
                 $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
         }
-        print_r($dataMergeByDate);
+        //print_r($dataMergeByDate);
         $returnData = null;
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
@@ -429,7 +432,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
     }
     
-    public function getSumValuesOrderedByDate($modelName, $values, $keyValue, $date) {
+    public function getSumValuesOrderedByDate($modelName, $values, $keyValue, $date, $interval = null) {
         $model = ClassRegistry::init($modelName);
         $sumValues = $values;
         $nameSum = $values;
@@ -621,6 +624,32 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';
     }*/
     
-    
+    /**
+     * Gets the latest (=last entry in DB) data of a model table
+     * @param string    $model
+     * @param array     $filterConditions
+     *
+     * @return array with data
+     *          or false if $elements do not exist in two dimensional array
+     */
+    public function getLatestTotalsConsolidation($model, $filterConditions) {
+
+        $temp = $this->$model->find("first", array('conditions' => $filterConditions,
+            'order' => array($model . '.id' => 'desc'),
+            'recursive' => -1
+        ));
+
+        if (empty($temp)) {
+            return false;
+        }
+
+        foreach ($temp[$model] as $key => $item) {
+            $keyName = explode("_", $key);
+            if (strtoupper($model) <> strtoupper($keyName[0])) {
+                unset($temp[$model][$key]);
+            }
+        }
+        return $temp;
+    }   
     
 }
