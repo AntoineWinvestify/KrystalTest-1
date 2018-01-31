@@ -462,7 +462,7 @@ class finanzarel extends p2pCompany {
             ]
         ]
     ];
-    
+        
  
     protected $valuesControlVariables = [
         [
@@ -1177,10 +1177,26 @@ class finanzarel extends p2pCompany {
                 $this->myParser = new Fileparser();
                 $folder = $this->getFolderPFPFile();
                 $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                echo $file;
                 $this->myParser->setConfig($this->investmentConfigParms[0]);
-                $info = $this->myParser->analyzeFile($file ,$this->valuesInvestment, $this->typeFileInvestment);
-                break;
+                $info = $this->myParser->analyzeFile($file ,$this->valuesInvestment[0], $this->typeFileInvestment);
+                
+                foreach($info as $key=>$value){
+                    if(!in_array($key, $this->loanIds)){
+                        unset($info[$key]); //Delete old investments
+                        continue;
+                    }
+                    unset($info[$key][0]["investment_debtor"]);  //Delete info that we dont want in the amortization table
+                    unset($info[$key][0]["investment_riskRating"]);
+                    unset($info[$key][0]["investment_typeOfInvestment"]);
+                    unset($info[$key][0]["investment_fullLoanAmount"]);
+                    unset($info[$key][0]["investment_originalDuration"]);
+                    unset($info[$key][0]["investment_myInvestmentDate"]); 
+                    
+                    
+                    $htmlArray[$key] = $this->arrayToTableConversion($info[$key]);
+                }
+
+                return $htmlArray;
         }
         
         

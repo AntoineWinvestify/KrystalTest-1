@@ -1875,12 +1875,12 @@ class p2pCompany {
      */
     function arrayToTableConversion($rows) {
         ob_start();
-
         echo "<table>";
+        
         foreach ($rows as $row) {
             echo "<tr>";
             foreach ($row as $key => $column) {
-                echo "<td>$key</td>";
+                echo "<th>$key</th>";
             }
             echo "</tr>";
         }
