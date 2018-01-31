@@ -1558,7 +1558,7 @@ class loanbook extends p2pCompany {
                             echo 'Not so ok';
                             $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         }
-                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
+                        //$this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
                 }

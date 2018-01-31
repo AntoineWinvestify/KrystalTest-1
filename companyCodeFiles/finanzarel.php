@@ -1171,7 +1171,7 @@ class finanzarel extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null) {
-
+        echo 'idddddddddd' . $this->idForSwitch . "\n";
         switch ($this->idForSwitch) {
             case 0:
                 $this->myParser = new Fileparser();
@@ -1181,10 +1181,30 @@ class finanzarel extends p2pCompany {
                 $info = $this->myParser->analyzeFile($file, $this->valuesInvestment[0], $this->typeFileInvestment);
 
                 foreach ($info as $key => $value) {
+                    
                     if (!in_array($key, $this->loanIds)) {
+                        echo $key . " dont found, dont compare \n";
                         unset($info[$key]); //Delete old investments
                         continue;
                     }
+                    
+
+                    foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find
+                        $this->htmlArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the invesment table.                       
+                        echo $slice . " " . $id . " slice and id from json" . "\n";
+                        echo $key . " investment file id" . "\n\n\n\n\n\n\n";
+                        
+                        if ($key == $id) {
+                            echo 'compare ok';
+                            $this->htmlArray['correctTables'][$slice] = $key;
+                            continue;
+                        }
+                    }
+                       
+                    foreach($this->htmlArray['correctTables'] as $slice => $id){
+                        unset($this->htmlArray['errorTables'][$slice]);
+                    }
+                    
                     unset($info[$key][0]["investment_debtor"]);  //Delete info that we dont want in the amortization table
                     unset($info[$key][0]["investment_riskRating"]);
                     unset($info[$key][0]["investment_typeOfInvestment"]);
@@ -1193,10 +1213,11 @@ class finanzarel extends p2pCompany {
                     unset($info[$key][0]["investment_myInvestmentDate"]);
 
 
-                    $htmlArray[$key] = $this->arrayToTableConversion($info[$key]);
+                    $this->htmlArray['tables'][$key] = $this->arrayToTableConversion($info[$key]);
                 }
                 
-                return $htmlArray;
+                print_r($this->htmlArray);
+                return $this->htmlArray;
         }
     }
 
