@@ -750,7 +750,8 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10004 ){
                 $internalVariablesToHandle = array(10001,  // removed 10004 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
-                                                    10012, 10013);      
+                                                    10012, 10013, 10016,
+                                                    10017, 10018, 10019);      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
