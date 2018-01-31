@@ -1883,6 +1883,7 @@ class p2pCompany {
                 echo "<th>$key</th>";
             }
             echo "</tr>";
+            break;
         }
         foreach ($rows as $row) {
             echo "<tr>";
