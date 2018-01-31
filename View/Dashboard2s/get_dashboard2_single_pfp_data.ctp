@@ -231,7 +231,7 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Actual Yield.') ?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield') ?></strong></p>
-                                            <h3 class="title">12,25%</h3>
+                                            <h3 class="title">0</h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
@@ -257,11 +257,11 @@ echo $companyInvestmentDetails[0];
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo __('995,00 €') ?></td>
+                                                        <td class="right"><?php echo __('0.00') ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year') ?></td>
-                                                        <td class="right"><?php echo __('935,00 €') ?></td>
+                                                        <td class="right"><?php echo __('0.00') ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
@@ -304,7 +304,7 @@ echo $companyInvestmentDetails[0];
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off') ?></td>
-                                                        <td class="right"><?php echo __('3.678,00 €') ?></td>
+                                                        <td class="right"><?php echo __('0.00') ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>

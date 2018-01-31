@@ -1171,17 +1171,17 @@ class finanzarel extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParallel($str = null) {
-        
+
         switch ($this->idForSwitch) {
             case 0:
                 $this->myParser = new Fileparser();
                 $folder = $this->getFolderPFPFile();
                 $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->myParser->setConfig($this->investmentConfigParms[0]);
-                $info = $this->myParser->analyzeFile($file ,$this->valuesInvestment[0], $this->typeFileInvestment);
-                
-                foreach($info as $key=>$value){
-                    if(!in_array($key, $this->loanIds)){
+                $info = $this->myParser->analyzeFile($file, $this->valuesInvestment[0], $this->typeFileInvestment);
+
+                foreach ($info as $key => $value) {
+                    if (!in_array($key, $this->loanIds)) {
                         unset($info[$key]); //Delete old investments
                         continue;
                     }
@@ -1190,20 +1190,16 @@ class finanzarel extends p2pCompany {
                     unset($info[$key][0]["investment_typeOfInvestment"]);
                     unset($info[$key][0]["investment_fullLoanAmount"]);
                     unset($info[$key][0]["investment_originalDuration"]);
-                    unset($info[$key][0]["investment_myInvestmentDate"]); 
-                    
-                    
+                    unset($info[$key][0]["investment_myInvestmentDate"]);
+
+
                     $htmlArray[$key] = $this->arrayToTableConversion($info[$key]);
                 }
-
+                
                 return $htmlArray;
         }
-        
-        
-        
     }
-    
-    
+
     public function companyUserLogout($url = null) {
         $this->doCompanyLogout(); //logout
         return true;
