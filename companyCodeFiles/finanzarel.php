@@ -183,7 +183,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "date",                                               // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/Y",
+                                "input2" => "D/M/y",
                                 ],
                     "functionName" => "getDefaultDate",
                 ]
@@ -234,7 +234,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "investment_issueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
-				"input2" => "D/M/Y",
+				"input2" => "D/M/y",
 
                                 ],
                     "functionName" => "normalizeDate",
@@ -242,7 +242,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "investment_myInvestmentDate",                    // Winvestify standardized name OK
                     "inputData" => [
-				"input2" => "D/M/Y",
+				"input2" => "D/M/y",
                                 ],
                     "functionName" => "normalizeDate",
                 ]
@@ -285,7 +285,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "investment_issueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
-				"input2" => "D/M/Y",
+				"input2" => "D/M/y",
 
                                 ],
                     "functionName" => "normalizeDate",
