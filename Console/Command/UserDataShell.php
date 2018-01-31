@@ -969,6 +969,17 @@ class UserDataShell extends AppShell {
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
     
+    /*
+     *  Calculates the sum of the payment concept "PartialPrincipalRepayment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalPartialPrincipalRepaymentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_partialPrincipalRepayment']);    
+    }    
+    
 }
 
 /*
