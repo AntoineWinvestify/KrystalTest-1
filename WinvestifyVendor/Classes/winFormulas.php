@@ -71,25 +71,26 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestGrossIncomePerDay",
-                    "globaltotalsdata_interestIncomeBuybackPerDay",
-                    "globaltotalsdata_delayedInterestIncomePerDay",
-                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    "globaltotalsdata_latePaymentFeeIncomePerDay",
-                    "globaltotalsdata_loanRecoveriesPerDay",
-                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    "globaltotalsdata_loanCompensationPerDay",
-                    "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_capitalRepaymentPerDay",
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
-                    "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
+                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
+                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    //"globaltotalsdata_interestGrossIncomePerDay",
+                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
+                    //"globaltotalsdata_loanRecoveriesPerDay",
+                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    //"globaltotalsdata_loanCompensationPerDay",
+                    //"globaltotalsdata_incomeSecondaryMarket",
+                    //"globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-1",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "add"
         ],
@@ -99,29 +100,31 @@ class WinFormulas {
                     "globaltotalsdata_myInvestmentPerDay",
                     "globaltotalsdata_costSecondaryMarketPerDay",
                     "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    "globaltotalsdata_commissionPaidPerDay",
+                    "globaltotalsdata_taxVATPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-1",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "substract"
         ],
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "add"
         ],
         "D" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-366",
+            "dateInit" => "-365",
+            "dateFinish" => "-365",
             "intervals" => "inclusive",
             "operation" => "substract"
         ]
@@ -185,25 +188,26 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestGrossIncomePerDay",
-                    "globaltotalsdata_interestIncomeBuybackPerDay",
-                    "globaltotalsdata_delayedInterestIncomePerDay",
-                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    "globaltotalsdata_latePaymentFeeIncomePerDay",
-                    "globaltotalsdata_loanRecoveriesPerDay",
-                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    "globaltotalsdata_loanCompensationPerDay",
-                    "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_capitalRepaymentPerDay",
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
-                    "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
+                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
+                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    //"globaltotalsdata_interestGrossIncomePerDay",
+                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
+                    //"globaltotalsdata_loanRecoveriesPerDay",
+                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    //"globaltotalsdata_loanCompensationPerDay",
+                    //"globaltotalsdata_incomeSecondaryMarket",
+                    //"globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-1",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "add"
         ],
@@ -213,13 +217,15 @@ class WinFormulas {
                     "globaltotalsdata_myInvestmentPerDay",
                     "globaltotalsdata_costSecondaryMarketPerDay",
                     "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    "globaltotalsdata_commissionPaidPerDay",
+                    "globaltotalsdata_taxVATPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-1",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "substract"
         ],
@@ -233,8 +239,8 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "add"
         ],
@@ -248,8 +254,8 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-366",
+            "dateInit" => "-365",
+            "dateFinish" => "-365",
             "intervals" => "inclusive",
             "operation" => "substract"
         ]
@@ -259,18 +265,19 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestGrossIncomePerDay",
-                    "globaltotalsdata_interestIncomeBuybackPerDay",
-                    "globaltotalsdata_delayedInterestIncomePerDay",
-                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    "globaltotalsdata_latePaymentFeeIncomePerDay",
-                    "globaltotalsdata_loanRecoveriesPerDay",
-                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    "globaltotalsdata_loanCompensationPerDay",
-                    "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_capitalRepaymentPerDay",
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",
-                    "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
+                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
+                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    //"globaltotalsdata_interestGrossIncomePerDay",
+                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
+                    //"globaltotalsdata_loanRecoveriesPerDay",
+                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    //"globaltotalsdata_loanCompensationPerDay",
+                    //"globaltotalsdata_incomeSecondaryMarket",
+                    //"globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -293,6 +300,8 @@ class WinFormulas {
                     "globaltotalsdata_myInvestmentPerDay",
                     "globaltotalsdata_costSecondaryMarketPerDay",
                     "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    "globaltotalsdata_commissionPaidPerDay",
+                    "globaltotalsdata_taxVATPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -336,7 +345,7 @@ class WinFormulas {
                 "month" => "1",
                 "day" => "1"
             ],
-            "intervals" => "inclusive",
+            "intervals" => "latest",
             "operation" => "substract"
         ]
     ];
