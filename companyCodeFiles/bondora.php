@@ -562,8 +562,9 @@ class bondora extends p2pCompany {
 
                 $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
-                if ((explode("/", $this->dateInitBondora)[2] == '2008')) { //Minimum date for bondora is 1/1/2009
+                if ((explode("/", $this->dateInitBondora)[2] < 2009)) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
+                    $continue = true;
                 }
 
                 if ($this->investmentNumber === 0) { //Max day in bondora is yesterday
@@ -572,7 +573,7 @@ class bondora extends p2pCompany {
                     $this->dateFinishBondora = date("d/m/Y", strtotime($this->dateFinishPeriod));
                 }
 
-
+                
                 $credentials = $this->credentials; //Credentials to generate the investments
                 $credentials['__RequestVerificationToken'] = $inputsValue['__RequestVerificationToken'];
                 $credentials['NewReports[0].ReportType'] = 'InvestmentsListV2';
@@ -607,8 +608,9 @@ class bondora extends p2pCompany {
 
                 $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
                 $this->dateInitBondora = date('d/m/Y', strtotime($this->dateInitPeriod));
-                if ((int) explode("/", $this->dateInitBondora)[2] == '2008') { //Minimum date for bondora is 1/1/2009
+                if ((int) explode("/", $this->dateInitBondora)[2] < 2009) { //Minimum date for bondora is 1/1/2009
                     $this->dateInitBondora = '01/01/2009';
+                    $continue = true;
                 }
 
                 if ($this->transactionNumber === 0) { //Max day in bondora is yesterday

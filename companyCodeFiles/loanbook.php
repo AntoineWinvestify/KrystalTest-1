@@ -1147,7 +1147,7 @@ class loanbook extends p2pCompany {
                     }
                     foreach ($spans as $span) {
                         if ($span->getAttribute('class') == 'lb_main_menu_bold') {
-                            $this->tempArray['global']['myWallet'] = $span->nodeValue;
+                            $this->tempArray['global']['myWallet'] = floatval(str_replace(',', '.', str_replace('.', '', $span->nodeValue )));
                             echo $this->tempArray['global']['myWallet'];
                             break; //myWallet is only the first span
                         }
@@ -1165,9 +1165,10 @@ class loanbook extends p2pCompany {
                         }
                     }              
                     $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
-                    $this->tempArray['global']['outstandingPrincipal'] = $outstanding; //$this->getMonetaryValue($spans[0]->nodeValue);
+                    $this->tempArray['global']['outstandingPrincipal'] = floatval(str_replace(',', '.', str_replace('.', '', $outstanding))); //$this->getMonetaryValue($spans[0]->nodeValue);
                 }
                 
+                print_r($this->tempArray);
                 //$continue = $this->downloadTimePeriod("20171104", $this->period);
                 //echo "_" . $this->dateInitPeriod . "/" . $this->dateFinishPeriod . "_";
                 $dateInit = strtotime($this->dateInit); //strtotime($this->dateInitPeriod);

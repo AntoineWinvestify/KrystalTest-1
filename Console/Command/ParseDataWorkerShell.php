@@ -225,6 +225,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                             }
                             break;                            
                     }
+                    unset($tempResult);
                     
 /*
                     try {
