@@ -164,6 +164,7 @@ class p2pCompany {
     protected $valuesInvestment;
     protected $valuesAmortizationTable;
     protected $valuesControlVariables;     
+    protected $dashboard2ConfigurationParameters;
     
     protected $callbacks;
     protected $originExecution;
@@ -2909,6 +2910,19 @@ FRAGMENT
     public function getParserConfigControlVariablesFile()  {
         return $this->valuesControlVariables;
     }   
+
+    
+    /** 
+     * Read the configurationParameters for the Dashboard2 functionality
+     *     
+     * @return  array with configuration parameters
+     *            
+     */
+    public function getDashboard2ConfigurationParameters()  {
+        return $this->dashboard2ConfigurationParameters;
+    } 
+    
 }
+
 ?>
 

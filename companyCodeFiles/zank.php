@@ -94,6 +94,11 @@ class zank extends p2pCompany {
     private $url;
     private $start = 0;
  
+       
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01'            // This *optional* parameter is used to determine what we 
+                                                                // consider 0 in order to "close" an active investment
+    ];
     
     protected $transactionConfigParms = [
         [
@@ -255,8 +260,8 @@ class zank extends p2pCompany {
                 ],
                 [
                     "type" => "investment_typeOfInvestment",                        
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => " ",                                // 'input3' is NOT mandatory. 
+                    "inputData" => [                                            
+                                "input2" => " ",                                 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -315,7 +320,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_investmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                      // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],

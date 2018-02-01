@@ -143,7 +143,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
             $this->myParser->setDefaultFinishDate($this->finishDate);
-            
+            $dashboard2ConfigurationParameters = $companyHandle->getDashboard2ConfigurationParameters();
+
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
@@ -251,10 +252,12 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
             } 
             
 
-            
-print_r($totalParsingresultControlVariables);
-print_r($totalParsingresultTransactions['2014-09-19']);
-print_r($totalParsingresultTransactions['2015-08-02']);
+//print_r($totalParsingresultInvestments);   
+//print_r($totalParsingresultExpiredInvestments); 
+print_r($totalParsingresultTransactions['2014-11-17']);
+//print_r($totalParsingresultTransactions['2014-09-22']);
+//print_r($totalParsingresultTransactions['2014-07-10']);
+//print_r($totalParsingresultTransactions['2014-07-15']);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
@@ -266,7 +269,9 @@ print_r($totalParsingresultTransactions['2015-08-02']);
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
             $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile']; 
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
-            $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];             
+            $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];
+            $returnData[$linkedAccountKey]['dashboard2ConfigurationParameters'] = $dashboard2ConfigurationParameters;
+        
 //print_r($returnData[$linkedAccountKey]);            
           
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
@@ -303,7 +308,7 @@ print_r($totalParsingresultTransactions['2015-08-02']);
                     foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
                         $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
                         if ($existsInActive) {
-                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+                            if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                         //      generate a statechange record, state is changed to "active"
                                 $dateKeys = array_keys($totalParsingresultTransactions);
                                 $key = $dateKeys[count($dateKeys) - 1];
