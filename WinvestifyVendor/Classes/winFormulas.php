@@ -117,7 +117,7 @@ class WinFormulas {
             "table" => "Userinvestmentdata",
             "dateInit" => "-0",
             "dateFinish" => "-0",
-            "intervals" => "inclusive",
+            "intervals" => "latest",
             "operation" => "add"
         ],
         "D" => [
@@ -125,7 +125,7 @@ class WinFormulas {
             "table" => "Userinvestmentdata",
             "dateInit" => "-365",
             "dateFinish" => "-365",
-            "intervals" => "inclusive",
+            "intervals" => "latest",
             "operation" => "substract"
         ]
     ];
@@ -241,7 +241,7 @@ class WinFormulas {
             "table" => "Userinvestmentdata",
             "dateInit" => "-0",
             "dateFinish" => "-0",
-            "intervals" => "inclusive",
+            "intervals" => "latest",
             "operation" => "add"
         ],
         "D" => [
@@ -256,7 +256,7 @@ class WinFormulas {
             "table" => "Userinvestmentdata",
             "dateInit" => "-365",
             "dateFinish" => "-365",
-            "intervals" => "inclusive",
+            "intervals" => "latest",
             "operation" => "substract"
         ]
     ];
@@ -330,7 +330,7 @@ class WinFormulas {
                 "month" => "12",
                 "day" => "31"
             ],
-            "intervals" => "inclusive",
+            "intervals" => "latest",
             "operation" => "add"
         ],
         "D" => [
