@@ -202,8 +202,8 @@ class ParseDataClientShell extends GearmanClientShell {
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
                         
-                        //$mapResult = $this->mapData($platformResult);
-                        $mapResult = true;
+                        $mapResult = $this->mapData($platformResult);
+
                         if ($mapResult == true) { 
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
@@ -315,7 +315,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
 
-if ($dateKey == "2014-01- 21"){ 
+if ($dateKey == "2019-03-13"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -505,7 +505,7 @@ echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and putting
  //                       $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
                         $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-                        $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
+                        //$database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
              //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 501
                         $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
@@ -531,28 +531,45 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
-                    
+
+                print_r($database);
+                
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
                                 if (isset($transactionData['sliceIdentifier'])) {
+                                    echo "@@@@ sliceIdentifier has been obtained from Transaction array\n";  
                                         $sliceIdentifier = $transactionData['sliceIdentifier'];
                                     }
                                 if (isset($database['investment']['investment_sliceIdentifier'])) {
+                                    echo "@@@@ sliceIdentifier has been obtained from Investment array\n";  
                                         $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];
                                     }                                    
                                 if (empty($sliceIdentifier)) {                       // Take the default one
+                                    echo "@@@@ sliceIdentifier has been obtained from Default array\n";  
                                     $sliceIdentifier = $transactionData['investment_loanId'];
-echo "@@@@ sliceIdentifier has been obtained from Investment array\n";                                  
+                                
                                 }
                                                                
-                                $sliceIdExists = array_search ($sliceIdentifier, $platformData['newLoans']);
-                                if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
-                                    $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
-                                }
+                                $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
                             }
+                        }
+                        if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
+                            if (isset($transactionData['sliceIdentifier'])) {
+                                    $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
+                                }
+                            if (isset($database['investment']['investment_sliceIdentifier'])) {
+                                    $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                        
+                                }                                    
+                            if (empty($sliceIdentifier)) {                       // Take the default one
+                                $sliceIdentifier = $transactionData['investment_loanId'];                                 
+                            }
+                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
+                            if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
+                                unset($slicesAmortizationTablesToCollect[$sliceIdExists]);    // For later processing
+                            }                          
                         }
                     }
                     
@@ -717,6 +734,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 
 
 //Define which amortization tables shall be collected 
+                $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+                print_r($slicesAmortizationTablesToCollect);
+                echo 'ñññññññññññññññ';
                 foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
                     $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
                     
@@ -725,7 +745,6 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     }
                     
                 }
-                unset($slicesAmortizationTablesToCollect);
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
@@ -764,6 +783,8 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
                 unset($investmentId);
                 unset($database['investment']);
                 unset($database['payment']);
+                unset($slicesAmortizationTablesToCollect);
+
             }
 
             echo "printing global data for the date = $dateKey\n";

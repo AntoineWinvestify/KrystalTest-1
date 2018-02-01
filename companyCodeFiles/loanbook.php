@@ -159,7 +159,14 @@ class loanbook extends p2pCompany {
 
                     ],
                     "functionName" => "generateId",
-                ]
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
+                ] 
             ],          
         ]
     ];
@@ -1462,7 +1469,7 @@ class loanbook extends p2pCompany {
                     foreach ($inputs as $input) {
                         if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
                             if ($input->getAttribute('name') == "csrf") {
-                                echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
+                                //echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
                                 $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                                 break 2;
                             }
@@ -1540,11 +1547,11 @@ class loanbook extends p2pCompany {
                         //Mod the dom clone
                         $is = $clone->getElementsByTagName('i');
                         foreach ($is as $key => $status) {
-                            echo "search status";
-                            echo $status->getAttribute('class');
+                            //echo "search status";
+                            //echo $status->getAttribute('class');
                             if ($status->getAttribute('class') == 'fa fa-circle') {
-                                echo 'Finded';
-                                echo $status->getAttribute('title');
+                                //echo 'Finded';
+                                //echo $status->getAttribute('title');
                                 $clone->getElementsByTagName('i')->item($key)->nodeValue = $status->getAttribute('title');
                             }
                         }
@@ -1558,11 +1565,11 @@ class loanbook extends p2pCompany {
                             $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
                             $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         } else {
-                            echo 'Not so ok';
+                            echo 'Comparation Not ok';
                             $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
                         }
                         //$this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
-                        echo $AmortizationTableString;
+                        //echo $AmortizationTableString;
                     }
                 }
                 if ($this->i < $this->maxLoans) {
