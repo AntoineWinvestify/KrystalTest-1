@@ -94,6 +94,11 @@ class zank extends p2pCompany {
     private $url;
     private $start = 0;
  
+       
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01'            // This *optional* parameter is used to determine what we 
+                                                                // consider 0 in order to "close" an active investment
+    ];
     
     protected $transactionConfigParms = [
         [
