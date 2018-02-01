@@ -517,6 +517,14 @@ class finanzarel extends p2pCompany {
                 "investment_typeOfInvestment" => "translateLoanType",
                 "investment_statusOfLoan" => "translateLoanStatus"
             ]
+        ],
+        "transactionFile" => [
+            "cleanDatesTempArray" => [
+                "values" => [
+                    "startDate",
+                    "finishDate"
+                ]
+            ]
         ]
     ];
 
