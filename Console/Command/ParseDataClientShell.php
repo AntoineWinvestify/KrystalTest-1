@@ -203,9 +203,10 @@ class ParseDataClientShell extends GearmanClientShell {
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
                         
-                        $mapResult = $this->mapData($platformResult);
-
+                        //$mapResult = $this->mapData($platformResult);
+                        $mapResult = true;
                         if ($mapResult == true) { 
+                            $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
                             if (!empty($newLoans)) {
                       //          $controlVariableFile =  $platformData['controlVariableFile'];
@@ -217,6 +218,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                         else {
+                            $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_ERROR;
                             echo "ERROR ENCOUNTERED\n"; 
                         }
                     }                                                       //verifyStatus($status, $message, $restartStatus, $errorStatus)
@@ -312,7 +314,7 @@ $tempMeasurements = array(
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "dateKey = $dateKey \n";
 
-if ($dateKey == "2014-11-17"){ 
+if ($dateKey == "2014-11-  17"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
