@@ -462,7 +462,7 @@ class finanzarel extends p2pCompany {
             ]
         ]
     ];
-    
+        
  
     protected $valuesControlVariables = [
         [
@@ -1165,7 +1165,62 @@ class finanzarel extends p2pCompany {
         echo 'Downloaded';
     }
     
-    
+    /**
+     * Get amortization tables of user investments.
+     * In finanzarel we don't get the tables via curl, we parser the investment file and read the info there.
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array html of the tables
+     */
+    function collectAmortizationTablesParserFile($str = null) {
+        
+        $this->tempArray['loanTotalIds'] = $this->loanIds;
+        $this->myParser = new Fileparser();                                                                             //Call the parser
+        $folder = $this->getFolderPFPFile();
+        $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
+        $this->myParser->setConfig($this->investmentConfigParms[0]);                                                    //Set the config 
+        $info = $this->myParser->analyzeFile($file, $this->valuesInvestment[0], $this->typeFileInvestment);             //Parse the file
+
+        foreach ($info as $key => $value) {
+
+            if (!in_array($key, $this->loanIds)) {
+                //echo $key . " dont found, dont compare \n";
+                unset($info[$key]); //Delete old investments that we don't have in loanId.json from parsed array.
+                continue;
+            }
+
+
+            foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find
+                $this->tempArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the invesment table.                          //                                                                   
+                //echo $slice . " " . $id . " slice and id from json" . "\n";
+                //echo $key . " investment file id" . "\n\n\n\n\n\n\n";
+
+                if ($key == $id) {
+                    //echo 'compare ok';
+                    $this->tempArray['correctTables'][$slice] = $key; //If the investment exist in the file, we can get the table. Save the id in correcTabes.
+                    continue;
+                }
+            }
+
+            foreach ($this->tempArray['correctTables'] as $slice => $id) {
+                unset($this->tempArray['errorTables'][$slice]); //If we can get the amortization table of the investment, delete from errorTables,.
+            }
+
+            unset($info[$key][0]["investment_debtor"]);  //Delete info that we dont want in the amortization table
+            unset($info[$key][0]["investment_riskRating"]);
+            unset($info[$key][0]["investment_typeOfInvestment"]);
+            unset($info[$key][0]["investment_fullLoanAmount"]);
+            unset($info[$key][0]["investment_originalDuration"]);
+            unset($info[$key][0]["investment_myInvestmentDate"]);
+
+
+            $this->tempArray['tables'][$key] = $this->arrayToTableConversion($info[$key]); //Get the html table from the array         
+        }
+        
+        //print_r($this->tempArray);
+        return $this->tempArray;
+    }
+
     public function companyUserLogout($url = null) {
         $this->doCompanyLogout(); //logout
         return true;

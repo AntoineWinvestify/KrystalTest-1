@@ -1875,10 +1875,17 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *                                  with or without a "," or "."
      * @param string $multiplyFactor    The factor which shall be used to multiply the input
      * @param string $decimals          The (maximum) number of decimals that the end result may have
+     * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals) {
-        $cleanInput = trim(preg_replace('/\,/', '.', $input));
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
+        $cleanInput = preg_replace("/[^0-9,.]/", "",$input);
+        if($separator === "."){
+           $cleanInput =  str_replace(",", "", $cleanInput);
+        } 
+        else if($separator === ","){
+           $cleanInput =  str_replace(",", ".", str_replace(".", "",$cleanInput));
+        }
         $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    

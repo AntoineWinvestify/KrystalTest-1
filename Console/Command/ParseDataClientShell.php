@@ -46,7 +46,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //       return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -307,7 +307,7 @@ $tempMeasurements = array(
  //           echo "regular update\n";
             $platformData['workingNewLoans'] = $platformData['newLoans'];
         } 
-      
+
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
@@ -531,6 +531,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                    
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected
@@ -555,13 +556,17 @@ echo "@@@@ sliceIdentifier has been obtained from Investment array\n";
                         }
                     }
                     
+                    echo __FILE__ . " " . __LINE__ . "\n";
 //print_r($transactionData);
                     foreach ($transactionData as $transactionDataKey => $transaction) {  // read all transaction concepts
                         if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
+                        print_r($tempResult);
+                        echo '-----------------------------';
+                        print_r($transactionDataKey);
+                        echo __FILE__ . " " . __LINE__ . "\n";
                         if (!empty($tempResult)) {
                             unset($result);
                             
@@ -571,6 +576,7 @@ echo "@@@@ sliceIdentifier has been obtained from Investment array\n";
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
                             $dbVariableName = $dataInformation[1];
+                            
 echo "index = " . $tempResult['internalIndex'] . " \n";
                             echo "Execute calculationfunction: $functionToCall\n";
                             if (!empty($functionToCall)) { 
@@ -636,12 +642,14 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                 }
                             }        
                         }
-                    }                           
+                    }       
+                    
+
+                    
                 }   
-                
+                    
 // Now start consolidating of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004);
-$internalVariableToHandle = array(37, 10004);  // I should also calculate the numberActiveInvestment using COUNT()
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -660,6 +668,8 @@ $internalVariableToHandle = array(37, 10004);  // I should also calculate the nu
                 echo "printing relevant part of database\n";
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
+                
+                    
 //               if ($database['investment']['investment_new'] == YES) {
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
@@ -686,8 +696,9 @@ $internalVariableToHandle = array(37, 10004);  // I should also calculate the nu
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
                         }
                     }
+                    
                 }
-
+                
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
                 $database['payment']['investment_id'] = $investmentId;
                 $database['payment']['date'] = $dateKey;

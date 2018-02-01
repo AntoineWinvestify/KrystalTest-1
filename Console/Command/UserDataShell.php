@@ -127,7 +127,7 @@ class UserDataShell extends AppShell {
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
-
+        echo "/////////////////////////////////////";
         if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
         }
@@ -152,6 +152,10 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
+        if (isset($resultData['investment']['investment_disinvestment'])) {
+            $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
+        }
+        print_r($resultData['investment']['investment_disinvestment']);
         return $result;
     }
 
@@ -796,7 +800,9 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestment(&$transactionData, &$resultData) {
-        return $resultData['investment']['investment_myInvestment'];
+        $investment = $resultData['investment']['investment_myInvestment'];
+        
+        return -$investment;
     }   
     
     
@@ -963,9 +969,32 @@ class UserDataShell extends AppShell {
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
+         print_r($resultData);
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
     
+    /**
+     * Get the amount which corresponds to the "payment_taxVAT" concept
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    public function calculatePaymentTax(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    /**
+     * Get the amount which corresponds to the "payment_incomeWithholdingTax" concept
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    public function calculateIncomeWithholdingTax(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+   
     /*
      *  Calculates the sum of the payment concept "PartialPrincipalRepayment" that happened during a day
      *  @param  array       array with the current transaction data
