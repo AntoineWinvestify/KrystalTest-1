@@ -317,11 +317,6 @@ if ($dateKey == "2014-01-21"){
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
-echo "newloan array";
-print_r($platformData['amortizationTablesOfNewLoans']);    
-    
-    echo "FINISHED_ACCOUNT = $FINISHED_ACCOUNT   \n";
-    echo "STARTED_NEW_ACCOUNTS = $STARTED_NEW_ACCOUNTS \n"; 
     exit;
 }
 
@@ -537,17 +532,16 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected
-        //        if ($transactionData['conceptChars'] == "AM_TABLE") {       // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
                                 if (isset($transactionData['sliceIdentifier'])) {
                                         $sliceIdentifier = $transactionData['sliceIdentifier'];
                                     }
                                 if (isset($database['investment']['investment_sliceIdentifier'])) {
-                                        $sliceIdentifier = $transactionData['sliceIdentifier'];
+                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];
                                     }                                    
                                 if (empty($sliceIdentifier)) {                       // Take the default one
-                                    $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];
+                                    $sliceIdentifier = $transactionData['investment_loanId'];
 echo "@@@@ sliceIdentifier has been obtained from Investment array\n";                                  
                                 }
                                                                
@@ -836,11 +830,6 @@ if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
             
             $activeInvestments = $this->Investment->find('count', array(
                                         'conditions' => $filterConditions));
-            
-            echo "conditions are: \n";
-            print_r($filterConditions);
-            echo "\n";
-            echo "NumberOFActiveInvestments = $activeInvestments\n";
 
             $tempUserInvestmentDataItem = array('id' => $userInvestmentDataId,
                                                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
