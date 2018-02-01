@@ -202,8 +202,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
                         
-                        //$mapResult = $this->mapData($platformResult);
-                        $mapResult = true;
+                        $mapResult = $this->mapData($platformResult);
                         if ($mapResult == true) { 
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
