@@ -226,121 +226,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     /**
-     * Function to initiate the process to save the files of a company
-     * @param object $job It is the object of Gearmanjob that contains
-     * The $job->workload() function read the input data as sent by the Gearman client
-     * This is json_encoded data with the following structure:
-     *      $data["companies"]                  array It contains all the linkedaccount information
-     *      $data["queue_userReference"]        string It is the user reference
-     *      $data["queue_id"]                   integer It is the queue id
-     * @return json Json containing all the status collect and errors by link account id
-     */
-    /*public function consolidateUserData($job) {
-        $data = json_decode($job->workload(), true);
-        $this->job = $job;
-        $this->Applicationerror = ClassRegistry::init('Applicationerror');
-        print_r($data);
-        //$dateYearBack = date("Y-m-d",strtotime(date('Y-m-d') . "-1 Year"));
-        $index = 0;
-        $i = 0;
-        $this->winFormulas = new WinFormulas();
-        //Get investor ID by queue_userReference
-        //$investorId = $this->investor->find("userReference");
-        
-        Configure::load('internalVariablesConfiguration.php', 'default');
-        $this->variablesConfig = Configure::read('internalVariables');
-        $formulasByInvestor = [];
-        
-        foreach ($formulasByInvestor as $linkaccountIdKey => $formulas) {
-            $i = 0;
-            foreach ($formulas as $formula) {
-                $formulasByCompany[$linkaccountIdKey][$i]['formula'] = $this->winFormulas->getFormula($formula['formula']);
-                $formulasByCompany[$linkaccountIdKey][$i]['variablesFormula'] = $this->winFormulas->getFormulaParams($formula['variables']);
-                $i++;
-            }
-        }
-        
-        foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
-            foreach ($formulas as $key => $formula) {
-                foreach ($formula['variablesFormula'] as $variablesKey => $variablesFormula) {
-                    //$formulasValue = [];
-                    $dataFormula = null;
-                    foreach ($variablesFormula as $variableFormula) {
-                        $dateInit = $this->getDateForSum($variableFormula['dateInit']);
-                        $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
-                        $value = $this->winFormulas->getSumOfValue($variableFormula['table'], $variableFormula['type'], $linkaccountIdKey, $dateInit, $dateFinish);
-                        //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
-                    }
-                    $formulasByCompany[$linkaccountIdKey][$key]['formula']['variables'][$variablesKey] = $value;
-                }
-            }
-        }
-
-        foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
-            foreach ($formulas as $key => $formula) {
-                print_r($formula);
-                $dataFormula = null;
-                foreach ($formula['formula']['steps'] as $stepsKey => $stepsFormula) {
-                    $value = $this->getValueFromFormula($stepsFormula, $formula['formula']['variables']);
-                    $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $stepsFormula[1]);
-                }
-                $formulasByCompany[$linkaccountIdKey][$key]['formula']['result']['data'] = $dataFormula;
-            }
-        }
-        $i = 0;
-        $formulasInvestorTotal[$i]['formula'] = "formula_A";
-        $formulasInvestorTotal[$i]['variables'] = "formula_A";
-        $i++;
-        $formulasInvestorTotal[$i]['formula'] = "formula_A";
-        $formulasInvestorTotal[$i]['variables'] = "formula_B";
-        $i = 0;
-        foreach ($formulasInvestorTotal as $formula) {
-            $formulasTotal[$i]['formula'] = $this->winFormulas->getFormula($formula['formula']);
-            $formulasTotal[$i]['variablesFormula'] = $this->winFormulas->getFormulaParams($formula['variables']);
-            $i++;
-        }
-        
-        foreach ($formulasTotal as $key => $formula) {
-            foreach ($formula['variablesFormula'] as $variablesKey => $variablesFormula) {
-                //$formulasValue = [];
-                $dataFormula = null;
-                foreach ($variablesFormula as $variableFormula) {
-                    $dateInit = $this->getDateForSum($variableFormula['dateInit']);
-                    $dateFinish = $this->getDateForSum($variableFormula['dateFinish']);
-                    $value = $this->winFormulas->getSumOfValueByUserReference($variableFormula['table'], $variableFormula['type'], $data["queue_userReference"], $dateInit, $dateFinish);
-                    $dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
-                }
-                $formulasTotal[$key]['formula']['variables'][$variablesKey] = $dataFormula;
-            }
-        }
-        
-        foreach ($formulasTotal as $key => $formula) {
-            $dataFormula = null;
-            foreach ($formula['formula']['steps'] as $stepsKey => $stepsFormula) {
-                $value = $this->getValueFromFormula($stepsFormula, $formula['formula']['variables']);
-                $dataFormula = $this->winFormulas->doOperationByType($dataFormula, $value, $stepsFormula[1]);
-            }
-            $formulasTotal[$key]['formula']['result']['data'] = $dataFormula;
-        }
-        
-        $result = [];
-        
-        foreach ($formulasByCompany as $linkaccountIdKey => $formulas) {
-            foreach ($formulas as $key => $formula) {
-                $result[$linkaccountIdKey][] = $formula["formula"]["result"];
-            }
-        }
-        
-        $returnData['tempArray'] = $result;
-        
-        if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
-        } 
-        print_r($returnData);
-        return json_encode($returnData);
-    }*/
-    
-    /**
      * Function to get the correct value for the Formula
      * 
      */
@@ -433,7 +318,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function getSumValuesOrderedByDate($modelName, $values, $keyValue, $date, $interval = null) {
-        $model = ClassRegistry::init($modelName);
         $sumValues = $values;
         $nameSum = $values;
         if (is_array($values)) {
@@ -447,17 +331,42 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             }
             $sumValues = rtrim($sumValues,"+ ");
         }
+        $model = ClassRegistry::init($modelName);
         $model->virtualFields = array('sum' => 'sum(' . $sumValues . ')');
-        $sumValue  =  $model->find('list',array(
-                'fields' => array('date', 'sum'),
-                'group' => array('date'),
-                'conditions' => array(
-                    "date >=" => $date['init'],
-                    "date <=" => $date['finish'],
-                    $keyValue['type'] => $keyValue['value']
+        if ($interval !== "latest") {
+            $sumValue  =  $model->find('list',array(
+                    'fields' => array('date', 'sum'),
+                    'group' => array('date'),
+                    'conditions' => array(
+                        "date >=" => $date['init'],
+                        "date <=" => $date['finish'],
+                        $keyValue['type'] => $keyValue['value']
+                    )
                 )
-            )
-        );
+            );
+        }
+        else if ($interval === "latest") {
+            $options['conditions'] = array(
+                //"date >=" => $date['init'],
+                "date <=" => $date['finish'],
+                $keyValue['type'] => $keyValue['value']
+            );
+            $options['fields'] = array('date', 'sum');
+            $options['group'] = array('date');
+            $latestValue = $this->getLatestTotalsConsolidation($model, $options);
+            if (!empty($latestValue)) {
+                $sumValue[$date['finish']] = $latestValue['Userinvestmentdata']['sum'];
+            }
+            else {
+                $options = [];
+                $options['fields'] = array('date');
+                $options['order'] = array('date' => 'asc');
+                $options['recursive'] = -1;
+                $temp = $model->find("first", $options);
+                $sumValue[$temp['Userinvestmentdata']['date']] = 0;
+            }
+             
+        }
         return $sumValue;
     }
     
@@ -537,93 +446,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return $dataArray;
     }
     
-    public function getJoinAssociationForTable($tableName, $linkaccountId) {
-        switch($tableName) {
-            case "globaltotalsdatas":
-                $options['joins'] = array(
-                    array('table' => 'globaltotalsdatas',
-                        'alias' => 'globaltotalsdata',
-                        'type' => 'inner',
-                        'conditions' => array(
-                            'Sector.id = RolesSector.sector_id'
-                        )
-                    ),
-                    array('table' => 'roles',
-                        'alias' => 'Role',
-                        'type' => 'inner',
-                        'conditions' => array(
-                            'RolesSector.role_id = Role.id'
-                        )
-                    )
-                );
-
-                $options['conditions'] = array(
-                    'Role.id' => $roleId
-                );
-                //$options['field'] = array('Sector.*');
-                $options['recursive'] = -1;
-                $options['order'] = array(
-                    'Sector.sectors_father',
-                    'Sector.sectors_subSectorSequence'
-                );
-                break;
-            case "globalcashflowdatas":
-                
-                break;
-        }
-        return $joinAssociation;
-    }
-    
-    /*public function calculateNetAnnualReturn($data) {
-        $variables = $this->winFormulas->getFormulaParams("formula_A");
-        $this->originExecution = $data['originExecution'];
-        foreach ($data["companies"] as $linkedaccountId) {
-            $formula[$linkedaccountId] = $this->winFormulas->getFormula("formula_A");
-            foreach ($variables as $variableKey => $variable) {
-                $dateInit = $this->getDateForSum($variable['dateInit']);
-                $dateFinish = $this->getDateForSum($variable['dateFinish']);
-                $value = $this->getSumOfValue($variable['table'], $variable['type'], $linkedaccountId, $dateInit, $dateFinish);
-                $formula[$linkedaccountId]['formula']['variables'][$variableKey] = $value;
-                //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
-            }
-        }
-        print_r($formula);
-        exit;
-    }*/
-    
-    /**
-     * Function to initiate the formulas, in the future, this will be a config file
-     */
-    /*public function initFormula() {
-        $this->formula[0]['eval'] = "$interestPaidGlobalOld-$interestPaidOld+$interestPaidNew";
-        $this->formula[0]['externalName'] = 'interestPaidGlobal';
-        $this->formula[0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal';
-        $this->formula[0]['param'][0]['externalName'] = 'interestPaidNew';
-        $this->formula[0]['param'][0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaid';
-        $this->formula[0]['param'][0]['period'] = 'exclusive';
-        $this->formula[0]['param'][0]['date'] = '0';
-        $this->formula[0]['param'][0]['externalName'] = 'interestPaidOld';
-        $this->formula[0]['param'][0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaid';
-        $this->formula[0]['param'][0]['period'] = 'exclusive';
-        $this->formula[0]['param'][0]['date'] = '365';
-        $this->formula[0]['param'][0]['externalName'] = 'interestPaidGlobalOld';
-        $this->formula[0]['param'][0]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal';
-        $this->formula[0]['param'][0]['period'] = 'exclusive';
-        $this->formula[0]['param'][0]['date'] = '1';
-        
-        
-        
-        /*$this->formula[1]['eval'] = "(1+(($interestPaidGlobal+$chargeOffGlobal)/$outstandingPrincipalGlobal)^365)-1";
-        $this->formula[1]['externalName'] = 'profitability';
-        $this->formula[1]['internalName'] = 'newuserinvestmentdatas.newuserinvestmentdata_profitability';
-        $this->formula[1]['param'][0] = 'interestPaidGlobal';
-        $this->formula[1]['param'][1] = 'chargeOffGlobal';
-        $this->formula[1]['param'][2] = 'outstandingPrincipalGlobal';
-        
-        $this->config['interestPaidGlobal'] = "newuserinvestmentdatas.newuserinvestmentdata_interestPaidGlobal";
-        $this->config['chargeOffGlobal'] = 'userinvestmentdata.userinvestmentdata_myWallet';
-    }*/
-    
     /**
      * Gets the latest (=last entry in DB) data of a model table
      * @param string    $model
@@ -632,23 +454,10 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return array with data
      *          or false if $elements do not exist in two dimensional array
      */
-    public function getLatestTotalsConsolidation($model, $filterConditions) {
-
-        $temp = $this->$model->find("first", array('conditions' => $filterConditions,
-            'order' => array($model . '.id' => 'desc'),
-            'recursive' => -1
-        ));
-
-        if (empty($temp)) {
-            return false;
-        }
-
-        foreach ($temp[$model] as $key => $item) {
-            $keyName = explode("_", $key);
-            if (strtoupper($model) <> strtoupper($keyName[0])) {
-                unset($temp[$model][$key]);
-            }
-        }
+    public function getLatestTotalsConsolidation($model, $options) {
+        $options['recursive'] = -1;
+        $options['order'] = array('date' => 'desc');
+        $temp = $model->find("first", $options);
         return $temp;
     }   
     
