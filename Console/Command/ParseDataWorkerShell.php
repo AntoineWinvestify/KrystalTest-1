@@ -255,7 +255,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
 //print_r($totalParsingresultInvestments);   
 //print_r($totalParsingresultExpiredInvestments); 
 print_r($totalParsingresultTransactions['2014-11-17']);
-//print_r($totalParsingresultTransactions['2014-09-22']);
+print_r($totalParsingresultTransactions['2014-09-19']);
 //print_r($totalParsingresultTransactions['2014-07-10']);
 //print_r($totalParsingresultTransactions['2014-07-15']);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;

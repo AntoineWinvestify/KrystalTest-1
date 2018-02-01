@@ -183,13 +183,14 @@ class Dashboard2sController extends AppController {
         }
         echo 1;
         $this->Company = ClassRegistry::init('Company');
-        //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
-        $investorIdentityId = $this->Session->read('Auth.User.Investor.id');
+        //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Global Investor Identity number
+        $investorId = $this->Session->read('Auth.User.Investor.id');
 
         //Get investment data from db
-        $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorIdentityId);
-        //print_r($allInvestment);
-        //Get global data
+        $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorId);
+echo "AANAN\n";
+        print_r($allInvestment);
+        //Get global data 
         $this->range = array();
         $global['totalVolume'] = 0;
         $global['investedAssets'] = 0;
@@ -200,15 +201,18 @@ class Dashboard2sController extends AppController {
         /* $global['netAnnualTotal'] = 0;
           $global['netAnnual12Months'] = 0;
           $global['netAnnualReturnLastYear'] = 0; */
-
+echo "Daniel\n";
         $i = 0;
         //$global['netDeposits'] = 0; 
         foreach ($allInvestment as $globalKey => $individualPfpData) {
+    echo "AB\n";        
             if (empty($individualPfpData)) {
                 unset($allInvestment[$globalKey]);
+ echo "loop with cçntinue\n";               
                 continue;
             }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
+                echo "key = $key \n";
                 switch ($key) {
                     case "linkedaccount_id":
                         //Get the pfp id of the linked acount

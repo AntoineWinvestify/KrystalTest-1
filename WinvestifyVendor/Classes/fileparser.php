@@ -373,7 +373,8 @@ Currency exchange fee	FX commission with Exchange Rate:    */
                 "detail" => "Disinvestment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "disinvestment"
+                "type" => "disinvestment",
+                "chars" => "REMOVE_AMOR_TABLE" 
                 ],
         
             101 => [

@@ -91,8 +91,8 @@ class loanbook extends p2pCompany {
             ],
             "C" => [
                 [
-                    "type" => "transactionDetail", // Winvestify standardized name   OK
-                    "inputData" => [// List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
                         "input2" => [
                             0 => ["Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Retirada de Fondos" => "Cash_withdrawal"],
@@ -121,9 +121,10 @@ class loanbook extends p2pCompany {
                 ],
                 
                 [
-                    "type" => "transactionDetail", // Winvestify standardized name   OK
-                    "inputData" => [// List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
-                        "input2" => [
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
+                        "input2" => "#current.original_concept", 
+                        "input3" => [
                             0 => ["Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Retirada de Fondos" => "Cash_withdrawal"],
                             2 => ["Participación en préstamo" => "Primary_market_investment"],

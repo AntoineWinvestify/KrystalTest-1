@@ -312,7 +312,6 @@ $tempMeasurements = array(
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
-
 if ($dateKey == "2014-01-21"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
@@ -503,7 +502,7 @@ echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and putting
  //                       $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
                         $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-                        $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
+              //          $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
              //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 501
                         $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
@@ -527,35 +526,44 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 }
 
                 // load all the transaction data
-                foreach ($dateTransaction as $transactionKey => $transactionData) {       // read one by one all transactions of this loanId
+                foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
-                        if (in_array("AM_TABLE", $conceptChars)) {          // New, or extra investment, so new amortizationtable shall be collected
+                        if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
                                 if (isset($transactionData['sliceIdentifier'])) {
-                                        $sliceIdentifier = $transactionData['sliceIdentifier'];
+                                        $sliceIdentifier = $transactionData['sliceIdentifier'];                                        
                                     }
                                 if (isset($database['investment']['investment_sliceIdentifier'])) {
-                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];
+                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
                                     }                                    
-                                if (empty($sliceIdentifier)) {                       // Take the default one
-                                    $sliceIdentifier = $transactionData['investment_loanId'];
-echo "@@@@ sliceIdentifier has been obtained from Investment array\n";                                  
+                                if (empty($sliceIdentifier)) {                              // Take the default one
+                                    $sliceIdentifier = $transactionData['investment_loanId'];                                
                                 }
-                                                               
-                                $sliceIdExists = array_search ($sliceIdentifier, $platformData['newLoans']);
-                                if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
-                                    $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
-                                }
+                                $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
+
                             }
                         }
+                        if (in_array("REMOVE_AM_TABLE", $conceptChars)) { 
+                            if (isset($transactionData['sliceIdentifier'])) {
+                                    $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
+                            }
+                            if (isset($database['investment']['investment_sliceIdentifier'])) {
+                                    $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                        
+                            }                                    
+                            if (empty($sliceIdentifier)) {                                  // Take the default one
+                                $sliceIdentifier = $transactionData['investment_loanId'];                                 
+                            }
+                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
+                            if ($sliceIdExists !== false) {                                 // loanSliceId does not exist in newLoans array, so add it
+                                $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
+                            }                          
+                        }
                     }
-                    
-//print_r($transactionData);
-                    foreach ($transactionData as $transactionDataKey => $transaction) {  // read all transaction concepts
-                        if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
+                    foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
+                        if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
@@ -569,7 +577,7 @@ echo "@@@@ sliceIdentifier has been obtained from Investment array\n";
                             $dataInformation = explode(".", $tempResult['databaseName']);
                             $dbTable = $dataInformation[0];
                             $dbVariableName = $dataInformation[1];
-echo "index = " . $tempResult['internalIndex'] . " \n";
+
                             echo "Execute calculationfunction: $functionToCall\n";
                             if (!empty($functionToCall)) { 
                                 $result = $calculationClassHandle->$functionToCall($transactionData, $database);
@@ -639,7 +647,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 
 // Now start consolidating of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004);
-$internalVariableToHandle = array(37, 10004);  // I should also calculate the numberActiveInvestment using COUNT()
+
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -725,17 +733,7 @@ $internalVariableToHandle = array(37, 10004);  // I should also calculate the nu
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
                     $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
 echo "&&&&&=>: original amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
-/*
-if ($this->variablesConfig[$item]['internalIndex'] == 10002 ){
-    if ($database[$varName[0]][$varName[1]] < $result){  // we close an investment
-        $FINISHED_ACCOUNT = $FINISHED_ACCOUNT + 1;
-        $FINISHED_ACCOUNT_LIST[] = $database['investment']['investment_loanId'];   
-        if (in_array($database['investment']['investment_loanId'], $FINISHED_ACCOUNT_LIST)) {
-            $FINISHED_DUPLICATES_LIST[] = $database['investment']['investment_loanId'];
-        }
-    }
-}
-*/
+
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {
                             $database[$dbTable][$transactionDataKey] = 0;
