@@ -205,6 +205,9 @@ class loanbook extends p2pCompany {
             "J" => [
                 "name" => "investment_nominalInterestRate1"
             ],
+            "N" => [
+                "name" => "investment_sliceIdentifier"
+            ],
         ]
     ];
     
