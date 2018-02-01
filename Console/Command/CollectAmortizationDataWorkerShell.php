@@ -37,6 +37,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlAmortization', array($this, 'getAmortizationDataMulticurl'));
+        $this->GearmanWorker->addFunction('parserFileAmortization', array($this, 'getAmortizationDataParserFile'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n"; 
         while( $this->GearmanWorker->work() );
     }
@@ -111,4 +112,56 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
        return json_encode($data);
     }
 
+    public function getAmortizationDataParserFile($job){
+        $data = json_decode($job->workload(),true);
+        $this->Applicationerror = ClassRegistry::init('Applicationerror');
+        $this->Structure = ClassRegistry::init('Structure');
+        $this->queueFunction = "collectAmortizationTablesParserFile";
+        print_r($data);
+        $queueFunction = $this->queueFunction;
+        
+        
+        $i = 0;
+        foreach ($data["companies"] as $linkedaccount) {
+            $this->initCompanyClass($data, $i, $linkedaccount, null);
+            $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_AMORTIZATION_TABLE);
+            $this->newComp[$i]->setTableStructure($structure);
+            $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
+            $i++;
+        }
+        $companyNumber = 0;
+        echo "MICROTIME_START = " . microtime() . "<br>";
+        //We start at the same time the queue on every company
+        foreach ($data["companies"] as $linkedaccount) {
+            $this->tempArray = $this->newComp[$companyNumber]->$queueFunction();
+            $this->loanTotalIds = $this->tempArray['loanTotalIds'];
+            $this->newComp[$companyNumber]->saveAmortizationTable();
+            $this->newComp[$companyNumber]->verifyErrorAmortizationTable();
+            
+            $statusCollect = [];
+            $errors = null;
+           
+            //if (empty($this->tempArray[$i]['global']['error'])) {
+            if (!empty($this->tempArray['errorTables'])) {
+                $statusCollect[$this->newComp[$companyNumber]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
+            } else {
+                $statusCollect[$this->newComp[$companyNumber]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+            }
+            /* }
+              else {
+              $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_ERROR;
+              $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
+              } */
+
+            $companyNumber++;
+        }
+               
+       $data['statusCollect'] = $statusCollect;
+       $data['errors'] = $errors;
+
+       return json_encode($data);
+    }
+    
+    
+    
 }
