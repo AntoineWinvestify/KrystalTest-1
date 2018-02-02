@@ -671,7 +671,7 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3109;
+        $this->minEmptySize = 3108;
         $this->maxEmptySize = 3110;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
@@ -856,7 +856,7 @@ class mintos extends p2pCompany {
             case 4:
                 //$credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
-                  $this->headerComparation = $this->investmentHeader;
+                $this->headerComparation = $this->investmentHeader;
                 $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $credentials = array_shift($this->urlSequence);
@@ -880,7 +880,9 @@ class mintos extends p2pCompany {
                 }
                 
                 $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
-                                echo 'sizzzzzeeeee:     ' . $size;
+                if (Configure::read('debug')) {
+                    echo 'File size:     ' . $size;
+                }
 
                 if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
@@ -951,7 +953,9 @@ class mintos extends p2pCompany {
                 }
                 
                 $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
-                echo 'sizzzzzeeeee:     ' . $size;
+                if (Configure::read('debug')) {
+                    echo 'File size:     ' . $size;
+                }
                 if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
@@ -985,7 +989,9 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                                echo 'sizzzzzeeeee:     ' . $size;
+                if (Configure::read('debug')) {
+                    echo 'File size:     ' . $size;
+                }
 
                 $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
