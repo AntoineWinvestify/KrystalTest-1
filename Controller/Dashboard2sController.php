@@ -188,7 +188,7 @@ class Dashboard2sController extends AppController {
 
         //Get investment data from db
         $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorId);
-echo "AANAN\n";
+
         print_r($allInvestment);
         //Get global data 
         $this->range = array();
@@ -201,14 +201,12 @@ echo "AANAN\n";
         /* $global['netAnnualTotal'] = 0;
           $global['netAnnual12Months'] = 0;
           $global['netAnnualReturnLastYear'] = 0; */
-echo "Daniel\n";
+
         $i = 0;
         //$global['netDeposits'] = 0; 
-        foreach ($allInvestment as $globalKey => $individualPfpData) {
-    echo "AB\n";        
+        foreach ($allInvestment as $globalKey => $individualPfpData) {        
             if (empty($individualPfpData)) {
-                unset($allInvestment[$globalKey]);
- echo "loop with cçntinue\n";               
+                unset($allInvestment[$globalKey]);              
                 continue;
             }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {

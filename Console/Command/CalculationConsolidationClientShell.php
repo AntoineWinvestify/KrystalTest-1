@@ -57,7 +57,6 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 
     
     public function initClient() {
-        $handle = new UserDataShell();
 
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
@@ -73,7 +72,6 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 3C Client\n";
         }
 
-        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
         $inActivityCounter++;
 
         Configure::load('p2pGestor.php', 'default');
