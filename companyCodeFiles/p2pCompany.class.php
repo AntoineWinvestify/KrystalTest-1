@@ -1727,7 +1727,7 @@ class p2pCompany {
         echo "===========================> File name is " . $fileName;
         
         $pathCreated = $this->getFolderPFPFile();
-        echo 'Saving in: ' . $path . HTML_ENDOFLINE;
+        echo 'Saving in: ' . $pathCreated . HTML_ENDOFLINE;
         if (empty($pathCreated)) {
             //$path = $partialPath . DS . $path;
             //echo "The path is " . $partialPath . $path;
@@ -2439,26 +2439,52 @@ class p2pCompany {
         $this->maxLoans = count($this->loanIds);
     }
 
+    /**
+     * Function to get the initial date of the period for a company file
+     * @return $string date
+     */
     function getDateInit() {
         return $this->dateInit;
     }
 
+    /**
+     * Function to get the finish date of the period for a company file
+     * @return $string date
+     */
     function getDateFinish() {
         return $this->dateFinish;
     }
 
+    /**
+     * Function to set the initial date of the period for a company file
+     * @param string $dateInit Initial date
+     */
     function setDateInit($dateInit) {
         $this->dateInit = $dateInit;
     }
 
+    /**
+     * Function to set the finish date of the period for a company file
+     * @param string $dateFinish Finish date
+     */
     function setDateFinish($dateFinish) {
         $this->dateFinish = $dateFinish;
     }
 
+    /**
+     * Function to set the origin execution to recollect the data
+     * @param int $originExecution
+     */
     function setOriginExecution($originExecution) {
         $this->originExecution = $originExecution;
     }
 
+    /**
+     * Callback function for Dashboard 2.
+     * Function to get all the callbacks for a company in Dashboard2 in the flow 2
+     * 
+     * @return array
+     */
     function getCallbacks() {
         return $this->callbacks;
     }
@@ -2513,7 +2539,7 @@ class p2pCompany {
      * Also note that this callback is ALSO called in case the companycodefile has facilitated the list using the
      * "beforeamortizationList" callback function. 
      * 
-     * @param array $fileContent    The array which contains the result of the parsing of the downloaded file
+     * @param array $amortizationTables    The array which contains the result of the parsing of the downloaded file
      * @return ??
      */
     public function afterAmortizationlist(array $amortizationTables) {
@@ -2795,6 +2821,12 @@ FRAGMENT
         //http://docs.casperjs.org/en/latest/modules/casper.html#download
     }
 
+    /**
+     * Function to copy a file with a new name
+     * @param string $file FQDN of the file to copy
+     * @param string $newFile FQDN of the new file
+     * @return boolean
+     */
     public function copyFile($file, $newFile) {
         $created = true;
         if (!copy($file, $newFile)) {
@@ -2803,7 +2835,7 @@ FRAGMENT
         return $created;
     }
 
-    /*     * Function to compare header of the downloaded file of the pfps.
+    /* Function to compare header of the downloaded file of the pfps.
      * 
      * @return boolean true if header is different, false if is the same.
      */

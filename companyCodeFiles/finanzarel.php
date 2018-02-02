@@ -56,6 +56,7 @@ class finanzarel extends p2pCompany {
     protected $pInstanceGlobal = '';
     protected $credentialsGlobal = array();
     protected $requestFiles = array();
+    protected $tempRequest = [];
     
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
         [
@@ -599,6 +600,22 @@ class finanzarel extends p2pCompany {
                                  "G" => "Importe",
                                  "H" => "Saldo");
     
+    protected $transaction3Header = array(
+                                "A" => "Id",
+                                "B" => "Deudor/Emisor",
+                                "C" => "Rating  ?",
+                                "D" => "T?tulo",
+                                "E" => "Importe",
+                                "F" => "Vto.(d)",
+                                "G" => "Mejor Ofertaponderada",
+                                "H" => "Cobertura acumulada",
+                                "I" => "Mi oferta",
+                                "J" => "Importe Asignado",
+                                "K" => "Mi oferta(precio)",
+                                "L" => "Plusval?aEsperada",
+                                "M" => "TiempoRestante"
+                                );
+    
     protected  $compareHeaderConfigParam = array( 'separatorChar' => ";",
                                                   'chunkInit' => 1,
                                                   'chunkSize' => 1 );
@@ -862,7 +879,9 @@ class finanzarel extends p2pCompany {
                     '{$p_flow_step_id}' => 1,
                     '{$p_instance}' => $this->credentialsGlobal['p_instance']
                         ));
-                
+                if (count($this->request) === 3) {
+                    $this->tempRequest = array_shift($this->request);
+                }
                 //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
@@ -914,7 +933,7 @@ class finanzarel extends p2pCompany {
                 $this->headerComparation = $this->expiredLoansHeader;
                 $headers = array('Expect:');
                 
-                if (count($this->request) > 2) {
+                if (!empty($this->tempRequest)) {
                     $this->idForSwitch++;                   
                 }
                 else {
@@ -940,10 +959,10 @@ class finanzarel extends p2pCompany {
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->request[2]);
+                        'p_request' => $this->tempRequest);
                 $this->numFileTransaction = 3;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
-                //$this->headerComparation = $this->investmentHeader;
+                $this->headerComparation = $this->transaction3Header;
                 $headers = array('Expect:');
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
