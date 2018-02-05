@@ -147,7 +147,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
     /**
      * Function to save all the amortization tables in DB per user and per linked account
      */
-    public function saveAmortizationtablesToDB($tempArray) {
+    public function saveAmortizationtablesToDB() {
 $timeStart = time();
         foreach ($this->tempArray as $tempArray) {
             foreach ($tempArray as $amortizationData) {

@@ -187,8 +187,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         break;                        
                 }
 echo __FILE__. " " . __LINE__ . "\n";   
-//print_r($parserConfigFile);
-//print_r($configParameters);
+print_r($parserConfigFile);
+print_r($configParameters);
 print_r($filesByType[0]);
                 if (count($filesByType) === 1) {
 echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
@@ -212,8 +212,9 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                         //    $totalParsingresultTransactions = $tempResult;
                             break;
                         case WIN_FLOW_CONTROL_FILE:
-                            
-                            $totalParsingresultControlVariables = $tempResult;                         
+                            $totalParsingresultControlVariables = $tempResult;
+print_r($tempResult);                            
+echo __FILE__. " " . __LINE__ . "\n";                             
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
@@ -254,8 +255,8 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
 
 //print_r($totalParsingresultInvestments);   
 //print_r($totalParsingresultExpiredInvestments); 
-print_r($totalParsingresultTransactions['2014-11-17']);
-print_r($totalParsingresultTransactions['2014-09-19']);
+//print_r($totalParsingresultTransactions['2014-11-17']);
+//print_r($totalParsingresultTransactions['2014-09-19']);
 //print_r($totalParsingresultTransactions['2014-07-10']);
 //print_r($totalParsingresultTransactions['2014-07-15']);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -267,11 +268,12 @@ print_r($totalParsingresultTransactions['2014-09-19']);
             $returnData[$linkedAccountKey]['pfp'] = $platform;  
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-            $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile']; 
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
             $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];
             $returnData[$linkedAccountKey]['dashboard2ConfigurationParameters'] = $dashboard2ConfigurationParameters;
-        
+            $returnData[$linkedAccountKey]['controlVariables'] = $data['totalParsingresultControlVariables'];
+echo "Control Variables\n";
+print_r($returnData[$linkedAccountKey]['controlVariables']);        
 //print_r($returnData[$linkedAccountKey]);            
           
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         

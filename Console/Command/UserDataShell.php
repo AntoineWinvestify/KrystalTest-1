@@ -37,8 +37,9 @@ class UserDataShell extends AppShell {
     }
 
     /* not finished yet
-     * The control variables are calculated for each "DAY", but the checking is only done for the date of the readout.
-     * This means that if a reading period covers a week, the checking SHOULD be done only for the last calculation (= last day)
+     * Internally the control variables are calculated for each "DAY", but the checking is only done for 
+     * the date of the readout. This means that if a reading period covers a week, the checking SHOULD be done 
+     * only for the last calculation (= last day).
      * The structure of both arrays is:
      *     controlVariable['myWallet']
      *                    ['outstandingPrincipal']
@@ -53,20 +54,24 @@ class UserDataShell extends AppShell {
 
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
         $error = 0;
+        echo "external = \n";
+        print_r($externalControlVariables);
+        echo "internal = \n";
+        print_r($internalControlVariables);
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
-                    if ($internalControlVariables['myWallet'] <> $externalControlVariables) {
+                    if ($internalControlVariables['myWallet'] <> $externalControlVariables['myWallet'] ) {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;
                     }
                     break;
                 case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-                    if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables) {
+                    if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables['outstandingPrincipal'] ) {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;
                     }
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
-                    if ($internalControlVariables['activeInvestments'] <> $externalControlVariables) {
+                    if ($internalControlVariables['activeInvestments'] <> $externalControlVariables['activeInvestments'] ) {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_ACTIVE_INVESTMENTS;
                     }
                     break;

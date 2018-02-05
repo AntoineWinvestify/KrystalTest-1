@@ -300,7 +300,7 @@ $timeStart = time();
                 }
                 
                 $today = strtotime($linkedAccount['finishDate']);
-                
+echo __FILE__ . " " . __LINE__ ."today = $today\n";                
                 foreach ($result as $item) {   
                     $nextPaymentDate = strtotime($item['Investment']['investment_nextPaymentDate']);
                     $today = strtotime($linkedAccount['finishDate']);

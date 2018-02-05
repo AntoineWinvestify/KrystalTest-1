@@ -72,6 +72,9 @@
  * 2018-01-02           version 0.9.1
  * A new characteric, REPAYMENT,  was added to the $transactionDetails array
  * 
+ * 2018-02-04   version_0.9.1
+ * Added new method, handleNumber, for dealing with numbers
+ * 
  * 
  * 
  * Pending:
@@ -1879,8 +1882,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return  string                  The manipulated number as a string
      */
     public function handleNumber($input, $multiplyFactor, $decimals) {
-        $cleanInput = trim(preg_replace('/\,/', '.', $input));
+        $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
+        $cleanInput =  str_replace(",", ".", $cleanInput);
         $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
+        
         return $temp;
     }    
 }

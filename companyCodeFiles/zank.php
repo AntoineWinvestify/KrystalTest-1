@@ -506,7 +506,7 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
-        "activeInvestments" => [
+        "activeInvestment" => [
             [
                 "type" => "activeInvestments",                                  // Winvestify standardized name  OK
                 "inputData" => [
@@ -573,7 +573,11 @@ class zank extends p2pCompany {
                     "finishDate"
                 ]
             ]
+        ],
+        "controlVariableFile" => [
+            
         ]
+        
     ];
     
         protected $investmentHeader = array(   
