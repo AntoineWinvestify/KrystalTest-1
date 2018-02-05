@@ -284,7 +284,7 @@ class finanzarel extends p2pCompany {
             //"M" FUTURE DATA Number 41
             "N" => [
                 [
-                    "type" => "investment_issueDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_dueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
