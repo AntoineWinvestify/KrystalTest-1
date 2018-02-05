@@ -830,11 +830,12 @@ class UserDataShell extends AppShell {
     public function calculateBadDebt(&$transactionData, &$resultData) {
         
         if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
-            return 0;
+            return $resultData['investment']['investment_writtenOff'];
         }
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
         
         if (isset( $transactionData['amount'])) {           // We take the value as provided in the transaction record by the P2P
+                                                            // This should be identical to the outstanding principal of investment
             $tempOutstandingPrincipal = $transactionData['amount'];
         }
         else {
@@ -961,7 +962,7 @@ class UserDataShell extends AppShell {
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
     
-    /*
+    /**
      *  Get the amount which corresponds to the "commission paid" concept.
      *  Note that this is both the in case a transaction record contains a loanId or not
      * 
@@ -974,6 +975,18 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
     
+
+    /**
+     *  Get the amount which corresponds to the "written off" concept for the userinvestmentdata
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      amount expressed as a string
+     * 
+     */
+    public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
     
     
 }

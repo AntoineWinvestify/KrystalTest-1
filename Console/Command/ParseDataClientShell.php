@@ -511,7 +511,7 @@ if ($dateKey == "2014-01-21"){
                         case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
                         case WIN_LOANSTATUS_ACTIVE:
                         case WIN_LOANSTATUS_FINISHED:    
-//                            $database['investment']['investment_new'] = YES;        // Serves for writing it to the DB as a NEW loan  
+//                            $database['investment']['investment_new'] = YES;                  // Serves for writing it to the DB as a NEW loan  
                             $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                             $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
                         break;
@@ -531,11 +531,11 @@ if ($dateKey == "2014-01-21"){
 
 echo "THE LOAN WITH ID " . $dateTransaction[0]['investment_loanId']  . " IS A ZOMBIE LOAN\n";
 echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and putting its state to WIN_LOANSTATUS_ACTIVE\n";
-                        $loanStatus = WIN_LOANSTATUS_ACTIVE;        // So amortization data is collected
- //                       $database['investment']['investment_new'] = YES;        // SO we store it as new loan in the database
+                        $loanStatus = WIN_LOANSTATUS_ACTIVE;                                        // So amortization data is collected
+ //                       $database['investment']['investment_new'] = YES;                          // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
                         $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-              //          $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM  
+              //          $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";        // TO BE DECIDED WHERE THIS ID COMES FROM  
              //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 501
                         $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
@@ -554,7 +554,6 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                         $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
                         $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
                         $database['investment']['id'] = $investmentId;
-//$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
                     }
                 }
 

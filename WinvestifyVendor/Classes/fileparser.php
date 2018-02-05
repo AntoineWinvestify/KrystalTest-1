@@ -1881,11 +1881,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $decimals          The (maximum) number of decimals that the end result may have
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals) {
+    public function handleNumber($input, $multiplyFactor, $decimals, $seperator) {
         $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
         $cleanInput =  str_replace(",", ".", $cleanInput);
-        $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         
+        if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
+            $cleanInput = "0.0";
+        }       
+        
+        $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    
 }
