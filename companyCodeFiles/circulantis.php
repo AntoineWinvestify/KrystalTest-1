@@ -350,10 +350,16 @@ class circulantis extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         $tables = $dom->getElementsByTagName("table"); //Get investment table
-
+        $this->verifyNodeHasElements($tables);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__);
+        }
         foreach ($tables as $keyTable => $table) {
             $rows = $table->getElementsByTagName("tr"); //Get investment row
-
+            $this->verifyNodeHasElements($rows);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }
             if ($totalArray !== false) {
                 foreach ($rows as $key => $row) {
 
@@ -376,7 +382,10 @@ class circulantis extends p2pCompany {
                     $tempArray['marketplace_country'] = 'ES';
 
                     $tds = $row->getElementsByTagName("td"); //Get investment data
-
+                    $this->verifyNodeHasElements($tds);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
                     foreach ($tds as $key => $td) {
                         echo $key . ': ' . $td->nodeValue . '<br>';
 
@@ -404,6 +413,10 @@ class circulantis extends p2pCompany {
                         }
 
                         $as = $td->getElementsByTagName("a"); //Get loanId
+                        $this->verifyNodeHasElements($as);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         foreach ($as as $key => $a) {
                             echo $key . ' loan Id: ' . $a->getAttribute('href') . '<br>';
                             $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
@@ -412,6 +425,10 @@ class circulantis extends p2pCompany {
                         }
 
                         $buttons = $td->getElementsByTagName("button"); //Get status data
+                        $this->verifyNodeHasElements($buttons);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         foreach ($buttons as $key => $button) {
                             echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
                             switch ($button->getAttribute('title')) {
