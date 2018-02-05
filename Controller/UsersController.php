@@ -80,10 +80,10 @@ function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 	$this->Security->requireAuth();
-	$this->Auth->allow('requestNewPasswordPanel', 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
-						'testReadPreferredFollowers', 'cronDBbackup', 'initLoad', 'changeDisplayLanguage',
-						'registerPanel', 'registerPanelA', 'registerPanelB', 'registerPanelC', 'registerPanelD',
-						'registerPanelE', 'cronAnalyzeUserDatas', 'session', 'loginRedirect');
+        $this->Auth->allow( 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
+                                        'changeDisplayLanguage', 'registerPanel', 'registerPanelA', 'registerPanelB', 
+					'registerPanelC', 'registerPanelD', 'registerPanelE','loginRedirect');
+
 
 	// allow these actions without logon
 //	$this->Security->validatePost = false;
