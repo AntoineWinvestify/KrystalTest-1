@@ -1880,7 +1880,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return  string                  The manipulated number as a string
      */
     public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
-        $cleanInput = preg_replace("/[^0-9,.]/", "",$input);
+        $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
         if($separator === "."){
            $cleanInput =  str_replace(",", "", $cleanInput);
         } 
@@ -1891,8 +1891,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
          if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
             return "0.0";
         }
-        
-        $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
+
+        $temp = bcmul((string)$cleanInput, (string)$multiplyFactor, $decimals);  
         return $temp;
     }    
 }
