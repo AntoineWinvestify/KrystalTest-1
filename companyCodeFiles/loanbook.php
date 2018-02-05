@@ -274,6 +274,7 @@ class loanbook extends p2pCompany {
                 "inputData" => [
                     "input2" => "1",
                     "input3" => "0",
+                    "input3" => ",",
                 ],
                 "functionName" => "handleNumber",
             ]

@@ -1887,6 +1887,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         else if($separator === ","){
            $cleanInput =  str_replace(",", ".", str_replace(".", "",$cleanInput));
         }
+        
+         if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
+            return "0.0";
+        }
+        
         $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    
