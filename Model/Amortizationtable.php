@@ -101,7 +101,8 @@ class Amortizationtable extends AppModel
         $this->Investment = ClassRegistry::init('Investment');
         $amortizationtable = [];
         $investmentsliceIds = [];
-        
+
+// connect amortization table to the correct Investmentslide model        
         foreach ($amortizationData as $loanId => $loanData) {
             foreach ($loanData as $value) {
                 $loanIdInformation = explode("_", $loanId);
@@ -112,9 +113,9 @@ class Amortizationtable extends AppModel
                 $amortizationtable[] = $value;
             }
         }
-
         $this->saveMany($amortizationtable, array('validate' => true));
-        
+
+// update mark in investment model stating that amoritzationtable is available        
         $index = 0;
         $controlIndex = 0;
         $limit = WIN_DATABASE_READOUT_LIMIT;       

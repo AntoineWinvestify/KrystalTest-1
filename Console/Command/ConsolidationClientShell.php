@@ -58,9 +58,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         //$this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $pendingJobs = $this->checkJobs(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, $jobsInParallel);
-
-            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
                                                   WIN_QUEUE_STATUS_START_CONSOLIDATION,
                                                 $jobsInParallel);
 

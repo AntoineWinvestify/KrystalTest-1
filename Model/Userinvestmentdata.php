@@ -38,16 +38,16 @@ class Userinvestmentdata extends AppModel {
     
     /**
      * Get data of the last linked accounts investments of an investor.
-     * @param string $investorIdentityId investor id.
+     * @param string $investorId             investor database id.
      * @return array Last Userinvestmentdata rows for the linked accounts
      */
-    public function getLastInvestment($investorIdentityId) {
+    public function getLastInvestment($investorId) {
 
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
         //Get linked accounts id
         $linkedAccountsId = $this->Linkedaccount->find("all", array("recursive" => -1,
-            "conditions" => array("investor_id" => $investorIdentityId),
+            "conditions" => array("investor_id" => $investorId),
             "fields" => array("id"),
         ));
 
@@ -56,11 +56,12 @@ class Userinvestmentdata extends AppModel {
         foreach ($linkedAccountsId as $linkedAccountId) {
             $resultInvestorData[] = $this->find("first", array("recursive" => -1,
                 "conditions" => array("linkedaccount_id" => $linkedAccountId['Linkedaccount']['id']),
-                "order" => "created DESC",
+                "fields" => array("*"),
+                "order" => "date DESC",
             ));
         }
-        
-        //print_r($resultInvestorData);
+
+    //    print_r($resultInvestorData);
         return $resultInvestorData;
     }
 

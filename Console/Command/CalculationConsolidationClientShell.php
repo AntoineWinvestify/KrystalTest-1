@@ -48,16 +48,15 @@ App::import('Shell', 'UserData');
 class CalculationConsolidationClientShell extends GearmanClientShell {
 
     public $uses = array('Queue', 'Investment', 'Investmentslice');
-    protected $variablesConfig;
+
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-
         return;
     }
 
+    
     public function initClient() {
-        $handle = new UserDataShell();
 
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
@@ -70,16 +69,13 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 
         echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
         if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 2 Client\n";
+            echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 3C Client\n";
         }
 
-        //$resultQueue = $this->Queue->getUsersByStatus(FIFO, GLOBAL_DATA_DOWNLOADED);
         $inActivityCounter++;
 
         Configure::load('p2pGestor.php', 'default');
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
-        Configure::load('internalVariablesConfiguration.php', 'default');
-        $this->variablesConfig = Configure::read('internalVariables');
         
         while (true) {
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION),
@@ -304,7 +300,7 @@ $timeStart = time();
                 }
                 
                 $today = strtotime($linkedAccount['finishDate']);
-                
+echo __FILE__ . " " . __LINE__ ."today = $today\n";                
                 foreach ($result as $item) {   
                     $nextPaymentDate = strtotime($item['Investment']['investment_nextPaymentDate']);
                     $today = strtotime($linkedAccount['finishDate']);

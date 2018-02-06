@@ -339,7 +339,7 @@ class MarketPlacesController extends AppController {
                 $this->cronMarketPlaceHistorical($companyId, $structure, $companyDataResult[$companyId]['company_hasMultiplePages']);
             }
         }
-    }*/
+    }
 
     /**
      *

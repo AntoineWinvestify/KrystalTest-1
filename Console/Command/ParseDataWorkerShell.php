@@ -110,7 +110,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId'][‘parsingResultInvestments'] 
      *      $data['linkedAccountId']['activeInvestments']
      *      $data['linkedAccountId']['linkedaccountId']
-     *      $data['linkedAccountId']['controlVariableFile']
+     *      $data['linkedAccountId']['parsingResultControlVariables']
      *      * 
 
      *
@@ -143,6 +143,8 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $this->myParser = new Fileparser();       // We are dealing with an XLS file so no special care needs to be taken
             $callbacks = $companyHandle->getCallbacks();
             $this->myParser->setDefaultFinishDate($this->finishDate);
+            $dashboard2ConfigurationParameters = $companyHandle->getDashboard2ConfigurationParameters();
+
             foreach ($files as $fileTypeKey => $filesByType) {
                 switch ($fileTypeKey) {
                     case WIN_FLOW_TRANSACTION_FILE:
@@ -168,6 +170,14 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         $parserConfigFile = $companyHandle->getParserConfigExtendedTransactionFile();
                         $configParameters = $companyHandle->getParserExtendedTransactionConfigParms();
                         break; 
+                        
+                    case WIN_FLOW_CONTROL_FILE:
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing ControlVariables file \n";
+                        } 
+                        $parserConfigFile = $companyHandle->getParserConfigControlVariablesFile();
+                        $configParameters = $companyHandle->getParserControlVariablesConfigParms();
+                        break;                         
                     case WIN_FLOW_EXPIRED_LOAN_FILE:
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Analyzing Files with expired Loans\n";
@@ -176,8 +186,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
-
+echo __FILE__. " " . __LINE__ . "\n";   
+print_r($parserConfigFile);
+print_r($configParameters);
+print_r($filesByType[0]);
                 if (count($filesByType) === 1) {
+echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
                     $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
                 } 
                 else if (count($filesByType) > 1) {
@@ -197,6 +211,11 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
                             break;
+                        case WIN_FLOW_CONTROL_FILE:
+                            $totalParsingresultControlVariables = $tempResult;
+print_r($tempResult);                            
+echo __FILE__. " " . __LINE__ . "\n";                             
+                            break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
                             $this->callbackInit($tempResult, $companyHandle, $callbacks["expiredLoan"]);
@@ -208,6 +227,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                             }
                             break;                            
                     }
+                    unset($tempResult);
                     
 /*
                     try {
@@ -224,29 +244,38 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                                             );
                         $returnData[$linkedAccountKey]['error'][] = $errorInfo;
                     }
- */
+ */ 
                 }
                 else {               // error occurred while analyzing a file. Report it back to Client
                     $returnData[$linkedAccountKey]['error'][] = $tempResult['error'];
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                 }
-            }
+            } 
             
+
+//print_r($totalParsingresultInvestments);   
+//print_r($totalParsingresultExpiredInvestments); 
+//print_r($totalParsingresultTransactions['2014-11-17']);
+//print_r($totalParsingresultTransactions['2014-09-19']);
+//print_r($totalParsingresultTransactions['2014-07-10']);
+//print_r($totalParsingresultTransactions['2014-07-15']);
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
+            $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
             $returnData[$linkedAccountKey]['parsingResultExpiredInvestments'] = $totalParsingresultExpiredInvestments;
             $returnData[$linkedAccountKey]['userReference'] = $data['userReference'];
             $returnData[$linkedAccountKey]['actionOrigin'] = $data['actionOrigin'];
             $returnData[$linkedAccountKey]['pfp'] = $platform;  
             $returnData[$linkedAccountKey]['activeInvestments'] = $data['activeInvestments'];
             $returnData[$linkedAccountKey]['linkedaccountId'] = $linkedAccountKey;
-            $returnData[$linkedAccountKey]['controlVariableFile'] = $data['controlVariableFile']; 
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
-            $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];             
-            
-            
-            $returnData[$linkedAccountKey]['listOfTerminatedInvestments'] = $this->getListofFinishedInvestmentsA($platform, $totalParsingresultExpiredLoans);       
-            
+            $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];
+            $returnData[$linkedAccountKey]['dashboard2ConfigurationParameters'] = $dashboard2ConfigurationParameters;
+            $returnData[$linkedAccountKey]['controlVariables'] = $data['totalParsingresultControlVariables'];
+echo "Control Variables\n";
+print_r($returnData[$linkedAccountKey]['controlVariables']);        
+//print_r($returnData[$linkedAccountKey]);            
+          
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                 echo "action = account linking\n";
@@ -281,7 +310,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                     foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
                         $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
                         if ($existsInActive) {
-                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+                            if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                         //      generate a statechange record, state is changed to "active"
                                 $dateKeys = array_keys($totalParsingresultTransactions);
                                 $key = $dateKeys[count($dateKeys) - 1];
@@ -322,7 +351,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
        
-        echo "Number of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
+        echo "\nNumber of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
 
@@ -489,10 +518,9 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
      * @param array $configParameters Configuration parameters
      * @return array
      */
-    public function getSimpleFileData($file, $parserConfigFile, $configParameters) {
-        echo __LINE__ . "Dealing with file $file\n";  
+    public function getSimpleFileData($file, $parserConfigFile, $configParameters) { 
         //We need to pass the 0 value of the array because every company has a two-dimensional array starting with the value 0
-        if (!empty($configParameters[0]['offsetStart'])) {
+        if (isset($configParameters[0]['offsetStart'])) {
             $tempResult = $this->getSimpleSheetData($file, $parserConfigFile[0], $configParameters[0]);
         }
         else {
@@ -582,7 +610,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     }
     
     /**
-     * Get data from multiple sheet data with their individual configparameters
+     * Get data from multiple sheet data with their individual config parameters
      * 
      * @param string $file FQDN of the files
      * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
@@ -642,18 +670,31 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     }
     
     /**
-     * Join together two or more arrays with the same keys
+     * Join together two or more arrays with the same keys with two levels
+     * 
      * @param array $array It is an array of arrays
      * @param array $orderParam With orderParams if needed
      */
-    public function joinTwoDimensionArrayTogether($array, $orderParam) {
+    public function joinTwoDimensionArrayTogether($arrays, $orderParam) {
         $numberArrays = count($array);
-        $fullArray = array_shift($array);
-        foreach ($array as $arrayKey => $tempArray) {
-            foreach ($tempArray as $dateKey => $dateArray) {
-                foreach ($dateArray as $loanIdKey => $loanId) {
-                    foreach ($loanId as $keyVariable => $variable) {
-                        $fullArray[$dateKey][$loanIdKey][] = $variable;
+        $dates = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $keyDate => $value) {
+                if (!in_array($keyDate, $dates)) {
+                    $dates[] = $keyDate;
+                }
+            }
+        }
+        sort($dates);
+        $fullArray = [];
+        //$fullArray = array_shift($arrays);
+        $i = 0;
+        foreach ($dates as $date) {
+            $value = null;
+            foreach ($arrays as $arrayKey => $array) {
+                foreach ($array[$date] as $loanIdKey => $loanData) {
+                    foreach ($loanData as $key => $data) {
+                        $fullArray[$date][$loanIdKey][] = $data;
                     }
                 }
             }
@@ -661,17 +702,34 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         return $fullArray;
     }
     
-    public function joinOneDimensionArrayTogether($array, $orderParam) {
-        $numberArrays = count($array);
-        $fullArray = array_shift($array);
-        foreach ($array as $arrayKey => $tempArray) {
-            foreach ($tempArray as $loanKeyId => $loanId) {
-                foreach ($loanId as $keyVariable => $variable) {
-                     $fullArray[$loanKeyId][] = $variable;
+    /**
+     * Function to join two or more arrays together keeping the keys
+     * 
+     * @param array $arrays Arrays to join together
+     * @param array $orderParam Order parameters of the array
+     * @return array The array fully merged
+     */
+    public function joinOneDimensionArrayTogether($arrays, $orderParam) {
+        
+        $loanIds = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $keyLoanId => $value) {
+                if (!in_array($keyLoanId, $loanIds)) {
+                    $loanIds[] = $keyLoanId;
                 }
-               
             }
         }
+        $fullArray = [];
+        $i = 0;
+        foreach ($loanIds as $loanId) {
+            $value = null;
+            foreach ($arrays as $arrayKey => $array) {
+                foreach ($array[$loanId] as $Key => $loanData) {
+                    $fullArray[$loanId][] = $loanData;
+                }
+            }
+        }
+        
         return $fullArray;
     }
     

@@ -293,15 +293,15 @@
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
-                                                        <td class="right"><?php echo __('12,15%')?></td>
+                                                        <td class="right"><?php echo __('0.00')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
-                                                        <td class="right"><?php echo __('11,33%')?></td>
+                                                        <td class="right"><?php echo __('0.00')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return past year.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year')?></td>
-                                                        <td class="right"><?php echo __('9,22%')?></td>
+                                                        <td class="right"><?php echo __('0.00')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
@@ -312,11 +312,11 @@
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo __('3.743,82 €')?></td>
+                                                        <td class="right"><?php echo __('0.00')?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
-                                                        <td class="right"><?php echo __('935,00 €')?></td>
+                                                        <td class="right"><?php echo __('0.00')?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
@@ -359,7 +359,7 @@
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off')?></td>
-                                                        <td class="right"><?php echo __('81.56 €')?></td>
+                                                        <td class="right"><?php echo __('0.00')?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -421,7 +421,7 @@
                                 <td><?php echo number_format($total, WIN_SHOW_DECIMAL) . " &euro;"?></td>
                                 <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . " &euro;"?></td>
                                 <td><?php echo number_format(round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
-                                <td>12,11</td>
+                                <td>0.00</td>
                                 <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['current'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
                             </tr>
                             <?php } ?>

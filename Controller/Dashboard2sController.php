@@ -182,13 +182,14 @@ class Dashboard2sController extends AppController {
         }
         echo 1;
         $this->Company = ClassRegistry::init('Company');
-        //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Investor idnetity number
-        $investorIdentityId = $this->Session->read('Auth.User.Investor.id');
-        
-        //Get investment data from db
-        $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorIdentityId);
+        //$investorIdentity = $this->Session->read('Auth.User.Investor.investor_identity'); //Global Investor Identity number
+        $investorId = $this->Session->read('Auth.User.Investor.id');
 
-        //Get global data
+        //Get investment data from db
+        $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorId);
+
+        print_r($allInvestment);
+        //Get global data 
         $this->range = array();
         $global['totalVolume'] = 0;
         $global['investedAssets'] = 0;
@@ -202,12 +203,13 @@ class Dashboard2sController extends AppController {
 
         $i = 0;
         //$global['netDeposits'] = 0; 
-        foreach ($allInvestment as $globalKey => $individualPfpData) {
+        foreach ($allInvestment as $globalKey => $individualPfpData) {        
             if (empty($individualPfpData)) {
-                unset($allInvestment[$globalKey]);
+                unset($allInvestment[$globalKey]);              
                 continue;
             }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
+                echo "key = $key \n";
                 switch ($key) {
                     case "linkedaccount_id":
                         //Get the pfp id of the linked acount

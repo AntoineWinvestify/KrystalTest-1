@@ -57,6 +57,7 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function to catch a fail on a Gearman Worker
+     * 
      * @param GearmanTask $task It is a Gearman::Client's representation of a task to be done.
      *          $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
      *                  $data[0] It is the queueId of the task
@@ -107,6 +108,7 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function that runs after a task was complete on the Gearman Worker
+     * 
      * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
      *          string $task->unique Returns the unique identifier for this task. This is assigned by the GearmanClient
      *                  $data[0] It is the queueId of the task
@@ -126,12 +128,14 @@ class GearmanClientShell extends AppShell {
         $dataWorker = json_decode($task->data(), true);
         
         if (!empty($dataWorker['statusCollect'])) {
+             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Collecting status from worker \n");
             foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
                 $this->userResult[$data[0]][$linkaccountId] = $status;
                 $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
             }
         }
         if (!empty($dataWorker['tempArray'])) {
+             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
             $this->tempArray[$data[0]] = $dataWorker['tempArray'];
         }
 
@@ -145,6 +149,7 @@ class GearmanClientShell extends AppShell {
     /**
      * Function to delete a folder of a day and a investor if there was some 
      * fail on the process to collect his data
+     * 
      * @param string $queueId It is the queueId
      * @param integer $linkAccountId It is the link account id
      * @return boolean It's true if the deleted was successful
@@ -174,10 +179,11 @@ class GearmanClientShell extends AppShell {
         return $delete;
     }
     
-     /**
+    /**
      * Function to verify that the collection of data was successful on all the 
      * workers per company and per user, if a company failed, the function will delete it.
      * If a massive fail occurs, the function will delete all the folders
+     *  
      * @param string $userResult It is the result of the collection of data
      * @return boolean It is true if the process was successful
      */
@@ -217,17 +223,17 @@ class GearmanClientShell extends AppShell {
     
     /**
      * Function to verify if a folder exist searching by path or it containing files
+     * 
      * @param string $userReference It is the user reference used by our database
      * @param integer $linkaccountId It is the link account id
      * @param string $fileName It is the name of the file to look for inside the folder
      * @return boolean It's true if the folder exists
      */
     public function verifyCompanyFolderExist($userReference, $linkaccountId, $fileName = null) {
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
-        $path = $userReference . DS . $this->date . DS . $linkaccountId;
-        print_r($path);
-        $path = $partialPath . DS . $path;
+        $partialPath = Configure::read('dashboard2Files');
+        $internalPath = $userReference . DS . $this->date . DS . $linkaccountId; 
+        $path = $partialPath . $internalPath;
+
         $folder = new Folder($path);
         $folderExist = false;
         if (empty($fileName)) {
@@ -239,8 +245,7 @@ class GearmanClientShell extends AppShell {
              $files = $folder->findRecursive($fileName . ".*");
              if ($files) {
                 $folderExist = true;
-             }
-             
+             }  
         }
         return $folderExist;
     }
@@ -270,16 +275,18 @@ class GearmanClientShell extends AppShell {
         $userAccess = 0;
 
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
-    
-        $tempData = array();
-        foreach ($jobList as $job) {
-            $jobListId = $job['Queue']['id'];
-            $tempData[] = array('id' => $jobListId,
-                              'queue_status' => $newStatus
-                              );
-        }
+        if (!empty($jobList)) {
+            $tempData = array();
+            foreach ($jobList as $job) {
+                $jobListId = $job['Queue']['id'];
+                $tempData[] = array('id' => $jobListId,
+                                  'queue_status' => $newStatus
+                                  );
+            }
 
-        $this->Queue->saveMany($tempData, array('validate' => true));
+            $this->Queue->saveMany($tempData, array('validate' => true));
+        }
+        
         return $jobList;
     }    
     

@@ -245,11 +245,11 @@ class ecrowdinvest extends p2pCompany {
      * @param Array $structure
      * @return Array
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) { //ecrowd doesnt have pagination
-        
-        
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) { //ecrowd doesnt have pagination
         $readController = 0;
         $investmentController = false;
+        $this->investmentDeletedList = $loanIdList;
+
 
         $totalArray = array();
         $str = $this->getCompanyWebpage();
@@ -321,7 +321,10 @@ class ecrowdinvest extends p2pCompany {
                     $tempArray['marketplace_statusLiteral'] = 'Completado/Con Tiempo';
                     $tempArray['marketplace_status'] = PERCENT;
                 }
-                foreach ($companyBackup as $inversionBackup) { //if completed and same status that is in backup
+                //print_r($tempArray);
+                foreach ($companyBackup as $inversionBackup) { //if completed and same status that is in backup 
+                   // echo '//////////////////// comapare with backup ' . $inversionBackup['Marketplacebackup']['marketplace_loanReference'] . ' and ' . $tempArray['marketplace_loanReference'];
+                    
                     if ($tempArray['marketplace_loanReference'] == $inversionBackup['Marketplacebackup']['marketplace_loanReference'] && $inversionBackup['Marketplacebackup']['marketplace_status'] === $tempArray['marketplace_status']) {
                         echo HTML_ENDOFLINE . $tempArray['marketplace_loanReference'] . HTML_ENDOFLINE;
                         print_r($inversionBackup);
@@ -329,6 +332,7 @@ class ecrowdinvest extends p2pCompany {
                         $investmentController = true;
                     }
                 }
+                
             } else if ($tempArray['marketplace_status'] == 'En estudio') {
                 $tempArray['marketplace_statusLiteral'] = 'En estudio';
                 $tempArray['marketplace_status'] = null;
@@ -339,27 +343,52 @@ class ecrowdinvest extends p2pCompany {
 
 
             if ($investmentController) { //Don't save a already existing investment
+                echo "unset, don't save";
                 unset($tempArray);
                 $investmentController = false;
             } else {
+                echo "save:";
+                print_r($tempArray);
+                $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                 $totalArray[] = $tempArray;
-                $this->print_r2($totalArray);
                 unset($tempArray);
             }
             echo $readController;
-            if ($readController > 50) {  //If we find more than 25 completed investment existing in the backpup, stop reading
+            if ($readController > 15) {  //If we find more than 25 completed investment existing in the backpup, stop reading
                 echo 'Stop reading';
                 echo $readController;
                 break;
             }
         }
-        $this->print_r2($totalArray);
+        
+        if ($totalArray != false) {
+            echo 'To delete';
+            print_r($this->investmentDeletedList);
+            $deletedInvestment = $this->deleteInvestment($this->investmentDeletedList);
+            echo 'totalpremerge';
+            print_r($totalArray);
+            if (!empty($deletedInvestment)) {
+                $totalArray = array_merge($totalArray, $deletedInvestment);
+                echo 'total:';
+                $this->print_r2($totalArray);
+            }
+        }
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
     }
 
+    function deleteInvestment($referenceArray){
+        foreach($referenceArray as $id){
+            $tempArray["marketplace_loanReference"] = $id;
+            $tempArray['marketplace_statusLiteral'] = 'Eliminada';
+            $tempArray['marketplace_status'] = REJECTED;
+            $totalArray[] = $tempArray;
+        }
+        return $totalArray;
+    }
+    
     /**
      *  Collect all investments
      * @param Array $structure
@@ -702,41 +731,48 @@ class ecrowdinvest extends p2pCompany {
 
         //We need remove this attribute directly from the div tag(the father)
         $node1->removeAttribute('class');
-        $node1->removeAttribute('Style');
+        $node1->removeAttribute('style');
         $node2->removeAttribute('class');
-        $node2->removeAttribute('Style');
+        $node2->removeAttribute('style');
 
-
+        
+        $node1 = $this->cleanDomTag($node1, array(  
+            array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
+            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'img', 'attr' => 'rel', 'value' => 'popover2'),
+        ));
+        
         $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width', 'style', 'rel'));
 
 
         $node1 = $this->cleanDom($node1, array(//Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
-                ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
+            array('typeSearch' => 'element', 'tag' => 'img'),
+                ), array('class', 'style', 'data-toggle', 'data-placement', 'data-trigger', 'data-content', 'title', 'data-original-title', 'aria-valuenow'));
 
-        $node1 = $this->cleanDomTag($node1, array(
+       
+        $node2 = $this->cleanDomTag($node2, array(   
             array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
             array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
+            array('typeSearch' => 'tagElement', 'tag' => 'img', 'attr' => 'rel', 'value' => 'popover2'),
         ));
 
         $node2 = $this->cleanDom($node2, array(
             array('typeSearch' => 'element', 'tag' => 'a'),
             array('typeSearch' => 'element', 'tag' => 'img'),
-                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width'));
-
-        $node2 = $this->cleanDom($node2, array(//Clear progress div
+                ), array('a', 'href', 'id', 'alt', 'title', 'src', 'height', 'srcset', 'sizes', 'width', 'style'));
+        
+        $node2 = $this->cleanDom($node2, array( //Clear progress div
             array('typeSearch' => 'element', 'tag' => 'div'),
+            array('typeSearch' => 'element', 'tag' => 'img'),
                 ), array('class', 'style', 'data-toggle', 'data-placement', 'title', 'data-original-title', 'aria-valuenow'));
-
-        $node2 = $this->cleanDomTag($node2, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'strong'), //We dont have strong tag in completed investment
-            array('typeSearch' => 'tagElement', 'tag' => 'span', 'attr' => 'class', 'value' => 'blue'), //Span tag causes problems
-        ));
-
-
+        
+        
+        
+        
         $structureRevision = $this->verifyDomStructure($node1, $node2);
         return $structureRevision;
     }

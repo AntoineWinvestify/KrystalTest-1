@@ -72,6 +72,9 @@
  * 2018-01-02           version 0.9.1
  * A new characteric, REPAYMENT,  was added to the $transactionDetails array
  * 
+ * 2018-02-04   version_0.9.1
+ * Added new method, handleNumber, for dealing with numbers
+ * 
  * 
  * 
  * Pending:
@@ -239,7 +242,7 @@ class Fileparser {
                 "detail" => "Compensation",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept15"    
+                "type" => "globalcashflowdata_platformCompensation"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -299,13 +302,13 @@ class Fileparser {
                 "detail" => "Tax_VAT",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept26"
+                "type" => "payment_taxVAT"
                 ],
             27 => [
                 "detail" => "Tax_income_withholding_tax",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept27"
+                "type" => "payment_incomeWithholdingTax"
                 ],
             28 => [
                 "detail" => "Write-off",
@@ -323,7 +326,7 @@ class Fileparser {
                 "detail" => "Currency_exchange_transaction",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept30"
+                "type" => "currencyExchangeTransaction"
                 ],
             31 => [
                 "detail" => "Unknown_income",
@@ -348,16 +351,20 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "DefaultInterestIncome"
-                ],        
+                ],     
+            35 => [
+                "detail" => "Partial_principal_and_interest_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "Mix",
+                "type" => "payment_partialPrincipalAndInterestPayment"
+                ],
         
   
- 
-    /*dfefault interest income should be in globalcashflow table
+ /*
+    default interest income should be in globalcashflow table
 
 30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    */
-    
-           
+Currency exchange fee	FX commission with Exchange Rate:    */        
         
         
         
@@ -369,7 +376,8 @@ Currency exchange fee	FX commission with Exchange Rate:    */
                 "detail" => "Disinvestment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "disinvestment"
+                "type" => "disinvestment",
+                "chars" => "REMOVE_AM_TABLE",    
                 ],
         
             101 => [
@@ -397,6 +405,12 @@ Currency exchange fee	FX commission with Exchange Rate:    */
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
+                ],
+            105 => [
+                "detail" => "dummy_concept",    // This is a dummy concept
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "dummy",
                 ],
         
     /*         105 => [
@@ -733,7 +747,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         //In the future to clean empty cells
         //https://stackoverflow.com/questions/24936905/phpexcel-finding-first-column-with-blank-cell
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-        $datas = $this->saveExcelToArray($sheetData, $configuration, $highestRow);
+        $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel);
         return $datas;
     }
     
@@ -750,6 +767,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel, $objReader);
         return $datas;
     }
     
@@ -760,7 +780,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *  @return array           $parsedData
      *          false in case an error occurred
      */
-    public function analyzeFileJson($file, $configuration) {
+    public function analyzeFileJson($file, $configuration) {        
         $fileString = file_get_contents($file);
         $data = json_decode($fileString, true);
         return $this->saveExcelToArray($data, $configuration, $this->config["offsetStart"]);
@@ -777,7 +797,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return array $temparray the data after the parsing process.
      *
      */
-    private function saveExcelToArray(&$rowDatas, $values, $totalRows) {
+    private function saveExcelToArray(&$rowDatas, $values, $totalRows) {     
         $tempArray = [];
         $maxRows = count($rowDatas);
 
@@ -803,7 +823,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
             array_pop($rowDatas);
         }
-       
+   
         $i = 0;
         $outOfRange = false;
         foreach ($rowDatas as $rowData) {
@@ -815,7 +835,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
-                    eval($tempString);
+                    eval($tempString);                   
                 }
                 else {          // "type" => .......
                     foreach ($value as $myKey => $userFunction ) {
@@ -849,26 +869,26 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                                                                        $userFunction['functionName']),
                                                                        $userFunction['inputData']);
 
-                            if (is_array($tempResult)) {
+                            if (is_array($tempResult)) {                                
                                 $userFunction = $tempResult;
                                 $tempResult = $tempResult[0];
                             }
 
                             // Write the result to the array with parsing result. The first index is written
                             // various variables if $tempResult is an array
-                            if (!empty($tempResult)) {
+                            if (!empty($tempResult)) {                             
                                 $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $userFunction["type"]) . "']";
                                 $tempString = $finalIndex  . "= '" . $tempResult .  "';  ";
                                 eval($tempString);
                             }
                         }
                         else {
-                            $outOfRange = false;        // reset
+                             $outOfRange = false;        // reset
                         }
                     }
                 }
-            }
-          
+            }  
+
             $countSortParameters = count($this->config['sortParameter']);
             switch ($countSortParameters) {
                 case 1:
@@ -1364,9 +1384,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
+
             foreach ($this->transactionDetails as $key => $detail) { 
-                $position = strpos($input, $configItemKey );
-                if ($position !== false) {                   
+                $position = strpos($input, $configItemKey);
+                if ($position !== false) {   
                     if ($detail['detail'] == $configItem){
                         $internalConceptName = $detail['type'];
                         $found = YES;
@@ -1423,15 +1444,20 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string    $input      It is the string in which we search the information
      * @param string    $search     The character to search. 
      * @param string    $separator  The separator character
-     * @param int       $mandatory  Indicates if it is mandatory that $search exists. If it does not exist 
-     *                              then the function will return a string of format "global_xxxxxx" with 
-     *                              xxxxxx being a random number
+     * @param int       $mandatory  Indicates if it is mandatory that $search exists. 
+     *                              If mandatory is 1 and it does not exist then the function will return 
+     *                              a string of format "global_xxxxxx" with xxxxxx being a random number
+     *                              If mandatory is 2 and it does exists, then the function will return 
+     *                              a string of format "global_xxxxxx" with xxxxxx being a random number
      * @return string   $extractedString    The value we were looking for
      *
      */
     private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
         $position = stripos($input, $search);
         if ($position !== false) {  // == TRUE
+            if ($mandatory == 2){    
+                return "global_" . mt_rand();
+            }
             $start = $position;
             $length = strlen($search);
         }
@@ -1791,9 +1817,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
     }
       
-     /**
+    /**
      * Function to get the extension of a file
-     * @param string $filePath FQDN of the file to analyze
+     * 
+     * @param string $file FQDN of the file to analyze
      * @return string It is the extension of the file
      */
     public function getExtensionFile($file) {              
@@ -1816,6 +1843,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return $inputType;
     }
     
+    /**
+     * Get an excel sheet by parts, from example from cell 1 to 500
+     * 
+     * @param string $filePath FQDN of the file to analyze
+     * @param int $chunkInit The first cell from we start taking data
+     * @param int $chunkSize The last cell from we finish taking data
+     * @param string $inputFileType It is the extension
+     * @return array
+     */
     function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
         if (empty($inputFileType)) {
             $inputFileType = "Excel2007";
@@ -1847,10 +1883,18 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 unset($sheetData[$key]);
             }
         }
-        var_dump($sheetData);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel, $objReader);
         return $sheetData;
     }
 
+    /**
+     * Get all the data from different sheets of an excel
+     * @param string $filePath FQDN of the file to analyze
+     * @param string $inputFileType It is the extension
+     * @return array
+     */
     function convertExcelMultiSheetByParts($filePath, $inputFileType) {
         if (empty($inputFileType)) {
             $inputFileType = "Excel2007";
@@ -1873,10 +1917,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                $sheetData[] = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
            }
         }
-        var_dump($sheetData);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel, $objReader);
         return $sheetData;
     }
     
+    /**
+     * Function to clear a csv
+     * @param string $filePath FQDN of the file to analyze
+     */
     function clearCsv($filePath) {
             //WE MUST CLEAR CSV OF SPECIAL CHARACTERS
             $csv = fopen($filePath, "r");
@@ -1887,17 +1937,61 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             fclose($csv);
     }
     
+    /**
+     * Function to set the finish date when we starting the process
+     * @param string $defaultFinishDate It is the default date
+     */
     function setDefaultFinishDate($defaultFinishDate) {
         $defaultFinishDate = date("Y-m-d", strtotime($defaultFinishDate));
         $this->defaultFinishDate = $defaultFinishDate;
-    }
+    } 
     
+    /**
+     * Function to get a defaulted date for a company
+     * 
+     * @param string    $input          cell data [Not used]
+     * @param array     $defaultValue   The value to be returned
+     * @return type
+     */
     function getDefaultDate($input, $defaultValue) {
         return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
     }
     
+    /**
+     * Function to clear the config variable with new values
+     * 
+     * @param array $config The new values
+     */
     public function cleanConfig($config) {
         $this->config = $config;
     }
-    
+
+
+    /**
+     * Function to manipulate a number
+     * Example:
+     *  21.903 -> 2090
+     * @param string $input             The number to manipulate. It is assumed that only a *number* is received,
+     *                                  with or without a "," or "."
+     * @param string $multiplyFactor    The factor which shall be used to multiply the input
+     * @param string $decimals          The (maximum) number of decimals that the end result may have
+     * @param string $separator         Decimal separator, can be "," or ".".
+     * @return  string                  The manipulated number as a string
+     */
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
+        $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
+        if($separator === "."){
+           $cleanInput =  str_replace(",", "", $cleanInput);
+        } 
+        else if($separator === ","){
+           $cleanInput =  str_replace(",", ".", str_replace(".", "",$cleanInput));
+        }
+        
+         if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
+            return "0.0";
+        }
+
+        $temp = bcmul((string)$cleanInput, (string)$multiplyFactor, $decimals);  
+        return $temp;
+    }    
 }

@@ -126,15 +126,15 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $this->saveAmortizationtablesToDB();
                 unset($pendingJobs);
-                $numberOfIteration++;
             }
             else {
-                $inActivityCounter++;
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
                 }     
                 sleep (4); 
             }
+            
+            $inActivityCounter++;
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
@@ -149,7 +149,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
      */
     public function saveAmortizationtablesToDB() {
 $timeStart = time();
-
         foreach ($this->tempArray as $tempArray) {
             foreach ($tempArray as $amortizationData) {
                 $this->Amortizationtable->saveAmortizationtable($amortizationData);

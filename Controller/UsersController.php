@@ -80,10 +80,10 @@ function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
 	$this->Security->requireAuth();
-	$this->Auth->allow('requestNewPasswordPanel', 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
-						'testReadPreferredFollowers', 'cronDBbackup', 'initLoad', 'changeDisplayLanguage',
-						'registerPanel', 'registerPanelA', 'registerPanelB', 'registerPanelC', 'registerPanelD',
-						'registerPanelE', 'cronAnalyzeUserDatas', 'session', 'loginRedirect');
+        $this->Auth->allow( 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
+                                        'changeDisplayLanguage', 'registerPanel', 'registerPanelA', 'registerPanelB', 
+					'registerPanelC', 'registerPanelD', 'registerPanelE','loginRedirect');
+
 
 	// allow these actions without logon
 //	$this->Security->validatePost = false;
@@ -964,13 +964,14 @@ echo "startDate = $startDate and endDate = $endDate <br>";
 *
 *
 */
-public function getlinkedaccountpasswords() {
+public function getlinkedaccountpasswords($companyId) {
 Configure::write('debug', 2);
 $this->autoRender = false;
 
 	$this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 	
-        $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0),
+        $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0,
+                                                                                            'company_id' => $companyId),
                                                             'fields' => array('company_id', 'investor_id', 
                                                             'linkedaccount_username','linkedaccount_password'),
             'recursive' => -1));

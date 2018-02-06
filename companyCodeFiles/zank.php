@@ -94,22 +94,27 @@ class zank extends p2pCompany {
     private $url;
     private $start = 0;
  
+       
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01'                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 in order to "close" an active investment
+    ];
     
     protected $transactionConfigParms = [
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
     //        'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
-        ]
-    ];                                                      // 0 = do not inverse order of elements (=default)
+            'sortParameter' => array("date","investment_loanId"),               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
+        ]                                                                       // 0 = do not inverse order of elements (=default)
+    ];                                                   
  
     protected $valuesTransaction = [
         [
             "A" =>  [
                 [
-                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "D/M/Y",
                                 ],
@@ -118,23 +123,23 @@ class zank extends p2pCompany {
             ],
             "B" => [
                 [
-                    "type" => "original_concept",                               // 
+                    "type" => "original_concept",                 
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "",                                 // 
-                                "input3" => "",
-                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                                "input2" => "",         
+                                "input3" => "",                                 // 'input3' is NOT mandatory. 
+                                "input4" => 0                                 
                             ],
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "transactionDetail",                                  // Winvestify standardized name   OK
-                    "inputData" => [                                                // List of all concepts that the platform can generate  
-                                                                                    // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate  
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                 "input2" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
                                     2 => ["inversion" => "Primary_market_investment"],
-                                    3 => ["inversion" => "Disinvestment"],  
+                        //            3 => ["inversion" => "Disinvestment"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
                                     6 => ["recargo" => "Delayed_interest_income"],
@@ -148,18 +153,18 @@ class zank extends p2pCompany {
             "C" => [
                 
                 [
-                    "type" => "amount",                                             // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                    // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                    "type" => "amount",                                         // Winvestify standardized name   OK
+                    "inputData" => [                                 
+                                "input2" => ".",                  
+                                "input3" => ",",                      
                                 "input4" => 4
                                 ],
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "transactionDetail",                                  // Winvestify standardized name   OK
-                    "inputData" => [                                                // List of all concepts that the platform can generate  
-                                                                                    // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate  
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                   "input2" => "#current.original_concept",                                                    
                                   "input3" => [
                                     0 => ["ingreso" => "Cash_deposit"],
@@ -178,14 +183,21 @@ class zank extends p2pCompany {
             ], 
             "D" =>  [
                 [
-                    "type" => "investment_loanId",                                  // Typically used for generating a 'psuedo loanid' for platform related actions
-                    "inputData" => [                                                // like for instance cash deposit or cash withdrawal
+                    "type" => "investment_loanId",                              // Typically used for generating a 'psuedo loanid' for platform related actions
+                    "inputData" => [                                            // like for instance cash deposit or cash withdrawal
                                 "input2" => "global_",                                    
                                 "input3" => "rand",                   
                                 ],
                     "functionName" => "generateId",
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
                 ]
-            ]
+            ]           
         ]
     ];
 
@@ -195,7 +207,7 @@ class zank extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
      //       'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
     
@@ -204,7 +216,7 @@ class zank extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
      //       'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
     
@@ -212,7 +224,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_myInvestmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                    // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -225,13 +237,12 @@ class zank extends p2pCompany {
                
             "C" => [
                 [
-                    "type" => "investment_expectAnnualYield",                   // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
-                                "input2" => "",
-                                "input3" => ",",
-                                "input4" => 4
+                                "input2" => "100",
+                                "input3" => 0
                                 ],
-                    "functionName" => "getAmount",
+                    "functionName" => "handleNumber",
                 ]                                           
             ], 
             "D" =>  [
@@ -249,8 +260,8 @@ class zank extends p2pCompany {
                 ],
                 [
                     "type" => "investment_typeOfInvestment",                        
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => " ",                                // 'input3' is NOT mandatory. 
+                    "inputData" => [                                            
+                                "input2" => " ",                                 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -305,11 +316,11 @@ class zank extends p2pCompany {
         ]
     ];
     
-    protected $valuesExpiredLoan = [                                             // All types/names will be defined as associative index in array
+    protected $valuesExpiredLoan = [                                            // All types/names will be defined as associative index in array
         [
             "A" =>  [
                 [
-                    "type" => "investment_investmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                    // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -322,14 +333,13 @@ class zank extends p2pCompany {
                
             "C" => [
                 [
-                    "type" => "investment_expectAnnualYield",                   // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
-                                "input2" => "",
-                                "input3" => ",",
-                                "input4" => 4
+                                "input2" => "100",
+                                "input3" => 0
                                 ],
-                    "functionName" => "getAmount",
-                ]                                           
+                    "functionName" => "handleNumber",
+                ]                                         
             ], 
             "D" =>  [
                 "name" => "investment_originalDuration"
@@ -478,6 +488,55 @@ class zank extends p2pCompany {
         ]
     ];
     
+    
+    
+    
+    
+ 
+    protected $valuesControlVariables = [
+        [
+        "myWallet" => [
+            [
+                "type" => "myWallet",                                           // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        "activeInvestment" => [
+            [
+                "type" => "activeInvestments",                                  // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "1",
+                    "input3" => "0",
+                ],
+                "functionName" => "handleNumber",
+            ]
+        ],
+        "outstandingPrincipal" => [
+            [
+                "type" => "outstandingPrincipal",                               // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ",",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        ]
+    ];      
+    
+    protected $controlVariablesConfigParms = [
+        [
+            'offsetStart' => 0,
+            'offsetEnd' => 0,
+        ]
+    ];   
+    
     protected $callbacks = [
         "investment" => [
             "cleanTempArray" => [
@@ -514,7 +573,11 @@ class zank extends p2pCompany {
                     "finishDate"
                 ]
             ]
+        ],
+        "controlVariableFile" => [
+            
         ]
+        
     ];
     
         protected $investmentHeader = array(   
@@ -536,306 +599,7 @@ class zank extends p2pCompany {
         'D' => 'Destino',
         'E' => 'Saldo');
 
-    
-    protected $tableStructure = '<table id="parte" class="table table-hover"><tr><th>Cuota</th>
-                                                                <th class="info-tooltip">Fecha cobro <a href="#" data-toggle="tooltip" title="Fecha en la que se solicita el cobro al prestatario. Zank necesita 30 d&iacute;as despu&eacute;s para gestionar todos los cobros y enviarlos a tu monedero"><i class="fa fa-info-circle"></i></a></th>
-                                                                <th>Principal</th>
-                                                                <th>Intereses</th>
-                                                                <th>Mensualidad</th>
-                                                                <th>Comisi&oacute;n</th>
-                                                                <th>Intereses demora</th>
-                                                                <th>Estado</th>
-                                                                <th>Informaci&oacute;n</th>
-                                                            </tr><tr><td>INI</td>
-                                                                        <td>16/12/2015</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>1</td>
-                                                                        <td>01/01/2016</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td>0,37 &euro;</td>
-                                                                        <td>0,37 &euro;</td>
-                                                                        <td>-0,04 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>2</td>
-                                                                        <td>01/02/2016</td>
-                                                                        <td>1,76 &euro;</td>
-                                                                        <td>0,71 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,08 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>3</td>
-                                                                        <td>01/03/2016</td>
-                                                                        <td>1,79 &euro;</td>
-                                                                        <td>0,68 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,08 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>4</td>
-                                                                        <td>01/04/2016</td>
-                                                                        <td>1,81 &euro;</td>
-                                                                        <td>0,66 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,08 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>5</td>
-                                                                        <td>01/05/2016</td>
-                                                                        <td>1,84 &euro;</td>
-                                                                        <td>0,63 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,07 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>6</td>
-                                                                        <td>01/06/2016</td>
-                                                                        <td>1,87 &euro;</td>
-                                                                        <td>0,61 &euro;</td>
-                                                                        <td>2,53 &euro;</td>
-                                                                        <td>-0,07 &euro;</td>
-                                                                        <td>0,06 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>7</td>
-                                                                        <td>01/07/2016</td>
-                                                                        <td>1,89 &euro;</td>
-                                                                        <td>0,58 &euro;</td>
-                                                                        <td>2,50 &euro;</td>
-                                                                        <td>-0,07 &euro;</td>
-                                                                        <td>0,03 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>8</td>
-                                                                        <td>01/08/2016</td>
-                                                                        <td>1,92 &euro;</td>
-                                                                        <td>0,55 &euro;</td>
-                                                                        <td>2,63 &euro;</td>
-                                                                        <td>-0,07 &euro;</td>
-                                                                        <td>0,16 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>9</td>
-                                                                        <td>01/09/2016</td>
-                                                                        <td>1,95 &euro;</td>
-                                                                        <td>0,53 &euro;</td>
-                                                                        <td>2,60 &euro;</td>
-                                                                        <td>-0,06 &euro;</td>
-                                                                        <td>0,12 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>10</td>
-                                                                        <td>01/10/2016</td>
-                                                                        <td>1,97 &euro;</td>
-                                                                        <td>0,50 &euro;</td>
-                                                                        <td>2,57 &euro;</td>
-                                                                        <td>-0,06 &euro;</td>
-                                                                        <td>0,10 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>11</td>
-                                                                        <td>01/11/2016</td>
-                                                                        <td>2,00 &euro;</td>
-                                                                        <td>0,47 &euro;</td>
-                                                                        <td>2,53 &euro;</td>
-                                                                        <td>-0,06 &euro;</td>
-                                                                        <td>0,06 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>12</td>
-                                                                        <td>01/12/2016</td>
-                                                                        <td>2,03 &euro;</td>
-                                                                        <td>0,44 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,05 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>13</td>
-                                                                        <td>01/01/2017</td>
-                                                                        <td>2,06 &euro;</td>
-                                                                        <td>0,41 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,05 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>14</td>
-                                                                        <td>01/02/2017</td>
-                                                                        <td>2,09 &euro;</td>
-                                                                        <td>0,38 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,05 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>15</td>
-                                                                        <td>01/03/2017</td>
-                                                                        <td>2,12 &euro;</td>
-                                                                        <td>0,35 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,04 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>16</td>
-                                                                        <td>01/04/2017</td>
-                                                                        <td>2,15 &euro;</td>
-                                                                        <td>0,32 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,04 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>17</td>
-                                                                        <td>01/05/2017</td>
-                                                                        <td>2,18 &euro;</td>
-                                                                        <td>0,29 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,03 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>18</td>
-                                                                        <td>01/06/2017</td>
-                                                                        <td>2,21 &euro;</td>
-                                                                        <td>0,26 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,03 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>19</td>
-                                                                        <td>01/07/2017</td>
-                                                                        <td>2,24 &euro;</td>
-                                                                        <td>0,23 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,03 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>20</td>
-                                                                        <td>01/08/2017</td>
-                                                                        <td>2,27 &euro;</td>
-                                                                        <td>0,20 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,02 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>21</td>
-                                                                        <td>01/09/2017</td>
-                                                                        <td>2,30 &euro;</td>
-                                                                        <td>0,17 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,02 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-success estados-cuotas">CO</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota cobrada.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>22</td>
-                                                                        <td>01/10/2017</td>
-                                                                        <td>2,34 &euro;</td>
-                                                                        <td>0,14 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,02 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-encobro estados-cuotas">EC</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota En cobro.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>23</td>
-                                                                        <td>01/11/2017</td>
-                                                                        <td>2,37 &euro;</td>
-                                                                        <td>0,10 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,01 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label label-info estados-cuotas">DE</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota Devengandose.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>24</td>
-                                                                        <td>01/12/2017</td>
-                                                                        <td>2,40 &euro;</td>
-                                                                        <td>0,07 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,01 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label estados-cuotas" style="background-color: #aaaaaa;">PD</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota pendiente.
-                                                                                                                                                    </td>
-                                                                    </tr><tr><td>25</td>
-                                                                        <td>01/01/2018</td>
-                                                                        <td>2,44 &euro;</td>
-                                                                        <td>0,03 &euro;</td>
-                                                                        <td>2,47 &euro;</td>
-                                                                        <td>-0,00 &euro;</td>
-                                                                        <td>0,00 &euro;</td>
-                                                                        <td><span class="label estados-cuotas" style="background-color: #aaaaaa;">PD</span></td>
-                                                                                                                                                <td>
-                                                                                                                                                            Cuota pendiente.
-                                                                                                                                                    </td>
-                                                                    </tr></table>';
-    
-    
-    
+  
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -891,6 +655,8 @@ class zank extends p2pCompany {
 //set_time_limit(25);		// Zank is very very slow
         //echo $result; 
         $this->investmentDeletedList = $loanIdList;
+        echo 'id list: ';
+        print_r($this->investmentDeletedList);
         if (!$result) {   // Error while logging in
             echo __FUNCTION__ . __LINE__ . "login fail" . SHELL_ENDOFLINE;
             $tracings = "Tracing: " . SHELL_ENDOFLINE;
@@ -1075,12 +841,13 @@ class zank extends p2pCompany {
 
                 $as = $dom->getElementsByTagName('a');
                 foreach ($as as $a) {
-                    $tempArray['marketplace_purpose'] = $a->getAttribute('data-original-title');
+                    $tempArray['marketplace_purpose'] = utf8_decode($a->getAttribute('data-original-title'));
                 }
 
 
 
 
+             
                 if ($inversionReadController == 1) {
                     //echo __FUNCTION__ . __LINE__ . "Inversion completada ya existe" . HTML_ENDOFLINE . SHELL_ENDOFLINE;
                     $readControl++;
@@ -1161,12 +928,20 @@ class zank extends p2pCompany {
             $dom->loadHTML($str);
 
             $container = $this->getElements($dom, 'div', 'class', 'col-lg-12 col-md-12 col-sm-12 col-xs-12 col-bottom-box col-bottom-box-interno');
+            $this->verifyNodeHasElements($container);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }
             foreach ($container as $div) {
                 $subdivs = $div->getElementsByTagName('div');
-                /* foreach($subdivs as $subkey => $subdiv){
+                $this->verifyNodeHasElements($subdivs);
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                foreach($subdivs as $subkey => $subdiv){
                   echo 'Div: ' . HTML_ENDOFLINE;
                   echo $subkey . " => " . $subdiv->nodeValue . HTML_ENDOFLINE;
-                  } */
+                  }
                 $tempArray['marketplace_country'] = 'ES'; //Zank is in spain
                 $tempArray['marketplace_loanReference'] = $loanId;
                 //$tempArray['marketplace_category'] = $subdivs[31]->nodeValue;
@@ -1191,12 +966,17 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_status'] = REJECTED;
                 }
 
-                $tempArray['marketplace_sector'] = $subdivs[124]->getElementsByTagName('h4')[0]->nodeValue;
-                $tempArray['marketplace_purpose'] = $subdivs[124]->getElementsByTagName('p')[0]->nodeValue;
+                $tempArray['marketplace_sector'] = utf8_decode($subdivs[124]->getElementsByTagName('h4')[0]->nodeValue);
+                $tempArray['marketplace_purpose'] = utf8_decode($subdivs[124]->getElementsByTagName('p')[0]->nodeValue);
 
                 echo $subdivs[126]->nodeValue . SHELL_ENDOFLINE;
                 $tds = $subdivs[126]->getElementsByTagName('td');
-                $tempArray['marketplace_requestorLocation'] = $tds[5]->nodeValue;
+                $tempArray['marketplace_requestorLocation'] = utf8_decode($tds[5]->nodeValue);
+                
+                if(strpos($tempArray['marketplace_statusLiteral'], 'ategor')){  //If the loan has been deleted, the pfp redeirect to the marketplace, we detect that and chage status
+                    $tempArray['marketplace_statusLiteral'] = 'Eliminada';
+                    $tempArray['marketplace_status'] = REJECTED;
+                }
             }
             echo 'Hidden investment: ' . SHELL_ENDOFLINE;
             echo print_r($tempArray) . SHELL_ENDOFLINE;
@@ -1353,7 +1133,7 @@ class zank extends p2pCompany {
 
             $as = $dom->getElementsByTagName('a');
             foreach ($as as $a) {
-                $tempArray['marketplace_purpose'] = $a->getAttribute('data-original-title');
+                $tempArray['marketplace_purpose'] = utf8_decode($a->getAttribute('data-original-title'));
             }
 
             array_push($totalArray, $tempArray);
