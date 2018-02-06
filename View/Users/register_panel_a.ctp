@@ -103,6 +103,7 @@ insted of the types of platforms.
     function errorRegisterUserDataButton(data) {
         console.log("errorRegisterUserDataButton function is called");
         $('#registerModal').replaceWith(data);
+        $('#telephone').intlTelInput();
     }
 
 
@@ -438,26 +439,26 @@ insted of the types of platforms.
                                                 </small>
                                             </div>
                                             <div class="form-control blue_noborder4">
-												<?php
-													$errorClass = "";
-													if (array_key_exists('investor_telephone', $validationResult)) {
-														$errorClass = "redBorder";
-													}
-													$class = "center-block telephoneNumber". ' ' . $errorClass;
-								
-													echo $this->Form->input('investor_telephone',array("label"		=> false,
-																									"placeholder"	=> __("123456789"),
-																									"type"			=> "tel",
-																									"class"			=> $class,
-																									'value'			=> $userData['telephone'],
-																									"error"			=> false,
-																									"id"			=> "telephone"
-																			));
-													$errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
-													if (array_key_exists('investor_telephone',$validationResult)) {
-														$errorClassesForTexts .= " ". "actived";
-													}
-												?>		
+                                                <?php
+                                                $errorClass = "";
+                                                if (array_key_exists('investor_telephone', $validationResult)) {
+                                                    $errorClass = "redBorder";
+                                                }
+                                                $class = "center-block telephoneNumber" . ' ' . $errorClass;
+
+                                                echo $this->Form->input('investor_telephone', array("label" => false,
+                                                    "placeholder" => __("123456789"),
+                                                    "type" => "tel",
+                                                    "class" => $class,
+                                                    'value' => $userData['telephone'],
+                                                    "error" => false,
+                                                    "id" => "telephone"
+                                                ));
+                                                $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
+                                                if (array_key_exists('investor_telephone', $validationResult)) {
+                                                    $errorClassesForTexts .= " " . "actived";
+                                                }
+                                                ?>		
                                             </div>
                                             <div class="errorInputMessage ErrorPhoneNumber col-xs-offset-1">
                                                 <i class="fa fa-exclamation-circle"></i>
