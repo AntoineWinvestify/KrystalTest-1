@@ -58,11 +58,11 @@ class finanzarel extends p2pCompany {
     protected $requestFiles = array();
     protected $tempRequest = [];
     
-    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+    protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
         [
             "D" =>  [
                 [
-                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "D/M/y",
                                 ],
@@ -82,9 +82,9 @@ class finanzarel extends p2pCompany {
             ], 
             "F" => [// NOT FINISHED YET
                 [
-                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
-                    "inputData" => [                                                    // List of all concepts that the platform can generate
-                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Provisión de fondos" => "Cash_deposit"],
                                         1 => ["Retirada de fondos" => "Cash_withdrawal"],
@@ -106,10 +106,10 @@ class finanzarel extends p2pCompany {
             ],
             "G" => [
                 [
-                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                    "type" => "amount",                                         // Winvestify standardized name  OK
+                    "inputData" => [                               
+                                "input2" => ".",
+                                "input3" => ",",        
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
@@ -117,10 +117,10 @@ class finanzarel extends p2pCompany {
             ],
             "H" => [
                 [
-                    "type" => "balance",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                    "type" => "balance",                                        // Winvestify standardized name  OK
+                    "inputData" => [                             
+                                "input2" => ".",                   
+                                "input3" => ",",             
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
@@ -130,7 +130,7 @@ class finanzarel extends p2pCompany {
         [
             "D" =>  [
                 [
-                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "D/M/y",
                                 ],
@@ -150,9 +150,9 @@ class finanzarel extends p2pCompany {
             ], 
             "F" => [
                 [
-                    "type" => "transactionDetail",                                      // Winvestify standardized name   OK
-                    "inputData" => [                                                    // List of all concepts that the platform can generate
-                                                                                        // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                     "input3" => [
                                         0 => ["Intereses" => "Regular_gross_interest_income"],
                                         1 => ["Efecto fallido" => "Write-off"],
@@ -168,10 +168,10 @@ class finanzarel extends p2pCompany {
             ],
             "G" => [
                 [
-                    "type" => "amount",                                           // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                    "type" => "amount",                                         // Winvestify standardized name  OK
+                    "inputData" => [                                       
+                                "input2" => ".",     
+                                "input3" => ",",   
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
@@ -192,7 +192,7 @@ class finanzarel extends p2pCompany {
             ],
             "B" => [
                 [
-                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "D/M/y",
                                 ],
@@ -210,10 +210,10 @@ class finanzarel extends p2pCompany {
             ],
             "K" => [
                 [
-                    "type" => "amount",                                            // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                    // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                        // and its content is the result of the "getAmount" method
+                    "type" => "amount",                                         // Winvestify standardized name  OK
+                    "inputData" => [                                            
+                                "input2" => ".",    
+                                "input3" => ",",       
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
@@ -222,13 +222,13 @@ class finanzarel extends p2pCompany {
         ]
     ];
     
-    protected $valuesInvestment = [     // All types/names will be defined as associative index in array
+    protected $valuesInvestment = [                                             // All types/names will be defined as associative index in array
         [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "B" => [
-                "name" => "investment_debtor",                           // Winvestify standardized name  OK
+                "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
             "C" => [
                 "name" => "investment_riskRating",
@@ -238,7 +238,7 @@ class finanzarel extends p2pCompany {
             ],
             "E" => [  
                 [
-                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -280,7 +280,7 @@ class finanzarel extends p2pCompany {
             ],
             "J" =>  [
                 [
-                    "type" => "investment_nominalInterestRate",                           // Winvestify standardized name
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name
                     "inputData" => [
 				"input2" => ".",
                                 "input3" => ",",
@@ -343,10 +343,10 @@ class finanzarel extends p2pCompany {
         ],
         [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "B" => [
-                "name" => "investment_debtor",                           // Winvestify standardized name  OK
+                "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
             "C" =>  [
                 "name" => "investment_riskRating",
@@ -483,15 +483,15 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+            'sortParameter' => array("date","investment_loanId"),               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+            'sortParameter' => array("date","investment_loanId"),               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
             'callback' => [
                 "cleanTempArray" => [
                     "findValueInArray" => [
@@ -507,8 +507,8 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+                            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+                                'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
     ];
     
@@ -523,13 +523,13 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'debugEnd' => true,
-            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId"),   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId"),                      // Used to "sort" the array and use $sortParameter as prime index.
             'callback' => [
                 "cleanTempArray" => [
                     "findValueInArray" => [

@@ -964,13 +964,14 @@ echo "startDate = $startDate and endDate = $endDate <br>";
 *
 *
 */
-public function getlinkedaccountpasswords() {
+public function getlinkedaccountpasswords($companyId) {
 Configure::write('debug', 2);
 $this->autoRender = false;
 
 	$this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 	
-        $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0),
+        $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0,
+                                                                                            'company_id' => $companyId),
                                                             'fields' => array('company_id', 'investor_id', 
                                                             'linkedaccount_username','linkedaccount_password'),
             'recursive' => -1));

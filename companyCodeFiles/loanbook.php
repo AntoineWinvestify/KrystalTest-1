@@ -91,8 +91,8 @@ class loanbook extends p2pCompany {
             ],
             "C" => [
                 [
-                    "type" => "transactionDetail", // Winvestify standardized name   OK
-                    "inputData" => [// List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
                         "input2" => [
                             0 => ["Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Retirada de Fondos" => "Cash_withdrawal"],
@@ -130,9 +130,9 @@ class loanbook extends p2pCompany {
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "transactionDetail", // Winvestify standardized name   OK
-                    "inputData" => [// List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
-                        "input2" => "#current.original_concept",
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
+                        "input2" => "#current.original_concept", 
                         "input3" => [
                             0 => ["Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Retirada de Fondos" => "Cash_withdrawal"],
@@ -175,11 +175,10 @@ class loanbook extends p2pCompany {
             ],
             "C" => [
                 [
-                    "type" => "investment_fullLoanAmount",                      // This is an "empty variable name". So "type" is
-                    "inputData" => [                                            // obtained from $parser->TransactionDetails['type']   
-                        "input2" => "",                                         // and which BY DEFAULT is a Winvestify standardized variable name.
-                        "input3" => ",",                                        // and its content is the result of the "getAmount" method
-                        "input4" => 2
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name  OK
+                    "inputData" => [                                      
+                        "input2" => "",                      
+                        "input3" => ",",                       
                     ],
                     "functionName" => "getAmount",
                 ]
@@ -289,7 +288,7 @@ class loanbook extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+            'sortParameter' => array("date","investment_loanId")                // used to "sort" the array and use $sortParameter(s) as prime index.               
         ]
     ];
     
@@ -297,14 +296,14 @@ class loanbook extends p2pCompany {
         [
             'offsetStart'   => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // used to "sort" the array and use $sortParameter as prime index.
        ]
     ]; 
     
     protected $amortizationConfigParms = [
             'offsetStart' => 1,
             'offsetEnd'   => 1,
-            'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
     ];
     
     protected $controlVariablesConfigParms = [

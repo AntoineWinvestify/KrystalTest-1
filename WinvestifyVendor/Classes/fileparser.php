@@ -72,6 +72,9 @@
  * 2018-01-02           version 0.9.1
  * A new characteric, REPAYMENT,  was added to the $transactionDetails array
  * 
+ * 2018-02-04   version_0.9.1
+ * Added new method, handleNumber, for dealing with numbers
+ * 
  * 
  * 
  * Pending:
@@ -373,7 +376,8 @@ Currency exchange fee	FX commission with Exchange Rate:    */
                 "detail" => "Disinvestment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "disinvestment"
+                "type" => "disinvestment",
+                "chars" => "REMOVE_AMOR_TABLE" 
                 ],
         
             101 => [
@@ -1923,14 +1927,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
-        $cleanInput = preg_replace("/[^0-9,.]/", "",$input);
-        if($separator === "."){
-           $cleanInput =  str_replace(",", "", $cleanInput);
-        } 
-        else if($separator === ","){
-           $cleanInput =  str_replace(",", ".", str_replace(".", "",$cleanInput));
-        }
+    public function handleNumber($input, $multiplyFactor, $decimals, $seperator) {
+        $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
+        $cleanInput =  str_replace(",", ".", $cleanInput);
+        
+        if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
+            $cleanInput = "0.0";
+        }       
+        
         $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
         return $temp;
     }    

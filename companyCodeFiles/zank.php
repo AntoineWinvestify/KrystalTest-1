@@ -96,8 +96,8 @@ class zank extends p2pCompany {
  
        
     protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.01'            // This *optional* parameter is used to determine what we 
-                                                                // consider 0 in order to "close" an active investment
+        'outstandingPrincipalRoundingParm' => '0.01'                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 in order to "close" an active investment
     ];
     
     protected $transactionConfigParms = [
@@ -105,16 +105,16 @@ class zank extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
     //        'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
-        ]
-    ];                                                      // 0 = do not inverse order of elements (=default)
+            'sortParameter' => array("date","investment_loanId"),               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
+        ]                                                                       // 0 = do not inverse order of elements (=default)
+    ];                                                   
  
     protected $valuesTransaction = [
         [
             "A" =>  [
                 [
-                    "type" => "date",                                               // Winvestify standardized name  OK
+                    "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "D/M/Y",
                                 ],
@@ -123,18 +123,18 @@ class zank extends p2pCompany {
             ],
             "B" => [
                 [
-                    "type" => "original_concept",                               // 
+                    "type" => "original_concept",                 
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "",                                 // 
-                                "input3" => "",
-                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                                "input2" => "",         
+                                "input3" => "",                                 // 'input3' is NOT mandatory. 
+                                "input4" => 0                                 
                             ],
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "transactionDetail",                                  // Winvestify standardized name   OK
-                    "inputData" => [                                                // List of all concepts that the platform can generate  
-                                                                                    // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate  
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                 "input2" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
@@ -153,18 +153,18 @@ class zank extends p2pCompany {
             "C" => [
                 
                 [
-                    "type" => "amount",                                             // This is an "empty variable name". So "type" is
-                    "inputData" => [                                                // obtained from $parser->TransactionDetails['type']
-                                "input2" => ".",                                    // and which BY DEFAULT is a Winvestify standardized variable name.
-                                "input3" => ",",                                    // and its content is the result of the "getAmount" method
+                    "type" => "amount",                                         // Winvestify standardized name   OK
+                    "inputData" => [                                 
+                                "input2" => ".",                  
+                                "input3" => ",",                      
                                 "input4" => 4
                                 ],
                     "functionName" => "getAmount",
                 ],
                 [
-                    "type" => "transactionDetail",                                  // Winvestify standardized name   OK
-                    "inputData" => [                                                // List of all concepts that the platform can generate  
-                                                                                    // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // List of all concepts that the platform can generate  
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                   "input2" => "#current.original_concept",                                                    
                                   "input3" => [
                                     0 => ["ingreso" => "Cash_deposit"],
@@ -183,8 +183,8 @@ class zank extends p2pCompany {
             ], 
             "D" =>  [
                 [
-                    "type" => "investment_loanId",                                  // Typically used for generating a 'psuedo loanid' for platform related actions
-                    "inputData" => [                                                // like for instance cash deposit or cash withdrawal
+                    "type" => "investment_loanId",                              // Typically used for generating a 'psuedo loanid' for platform related actions
+                    "inputData" => [                                            // like for instance cash deposit or cash withdrawal
                                 "input2" => "global_",                                    
                                 "input3" => "rand",                   
                                 ],
@@ -207,7 +207,7 @@ class zank extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
      //       'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
     
@@ -216,7 +216,7 @@ class zank extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
      //       'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId")   // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
     
@@ -224,7 +224,7 @@ class zank extends p2pCompany {
         [
             "A" =>  [
                 [
-                    "type" => "investment_myInvestmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                    // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -237,7 +237,7 @@ class zank extends p2pCompany {
                
             "C" => [
                 [
-                    "type" => "investment_nominalInterestRate",                   // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
                                 "input3" => 0
@@ -316,11 +316,11 @@ class zank extends p2pCompany {
         ]
     ];
     
-    protected $valuesExpiredLoan = [                                             // All types/names will be defined as associative index in array
+    protected $valuesExpiredLoan = [                                            // All types/names will be defined as associative index in array
         [
             "A" =>  [
                 [
-                    "type" => "investment_myInvestmentDate",                      // Winvestify standardized name
+                    "type" => "investment_myInvestmentDate",                    // Winvestify standardized name
                     "inputData" => [
                                 "input2" => "D.M.Y",
                                 ],
@@ -333,7 +333,7 @@ class zank extends p2pCompany {
                
             "C" => [
                 [
-                    "type" => "investment_nominalInterestRate",                   // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
                                 "input3" => 0
@@ -506,7 +506,7 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
-        "activeInvestments" => [
+        "activeInvestment" => [
             [
                 "type" => "activeInvestments",                                  // Winvestify standardized name  OK
                 "inputData" => [
@@ -573,7 +573,11 @@ class zank extends p2pCompany {
                     "finishDate"
                 ]
             ]
+        ],
+        "controlVariableFile" => [
+            
         ]
+        
     ];
     
         protected $investmentHeader = array(   
