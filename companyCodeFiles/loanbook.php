@@ -337,9 +337,11 @@ class loanbook extends p2pCompany {
     ]; 
     
     protected $amortizationConfigParms = [
+        [
             'offsetStart' => 1,
             'offsetEnd'   => 1,
             'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+        ]
     ];
     
     protected $controlVariablesConfigParms = [
