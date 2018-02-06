@@ -138,7 +138,15 @@ class finanzarel extends p2pCompany {
                 ] 
             ],
             "E" => [
-                "name" => "investment_loanId",                                            // This is an "empty variable name". So "type" is
+                [
+                    "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "-",                                // May contain trailing spaces
+                                "input3" => "",
+                                "input4" => 2                                   // 'input3' is mandatory. With mandatory 2 If found then return "global_xxxxxx"
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
             ], 
             "F" => [
                 [
@@ -173,11 +181,13 @@ class finanzarel extends p2pCompany {
         [
             "A" => [
                 [
-                    "type" => "transactionDetail",                        
-                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "createReservedFunds",                                // 'input3' is NOT mandatory. 
+                    "type" => "investment_loanId",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "-",                                // May contain trailing spaces
+                                "input3" => "",
+                                "input4" => 2                                   // 'input3' is mandatory. With mandatory 2 If found then return "global_xxxxxx"
                             ],
-                    "functionName" => "getDefaultValue",
+                    "functionName" => "extractDataFromString",
                 ]
             ],
             "B" => [
@@ -187,6 +197,15 @@ class finanzarel extends p2pCompany {
                                 "input2" => "D/M/y",
                                 ],
                     "functionName" => "getDefaultDate",
+                ]
+            ],
+            "C" => [
+                [
+                    "type" => "internalName",                        
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "investment_myInvestment",                                // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
                 ]
             ],
             "K" => [
@@ -284,7 +303,7 @@ class finanzarel extends p2pCompany {
             //"M" FUTURE DATA Number 41
             "N" => [
                 [
-                    "type" => "investment_issueDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_dueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -329,12 +348,12 @@ class finanzarel extends p2pCompany {
             "B" => [
                 "name" => "investment_debtor",                           // Winvestify standardized name  OK
             ],
-            "C" => [
-                "name" => "investment_typeOfInvestment"
-            ], 
-            "D" =>  [
+            "C" =>  [
                 "name" => "investment_riskRating",
             ],
+            "D" => [
+                "name" => "investment_typeOfInvestment"
+            ], 
             "E" => [  
                 [
                     "type" => "investment_issueDate",                           // Winvestify standardized name  OK
@@ -385,6 +404,66 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ]
+        ],
+        [
+            "A" =>  [
+                "name" => "investment_loanId"                                          // Winvestify standardized name
+            ],
+            "B" => [
+                "name" => "investment_debtor",                           // Winvestify standardized name  OK
+            ],
+            "C" => [
+                "name" => "investment_riskRating",
+            ], 
+            "D" =>  [
+                "name" => "investment_typeOfInvestment"
+            ],
+            "E" => [  
+                [
+                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ], 
+            "F" => [
+                "name" => "investment_originalDuration"
+            ],
+            "I" =>  [
+                [
+                    "type" => "investment_nominalInterestRate",                           // Winvestify standardized name
+                    "inputData" => [
+				"input2" => ".",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            //FAKE CELL, IT IS A DEFAULT VALUE
+            "J" => [
+                [
+                    "type" => "investment_statusOfLoan",                        
+                    "inputData" => [                                            
+                                "input2" => WIN_LOANSTATUS_WAITINGTOBEFORMALIZED,                                 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ],
+            ],
+            "K" => [
+                [
+                    "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
         ]
     ];
 
@@ -416,9 +495,9 @@ class finanzarel extends p2pCompany {
             'callback' => [
                 "cleanTempArray" => [
                     "findValueInArray" => [
-                        "key" => "transactionDetail",
-                        "function" => "verifyNotEqual",
-                        "values" => ["Regular_gross_interest_income", "investment_writtenOff"],
+                        "key" => "internalName",
+                        "function" => "verifyEqual",
+                        "values" => ["dummy"],
                         "valueDepth" => 2
                     ]
                 ]
@@ -426,7 +505,7 @@ class finanzarel extends p2pCompany {
         ],
         2 => [
             'offsetStart' => 1,
-            'offsetEnd'     => 0,
+            'offsetEnd'     => 1,
             'separatorChar' => ";",
             'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
@@ -461,6 +540,13 @@ class finanzarel extends p2pCompany {
                     ]
                 ]
             ]
+        ],
+        2 => [
+            'offsetStart' => 1,
+            'offsetEnd'     => 1,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
     ];
         
@@ -976,6 +1062,12 @@ class finanzarel extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
                     $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                }
+                if (!empty($this->tempRequest)) {
+                    $path = $this->getFolderPFPFile();
+                    $file = $path . DS . $this->fileName;
+                    $newFile = $path . DS . $this->nameFileInvestment . "3" . "." . $this->typeFileInvestment;
+                    $this->copyFile($file, $newFile);                 
                 }
                 $this->idForSwitch++;
             case 7:

@@ -94,6 +94,7 @@ class CollectDataClientShell extends GearmanClientShell {
                     $filterConditions = array('investor_id' => $investorId);
                     //We verify that companiesInFlow exists and if exists, 
                     //we only get that companies information from database
+                    echo "\n" . __LINE__ . __FILE__ . "\n Verifying that companies from queue exists in DB for that investor \n";
                     if (!empty($queueInfo['companiesInFlow'])) {
                         $companiesInFlowExist[$job['Queue']['id']] = true;
                         foreach ($queueInfo['companiesInFlow'] as $key => $linkaccountIdInFlow) {
@@ -130,6 +131,10 @@ class CollectDataClientShell extends GearmanClientShell {
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                             $i++;
+                        }
+                        else {
+                            echo "\n" . __LINE__ . "   " . __FILE__;
+                            echo "\n company in flow with linkedAccountId $linkedaccount has a created folder \n Not including company $linkedaccount in flow \n";
                         }
                     }
                     if (Configure::read('debug')) {
