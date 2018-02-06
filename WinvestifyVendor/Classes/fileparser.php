@@ -72,6 +72,9 @@
  * 2018-01-02           version 0.9.1
  * A new characteric, REPAYMENT,  was added to the $transactionDetails array
  * 
+ * 2018-02-04   version_0.9.1
+ * Added new method, handleNumber, for dealing with numbers
+ * 
  * 
  * 
  * Pending:
@@ -744,6 +747,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         //https://stackoverflow.com/questions/24936905/phpexcel-finding-first-column-with-blank-cell
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel);
         return $datas;
     }
     
@@ -760,6 +766,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         echo " Number of rows = $highestRow and number of Columns = $highestColumn \n";
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
         $datas = $this->saveExcelToArray($sheetData, $configuration, $this->config['offsetStart']);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel, $objReader);
         return $datas;
     }
     
@@ -1760,7 +1769,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Function to get the extension of a file
      * 
-     * @param string $filePath FQDN of the file to analyze
+     * @param string $file FQDN of the file to analyze
      * @return string It is the extension of the file
      */
     public function getExtensionFile($file) {              
@@ -1783,6 +1792,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         return $inputType;
     }
     
+    /**
+     * Get an excel sheet by parts, from example from cell 1 to 500
+     * 
+     * @param string $filePath FQDN of the file to analyze
+     * @param int $chunkInit The first cell from we start taking data
+     * @param int $chunkSize The last cell from we finish taking data
+     * @param string $inputFileType It is the extension
+     * @return array
+     */
     function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
         if (empty($inputFileType)) {
             $inputFileType = "Excel2007";
@@ -1814,10 +1832,18 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 unset($sheetData[$key]);
             }
         }
-        var_dump($sheetData);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel, $objReader);
         return $sheetData;
     }
 
+    /**
+     * Get all the data from different sheets of an excel
+     * @param string $filePath FQDN of the file to analyze
+     * @param string $inputFileType It is the extension
+     * @return array
+     */
     function convertExcelMultiSheetByParts($filePath, $inputFileType) {
         if (empty($inputFileType)) {
             $inputFileType = "Excel2007";
@@ -1840,10 +1866,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                $sheetData[] = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
            }
         }
-        var_dump($sheetData);
+        $objPHPExcel->disconnectWorksheets();
+        $objPHPExcel->garbageCollect();
+        unset($objPHPExcel, $objReader);
         return $sheetData;
     }
     
+    /**
+     * Function to clear a csv
+     * @param string $filePath FQDN of the file to analyze
+     */
     function clearCsv($filePath) {
             //WE MUST CLEAR CSV OF SPECIAL CHARACTERS
             $csv = fopen($filePath, "r");
@@ -1854,15 +1886,31 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             fclose($csv);
     }
     
+    /**
+     * Function to set the finish date when we starting the process
+     * @param string $defaultFinishDate It is the default date
+     */
     function setDefaultFinishDate($defaultFinishDate) {
         $defaultFinishDate = date("Y-m-d", strtotime($defaultFinishDate));
         $this->defaultFinishDate = $defaultFinishDate;
     } 
     
+    /**
+     * Function to get a defaulted date for a company
+     * 
+     * @param string    $input          cell data [Not used]
+     * @param array     $defaultValue   The value to be returned
+     * @return type
+     */
     function getDefaultDate($input, $defaultValue) {
         return $this->normalizeDate($this->defaultFinishDate,"Y-M-D");
     }
     
+    /**
+     * Function to clear the config variable with new values
+     * 
+     * @param array $config The new values
+     */
     public function cleanConfig($config) {
         $this->config = $config;
     }

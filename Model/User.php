@@ -100,11 +100,11 @@ class User extends AppModel {
         'password' => array(
             'ruleName1_minLength' => array(
                 'rule' => array('minLength', 8),
-                'message' => 'Incorrect format. Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number.',
+                'message' => 'Incorrect format. Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number and a symbol.',
             ),
             'personalizedAlgorythm' => array(
                 'rule' => 'passwordAlgorythm',
-                'message' => 'Incorrect format. Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number.',
+                'message' => 'Incorrect format. Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number and a symbol.',
             ),
         )
     );
@@ -319,8 +319,8 @@ class User extends AppModel {
         $a = preg_match('/[A-Z]/', $value);
         $b = preg_match('/[a-z]/', $value);
         $c = preg_match('/[0-9]/', $value);
-//	$d = preg_match('/[!,%,&,@,#,$,^,*,?,_,~]/', $value);
-        return ($a * $b * $c);
+    	$d = preg_match('/[!,%,&,@,#,$,^,*,?,_,~]/', $value);
+        return ($a * $b * $c * $d);
     }
 
     function checkCurrentPassword($check) {
@@ -337,12 +337,14 @@ class User extends AppModel {
     }
 
     function passwordsMatch($check) {
+        $result = false;
         Configure::write('debug', 0);
         $this->autoRender = FALSE;
         $this->pw = $check['passwordNew2'];
-        if ($this->pw1 == $check['passwordNew2'])
-            return true;
-        return false;
+        if ($this->pw1 == $check['passwordNew2']) {
+            $result = true;
+        }
+        return $result;
     }
 
     /** NOT USED ANYMORE??

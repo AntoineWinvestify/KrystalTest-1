@@ -617,8 +617,17 @@ class growly extends p2pCompany {
                     $this->pageNum++;
                     break;
                 }
-                $this->tempArray['global']['investments'] = $this->numberOfInvestments;
-                $this->tempArray['global']['profitibility'] = $this->tempArray['global']['profitibility'] / ($this->numberOfInvestments);
+                $this->tempArray['global']['investments'] = 0;
+                if (!empty($this->numberOfInvestments)) {
+                    $this->tempArray['global']['investments'] = $this->numberOfInvestments;
+                }
+                if (!empty($this->tempArray['global']['profitibility']) && !empty($this->numberOfInvestments)) {
+                    $this->tempArray['global']['profitibility'] = $this->tempArray['global']['profitibility'] / ($this->numberOfInvestments);
+                }
+                else {
+                    $this->tempArray['global']['profitibility'] = 0;
+                }
+                
                 echo __FILE__ . " " . __LINE__ . "<br>";
                 $this->tempArray['investments'] = $this->data1;
 

@@ -76,9 +76,9 @@ class circulantis extends p2pCompany {
     protected $valuesTransaction = [
             "A" => [
                 [
-                    "type" => "transactionType",                // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
+                    "type" => "transactionType",                                // Complex format, calling external method
+                    "inputData" => [                                            // List of all concepts that the platform can generate
+                                                                                // format ["concept string platform", "concept string Winvestify"]
                                    "input2" => [["Traspaso", "Cash_deposit"],
                                                 ["Investment principal increase", "Primary_market_investment"],
                                                 ["Operación cobrada", "Principal_repayment"],
@@ -98,57 +98,56 @@ class circulantis extends p2pCompany {
                     "functionName" => "getTransactionDetail",  
                 ],
                 [
-                    "type" => "ID_Puja",                        // Complex format, calling external method
+                    "type" => "ID_Puja",                                        // Complex format, calling external method
                     "inputData" => [
-                                "input2" => " ID Puja: ",       // May contain trailing spaces
+                                "input2" => " ID Puja: ",                       // May contain trailing spaces
                                 "input3" => ",",
                             ],
                     "functionName" => "extractDataFromString",  
                 ],
                 [
-                    "type" => "ID_Subasta",                     // Complex format, calling external method
+                    "type" => "ID_Subasta",                                     // Complex format, calling external method
                     "inputData" => [
-                                "input2" => "ID Subasta: ",     // May contain trailing spaces
+                                "input2" => "ID Subasta: ",                     // May contain trailing spaces
                                 "input3" => ",",
                             ],
                     "functionName" => "extractDataFromString",  
                 ],
                 
                 [
-                    "type" => "loanId",                         // Complex format, calling external method
+                    "type" => "loanId",                                         // Complex format, calling external method
                     "inputData" => [
-                                "input2" => "Loan ID: ",        // May contain trailing spaces
+                                "input2" => "Loan ID: ",                        // May contain trailing spaces
                                 "input3" => ",",
                             ],
                     "functionName" => "extractDataFromString",  
                 ],
                
                  [
-                    "type" => "date",                           // Complex format, calling external method
+                    "type" => "date",                                           // Complex format, calling external method
                     "inputData" => [
-                                "input2" => "#previous.date",   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
-                                                                // Note that "date" must be a field defined in this config file
-                                                                // keywords are "#previous" and "#current" 
-                                                                // Be aware that #previous does NOT contain any data in case of parsing the
-                                                                // first line of the file.
-                                "input3" => false               // This parameter indicates if the defined field will be overwritten 
-                                                                // if it already contains a value.
-                                                                // 
+                                "input2" => "#previous.date",                   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                                // Note that "date" must be a field defined in this config file
+                                                                                // keywords are "#previous" and "#current" 
+                                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                                // first line of the file.
+                                "input3" => false                               // This parameter indicates if the defined field will be overwritten 
+                                                                                // if it already contains a value.
                                 ],
                     "functionName" => "getRowData",  
                 ],               
      
             ],
-            "B" => [                                            // Simply changing name of column to the Winvestify standardized name
+            "B" => [                                                            // Simply changing name of column to the Winvestify standardized name
                     "name" => "loanId",                      
                 ],
             "C" => "importe",
             "D" => [
                 [
-                    "type" => "date",                           // Winvestify standardized name 
+                    "type" => "date",                                           // Winvestify standardized name 
                     "inputData" => [
-				"input2" => "d/m/Y",		// Input parameters. The first parameter
-                                                                // is ALWAYS the contents of the cell
+				"input2" => "d/m/Y",                            // Input parameters. The first parameter
+                                                                                // is ALWAYS the contents of the cell
                                   // etc etc  ...
                                 ],
                     "functionName" => "normalizeDate",         
@@ -163,20 +162,20 @@ class circulantis extends p2pCompany {
     protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
 /*    NOT YET READY
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  );      
  
  */   
@@ -470,10 +469,16 @@ class circulantis extends p2pCompany {
         $dom->preserveWhiteSpace = false;
 
         $tables = $dom->getElementsByTagName("table"); //Get investment table
-
+        $this->verifyNodeHasElements($tables);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__);
+        }
         foreach ($tables as $keyTable => $table) {
             $rows = $table->getElementsByTagName("tr"); //Get investment row
-
+            $this->verifyNodeHasElements($rows);
+            if (!$this->hasElements) {
+                return $this->getError(__LINE__, __FILE__);
+            }
             if ($totalArray !== false) {
                 foreach ($rows as $key => $row) {
 
@@ -496,7 +501,10 @@ class circulantis extends p2pCompany {
                     $tempArray['marketplace_country'] = 'ES';
 
                     $tds = $row->getElementsByTagName("td"); //Get investment data
-
+                    $this->verifyNodeHasElements($tds);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__);
+                    }
                     foreach ($tds as $key => $td) {
                         echo $key . ': ' . $td->nodeValue . '<br>';
 
@@ -524,6 +532,10 @@ class circulantis extends p2pCompany {
                         }
 
                         $as = $td->getElementsByTagName("a"); //Get loanId
+                        $this->verifyNodeHasElements($as);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         foreach ($as as $key => $a) {
                             echo $key . ' loan Id: ' . $a->getAttribute('href') . '<br>';
                             $loanId = trim(preg_replace('/\D/', ' ', $a->getAttribute('href')));
@@ -532,6 +544,10 @@ class circulantis extends p2pCompany {
                         }
 
                         $buttons = $td->getElementsByTagName("button"); //Get status data
+                        $this->verifyNodeHasElements($buttons);
+                        if (!$this->hasElements) {
+                            return $this->getError(__LINE__, __FILE__);
+                        }
                         foreach ($buttons as $key => $button) {
                             echo $key . ' status: ' . $button->getAttribute('title') . '<br>';
                             switch ($button->getAttribute('title')) {
