@@ -377,7 +377,7 @@ Currency exchange fee	FX commission with Exchange Rate:    */
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestment",
-                "chars" => "REMOVE_AMOR_TABLE" 
+                "chars" => "REMOVE_AM_TABLE",    
                 ],
         
             101 => [
@@ -1927,15 +1927,20 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals, $seperator) {
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
         $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
-        $cleanInput =  str_replace(",", ".", $cleanInput);
+        if($separator === "."){
+           $cleanInput =  str_replace(",", "", $cleanInput);
+        } 
+        else if($separator === ","){
+           $cleanInput =  str_replace(",", ".", str_replace(".", "",$cleanInput));
+        }
         
-        if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
-            $cleanInput = "0.0";
-        }       
-        
-        $temp = bcmul($cleanInput, $multiplyFactor, $decimals);
+         if (empty($cleanInput) || $cleanInput == 0 && ($cleanInput <! 0 && $cleanInput >! 0)){ // decimals like 0,0045 are true in $input == 0
+            return "0.0";
+        }
+
+        $temp = bcmul((string)$cleanInput, (string)$multiplyFactor, $decimals);  
         return $temp;
     }    
 }

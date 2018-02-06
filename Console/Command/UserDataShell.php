@@ -792,7 +792,7 @@ class UserDataShell extends AppShell {
     public function calculatePaidInstalments(&$transactionData, &$resultData) {
         $resultData['investment']['investment_paidInstalments']++;
         return $resultData['investment']['investment_paidInstalments']; 
-    }          
+    }    
     
     
     /**

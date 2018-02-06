@@ -205,6 +205,7 @@ class ParseDataClientShell extends GearmanClientShell {
 // Add the status per PFP, 0 or 1
                         
                         $mapResult = $this->mapData($platformResult);
+
                         if ($mapResult == true) { 
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
@@ -353,7 +354,7 @@ $timeStart = time();
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
 
-if ($dateKey == "2014-01- 21"){ 
+if ($dateKey == "2019-03-13"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -562,7 +563,9 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transactions of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
-                    
+
+                print_r($database);
+                
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
@@ -580,6 +583,21 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                                 $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing
 
                             }
+                        }
+                        if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
+                            if (isset($transactionData['sliceIdentifier'])) {
+                                    $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
+                                }
+                            if (isset($database['investment']['investment_sliceIdentifier'])) {
+                                    $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                        
+                                }                                    
+                            if (empty($sliceIdentifier)) {                       // Take the default one
+                                $sliceIdentifier = $transactionData['investment_loanId'];                                 
+                            }
+                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
+                            if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
+                                unset($slicesAmortizationTablesToCollect[$sliceIdExists]);    // For later processing
+                            }                          
                         }
                         if (in_array("REMOVE_AM_TABLE", $conceptChars)) { 
                             if (isset($transactionData['sliceIdentifier'])) {
@@ -753,6 +771,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 
 
 //Define which amortization tables shall be collected 
+                $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+                print_r($slicesAmortizationTablesToCollect);
+                echo 'ñññññññññññññññ';
                 foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
                     $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
                     
@@ -790,6 +811,8 @@ echo __FILE_ . " " . __LINE__ . " Executing Calc. specific variables=>: original
                 unset($investmentId);
                 unset($database['investment']);
                 unset($database['payment']);
+                unset($slicesAmortizationTablesToCollect);
+
                 $database['investment']['investment_totalLoanCost'] = "";
                 $database['investment']['investment_paidInstalments'] = "";
                 
