@@ -118,7 +118,7 @@ class loanbook extends p2pCompany {
                     "functionName" => "extractDataFromString"
                 ]
                 
-            ],           
+            ],
             "D" => [
                 [
                     "type" => "amount", 
