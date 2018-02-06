@@ -195,25 +195,52 @@ class loanbook extends p2pCompany {
             "E" => [
                 "name" => "investment_riskRating",
             ],  
-            "F" => [
+            /*"F" => [TAE Inicial  = Expected annual yield
                 [
-                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate1",               
                     "functionName" => "getPercentage",
                 ]     
-            ],
-            "G" => [
-                //TIME LEFT, HOW TO TAKE
-            ],
-  /*
+            ],*/
+            /*"G" => [
+                Remaining term , need add to db
+            ],*/
             "H" => [
-                "name" => "investment_typeOfInvestment"                         // NOT REALLY CORRECT, BUT We store it anyway as transparent data
+                "name" => "investment_loanType"                                 // NOT REALLY CORRECT, BUT We store it anyway as transparent data
             ],
-  */
+            "I" => [
+                "name" => "investment_paymentFrequency"                         // NOT REALLY CORRECT, BUT We store it anyway as transparent data
+            ],           
             "J" => [
-                "name" => "investment_nominalInterestRate1"
+                [
+                    "type" => "investment_nominalInterestRate",               
+                    "functionName" => "getPercentage",
+                ]  
+            ],
+            "K" => [
+                [
+                    "type" => "investment_myInvestmentDate", // Winvestify standardized date  OK
+                    "inputData" => [
+                        "input2" => "D-M-Y",
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+                [
+                    "type" => "investment_issuDate", // Winvestify standardized date  OK
+                    "inputData" => [
+                        "input2" => "D-M-Y",
+                    ],
+                    "functionName" => "normalizeDate",
+                ]
             ],
             "N" => [
                 "name" => "investment_sliceIdentifier"
+            ],
+
+            "M" => [            
+                "name" => "investment_originalDuration"
+            ],
+            "O" => [            
+                "name" =>"investment_originalState"
             ],
         ]
     ];
@@ -328,7 +355,10 @@ class loanbook extends p2pCompany {
             "parserDataCallback" => [
                 "investment_loanType" => "translateLoanType",
                 "investment_amortizationMethod" => "translateAmortizationMethod",
-                "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
+                "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee',
+                "investment_paymentFrequency" => "translatePaymentFrequency",
+                "investment_originalDuration" => "translateDuration",
+                "investment_originalState" => "translateStatus"
             ]
         ]
     ];
@@ -1747,6 +1777,7 @@ class loanbook extends p2pCompany {
     /**
      * Function to translate the company specific payment frequency to the Winvestify standardized
      * payment frequency
+     * 
      * @param string $inputData     company specific payment frequency
      * @return int                  Winvestify standardized payment frequency
      */
@@ -1773,6 +1804,7 @@ class loanbook extends p2pCompany {
     /**
      * Function to translate the company specific loan type to the Winvestify standardized
      * loan type
+     * 
      * @param string $inputData     company specific loan type
      * @return int                  Winvestify standardized loan type
      */
@@ -1790,6 +1822,39 @@ class loanbook extends p2pCompany {
         return $type;
     }
       
+    /**
+     * Function to translate the company specific duration type to the Winvestify standardized
+     * duration string
+     * 
+     * @param type $inputData
+     * @return type
+     */
+    public function translateDuration($inputData){
+        return $inputData . "d";
+    }
+    
+    
+     /**
+     * Function to translate the company specific payment status type to the Winvestify standardized
+     * payment status 
+     *
+     * @param type $inputData
+     * @return type
+     */
+    public function translateStatus($inputData){
+        $inputData = mb_strtoupper($inputData);
+        switch ($inputData) {
+            case "GREEN":
+                $type = 0;
+                break;
+            default:
+                $type = 1;
+                break;
+        }
+        return $type;
+    }
+    
+    
     /**
      * Function to translate the company specific amortization method to the Winvestify standardized
      * amortization type
