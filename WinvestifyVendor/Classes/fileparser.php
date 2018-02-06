@@ -75,6 +75,9 @@
  * 2018-02-04   version_0.9.1
  * Added new method, handleNumber, for dealing with numbers
  * 
+ * 2018-02-06   version_0.9.2
+ * Added many new concepts according to the latest contents of FlowData.xlsx
+ * 
  * 
  * 
  * Pending:
@@ -145,7 +148,10 @@ class Fileparser {
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
  //                     an already existing loan if a extra participation is bought
  // REPAYMENT       => An amortization payment has taken place
+ // REMOVE_AM_TABLE => Remove the mark that an amortization table is to be collected
+    
  /*
+  * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
   */   
@@ -323,10 +329,10 @@ class Fileparser {
                 "type" => "concept29"
                 ],
             30 => [
-                "detail" => "Currency_exchange_transaction",
-                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "detail" => "Incoming_currency_exchange_transaction",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "currencyExchangeTransaction"
+                "type" => "incomingCurrencyExchangeTransaction"
                 ],
             31 => [
                 "detail" => "Unknown_income",
@@ -350,68 +356,72 @@ class Fileparser {
                 "detail" => "Default interest income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "DefaultInterestIncome"
+                "type" => "defaultInterestIncome"
                 ],     
             35 => [
                 "detail" => "Partial_principal_and_interest_payment",
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Mix",
                 "type" => "payment_partialPrincipalAndInterestPayment"
                 ],
-        
-  
- /*
-    default interest income should be in globalcashflow table
-
-30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    */        
-        
-        
-        
-        
-            // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
-            // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
-            // matured into a real loan
-            100 => [
-                "detail" => "Disinvestment",
+            36 => [
+                "detail" => "outgoing_currency_exchange_transaction", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept36",
+                ],
+            37 => [
+                "detail" => "compensation_negative",  
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept37",
+                ],
+            38 => [
+                "detail" => "disinvestment_primary_market", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestment",
-                "chars" => "REMOVE_AMOR_TABLE" 
+                "chars" => "REMOVE_AM_TABLE" 
+                ],
+            39 => [
+                "detail" => "disinvestment_secundary_market", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "concept39",
                 ],
         
-            101 => [
-                "detail" => "change_to_active_state",       // Move an investment from PRE-ACTIVE to ACTIVE
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "activeStateChange",
-                "chars" => "AM_TABLE"                       // = Collect Amortization table
-                ],
-            102 => [
-                "detail" => "change_to_badDebt_state",      // Move an investment from ACTIVE to WRITTEN_OFF 
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "badDebtStateChange",
-                ],
-            103 => [
-                "detail" => "change_to_cancelled_state",    // Move an investment from PRE-ACTIVE to CANCELLED
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "cancelledStateChange",
-                ],       
-        
-            104 => [
-                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+            40 => [
+                "detail" => "create_reserved_funds",                            // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
                 ],
-            105 => [
-                "detail" => "dummy_concept",    // This is a dummy concept
+     
+        
+            // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
+            // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
+            // matured into a real loan
+
+            10001 => [
+                "detail" => "change_to_active_state",                           // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "dummy",
+                "type" => "activeStateChange",
+                "chars" => "AM_TABLE"                                           // = Collect Amortization table
                 ],
+            10002 => [
+                "detail" => "change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "badDebtStateChange",
+                ],
+            10003 => [
+                "detail" => "change_to_cancelled_state",                        // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "cancelledStateChange",
+                ],       
+
         
     /*         105 => [
                 "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
@@ -419,7 +429,9 @@ Currency exchange fee	FX commission with Exchange Rate:    */
                 "account" => "PL",
                 "type" => "createReservedFundsNoImpactCashInPlatform",
                 ]  
-     */       
+     */  
+
+
         
         ];
 
