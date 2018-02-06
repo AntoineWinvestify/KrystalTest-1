@@ -935,9 +935,10 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
-        if (!isset($resultData['payment']['payment_principalAndInterestPayment'])) {
+        if (!isset($resultData['payment']['payment_principalAndInterestPayment']) || empty($resultData['payment']['payment_principalAndInterestPayment'])) {
             return;
         }
+        
         if (empty($resultData['payment']['payment_capitalRepayment'])) {
             $capitalRepayment = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_capitalRepayment'] = $capitalRepayment;
@@ -959,7 +960,7 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfPartialCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
-        if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
+        if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
             return;
         }
         
