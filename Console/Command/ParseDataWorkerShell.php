@@ -246,12 +246,12 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
                 }
             } 
-            
+/*            
 print_r($totalParsingresultInvestments);   
 print_r($totalParsingresultExpiredInvestments); 
 print_r($totalParsingresultTransactions);
 print_r($totalParsingresultControlVariables);
-
+*/
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
