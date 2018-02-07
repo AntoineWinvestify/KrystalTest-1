@@ -189,7 +189,6 @@ class Dashboard2sController extends AppController {
         //Get investment data from db
         $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorId);
 
-        print_r($allInvestment);
         //Get global data 
         $this->range = array();
         $global['totalVolume'] = 0;
@@ -210,7 +209,6 @@ class Dashboard2sController extends AppController {
                 continue;
             }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                echo "key = $key \n";
                 switch ($key) {
                     case "linkedaccount_id":
                         //Get the pfp id of the linked acount

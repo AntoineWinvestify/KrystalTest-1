@@ -149,6 +149,7 @@ class Fileparser {
  //                     an already existing loan if a extra participation is bought
  // REPAYMENT       => An amortization payment has taken place
  // REMOVE_AM_TABLE => Remove the mark that an amortization table is to be collected
+ // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state   
     
  /*
   * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
@@ -245,10 +246,10 @@ class Fileparser {
                 "type" => "payment_loanIncentivesAndBonus"  
                 ],
             15 => [
-                "detail" => "Compensation",
+                "detail" => "Compensation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensation"    
+                "type" => "globalcashflowdata_platformCompensationPositive"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -260,7 +261,7 @@ class Fileparser {
                 "detail" => "Currency_fluctuation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept17"  
+                "type" => "payment_currencyFluctuationPositive"  
                 ],
             19 => [
                 "detail" => "Recoveries",
@@ -299,10 +300,10 @@ class Fileparser {
                 "type" => "payment_currencyExchangeFee"
                 ],
             25 => [
-                "detail" => "currency_fluctuation_negative",
+                "detail" => "Currency_fluctuation_negative",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept25"
+                "type" => "payment_currencyFluctuationNegative"
                 ],                        
             26 => [
                 "detail" => "Tax_VAT",
@@ -353,7 +354,7 @@ class Fileparser {
                 "type" => "concept33"
                 ], 
             34 => [
-                "detail" => "Default interest income",
+                "detail" => "Default_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "defaultInterestIncome"
@@ -365,36 +366,37 @@ class Fileparser {
                 "type" => "payment_partialPrincipalAndInterestPayment"
                 ],
             36 => [
-                "detail" => "outgoing_currency_exchange_transaction", 
+                "detail" => "Outgoing_currency_exchange_transaction", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept36",
+                "type" => "outgoingCurrencyExchangeTransaction",
                 ],
             37 => [
-                "detail" => "compensation_negative",  
+                "detail" => "Compensation_negative",  
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept37",
+                "type" => "globalcashflowdata_platformCompensationNegative",
                 ],
             38 => [
-                "detail" => "disinvestment_primary_market", 
+                "detail" => "Disinvestment_primary_market", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "disinvestment",
+                "type" => "disinvestmentPrimaryMarket",
                 "chars" => "REMOVE_AM_TABLE" 
                 ],
             39 => [
-                "detail" => "disinvestment_secundary_market", 
+                "detail" => "Disinvestment_secundary_market", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept39",
+                "type" => "disinvestmentSecondaryMarket",
                 ],
         
             40 => [
-                "detail" => "create_reserved_funds",                            // Move an investment from PRE-ACTIVE to ACTIVE
+                "detail" => "Create_reserved_funds",                            // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
+                "chars" => "PRE-ACTIVE",
                 ],
      
         
@@ -403,20 +405,20 @@ class Fileparser {
             // matured into a real loan
 
             10001 => [
-                "detail" => "change_to_active_state",                           // Move an investment from PRE-ACTIVE to ACTIVE
+                "detail" => "Change_to_active_state",                           // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "activeStateChange",
                 "chars" => "AM_TABLE"                                           // = Collect Amortization table
                 ],
             10002 => [
-                "detail" => "change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
+                "detail" => "Change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "badDebtStateChange",
                 ],
             10003 => [
-                "detail" => "change_to_cancelled_state",                        // Move an investment from PRE-ACTIVE to CANCELLED
+                "detail" => "Change_to_cancelled_state",                        // Move an investment from PRE-ACTIVE to CANCELLED
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "cancelledStateChange",
@@ -424,7 +426,7 @@ class Fileparser {
 
         
     /*         105 => [
-                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "detail" => "Create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFundsNoImpactCashInPlatform",

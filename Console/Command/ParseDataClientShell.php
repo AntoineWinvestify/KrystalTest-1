@@ -282,7 +282,7 @@ $timeStart = time();
         
  //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
             
-        $controlVariableFile =  $platformData['controlVariableFile'];           // Control variables as supplied by P2P
+
         $controlVariableActiveInvestments = $platformData['activeInvestments']; // Our control variable
 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
@@ -461,7 +461,7 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
                 if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
                     echo "THIS IS AN ACTIVE LOAN\n";
                     $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                    $loanStatus = WIN_LOANSTATUS_ACTIVE;
+                    $loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
                 }
 
                 if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
@@ -557,10 +557,14 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 }
 
                 // load all the transaction data
-                foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transactions of this loanId
+                foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transaction data of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
+                        
+                        if (in_array("PRE-ACTIVE", $conceptChars)) {                         
+                            $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                        }                       
                         if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
@@ -591,6 +595,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing            
                         }
                     }
+                    
                     foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
                         if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
@@ -907,8 +912,8 @@ echo __FILE__ . " " . __LINE__ . " Executing Calc. specific variables=>: origina
 
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";        
-        print_r($platformData['totalParsingresultControlVariables']);
-        
+        print_r($platformData['parsingResultControlVariables']);
+
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, 
                                                     $platformData['totalParsingresultControlVariables']);
         if ($controlVariablesCheck > 0) { // mismatch detected

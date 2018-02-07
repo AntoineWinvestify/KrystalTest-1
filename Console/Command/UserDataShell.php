@@ -792,15 +792,15 @@ class UserDataShell extends AppShell {
     
     
     /**
-     *  Calculates the effect of a disinvestment of an investment which never matured to a real investment, i.e. it 
-     *  started with state "reserved" and never reached status "active". It basically means that the platform returns the
+     *  Calculates the effect of a disinvestment of an investment of the primary market which never matured to a real investment, 
+     *  i.e. it started with state "reserved" and never reached status "active". It basically means that the platform returns the
      *  money which the investor had assigned to the "failed" investment
      *   
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a float
      */
-    public function calculateDisinvestment(&$transactionData, &$resultData) {
+    public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
         return $resultData['investment']['investment_myInvestment'];
     }   
     
@@ -861,6 +861,7 @@ class UserDataShell extends AppShell {
     /**
      *  
      *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets. 
+     *  The amount is taken from "CashInPlatform2 and moved to "reservedAssets".
      *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
      *
      *  @param  array       array with the current transaction data
@@ -868,7 +869,7 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large amount to be stored in reservedAssets field
      */  
     public function calculateReservedComplex(&$transactionData, &$resultData) {
-        return WIN_LOANSTATUS_CANCELLED;
+        return $transactionData['amount'];
     }    
     
   
@@ -903,12 +904,12 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the amount which corresponds to the "Platform Compensation" concept 
+     * Get the amount which corresponds to the "Platform Compensation Positive" concept 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      */
-    public function calculatePlatformCompensation(&$transactionData, &$resultData) {
+    public function calculatePlatformCompensationPositive(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
     
@@ -987,6 +988,16 @@ class UserDataShell extends AppShell {
     public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
+ 
+    
+    /**
+     * Get the amount which corresponds to the "Platform Compensation Negative" concept
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculatePlatformCompensationNegative(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }   
     
     
 }
