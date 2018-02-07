@@ -1635,11 +1635,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to join values together
-     * @param string $input
-     * @param string $joinSeparator
+     * Function to join values together 
+     * @param string $input cell data
+     * @param string $joinSeparator Separator we want to use to join different cells
      * @param string $order It could be FIFO or LIFO
-     * @param array $inputValues
+     * @param array $inputValues All the values we want to join together
      * @return string
      */
     public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
