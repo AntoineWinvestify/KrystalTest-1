@@ -123,10 +123,11 @@ class Investor extends AppModel {
             'allowEmpty' => false,
             'message' => 'Id validation error',
         ),
-        'investor_dateOfBirth' => array(
-            'rule' => array('minLength', 6),
-            'allowEmpty' => false,
-            'message' => 'Date validation error',
+        'investor_dateOfBirth' => array(         
+            'age' => array(
+                'rule' => 'checkOver18',
+                'message' => 'You must be over 18 years old'
+            )
         ),
         'investor_telephone' => array(
             'rule' => array('minLength', 4),
@@ -159,6 +160,17 @@ class Investor extends AppModel {
             'message' => 'Email validation error',
         ),
     );
+
+    public function checkOver18($check) { //Calculate age for validation
+        $birthDate = explode("/", $check['investor_dateOfBirth']);
+        //get age from date or birthdate
+        $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md") ? ((date("Y") - $birthDate[2]) - 1) : (date("Y") - $birthDate[2]));
+
+        if ($age < 18) {
+            return false;
+        }
+        return true;
+    }
 
     /**
      *
@@ -366,7 +378,7 @@ class Investor extends AppModel {
             'recursive' => -1,));
 
         $checks = $this->readCheckData($id['Investor']['id']);
-        
+
         $infoInvestor = array(
             'id' => $id['Investor']['id'],
             'user_id' => $data['id'],
@@ -382,8 +394,8 @@ class Investor extends AppModel {
             'investor_email' => $data['investor_email'],
         );
 
-         
-         //Checks control, if check is 1 can't change the field in db
+
+        //Checks control, if check is 1 can't change the field in db
         foreach ($checks[0]['Check'] as $keyCheck => $check) {
             $checkField = strtolower(explode('_', $keyCheck)[1]);   //Get the check field name  check_name ----> name
             foreach ($infoInvestor as $keyData => $dataInvestor) {
@@ -395,8 +407,8 @@ class Investor extends AppModel {
             }
         }
 
-        
-        
+
+
         $this->set($infoInvestor);
         if ($this->validates()) {  //validation ok     
             $this->save($infoInvestor);
@@ -520,8 +532,8 @@ class Investor extends AppModel {
             'check_surname' => 0,
             'check_dni' => 0,
             'check_dateOfBirth' => 0,
-            'check_email' => 1,                 // Cannot be changed directly by user
-            'check_telephone' => 1,             // Cannot be changed directly by user
+            'check_email' => 1, // Cannot be changed directly by user
+            'check_telephone' => 1, // Cannot be changed directly by user
             'check_postCode' => 0,
             'check_address' => 0,
             'check_city' => 0,

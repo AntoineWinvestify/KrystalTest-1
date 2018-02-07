@@ -49,7 +49,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //       return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -210,6 +210,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $mapResult = $this->mapData($platformResult);
 
                         if ($mapResult == true) { 
+                            $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
                             if (!empty($newLoans)) {
                                 echo "WRITING LOANIDS\n";
@@ -222,6 +223,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                         else {
+                            $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_ERROR;
                             echo "ERROR ENCOUNTERED\n"; 
                         }
                     }           
@@ -350,7 +352,8 @@ $timeStart = time();
         
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
-if ($dateKey == "2014-01-21"){ 
+
+if ($dateKey == "2019-03-13"){ 
     echo "Exiting when date = " . $dateKey . "\n";
     $timeStop = time();
     echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
@@ -559,6 +562,9 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transaction data of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+
+                print_r($database);
+                
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
                         
@@ -581,6 +587,21 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
 
                             }
                         }
+                        if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
+                            if (isset($transactionData['sliceIdentifier'])) {
+                                    $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
+                                }
+                            if (isset($database['investment']['investment_sliceIdentifier'])) {
+                                    $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                        
+                                }                                    
+                            if (empty($sliceIdentifier)) {                       // Take the default one
+                                $sliceIdentifier = $transactionData['investment_loanId'];                                 
+                            }
+                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
+                            if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
+                                unset($slicesAmortizationTablesToCollect[$sliceIdExists]);    // For later processing
+                            }                          
+                        }
                         if (in_array("REMOVE_AM_TABLE", $conceptChars)) { 
                             if (isset($transactionData['sliceIdentifier'])) {
                                     $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
@@ -601,7 +622,10 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
+                        print_r($tempResult);
+                        echo '-----------------------------';
+                        print_r($transactionDataKey);
+                        echo __FILE__ . " " . __LINE__ . "\n";
                         if (!empty($tempResult)) {
                             unset($result);
                             
@@ -674,9 +698,12 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                 }
                             }        
                         }
-                    }                           
+                    }       
+                    
+
+                    
                 }   
-                
+                    
 // Now start consolidating of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004);
 
@@ -698,6 +725,8 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 echo  __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
+                
+                    
 //               if ($database['investment']['investment_new'] == YES) {
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
@@ -724,8 +753,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
                         }
                     }
+                    
                 }
-
+                
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
                 $database['payment']['investment_id'] = $investmentId;
                 $database['payment']['date'] = $dateKey;
@@ -744,6 +774,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 
 
 //Define which amortization tables shall be collected 
+                $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+                print_r($slicesAmortizationTablesToCollect);
+                echo 'ñññññññññññññññ';
                 foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
                     $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
                     
@@ -758,7 +791,8 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 $internalVariablesToHandle = array(10001, 20065,
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
-                                                    10012, 10013);      
+                                                    10012, 10013, 10016,
+                                                    10017, 10018, 10019);      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
@@ -779,6 +813,8 @@ echo __FILE__ . " " . __LINE__ . " Executing Calc. specific variables=>: origina
                 unset($investmentId);
                 unset($database['investment']);
                 unset($database['payment']);
+                unset($slicesAmortizationTablesToCollect);
+
                 $database['investment']['investment_totalLoanCost'] = "";
                 $database['investment']['investment_paidInstalments'] = "";
                 

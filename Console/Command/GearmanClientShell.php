@@ -128,12 +128,14 @@ class GearmanClientShell extends AppShell {
         $dataWorker = json_decode($task->data(), true);
         
         if (!empty($dataWorker['statusCollect'])) {
+             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Collecting status from worker \n");
             foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
                 $this->userResult[$data[0]][$linkaccountId] = $status;
                 $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
             }
         }
         if (!empty($dataWorker['tempArray'])) {
+             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
             $this->tempArray[$data[0]] = $dataWorker['tempArray'];
         }
 
@@ -273,16 +275,18 @@ class GearmanClientShell extends AppShell {
         $userAccess = 0;
 
         $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
-    
-        $tempData = array();
-        foreach ($jobList as $job) {
-            $jobListId = $job['Queue']['id'];
-            $tempData[] = array('id' => $jobListId,
-                              'queue_status' => $newStatus
-                              );
-        }
+        if (!empty($jobList)) {
+            $tempData = array();
+            foreach ($jobList as $job) {
+                $jobListId = $job['Queue']['id'];
+                $tempData[] = array('id' => $jobListId,
+                                  'queue_status' => $newStatus
+                                  );
+            }
 
-        $this->Queue->saveMany($tempData, array('validate' => true));
+            $this->Queue->saveMany($tempData, array('validate' => true));
+        }
+        
         return $jobList;
     }    
     

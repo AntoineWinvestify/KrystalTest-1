@@ -132,7 +132,7 @@ class UserDataShell extends AppShell {
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
-
+        echo "/////////////////////////////////////";
         if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
         }
@@ -157,6 +157,10 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
+        if (isset($resultData['investment']['investment_disinvestment'])) {
+            $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
+        }
+        print_r($resultData['investment']['investment_disinvestment']);
         return $result;
     }
 
@@ -788,7 +792,7 @@ class UserDataShell extends AppShell {
     public function calculatePaidInstalments(&$transactionData, &$resultData) {
         $resultData['investment']['investment_paidInstalments']++;
         return $resultData['investment']['investment_paidInstalments']; 
-    }          
+    }    
     
     
     /**
@@ -914,6 +918,16 @@ class UserDataShell extends AppShell {
     }
     
     /**
+     * Get the amount which corresponds to the "tax VAT" concept 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateTaxVAT(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
      * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
      * 
      *  @param  array       array with the current transaction data
@@ -960,11 +974,77 @@ class UserDataShell extends AppShell {
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
+         print_r($resultData);
         //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
     }
     
     /**
-     *  Get the amount which corresponds to the "commission paid" concept.
+     * Get the amount which corresponds to the "payment_taxVAT" concept
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    public function calculatePaymentTax(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    /**
+     * Get the amount which corresponds to the "payment_incomeWithholdingTax" concept
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    public function calculateIncomeWithholdingTax(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+   
+    /*
+     *  Calculates the sum of the payment concept "PartialPrincipalRepayment" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalPartialPrincipalRepaymentPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_partialPrincipalRepayment']);    
+    }    
+    
+    /*
+     *  Calculates the sum of the payment concept "DelayedInterestIncome" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalDelayedInterestIncomePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_delayedInterestIncome']);    
+    } 
+    
+    /*
+     *  Calculates the sum of the payment concept "Commission Paid" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_commissionPaid']);    
+    } 
+    
+    /*
+     *  Calculates the sum of the payment concept "Tax VAT" that happened during a day
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotaltaxVATPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_taxVAT']);    
+    } 
+    
+    /*  Get the amount which corresponds to the "commission paid" concept.
      *  Note that this is both the in case a transaction record contains a loanId or not
      * 
      *  @param  array       array with the current transaction data

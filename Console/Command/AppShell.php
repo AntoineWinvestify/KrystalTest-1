@@ -297,4 +297,25 @@ class AppShell extends Shell {
         return $temp;
     }   
     
+    /**
+     * Function to check if a client is running, if it is not running, the function started it
+     * 
+     * @param string $this->args[0] | $scriptName It is the name of the client that will be checked
+     */
+    public function checkIfScriptIsRunning() {
+        $scriptName = $this->args[0];
+        $output = shell_exec('ps -C php -f');
+        echo $output . "\n\n";
+        if (strpos($output, $scriptName . " initClient") === false) {
+            $command = __DIR__ . DS . ".." . DS . "cake " . $scriptName . " initClient";
+            echo "Not found, init client";
+            shell_exec($command);
+        }
+        else {
+            echo "Found client";
+            echo "\n DIE \n";
+            die;
+        }
+    }
+    
 }

@@ -601,7 +601,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     }
     
     /**
-     * Get data from multiple sheet data with their individual configparameters
+     * Get data from multiple sheet data with their individual config parameters
      * 
      * @param string $file FQDN of the files
      * @param array $parserConfigFile Array that contains the configuration data of a specific "document"
@@ -661,7 +661,8 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     }
     
     /**
-     * Join together two or more arrays with the same keys
+     * Join together two or more arrays with the same keys with two levels
+     * 
      * @param array $array It is an array of arrays
      * @param array $orderParam With orderParams if needed
      */
@@ -692,6 +693,13 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         return $fullArray;
     }
     
+    /**
+     * Function to join two or more arrays together keeping the keys
+     * 
+     * @param array $arrays Arrays to join together
+     * @param array $orderParam Order parameters of the array
+     * @return array The array fully merged
+     */
     public function joinOneDimensionArrayTogether($arrays, $orderParam) {
         
         $loanIds = [];
@@ -713,16 +721,6 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
             }
         }
         
-        /*$numberArrays = count($array);
-        $fullArray = array_shift($array);
-        foreach ($array as $arrayKey => $tempArray) {
-            foreach ($tempArray as $loanKeyId => $loanId) {
-                foreach ($loanId as $keyVariable => $variable) {
-                     $fullArray[$loanKeyId][] = $variable;
-                }
-               
-            }
-        }*/
         return $fullArray;
     }
     
