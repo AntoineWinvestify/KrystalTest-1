@@ -58,6 +58,11 @@ class finanzarel extends p2pCompany {
     protected $requestFiles = array();
     protected $tempRequest = [];
     
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.05'                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 in order to "close" an active investment
+    ];
+    
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
         [
             "D" =>  [
@@ -125,6 +130,13 @@ class finanzarel extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
+                ]
             ]
         ],
         [
@@ -175,8 +187,16 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
                 ]
             ],
+            
         ],
         [
             "A" => [
@@ -217,6 +237,13 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
                 ]
             ]
         ]
@@ -348,12 +375,12 @@ class finanzarel extends p2pCompany {
             "B" => [
                 "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
-            "C" =>  [
-                "name" => "investment_riskRating",
-            ],
-            "D" => [
+            "C" => [
                 "name" => "investment_typeOfInvestment"
             ], 
+            "D" =>  [
+                "name" => "investment_riskRating",
+            ],
             "E" => [  
                 [
                     "type" => "investment_issueDate",                           // Winvestify standardized name  OK
@@ -448,7 +475,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "investment_statusOfLoan",                        
                     "inputData" => [                                            
-                                "input2" => WIN_LOANSTATUS_WAITINGTOBEFORMALIZED,                                 
+                                "input2" => "PREACTIVE",                                 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -546,7 +573,6 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
     ];
         
@@ -1371,6 +1397,9 @@ class finanzarel extends p2pCompany {
             case "PAGARÉ":
                 $type = WIN_TYPEOFLOAN_PAGARE;
                 break;
+            case "PAGAR? N.O.":
+                $type = WIN_TYPEOFLOAN_PAGARE;
+                break; 
             case "PAGARÉ N.O.":
                 $type = WIN_TYPEOFLOAN_PAGARE;
                 break; 
@@ -1392,6 +1421,9 @@ class finanzarel extends p2pCompany {
         $status = WIN_LOANSTATUS_UNKNOWN;
         $inputData = strtoupper(trim($inputData));
          switch ($inputData) {
+            case "PREACTIVE":
+                $data =  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
             case "PENDIENTE":
                 $data = WIN_LOANSTATUS_ACTIVE;
                 break;
