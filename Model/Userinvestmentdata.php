@@ -51,7 +51,7 @@ class Userinvestmentdata extends AppModel {
             "fields" => array("id"),
         ));
 
-        print_r($linkedAccountsId);
+        //print_r($linkedAccountsId);
         
         //Get last Userinvestmentdata table row for a linked account id
         $resultInvestorData = array();
