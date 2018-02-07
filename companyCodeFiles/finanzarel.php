@@ -58,6 +58,11 @@ class finanzarel extends p2pCompany {
     protected $requestFiles = array();
     protected $tempRequest = [];
     
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.05'                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 in order to "close" an active investment
+    ];
+    
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
         [
             "D" =>  [
