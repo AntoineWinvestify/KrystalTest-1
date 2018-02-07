@@ -106,7 +106,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                         $tempName = explode("/", $subDirectory);
                         $linkedAccountId = $tempName[count($tempName) - 1];
                         $dirs = new Folder($subDirectory);
-                        $allFiles = $dirs->findRecursive();
+                        //$allFiles = $dirs->findRecursive();
                         if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
                             continue;
                         }
@@ -119,7 +119,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
                             'userReference' => $job['Queue']['queue_userReference'],
-                //            'files' => $allFiles,
+                            'files' => $allFiles,
                             'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
                             'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
@@ -137,11 +137,23 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                 }
                
                 // before calling the method you should download all amortization tables and store them in the database (Flow 3A and 3B)
- echo "Calling consolidateData\n";
+                
+                
+                
+                echo "Calling consolidateData\n";
                 $this->consolidateData($params);
+                
+
  echo "Calling consolidatePaymentDelay\n";               
                 $this->consolidatePaymentDelay($params);
                 
+                foreach ($this->queueInfo as $queueIdKey => $info) {
+                    foreach ($info['companiesInFlow'] as $companieInFlow) {
+                        $this->userResult[$queueIdKey][$companieInFlow] = 1;
+                    }
+                }
+
+
                 $this->verifyStatus(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, "Amortization tables succesfully stored", WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
 
 
@@ -194,7 +206,6 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
                    
                 }
-                exit;
             }
         }
     }
@@ -223,12 +234,13 @@ $timeStart = time();
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
-                $tempIdData = explode(".", $name[3]);
+                $tempIdData = explode(".", $name[2]);
                 $nameIdData[0] = $tempIdData[0];
-                $nameIdData[1] = $name[2];
+                $nameIdData[1] = $name[1];
                 $loanDataId[] = $nameIdData;
             }
 
+  
             foreach ($loanDataId as $loanId) { 
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
@@ -250,7 +262,7 @@ $timeStart = time();
                 }
                 
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
-                                               'investment_nextPaymentDateTech' =>  $tempScheduledDate )
+                                               'investment_nextPaymentDate' =>  $tempScheduledDate )
                                                );   
             } 
         }
@@ -277,6 +289,9 @@ echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 
+    
+
+
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
             $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
                                                       'linkedaccount_id'  => $linkedAccountKey
@@ -294,6 +309,10 @@ $timeStart = time();
                                                                 'limit' => $limit,
                                                                 'offset' => $index * $limit)
                                                  );
+                  
+                
+                
+                
 
                 if (count($result) < $limit) {          // No more results available
                     $controlIndex = 1;
@@ -319,6 +338,7 @@ echo __FILE__ . " " . __LINE__ ."today = $today\n";
                 $index++;
             } 
             while($controlIndex < 1); 
+            
             $this->Investment->saveMany($investment, array('validate' => true));
         }
 $timeStop = time();

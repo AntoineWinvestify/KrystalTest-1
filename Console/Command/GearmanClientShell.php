@@ -327,7 +327,7 @@ class GearmanClientShell extends AppShell {
      * @param int $restartStatus It is the Id of the queue if something fail
      * @param int $errorStatus It is the Id of the queue if the error repeats and it is irrecoverable
      */
-    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {       
         foreach ($this->userResult as $queueId => $userResult) {
             $globalDestruction = false;
             unset($this->queueInfo[$queueId]['companiesInFlow']);
