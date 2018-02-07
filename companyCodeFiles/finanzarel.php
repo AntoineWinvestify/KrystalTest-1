@@ -558,7 +558,7 @@ class finanzarel extends p2pCompany {
                 "type" => "myWallet",                                           // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "",
-                    "input3" => ",",
+                    "input3" => ".",
                     "input4" => 16
                 ],
                 "functionName" => "getAmount",
@@ -570,6 +570,7 @@ class finanzarel extends p2pCompany {
                 "inputData" => [
                     "input2" => "1",
                     "input3" => "0",
+                    "input4" => ",",
                 ],
                 "functionName" => "handleNumber",
             ]
