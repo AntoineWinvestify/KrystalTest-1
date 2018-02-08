@@ -281,7 +281,7 @@ $timeStart = time();
         $userReference = $platformData['userReference'];
         $startDate = $platformData['startDate'];
         $finishDate = $platformData['finishDate'];
-        
+        $amortizationTablesNotNeeded = array();        
  //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
             
 
@@ -570,13 +570,9 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                         
                         if (in_array("PRE-ACTIVE", $conceptChars)) {                         
                             $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-                        }                       
+                        }
+                        
                         if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
- /*
-  * check if outstanding principal = 0 in order to determine if a prestamo has finalized (good for Finanzarel as no expiredLoans exists
-  * 
-  */
-                            
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
                                 if (isset($transactionData['sliceIdentifier'])) {
@@ -592,6 +588,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
 
                             }
                         }
+                        
                         if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                             if (isset($transactionData['sliceIdentifier'])) {
                                     $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
@@ -599,27 +596,14 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             if (isset($database['investment']['investment_sliceIdentifier'])) {
                                     $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                        
                                 }                                    
-                            if (empty($sliceIdentifier)) {                       // Take the default one
-                                $sliceIdentifier = $transactionData['investment_loanId'];                                 
-                            }
-                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
-                            if ($sliceIdExists !== false) {     // loanSliceId does not exist in newLoans array, so add it
-                                unset($slicesAmortizationTablesToCollect[$sliceIdExists]);    // For later processing
-                            }                          
-                        }
-                        if (in_array("REMOVE_AM_TABLE", $conceptChars)) { 
-                            if (isset($transactionData['sliceIdentifier'])) {
-                                    $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
-                            }
-                            if (isset($database['investment']['investment_sliceIdentifier'])) {
-                                    $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                        
-                            }                                    
                             if (empty($sliceIdentifier)) {                                  // Take the default one
                                 $sliceIdentifier = $transactionData['investment_loanId'];                                 
                             }
-                            
-                            $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing            
-                        }
+                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
+                            if ($sliceIdExists !== false) {                                 // loanSliceId does not exist in newLoans array, so add it
+                                unset($slicesAmortizationTablesToCollect[$sliceIdExists]);  // For later processing
+                            }                          
+                        }                       
                     }
                     
                     foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
@@ -731,8 +715,11 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
                 
-                    
-//               if ($database['investment']['investment_new'] == YES) {
+                if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
+                    $amortizationTablesNotNeeded[] = $database['investment']['investment_sliceIdentifier'];
+                }
+                
+
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                     $resultCreate = $this->Investment->createInvestment($database['investment']);
@@ -776,21 +763,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
   
-
-//Define which amortization tables shall be collected 
-                $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
-
-                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
-                    $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
-                    
-                    if (!in_array($loanSliceId, $platformData['amortizationTablesOfNewLoans'])) {       // avoid duplicates
-                        $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier;
-                    }
-                }
-                $slicesAmortizationTablesToCollect = [];
+                 
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
-    
                 $internalVariablesToHandle = array(10001, 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
@@ -811,12 +786,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                         $database[$varName[0]][$varName[1]] = $result;
                     }
                 }
-                
+
                 echo "DELETING INVESTMENT RELATED PART OF SHADOW DATABASE\n";
                 unset($investmentId);
                 unset($database['investment']);
                 unset($database['payment']);
-                unset($slicesAmortizationTablesToCollect);
+//               unset($slicesAmortizationTablesToCollect);
 
                 $database['investment']['investment_totalLoanCost'] = "";
                 $database['investment']['investment_paidInstalments'] = "";
@@ -849,6 +824,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 $database['payment']['payment_incomeWithholdingTax'] = ""; 
             }
 
+            
+            
             echo "printing global data for the date = $dateKey\n";
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Finishing mapping process Flow 2\n";
             // The following is done only once per readout period independent if period covers one day, 1 week or if
@@ -949,6 +926,27 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
         }
 
+
+// All transactions have been analyzed. So consolidate the data of the total platform.
+// Define which amortization tables shall be collected 
+        $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+        foreach ($amortizationTablesNotNeeded as $tableToRemove) { // Remove the mark of the investments which already have finished
+            $tableExists = array_search ($tableToRemove, $slicesAmortizationTablesToCollect);
+            if ($tableExists !== false) {     
+                unset($slicesAmortizationTablesToCollect[$tableExists]);  
+            }                      
+        }               
+
+        foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
+            $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
+            if (!in_array($loanSliceId, $platformData['amortizationTablesOfNewLoans'])) {       // avoid duplicates
+                $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier;
+            }
+        }
+//        $slicesAmortizationTablesToCollect = [];
+                
+
+        
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";        
         print_r($platformData['parsingResultControlVariables']);
@@ -969,7 +967,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         }
        
         $calculationClassHandle->consolidatePlatformData($database);
-        // remove duplicates from the 'newLoans'AND remove all loans whose loanId/slice are in expiredLoans
+
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 print_r($platformData['amortizationTablesOfNewLoans']);
