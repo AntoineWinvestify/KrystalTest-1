@@ -788,7 +788,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
-                $internalVariablesToHandle = array(10001, 20065,
+                $internalVariablesToHandle = array(10001,
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
