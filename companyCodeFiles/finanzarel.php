@@ -306,7 +306,7 @@ class finanzarel extends p2pCompany {
                 ]       
             ],
             "J" =>  [
-                [
+                /*[
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name
                     "inputData" => [
 				"input2" => ".",
@@ -314,6 +314,14 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
+                ]*/
+                [
+                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "",                                // May contain trailing spaces
+                                "input3" => "&",
+                            ],
+                    "functionName" => "extractDataFromString",
                 ]
             ],
             "L" => [
@@ -628,6 +636,7 @@ class finanzarel extends p2pCompany {
         "investment" => [
             "parserDataCallback" => [
                 "investment_typeOfInvestment" => "translateLoanType",
+                "investment_nominalInterestRate" => "translateNominalInterestRate",
                 "investment_statusOfLoan" => "translateLoanStatus"
             ]
         ],
@@ -1501,6 +1510,16 @@ class finanzarel extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * nominalInterestRate
+     * @param string $inputData     company specific nominalInterestRate
+     * @return int                  Winvestify standardized nominalInterestRate
+     */
+    public function translateNominalInterestRate($inputData) {
+        return str_replace(",",".",$inputData);
     }
 
 }
