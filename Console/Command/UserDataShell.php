@@ -573,7 +573,7 @@ class UserDataShell extends AppShell {
  
 // the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
-            $resultData['investment']['investment_statusOfLine'] = WIN_LOANSTATUS_FINISHED;
+            $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
             return "FINISHED";             
         }    
         
@@ -581,7 +581,7 @@ class UserDataShell extends AppShell {
             if ($resultData['investment']['investment_technicalStateTemp'] <> 'FINISHED') {
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
-                $resultData['investment']['investment_statusOfLine'] = WIN_LOANSTATUS_FINISHED;
+                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
                 return "FINISHED";              
             }
         }        
@@ -589,8 +589,10 @@ class UserDataShell extends AppShell {
         if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
+            
             return "INITIAL";               
-        }       
+        } 
+        $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
         return "ACTIVE";                    
     }
     
@@ -1089,7 +1091,8 @@ class UserDataShell extends AppShell {
      * 
      */
     public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
+        $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
+        return $result;      
     }
  
     

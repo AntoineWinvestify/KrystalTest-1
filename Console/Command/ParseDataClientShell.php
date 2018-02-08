@@ -694,7 +694,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 }   
                     
 // Now start consolidating of the results on investment level and per day                
-                $internalVariableToHandle = array(10014, 10015, 37, 10004);
+                $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
 
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
