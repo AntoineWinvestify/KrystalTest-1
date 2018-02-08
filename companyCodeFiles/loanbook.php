@@ -1557,11 +1557,11 @@ class loanbook extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
-                if (empty($this->tempUrl['invesmentUrl'])) {
-                    $this->tempUrl['invesmentUrl'] = array_shift($this->urlSequence);
+                if (empty($this->tempUrl['investmentUrl'])){
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = $this->tempUrl['invesmentUrl'] . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;

@@ -240,7 +240,7 @@ $timeStart = time();
                 $loanDataId[] = $nameIdData;
             }
 
-  
+
             foreach ($loanDataId as $loanId) { 
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
@@ -289,8 +289,6 @@ echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 
-    
-
 
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
             $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
@@ -311,9 +309,6 @@ $timeStart = time();
                                                  );
                   
                 
-                
-                
-
                 if (count($result) < $limit) {          // No more results available
                     $controlIndex = 1;
                 }
@@ -338,7 +333,7 @@ echo __FILE__ . " " . __LINE__ ."today = $today\n";
                 $index++;
             } 
             while($controlIndex < 1); 
-            
+
             $this->Investment->saveMany($investment, array('validate' => true));
         }
 $timeStop = time();
