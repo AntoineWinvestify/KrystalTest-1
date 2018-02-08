@@ -412,11 +412,14 @@ class zank extends p2pCompany {
     ];
 
     
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
-                                 ); 
+    protected $amortizationConfigParms = array (
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    ); 
     
     protected $valuesAmortizationTable = [
         1 => [
@@ -461,7 +464,7 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
-        5 => [
+        /*5 => [
             [
                 "type" => "amortizationtable_comission",                        // Winvestify standardized name  OK
                 "inputData" => [
@@ -482,7 +485,7 @@ class zank extends p2pCompany {
                 ],
                 "functionName" => "getAmount",
             ]
-        ],
+        ],*/
         8 => [
             "name" => "amortizationtable_paymentStatus"
         ]
