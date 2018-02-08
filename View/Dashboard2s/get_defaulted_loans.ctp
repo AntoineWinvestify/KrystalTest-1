@@ -15,7 +15,7 @@ echo 1;
         "sAjaxSource": "ajaxDataTableDefaultedInvestments/"+ id,
         "aoColumns": [
             {"mData": 'Investment.investment_loanId'},
-            {"mData": 'Investment.investment_nextPaymentDate'},
+            {"mData": 'Investment.investment_myInvestmentDate'},
             {"mData": 'Investment.MyInvestmentFloat', "sType": "numeric", "mRender": function (data, type, row) {
                     return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' €';
                 },
@@ -23,11 +23,14 @@ echo 1;
             {"mData": 'Investment.InterestFloat', "sType": "numeric", "mRender": function (data, type, row) {
                     return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' %';
                 }},
-            {"mData": 'Investment.investment_instalmentsProgress'},
+             {"mData": 'Investment.ProgressFloat', "sType": "numeric", "mRender": function (data, type, row) {
+                    return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' %';
+                }},
             {"mData": 'Investment.OutstandingFloat', "sType": "numeric", "mRender": function (data, type, row) {
                     return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' €';
                 }},
-            {"mData": 'Investment.investment_myInvestmentDate'}
+            {"mData": 'Investment.investment_nextPaymentDate'}
+            
         ],
     });
 </script>
