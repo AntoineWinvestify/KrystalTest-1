@@ -209,7 +209,6 @@ class Dashboard2sController extends AppController {
                 continue;
             }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                //echo "key = $key \n";
                 switch ($key) {
                     case "linkedaccount_id":
                         //Get the pfp id of the linked acount

@@ -75,6 +75,9 @@
  * 2018-02-04   version_0.9.1
  * Added new method, handleNumber, for dealing with numbers
  * 
+ * 2018-02-06   version_0.9.2
+ * Added many new concepts according to the latest contents of FlowData.xlsx
+ * 
  * 
  * 
  * Pending:
@@ -145,7 +148,11 @@ class Fileparser {
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
  //                     an already existing loan if a extra participation is bought
  // REPAYMENT       => An amortization payment has taken place
+ // REMOVE_AM_TABLE => Remove the mark that an amortization table is to be collected
+ // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state   
+    
  /*
+  * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
   */   
@@ -239,10 +246,10 @@ class Fileparser {
                 "type" => "payment_loanIncentivesAndBonus"  
                 ],
             15 => [
-                "detail" => "Compensation",
+                "detail" => "Compensation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensation"    
+                "type" => "globalcashflowdata_platformCompensationPositive"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -254,7 +261,7 @@ class Fileparser {
                 "detail" => "Currency_fluctuation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept17"  
+                "type" => "payment_currencyFluctuationPositive"  
                 ],
             19 => [
                 "detail" => "Recoveries",
@@ -293,10 +300,10 @@ class Fileparser {
                 "type" => "payment_currencyExchangeFee"
                 ],
             25 => [
-                "detail" => "currency_fluctuation_negative",
+                "detail" => "Currency_fluctuation_negative",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept25"
+                "type" => "payment_currencyFluctuationNegative"
                 ],                        
             26 => [
                 "detail" => "Tax_VAT",
@@ -323,10 +330,10 @@ class Fileparser {
                 "type" => "concept29"
                 ],
             30 => [
-                "detail" => "Currency_exchange_transaction",
-                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "detail" => "Incoming_currency_exchange_transaction",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "currencyExchangeTransaction"
+                "type" => "incomingCurrencyExchangeTransaction"
                 ],
             31 => [
                 "detail" => "Unknown_income",
@@ -347,79 +354,86 @@ class Fileparser {
                 "type" => "concept33"
                 ], 
             34 => [
-                "detail" => "Default interest income",
+                "detail" => "Default_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "DefaultInterestIncome"
+                "type" => "defaultInterestIncome"
                 ],     
             35 => [
                 "detail" => "Partial_principal_and_interest_payment",
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Mix",
                 "type" => "payment_partialPrincipalAndInterestPayment"
                 ],
+            36 => [
+                "detail" => "Outgoing_currency_exchange_transaction", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "outgoingCurrencyExchangeTransaction",
+                ],
+            37 => [
+                "detail" => "Compensation_negative",  
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "globalcashflowdata_platformCompensationNegative",
+                ],
+            38 => [
+                "detail" => "Disinvestment_primary_market", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestmentPrimaryMarket",
+                "chars" => "REMOVE_AM_TABLE" 
+                ],
+            39 => [
+                "detail" => "Disinvestment_secundary_market", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestmentSecondaryMarket",
+                ],
         
-  
- /*
-    default interest income should be in globalcashflow table
-
-30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    */        
-        
-        
-        
+            40 => [
+                "detail" => "Create_reserved_funds",                            // Move an investment from PRE-ACTIVE to ACTIVE
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFunds",
+                "chars" => "PRE-ACTIVE",
+                ],
+     
         
             // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
             // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
             // matured into a real loan
-            100 => [
-                "detail" => "Disinvestment",
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "disinvestment",
-                "chars" => "REMOVE_AM_TABLE",    
-                ],
-        
-            101 => [
-                "detail" => "change_to_active_state",       // Move an investment from PRE-ACTIVE to ACTIVE
+
+            10001 => [
+                "detail" => "Change_to_active_state",                           // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "activeStateChange",
-                "chars" => "AM_TABLE"                       // = Collect Amortization table
+                "chars" => "AM_TABLE"                                           // = Collect Amortization table
                 ],
-            102 => [
-                "detail" => "change_to_badDebt_state",      // Move an investment from ACTIVE to WRITTEN_OFF 
+            10002 => [
+                "detail" => "Change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "badDebtStateChange",
                 ],
-            103 => [
-                "detail" => "change_to_cancelled_state",    // Move an investment from PRE-ACTIVE to CANCELLED
+            10003 => [
+                "detail" => "Change_to_cancelled_state",                        // Move an investment from PRE-ACTIVE to CANCELLED
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "cancelledStateChange",
                 ],       
-        
-            104 => [
-                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "createReservedFunds",
-                ],
-            105 => [
-                "detail" => "dummy_concept",    // This is a dummy concept
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "dummy",
-                ],
+
         
     /*         105 => [
-                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "detail" => "Create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFundsNoImpactCashInPlatform",
                 ]  
-     */       
+     */  
+
+
         
         ];
 
@@ -1635,11 +1649,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
     
     /**
-     * Function to join values together
-     * @param string $input
-     * @param string $joinSeparator
+     * Function to join values together 
+     * @param string $input cell data
+     * @param string $joinSeparator Separator we want to use to join different cells
      * @param string $order It could be FIFO or LIFO
-     * @param array $inputValues
+     * @param array $inputValues All the values we want to join together
      * @return string
      */
     public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {

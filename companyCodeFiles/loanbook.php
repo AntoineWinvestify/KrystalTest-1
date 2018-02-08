@@ -78,7 +78,7 @@
 
 class loanbook extends p2pCompany {
     
-    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+    protected $valuesTransaction = [     
         [
             "A" => [ 
                 [
@@ -233,7 +233,7 @@ class loanbook extends p2pCompany {
     protected $valuesAmortizationTable = [
         2 => [
             [
-                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name   OK
+                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "D-M-Y",
                 ],
@@ -271,7 +271,7 @@ class loanbook extends p2pCompany {
         [
         "myWallet" => [
             [
-                "type" => "myWallet",                                           // Winvestify standardized name   OK
+                "type" => "myWallet",                                           // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
                     "input3" => ",",
@@ -383,12 +383,12 @@ class loanbook extends p2pCompany {
 
     /**
      *
-     * 	Calculates how must it will cost in total to obtain a loan for a certain amount
+     * 	Calculates how much it will cost in total to obtain a loan for a certain amount
      * 	from a company
-     * 	@param  int	$amount 		: The amount (in Eurocents) that you like to borrow 
+     * 	@param  int $amount             : The amount (in Eurocents) that you like to borrow 
      * 	@param	int $duration		: The amortization period (in month) of the loan
      * 	@param	int $interestRate	: The interestrate to be applied (1% = 100)
-     * 	@return int					: Total cost (in Eurocents) of the loan
+     * 	@return int			: Total cost (in Eurocents) of the loan
      *
      */
     function calculateLoanCost($amount, $duration, $interestRate) {

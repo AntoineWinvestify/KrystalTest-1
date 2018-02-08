@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -16,11 +15,11 @@
  *
  *
  * @author
- * @version 0.2
- * @date 2017-10-27
+ * @version 0.3
+ * @date 2018-01-05
  * @package
  *
- * This client deals with performing the parsing of the files that have been downloaded
+ * This client deals with parsing of the files that have been downloaded
  * from the PFP's. Once the data has been parsed by the Worker, the Client starts analyzing
  * the data and writes the data-elements to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
@@ -32,6 +31,10 @@
  * 2017-10-27		version 0.2
  * client adapted to global Gearman framework
  *
+ * 2018-01-05		version 0.3
+ * deal with the flows for reserved funds
+ * introduction of state management
+ * 
  *
  * PENDING:
  * 
@@ -223,7 +226,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_ERROR;
                             echo "ERROR ENCOUNTERED\n"; 
                         }
-                    }                                                       //verifyStatus($status, $message, $restartStatus, $errorStatus)
+                    }           
                     $this->verifyStatus($newFlowState, 
                             "Data successfully downloaded", 
                             WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, 
@@ -243,9 +246,9 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n";
                 }
-                sleep(4);                                          // Just wait a short time and check again
+                sleep(4);                                                       // Just wait a short time and check again
             }
-            if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
+            if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
                    
@@ -280,10 +283,9 @@ $timeStart = time();
         $finishDate = $platformData['finishDate'];
         
  //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
-        
-        
-        $controlVariableFile =  $platformData['controlVariableFile'];                   // Control variables as supplied by P2P
-        $controlVariableActiveInvestments = $platformData['activeInvestments'];         // Our control variable
+            
+
+        $controlVariableActiveInvestments = $platformData['activeInvestments']; // Our control variable
 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             $platformData['workingNewLoans'] = array_values($platformData['newLoans']);
@@ -291,10 +293,8 @@ $timeStart = time();
  
             $precision = $platformData['dashboard2ConfigurationParameters']['outstandingPrincipalRoundingParm'];
             if (empty($precision)) {
-                $precision = '0.00001';     // Default precision
+                $precision = '0.00001';                                         // Default precision
             }
-
-            // merge the two arrays
             $countArray1 = count($platformData['workingNewLoans']);
             
             foreach ($expiredLoanValues as $key => $value) {
@@ -302,17 +302,16 @@ $timeStart = time();
             }
         }
         else {
- //           echo "regular update\n";
             $platformData['workingNewLoans'] = $platformData['newLoans'];
         } 
-
-        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');          // A new table exists for EACH new calculation interval
+      
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');  // A new table exists for EACH new calculation interval
         $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
         $this->Payment = ClassRegistry::init('Payment');
 
  // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
-        $database = array();              // Start with a clean shadow database
+        $database = array();                                                    // Start with a clean shadow database
         $database['investment']['investment_totalLoanCost'] = "";
         $database['investment']['investment_paidInstalments'] = "";
         $database['payment']['payment_latePaymentFeeIncome'] = "";
@@ -460,12 +459,12 @@ if ($dateKey == "2019-03-13"){
                     continue;
                 }
  
-                echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction[0]['investment_loanId'] . "\n";
+echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction[0]['investment_loanId'] . "\n";
 
                 if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
                     echo "THIS IS AN ACTIVE LOAN\n";
                     $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                    $loanStatus = WIN_LOANSTATUS_ACTIVE;
+                    $loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
                 }
 
                 if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
@@ -561,13 +560,17 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 }
 
                 // load all the transaction data
-                foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transactions of this loanId
+                foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transaction data of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
 
                 print_r($database);
                 
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
+                        
+                        if (in_array("PRE-ACTIVE", $conceptChars)) {                         
+                            $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                        }                       
                         if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
@@ -613,6 +616,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $slicesAmortizationTablesToCollect[] = $sliceIdentifier;    // For later processing            
                         }
                     }
+                    
                     foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
                         if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
@@ -637,7 +641,6 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                                 $result = $calculationClassHandle->$functionToCall($transactionData, $database);
 
 echo "Result = $result and index = " . $tempResult['internalIndex'] ."\n";
-
                                 if (isset($tempResult['linkedIndex'])) {
                                     echo ">>>>>>>>>>>>>>>> LINKED INDEX\n";
                                     $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
@@ -780,13 +783,12 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     if (!in_array($loanSliceId, $platformData['amortizationTablesOfNewLoans'])) {       // avoid duplicates
                         $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier;
                     }
-                    
                 }
                 $slicesAmortizationTablesToCollect = [];
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
-                $internalVariablesToHandle = array(10001,  // removed 10004 
+                $internalVariablesToHandle = array(10001, 20065,
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
@@ -795,7 +797,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
                     $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
-echo __FILE_ . " " . __LINE__ . " Executing Calc. specific variables=>: original amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
+echo __FILE__ . " " . __LINE__ . " Executing Calc. specific variables=>: original amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
 
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {
@@ -946,8 +948,8 @@ echo __FILE_ . " " . __LINE__ . " Executing Calc. specific variables=>: original
 
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";        
-        print_r($platformData['totalParsingresultControlVariables']);
-        
+        print_r($platformData['parsingResultControlVariables']);
+
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, 
                                                     $platformData['totalParsingresultControlVariables']);
         if ($controlVariablesCheck > 0) { // mismatch detected
