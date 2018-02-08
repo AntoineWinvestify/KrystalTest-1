@@ -1661,7 +1661,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $input
      * @param string $joinSeparator
      * @param string $order It could be FIFO or LIFO
-     * @param array $inputValues
+     * @param array $inputValues All the values we want to join together
      * @return string
      */
     public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
