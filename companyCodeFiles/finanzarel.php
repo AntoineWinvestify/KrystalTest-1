@@ -196,7 +196,6 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getConceptChars",
                 ]
             ],
-            
         ],
         [
             "A" => [
@@ -237,13 +236,6 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
-                ],
-                [
-                    "type" => "conceptChars",                                   // Winvestify standardized name
-                    "inputData" => [
-				"input2" => "#current.internalName",            // get Winvestify concept
-                                ],
-                    "functionName" => "getConceptChars",
                 ]
             ]
         ]
