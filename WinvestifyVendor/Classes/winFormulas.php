@@ -363,6 +363,158 @@ class WinFormulas {
         ]
     ];
     
+    protected $variablesFormula_netReturn_xnpv = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
+                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
+                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    //"globaltotalsdata_interestGrossIncomePerDay",
+                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
+                    //"globaltotalsdata_loanRecoveriesPerDay",
+                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    //"globaltotalsdata_loanCompensationPerDay",
+                    //"globaltotalsdata_incomeSecondaryMarket",
+                    //"globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    "globaltotalsdata_commissionPaidPerDay",
+                    "globaltotalsdata_taxVATPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-1",
+            "dateFinish" => "-1",
+            "intervals" => "latest",
+            "operation" => "add"
+        ],
+        "D" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
+            "intervals" => "latest",
+            "operation" => "substract"
+        ]
+    ];
+    
+    protected $variablesFormula_netPastReturn_xnpv = [
+        "A" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
+                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
+                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    //"globaltotalsdata_interestGrossIncomePerDay",
+                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
+                    //"globaltotalsdata_loanRecoveriesPerDay",
+                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    //"globaltotalsdata_loanCompensationPerDay",
+                    //"globaltotalsdata_incomeSecondaryMarket",
+                    //"globaltotalsdata_principalBuybackPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
+        "B" => [
+            "type" => [
+                "variables" => [
+                    "globaltotalsdata_myInvestmentPerDay",
+                    "globaltotalsdata_costSecondaryMarketPerDay",
+                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
+                    "globaltotalsdata_commissionPaidPerDay",
+                    "globaltotalsdata_taxVATPerDay",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "inclusive",
+            "operation" => "substract"
+        ],
+        "C" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "latest",
+            "operation" => "add"
+        ],
+        "D" => [
+            "type" => "userinvestmentdata_outstandingPrincipal",
+            "table" => "userinvestmentdata",
+            "operation" => "add",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "intervals" => "latest",
+            "operation" => "substract"
+        ]
+    ];
+    
     protected $configFormula_B = [
         "steps" => [
             ["A"],
