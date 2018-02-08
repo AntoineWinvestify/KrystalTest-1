@@ -187,9 +187,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         break;                        
                 }
 echo __FILE__. " " . __LINE__ . "\n";   
-print_r($parserConfigFile);
+/*print_r($parserConfigFile);
 print_r($configParameters);
-print_r($filesByType[0]);
+print_r($filesByType[0]);*/
                 if (count($filesByType) === 1) {
 echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
                     $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
@@ -213,7 +213,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                             break;
                         case WIN_FLOW_CONTROL_FILE:
                             $totalParsingresultControlVariables = $tempResult;
-print_r($tempResult);                            
+//print_r($tempResult);                            
 echo __FILE__. " " . __LINE__ . "\n";                             
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
@@ -273,7 +273,7 @@ echo __FILE__. " " . __LINE__ . "\n";
             $returnData[$linkedAccountKey]['dashboard2ConfigurationParameters'] = $dashboard2ConfigurationParameters;
             $returnData[$linkedAccountKey]['controlVariables'] = $data['totalParsingresultControlVariables'];
 echo "Control Variables\n";
-print_r($returnData[$linkedAccountKey]['controlVariables']);        
+//print_r($returnData[$linkedAccountKey]['controlVariables']);        
 //print_r($returnData[$linkedAccountKey]);            
           
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
@@ -330,7 +330,7 @@ print_r($returnData[$linkedAccountKey]['controlVariables']);
 
                     $this->array_keys_recursive($myArray, 4, "internalName", "disinvestment");
                     $foundArrays = $this->getlevel();
-                    print_r($foundArrays);
+                    //print_r($foundArrays);
                     if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
                         echo "some error occurred in PFP, but we will mark all Ghosts";
                     }

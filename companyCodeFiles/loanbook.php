@@ -89,35 +89,20 @@ class loanbook extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "C" => [
-                [
-                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
-                    "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
-                        "input2" => [
-                            0 => ["Provisión de Fondos" => "Cash_deposit"],
-                            1 => ["Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Pago de capital" => "Capital_repayment"],
-                            4 => ["Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            5 => ["Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            6 => ["Compensación por incidencia administrativa" => "Compensation"],
-                            7 => ["Comisión pago por tarjeta" => "Bank_charges"],
-                            8 => ["Participación en pagaré" => "Primary_market_investment"],
-                            9 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
-                        ]
-                    ],
-                    "functionName" => "getTransactionDetail",
-                ],
+            
+            "B" => [               
+                "name" => "tempConcept"  
+            ],
+            "C" => [                
                 [
                     "type" => "original_concept",
                     "inputData" => [
-                        "input2" => "",
-                        "input3" => "",
-                        "input4" => 0                    
+                        "input2" => "-",
+                        "input3" => LIFO,
+                        "input4" => "#current.tempConcept",              
                     ],
-                    "functionName" => "extractDataFromString"
-                ]
-                
+                    "functionName" => "joinDataCells"
+                ]             
             ],
             "D" => [
                 [
@@ -134,17 +119,18 @@ class loanbook extends p2pCompany {
                     "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
                         "input2" => "#current.original_concept", 
                         "input3" => [
-                            0 => ["Provisión de Fondos" => "Cash_deposit"],
-                            1 => ["Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Participación en préstamo" => "Disinvestment"],
-                            4 => ["Pago de capital" => "Capital_repayment"],
-                            5 => ["Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            6 => ["Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            7 => ["Compensación por incidencia administrativa" => "Compensation"],
-                            8 => ["Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Participación en pagaré" => "Primary_market_investment"],
-                            10 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
+                            0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
+                            1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
+                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment"],
+                            4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
+                            5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
+                            6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
+                                    7 => ["Compensación por incidencia administrativa" => "Compensation"],
+                                    8 => ["Comisión pago por tarjeta" => "Bank_charges"],
+                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment"],
+                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment"],
+                                    11 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
@@ -1291,22 +1277,15 @@ class loanbook extends p2pCompany {
 
                 foreach ($trs as $tr) {
 
-                    $as = $dom->getElementsByTagName('a');
-                    $this->verifyNodeHasElements($as);
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                    }
-                    foreach ($as as $a) {
+                   $as = $tr->getElementsByTagName('a');
+                   foreach ($as as $a) {            
                         if (!empty($a->getAttribute('data-id'))) {
                             $this->UserLoansId[] = $a->getAttribute('data-id');
-                            if (!$this->hasElements) {
-                                return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                            }
                             break;
-                        }
+                        }                      
                     }
                 }
-
+                              
                 $this->UserLoansId = array_unique($this->UserLoansId); //We have duplicate loans because a tag, we use this for delete duplicated loans
                 $this->UserLoansId = array_values($this->UserLoansId);
 
@@ -1360,11 +1339,13 @@ class loanbook extends p2pCompany {
                     //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
                     switch ($key) {
                         case 7:
-                            $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
-                            $this->loanArray[$this->j]['A'] = str_replace(")","",explode("(", $str[2])[1]); //Loan Id
-                            $this->loanArray[$this->j]['B'] = $str[0]; //Loan Purpose
-                            $this->loanArray[$this->j]['C'] = $str[1]; //Loan Price target
-                            $this->loanArray[$this->j]['D'] = explode("(", $str[2])[0]; //Loan Location
+                            //$str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));                            
+                            $stringProcessed = $this->handleInvestmentString(mb_convert_encoding($div->nodeValue, "utf8", "auto"));
+                            
+                            $this->loanArray[$this->j]['A'] = $stringProcessed[3]; //Loan Id
+                            $this->loanArray[$this->j]['B'] = $stringProcessed[1]; //Loan Purpose
+                            $this->loanArray[$this->j]['C'] = $stringProcessed[0]; //Loan Price target
+                            $this->loanArray[$this->j]['D'] = $stringProcessed[2]; //Loan Location
                             
                             break;
                         case 8:
@@ -1446,12 +1427,12 @@ class loanbook extends p2pCompany {
                     break;
                 }
 
-                print_r($this->loanArray);
+                print_r($this->loanArray[$this->j]);
                 //$this->loanArray[$this->j]['B'];
 
 
                 if ($this->j < $this->maxUserLoans) {
-                    $this->idForSwitch = 8;
+                    $this->idForSwitch = 7;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                     break;
                 } else {
@@ -1722,6 +1703,40 @@ class loanbook extends p2pCompany {
         return true;
     }
 
+    
+    /**
+     * Function that handle the string that contain purpose, amount, location and investment id.
+     * 
+     * @param type $string
+     * @return type
+     */
+    function handleInvestmentString($multiString) {
+
+        $tempArray = explode("€", $multiString);
+        
+       
+        
+        $purposeAndMoney = explode(",", $tempArray[0]);        
+        $money =  trim($purposeAndMoney[count($purposeAndMoney) -1]);
+        for ($i = 0; $i < count($purposeAndMoney) - 1; $i++) {
+            if ($i !== 0) {
+                $purpose = $purpose . "," . $purposeAndMoney[$i];
+            } else {
+                $purpose = $purposeAndMoney[$i];
+            }
+        }
+
+        $locationAndId = $tempArray[1];            
+        $location = trim(str_replace(",", "",explode("(", $locationAndId)[0]));
+        $id = str_replace(")", "", explode("(", $locationAndId)[1]);
+        
+        return array($money, $purpose, $location, $id);
+    }
+    
+    
+    
+    
+    
     /**
      *
      * 	translate the html of loan state to the winvestify normalized state
