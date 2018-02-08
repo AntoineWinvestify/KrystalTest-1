@@ -535,7 +535,7 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
                             'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-                                'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+            //'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
     ];
     
@@ -1320,7 +1320,7 @@ class finanzarel extends p2pCompany {
      */
     function collectAmortizationTablesParserFile($str = null) {
         
-        $this->tempArray['loanTotalIds'] = $this->loanIds;
+        $this->loanTotalIds = $this->loanIds;
         $this->myParser = new Fileparser();                                                                             //Call the parser
         $folder = $this->getFolderPFPFile();
         $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
