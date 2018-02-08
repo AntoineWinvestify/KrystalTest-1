@@ -110,7 +110,6 @@ class ConsolidationClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
                 // ######################################################################################################
-
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
@@ -175,16 +174,29 @@ class ConsolidationClientShell extends GearmanClientShell {
         $this->services['netAnnualReturnXirr']['database']['table'] = 'userinvestmentdata';
         $this->services['netAnnualReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPast12Months';
         $this->services['netAnnualReturnXirr']['database']['model'] = 'Userinvestmentdata';
+        
         $this->services['netAnnualTotalFundsReturnXirr']['service'] = "calculateNetAnnualTotalFundsReturnXirr";
         $this->services['netAnnualTotalFundsReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
         $this->services['netAnnualTotalFundsReturnXirr']['database']['table'] = 'userinvestmentdata';
         $this->services['netAnnualTotalFundsReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualTotalFundsReturn';
         $this->services['netAnnualTotalFundsReturnXirr']['database']['model'] = 'Userinvestmentdata';
+        
         $this->services['netAnnualReturnPastYearXirr']['service'] = "calculateNetAnnualReturnPastYearXirr";
         $this->services['netAnnualReturnPastYearXirr']['gearmanFunction'] = 'getFormulaCalculate';
         $this->services['netAnnualReturnPastYearXirr']['database']['table'] = 'userinvestmentdata';
         $this->services['netAnnualReturnPastYearXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPastYear';
         $this->services['netAnnualReturnPastYearXirr']['database']['model'] = 'Userinvestmentdata';
+        
+        $this->services['netReturn']['service'] = "calculateNetReturn";
+        $this->services['netReturn']['gearmanFunction'] = 'getFormulaCalculate';
+        $this->services['netReturn']['database']['table'] = 'userinvestmentdata';
+        $this->services['netReturn']['database']['variable'] = 'userinvestmentdata_netReturn';
+        $this->services['netReturn']['database']['model'] = 'Userinvestmentdata';
+        $this->services['netReturnPastYear']['service'] = "calculateNetReturnPastYear";
+        $this->services['netReturnPastYear']['gearmanFunction'] = 'getFormulaCalculate';
+        $this->services['netReturnPastYear']['database']['table'] = 'userinvestmentdata';
+        $this->services['netReturnPastYear']['database']['variable'] = 'userinvestmentdata_netReturnPastYear';
+        $this->services['netReturnPastYear']['database']['model'] = 'Userinvestmentdata';
         //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
         //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
         //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
