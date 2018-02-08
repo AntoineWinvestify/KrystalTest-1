@@ -37,7 +37,7 @@
  * 
  *
  * PENDING:
- * 
+ * check if outstanding principal = 0 in order to determine if a prestamo has finalized (good for Finanzarel as no expiredLoans exists
  * 
  */
 App::import('Shell', 'GearmanClient');
@@ -49,7 +49,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+    //    return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -572,6 +572,11 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
                         }                       
                         if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
+ /*
+  * check if outstanding principal = 0 in order to determine if a prestamo has finalized (good for Finanzarel as no expiredLoans exists
+  * 
+  */
+                            
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
                                 if (isset($transactionData['sliceIdentifier'])) {
@@ -772,11 +777,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
   
 
-
 //Define which amortization tables shall be collected 
                 $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
-                print_r($slicesAmortizationTablesToCollect);
-                echo 'ñññññññññññññññ';
+
                 foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
                     $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
                     
@@ -788,7 +791,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
-                $internalVariablesToHandle = array(10001, 20065,
+                $internalVariablesToHandle = array(10001, 
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
@@ -797,7 +800,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
                     $result = $calculationClassHandle->$functionToCall($transactionData, $database);                
-echo __FILE__ . " " . __LINE__ . " Executing Calc. specific variables=>: original amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
+echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $functionToCall and Executing Calc. specific variables=>: orig. amount = " . $database[$varName[0]][$varName[1]] ." and new result = $result". "\n";
 
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                         if (!isset($database[$varName[0]][$varName[1]])) {

@@ -696,6 +696,7 @@ protected $countries = [
     
     /**
      * Function to analyze a file depending on its extension
+     * 
      * @param string $file FQDN of the file to analyze
      * @param array  $configuration Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
@@ -742,6 +743,7 @@ protected $countries = [
 
     /**
      * Starts the process of analyzing the file and returns the results as an array
+     * 
      *  @param  FILE            FQDN of the file to analyze
      *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
      *  @return array           $parsedData
@@ -1000,6 +1002,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Returns information of the last occurred error. Can also detect if
      * an unknown "payment" concept was found.
+     * 
      *  @return JSON   
      *         
      */
@@ -1088,15 +1091,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
 
         switch($result) {
-            case WIN_CONCEPT_TYPE_COST:                                  // A result was found.
+            case WIN_CONCEPT_TYPE_COST:                                         // A result was found.
                 return "Unknown_cost";
                 break;
 
-            case WIN_CONCEPT_TYPE_INCOME:                                // A result was found
+            case WIN_CONCEPT_TYPE_INCOME:                                       // A result was found
                 return "Unknown_income";
                 break;
-            default:                                    // Nothing found, so do some maths to
-                return "Unknown_concept";               // see if it is an income or a cost.
+            default:                                                            // Nothing found, so do some maths to
+                return "Unknown_concept";                                       // see if it is an income or a cost.
         }
     }
 
@@ -1384,6 +1387,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Function to get details of transaction but when it is needed to get the content from
      * multiples columns of the file
+     * 
      * @param string $input It is the column value
      * @param array $config Winvestify standardized concept
      * @param array $inputValues Values needed to calculate transaction details from other columns
@@ -1490,6 +1494,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
   
     /**
      * Function to get the loanId from the file name of one amortization table
+     * 
      * @param array $delimiters     array with all the delimiter characters
      * @param string                input string
      *  
@@ -1503,6 +1508,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a file depending on its extension
+     * 
      * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
@@ -1521,6 +1527,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a html file to get its content
+     * 
      * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @return array $parsedData
@@ -1650,6 +1657,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to join values together
+     * 
      * @param string $input
      * @param string $joinSeparator
      * @param string $order It could be FIFO or LIFO
@@ -1675,6 +1683,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to clean a string of unnecessary characters
+     * 
      * @param string $input cell data
      * @param array $charactersToClean Array of chars to clean
      * @return string Cleaned value to be returned
@@ -1888,6 +1897,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to clear a csv
+     * 
      * @param string $filePath FQDN of the file to analyze
      */
     function clearCsv($filePath) {
@@ -1902,6 +1912,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to set the finish date when we starting the process
+     * 
      * @param string $defaultFinishDate It is the default date
      */
     function setDefaultFinishDate($defaultFinishDate) {
@@ -1934,6 +1945,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * Function to manipulate a number
      * Example:
      *  21.903 -> 2090
+     * 
      * @param string $input             The number to manipulate. It is assumed that only a *number* is received,
      *                                  with or without a "," or "."
      * @param string $multiplyFactor    The factor which shall be used to multiply the input

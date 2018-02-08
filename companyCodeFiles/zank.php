@@ -2132,7 +2132,7 @@ class zank extends p2pCompany {
                 $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
                 break;
             case "CANCELADO":
-                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                $data = WIN_LOANSTATUS_FINISHED;
                 break;
             case "COMPLETADO":
                 $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;

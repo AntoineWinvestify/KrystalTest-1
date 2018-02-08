@@ -943,7 +943,7 @@ class UserDataShell extends AppShell {
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
-        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {       
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
