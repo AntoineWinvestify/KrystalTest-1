@@ -215,7 +215,12 @@ class loanbook extends p2pCompany {
                         "input2" => "D-M-Y",
                     ],
                     "functionName" => "normalizeDate",
-                ]
+                ],
+                [
+                    "type" => "investment_statusOfLoan",
+                    "functionName" => "getHash",
+                    
+                ],
             ],
             "N" => [
                 "name" => "investment_sliceIdentifier"
@@ -345,7 +350,8 @@ class loanbook extends p2pCompany {
                 "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee',
                 "investment_paymentFrequency" => "translatePaymentFrequency",
                 "investment_originalDuration" => "translateDuration",
-                "investment_originalState" => "translateStatus"
+                "investment_originalState" => "translateOriginalLoanState",
+                "investment_statusOfLoan" => "translateStatusOfLoan",
             ]
         ]
     ];
@@ -1878,13 +1884,13 @@ class loanbook extends p2pCompany {
      * @param type $inputData
      * @return type
      */
-    public function translateStatus($inputData){
+    public function translateOriginalLoanState($inputData){
         $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "GREEN":
                 $type = 0;
                 break;
-            default:
+            ca:
                 $type = 1;
                 break;
         }
@@ -1893,47 +1899,18 @@ class loanbook extends p2pCompany {
     
     
     /**
-     * Function to translate the company specific amortization method to the Winvestify standardized
-     * amortization type
+     * 
+     * 
      * @param string $inputData     company specific amortization method
      * @return int                  Winvestify standardized amortization method
      */
-    public function translateAmortizationMethod($inputData) { //We don't have this in loanbook
+    public function translateStatusOfLoan($inputData) { 
+        return WIN_LOANSTATUS_ACTIVE;
 
     }   
     
-    /**
-     * Function to translate the company specific type of investment to the Winvestify standardized
-     * type of investment
-     * @param string $inputData     company specific type of investment
-     * @return int                  Winvestify standardized type of investment
-     */
-    public function translateTypeOfInvestment($inputData) { //We don't have this in loanbook
 
-    }
-    
-    /**
-     * Function to translate the type of investment market to an to the Winvestify standardized
-     * investment market concept
-     * @param string $inputData     company specific investment market concept
-     * @return int                  Winvestify standardized investment marke concept
-     */
-    public function translateInvestmentMarket($inputData) { //We don't have this in loanbook
-        
-    }
-    
-    /**
-     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
-     * investmentBuyBackGuarantee
-     * @param string $inputData     company specific investmentBuyBackGuarantee
-     * @return int                  Winvestify standardized investmentBuyBackGuarantee
-     */
-    public function translateInvestmentBuyBackGuarantee($inputData) { //we don't have this in loanbook
-        
-       
-    }
-    
-    
+     
     /**
      * Compare amortization table structure from loanbook
      * @param string $node1

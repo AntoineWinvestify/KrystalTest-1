@@ -776,7 +776,6 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 //Define which amortization tables shall be collected 
                 $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
                 print_r($slicesAmortizationTablesToCollect);
-                echo 'ñññññññññññññññ';
                 foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
                     $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
                     
@@ -788,7 +787,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
-                $internalVariablesToHandle = array(10001, 20065,
+                $internalVariablesToHandle = array(10001,
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
