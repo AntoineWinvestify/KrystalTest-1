@@ -716,8 +716,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                 
                 if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                     $amortizationTablesNotNeeded[] = $database['investment']['investment_sliceIdentifier'];
-                    echo ".....................";
-                     print_r($amortizationTablesNotNeeded);
+
                 }
                
 
@@ -919,11 +918,23 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
             
             
             
+             // Determine the number of active investments. NOTE THAT THIS IS A SIMPLE PATCH. THE REAL SOLUTION 
+            // ENTAILS THE INCREMENTING/DECREMENTING OF A COUNTER WHEN A NEW LOAN ENTERS OR WHEN A LOAN FINISHES
+            //      READ FROM investments 
+            $filterConditions = array("AND" => array(array('linkedaccount_id' => $linkedaccountId 
+                                             )),
+                                        "OR" =>  array(array('investment_technicalStateTemp' => 'INITIAL'), 
+                                                      array('investment_technicalStateTemp' => 'ACTIVE')
+                                              ));
+            
+            $activeInvestments = $this->Investment->find('count', array(
+                                        'conditions' => $filterConditions));
             
             $controlVariables['outstandingPrincipal'] = $database['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'];  // Holds the *last* calculated value so far
             $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];      // Holds the *last* calculated valueso far
-            $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']; // Holds the last calculated valueso far
+            $controlVariables['activeInvestments'] = $activeInvestments; // Holds the last calculated valueso far
 
+            print_r($database['Userinvestmentdata']);
             
             unset($database['Userinvestmentdata']);
             unset($database['globalcashflowdata']);
@@ -936,18 +947,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
             $database['globaltotalsdata']['globaltotalsdata_capitalRepaymentPerDay'] = "";              
             $database['globaltotalsdata']['globaltotalsdata_costSecondaryMarketPerDay'] = "";  
             
-            // Determine the number of active investments. NOTE THAT THIS IS A SIMPLE PATCH. THE REAL SOLUTION 
-            // ENTAILS THE INCREMENTING/DECREMENTING OF A COUNTER WHEN A NEW LOAN ENTERS OR WHEN A LOAN FINISHES
-            //      READ FROM investments 
+           
 
-            $filterConditions = array("AND" => array(array('linkedaccount_id' => $linkedaccountId 
-                                             )),
-                                        "OR" =>  array(array('investment_technicalStateTemp' => 'INITIAL'), 
-                                                      array('investment_technicalStateTemp' => 'ACTIVE')
-                                              ));
-            
-            $activeInvestments = $this->Investment->find('count', array(
-                                        'conditions' => $filterConditions));
 
             $tempUserInvestmentDataItem = array('id' => $userInvestmentDataId,
                                                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
@@ -964,15 +965,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 unset($platformData['amortizationTablesOfNewLoans'][$tableExists]);  
             }                      
         }               
-        
 
         
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";        
         //print_r($platformData['parsingResultControlVariables']);
-
+        
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, 
-                                                    $platformData['totalParsingresultControlVariables']);
+                                                    $platformData['parsingResultControlVariables']);
         if ($controlVariablesCheck > 0) { // mismatch detected
             echo "DOES NOT PASS CONTROL VARIABLES CHECK \n";
             // STILL TO FINISH
