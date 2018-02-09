@@ -871,6 +871,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
 
             if (!empty($database['globalcashflowdata'])) {
                 $database['globalcashflowdata']['userinvestmentdata_id'] = $userInvestmentDataId;
+                $database['globalcashflowdata']['linkedaccount_id'] = $linkedaccountId;
                 $database['globalcashflowdata']['date'] = $dateKey;
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Globalcashflowdata Data... ";                
                 $this->Globalcashflowdata->create();
