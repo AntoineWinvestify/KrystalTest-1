@@ -519,7 +519,7 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
                         break;
                     }   
                 } 
-                else {  // Already a loan which exists in our database, can be in any state
+                else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
                     $filterConditions = array("investment_loanId" => $dateTransaction[0]['investment_loanId'] ,
                                                 "linkedaccount_id" => $linkedaccountId);
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
@@ -656,17 +656,7 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                                 $result, 16); 
 //echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
                                 }
-   
-                                if (isset($database['investment']['amortizationTableAvailable'])) {
-                                    if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
-                                        if (in_array("REPAYMENT", $conceptChars)) {    
-                                            $this->repaymentReceived($transactionData, $database); 
-                                        }                                
-                                    }
-                                    else {
-                                        // Store the information so it can be processed in flow 3B
-                                    }
-                                }            
+             
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                     echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
                                     $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
@@ -688,9 +678,18 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                             }        
                         }
                     }       
-                    
 
-                    
+                    if (isset($database['investment']['amortizationTableAvailable'])) {     // Write payment data in amortization table
+                        if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
+                            if (in_array("REPAYMENT", $conceptChars)) {    
+echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $dateTransaction[0]['investment_loanId'] . "\n";                                
+                                $this->repaymentReceived($transactionData, $database); 
+                            }                                
+                        }
+                        else {
+                            // Store the information so it can be processed in flow 3B
+                        }
+                    }                      
                 }   
                     
 // Now start consolidating of the results on investment level and per day                
@@ -992,8 +991,8 @@ print_r($platformData['amortizationTablesOfNewLoans']);
     
     
     /**is needed for partial payments???
-     *  Deals with all the actions of a repayment of a loan. This is BEFORE ANYTHING has been
-     *  changed in the database by the main flow
+     *  Deals with all the actions of a repayment of a loan. This is AFTER all the
+     *  changes in the database by the main flow
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
@@ -1001,7 +1000,9 @@ print_r($platformData['amortizationTablesOfNewLoans']);
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-        echo __FUNCTION__ . __LINE__ . "\n";
+
+        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table \n";      
+        return;
         print_r($transactionData);
         print_r($resultData);
         
@@ -1009,7 +1010,7 @@ print_r($platformData['amortizationTablesOfNewLoans']);
          * I just implement loanId (as for Mintos)
          * store repayment data in amortization table
          * get next repayment data (date and amount)
-         * As this is a repayment, so an investmentId already exists.
+         * As this is a repayment, so an investmentId already exists.not IN CASE OF A ACCOUNT LINKING PROCEDURE
          * 
          * get all slices where investment_id = XXXXX;
          * for those investmentslices get the amortization table(s)

@@ -165,7 +165,6 @@ class UserDataShell extends AppShell {
         if (isset($resultData['investment']['investment_disinvestment'])) {
             $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
         }
-        print_r($resultData['investment']['investment_disinvestment']);
         return $result;
     }
 
@@ -884,7 +883,7 @@ class UserDataShell extends AppShell {
     
     /**
      *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets. 
-     *  The amount is taken from "CashInPlatform2 and moved to "reservedAssets".
+     *  The amount is taken from "CashInPlatform" and moved to "reservedAssets".
      *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
      *
      *  @param  array       array with the current transaction data
@@ -1105,6 +1104,27 @@ class UserDataShell extends AppShell {
     public function calculatePlatformCompensationNegative(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }   
+    
+    /**
+     *  Deals with the internals actions when an investments changes from state "pre-active" to "active"
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return int         new status of the loan
+     */
+    public function calculateActiveStateChange(&$transactionData, &$resultData) {
+        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+        // move the corresponding part of the money from reserved funds to outstanding principal
+            
+        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_PREACTIVE) {
+            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
+                                                $resultData['investment']['investment_myInvestment']);
+            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
+                                                $resultData['investment']['investment_myInvestment']);     
+            return WIN_LOANSTATUS_ACTIVE;
+        }
+    }  
+ 
     
     
 }

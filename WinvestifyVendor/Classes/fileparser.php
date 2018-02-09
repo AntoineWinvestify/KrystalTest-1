@@ -408,20 +408,22 @@ class Fileparser {
                 "detail" => "Change_to_active_state",                           // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "activeStateChange",
+                "type" => "investment_activeStateChange",
                 "chars" => "AM_TABLE"                                           // = Collect Amortization table
                 ],
+ /*       Not NEEDED AS THIS IS DONE USING A N ORDINARY TRANSACTION RECORD
             10002 => [
                 "detail" => "Change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "badDebtStateChange",
                 ],
+    */
             10003 => [
                 "detail" => "Change_to_cancelled_state",                        // Move an investment from PRE-ACTIVE to CANCELLED
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "cancelledStateChange",
+                "type" => "investment_cancelledStateChange",
                 ],       
 
         

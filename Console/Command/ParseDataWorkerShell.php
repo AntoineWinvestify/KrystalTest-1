@@ -304,15 +304,16 @@ print_r($totalParsingresultControlVariables);
                             if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                         //      generate a statechange record, state is changed to "active"
                                 $dateKeys = array_keys($totalParsingresultTransactions);
-                                $key = $dateKeys[count($dateKeys) - 1];
+                                $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
                                 $totalParsingresultTransactions[$key][$loanId][100]['date'] = $key;
                                 $totalParsingresultTransactions[$key][$loanId][100]['investment_loanId'] = $loanId;
                                 $totalParsingresultTransactions[$key][$loanId][100]['internalName'] = "activeStateChange";
-
+echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanId\n";
                                 unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
                             }
                             if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+echo __FUNCTION__ . " " . __LINE__ . " Loan $loanid detected with state WAITINGTOBEFORMALIZED\n";                                
                                 unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
                             } 
@@ -320,9 +321,9 @@ print_r($totalParsingresultControlVariables);
                     }
                     // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
 
-                    $this->array_keys_recursive($myArray, 4, "internalName", "disinvestment");
+                    $this->array_keys_recursive($data['listOfReservedInvestments'], 4, "internalName", "disinvestment");
                     $foundArrays = $this->getlevel();
-                    print_r($foundArrays);
+ //                   print_r($foundArrays);
                     if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
                         echo "some error occurred in PFP, but we will mark all Ghosts";
                     }
