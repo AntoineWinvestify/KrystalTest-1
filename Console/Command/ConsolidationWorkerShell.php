@@ -515,8 +515,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }   
     
     public function consolidateResults($values) {
+        $result = "0";
         foreach ($values as $value) {
-            
+            $result = $this->winFormulas->doOperationByType($result, $value, "add");
         }
     }
     
