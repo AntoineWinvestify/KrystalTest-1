@@ -1669,18 +1669,18 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
         if ($order == FIFO) {
             foreach ($inputValues as $inputValue) {
-                $input .= $joinSeparator . $inputValue;
+                $input .= $joinSeparator . trim($inputValue);
             }
         }
         else if ($order == LIFO) {
             foreach ($inputValues as $inputValue) {
-                $inputNew .= $inputValue . $joinSeparator ;
+                $inputNew .= trim($inputValue) . $joinSeparator ;
             }
             $inputNew .= $input;
             $input = $inputNew;
         }
         
-        return $input;
+        return trim($input);
     }
     
     /**
