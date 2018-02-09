@@ -398,6 +398,14 @@ class Fileparser {
                 "type" => "createReservedFunds",
                 "chars" => "PRE-ACTIVE",
                 ],
+        
+            105 => [
+                "detail" => "dummy_concept",    // This is a dummy concept
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "dummy",
+                ],
+
      
         
             // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
@@ -425,6 +433,7 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "investment_cancelledStateChange",
                 ],       
+                
 
         
     /*         105 => [
