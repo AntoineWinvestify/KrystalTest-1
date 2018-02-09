@@ -99,8 +99,8 @@ class finanzarel extends p2pCompany {
                                         5 => ["Abono por cobro parcial de efecto" => "Partial_principal_and_interest_payment"],
                                         7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
                                         9 => ["Intereses de demora" => "Delayed_interest_income"],
-                                        14 => ["Retrocesión de comisiones" => "Compensation"],
-                                        15 => ["Retrocesi?n de comisiones" => "Compensation"],
+                                        14 => ["Retrocesión de comisiones" => "Compensation_positive"],
+                                        15 => ["Retrocesi?n de comisiones" => "Compensation_positive"],
                                         16 => ["IVA sobre Comisiones" => "Tax_VAT"],
                                         18 => ["Comisiones" => "Commission"],
                                         29 => ["Retiro de fondos" => "Cash_withdrawal"]
