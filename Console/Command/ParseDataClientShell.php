@@ -763,7 +763,21 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
   
-                 
+                
+                
+                
+
+//Define which amortization tables shall be collected 
+                $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+
+                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
+                    $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
+                    
+                    if (!in_array($loanSliceId, $platformData['amortizationTablesOfNewLoans'])) {       // avoid duplicates
+                        $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier;
+                    }
+                }
+                $slicesAmortizationTablesToCollect = [];
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
@@ -942,15 +956,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 unset($slicesAmortizationTablesToCollect[$tableExists]);  
             }                      
         }               
-
-        foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
-            $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
-            if (!in_array($loanSliceId, $platformData['amortizationTablesOfNewLoans'])) {       // avoid duplicates
-                $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier;
-            }
-        }
-//        $slicesAmortizationTablesToCollect = [];
-                
 
         
 // Deal with the control variables     
