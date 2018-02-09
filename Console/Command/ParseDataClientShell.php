@@ -906,7 +906,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
             foreach ($amortizationTablesNotNeeded as $tableNotNeeded) {
                 $item = array_search($tableNotNeeded, $investmentSliceToSave);
                 if ($item !== false) {
-                    unset($investmentSliceToSave($item));  
+                    unset($investmentSliceToSave[$item]);  
                 }
             }
             
