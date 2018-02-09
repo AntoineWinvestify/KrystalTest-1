@@ -398,6 +398,14 @@ class Fileparser {
                 "type" => "createReservedFunds",
                 "chars" => "PRE-ACTIVE",
                 ],
+        
+            105 => [
+                "detail" => "dummy_concept",    // This is a dummy concept
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "dummy",
+                ],
+
      
         
             // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
@@ -425,6 +433,7 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "investment_cancelledStateChange",
                 ],       
+                
 
         
     /*         105 => [
@@ -1669,18 +1678,18 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
         if ($order == FIFO) {
             foreach ($inputValues as $inputValue) {
-                $input .= $joinSeparator . $inputValue;
+                $input .= $joinSeparator . trim($inputValue);
             }
         }
         else if ($order == LIFO) {
             foreach ($inputValues as $inputValue) {
-                $inputNew .= $inputValue . $joinSeparator ;
+                $inputNew .= trim($inputValue) . $joinSeparator ;
             }
             $inputNew .= $input;
             $input = $inputNew;
         }
         
-        return $input;
+        return trim($input);
     }
     
     /**

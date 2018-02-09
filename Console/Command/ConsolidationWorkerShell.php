@@ -172,6 +172,78 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return json_encode($dataArray);
     }
     
+    public function calculateNetReturn($data) {
+        $variables = $this->winFormulas->getFormulaParams("netReturn_xnpv");
+        $values = [];
+        foreach ($data["companies"] as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+            }
+            /*print_r($values);
+            exit;*/
+            $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+            //print_r($dataMergeByDate);
+            //exit;
+            //$dataMergeByDate = $this->returnDataPreformat();
+        }
+        $returnData = null;
+        Configure::load('p2pGestor.php', 'default');
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+        $financialClass = new Financial;
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            $returnData[$linkedaccountId]['netReturn'] = $financialClass->XNPV(0, $dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        }
+        /*print_r($returnData);
+        
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "PHPExcel/PHPExcel/Calculation";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'Financial.php');
+        $financialClass = new PHPExcel_Calculation_Financial;
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        }
+        */
+        print_r($returnData);
+        $dataArray['tempArray'] = $returnData;
+        return json_encode($dataArray);
+    }
+    
+    public function calculateNetReturnPastYear($data) {
+        $variables = $this->winFormulas->getFormulaParams("netPastReturn_xnpv");
+        $this->originExecution = $data['originExecution'];
+        foreach ($data["companies"] as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+            foreach ($dates as $keyDate => $dateYear) {
+                foreach ($variables as $variableKey => $variable) {
+                    $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
+                    $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
+                    $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+                }
+                $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+                //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
+            }
+        }
+        //print_r($dataMergeByDate);
+        $returnData = null;
+        Configure::load('p2pGestor.php', 'default');
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+        $financialClass = new Financial;
+        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
+            foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
+                $returnData[$linkedaccountId]['netReturnPastYear'][$keyDate] = $financialClass->XNPV(0, $dataByDate['values'], $dataByDate['dates']);
+            }
+        }
+        $dataArray['tempArray'] = $returnData;
+        return json_encode($dataArray);
+    }
+    
     public function getPeriodOfTime($dateFinish, $linkedaccountId) {
         if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
             $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);

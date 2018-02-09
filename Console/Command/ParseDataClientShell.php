@@ -772,7 +772,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
     //            $slicesAmortizationTablesToCollect = [];
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
-                $internalVariablesToHandle = array(10001, 
+    
+                $internalVariablesToHandle = array(10001,
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
