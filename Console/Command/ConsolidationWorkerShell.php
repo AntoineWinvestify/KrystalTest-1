@@ -173,7 +173,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     public function calculateNetReturn($data) {
-        $variables = $this->winFormulas->getFormulaParams("netReturn_xnpv");
+        $variables = $this->winFormulas->getFormulaParams("netReturn");
         $values = [];
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
@@ -183,37 +183,18 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
             }
-            /*print_r($values);
-            exit;*/
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
-            //print_r($dataMergeByDate);
-            //exit;
-            //$dataMergeByDate = $this->returnDataPreformat();
         }
-        $returnData = null;
-        Configure::load('p2pGestor.php', 'default');
-        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-        $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            $returnData[$linkedaccountId]['netReturn'] = $financialClass->XNPV(0, $dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+            $returnData[$linkedaccountId]['netReturn'] = $this->consolidateResults($dataByLinkedaccountId['values']);
         }
-        /*print_r($returnData);
-        
-        $vendorBaseDirectoryClasses = Configure::read('vendor') . "PHPExcel/PHPExcel/Calculation";          // Load Winvestify class(es)
-        require_once($vendorBaseDirectoryClasses . DS . 'Financial.php');
-        $financialClass = new PHPExcel_Calculation_Financial;
-        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
-        }
-        */
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
     
     public function calculateNetReturnPastYear($data) {
-        $variables = $this->winFormulas->getFormulaParams("netPastReturn_xnpv");
+        $variables = $this->winFormulas->getFormulaParams("netPastReturn");
         $this->originExecution = $data['originExecution'];
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
@@ -532,5 +513,11 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $temp = $model->find("first", $options);
         return $temp;
     }   
+    
+    public function consolidateResults($values) {
+        foreach ($values as $value) {
+            
+        }
+    }
     
 }
