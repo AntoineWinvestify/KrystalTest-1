@@ -120,32 +120,25 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         print_r($data);
         $queueFunction = $this->queueFunction;
         
-        
+        echo "MICROTIME_START = " . microtime() . "<br>";
         $i = 0;
         foreach ($data["companies"] as $linkedaccount) {
             $this->initCompanyClass($data, $i, $linkedaccount, null);
             $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_AMORTIZATION_TABLE);
             $this->newComp[$i]->setTableStructure($structure);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
-            $i++;
-        }
-        $companyNumber = 0;
-        echo "MICROTIME_START = " . microtime() . "<br>";
-        //We start at the same time the queue on every company
-        foreach ($data["companies"] as $linkedaccount) {
-            $this->tempArray = $this->newComp[$companyNumber]->$queueFunction();
-            $this->loanTotalIds = $this->tempArray['loanTotalIds'];
-            $this->newComp[$companyNumber]->saveAmortizationTable();
-            $this->newComp[$companyNumber]->verifyErrorAmortizationTable();
+            $this->tempArray = $this->newComp[$i]->$queueFunction();
+            $this->newComp[$i]->saveAmortizationTable();
+            $this->newComp[$i]->verifyErrorAmortizationTable();
             
             $statusCollect = [];
             $errors = null;
            
             //if (empty($this->tempArray[$i]['global']['error'])) {
             if (!empty($this->tempArray['errorTables'])) {
-                $statusCollect[$this->newComp[$companyNumber]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
             } else {
-                $statusCollect[$this->newComp[$companyNumber]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
             }
             /* }
               else {
@@ -153,7 +146,7 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
               $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
               } */
 
-            $companyNumber++;
+            $i++;
         }
                
        $data['statusCollect'] = $statusCollect;

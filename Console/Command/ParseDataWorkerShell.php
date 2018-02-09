@@ -186,10 +186,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                         $configParameters = $companyHandle->getParserExpiredLoanConfigParms();  
                         break;                        
                 }
-echo __FILE__. " " . __LINE__ . "\n";   
-print_r($parserConfigFile);
-print_r($configParameters);
-print_r($filesByType[0]);
+
                 if (count($filesByType) === 1) {
 echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
                     $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
@@ -212,9 +209,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                         //    $totalParsingresultTransactions = $tempResult;
                             break;
                         case WIN_FLOW_CONTROL_FILE:
-                            $totalParsingresultControlVariables = $tempResult;
-print_r($tempResult);                            
-echo __FILE__. " " . __LINE__ . "\n";                             
+                            $totalParsingresultControlVariables = $tempResult;               
                             break;
                         case WIN_FLOW_EXPIRED_LOAN_FILE:
                             unset($listOfExpiredLoans);
@@ -252,13 +247,12 @@ echo __FILE__. " " . __LINE__ . "\n";
                 }
             } 
             
+print_r($totalParsingresultInvestments);   
+print_r($totalParsingresultExpiredInvestments); 
+print_r($totalParsingresultTransactions);
+print_r($totalParsingresultControlVariables);
 
-//print_r($totalParsingresultInvestments);   
-//print_r($totalParsingresultExpiredInvestments); 
-//print_r($totalParsingresultTransactions['2014-11-17']);
-//print_r($totalParsingresultTransactions['2014-09-19']);
-//print_r($totalParsingresultTransactions['2014-07-10']);
-//print_r($totalParsingresultTransactions['2014-07-15']);
+            
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
             $returnData[$linkedAccountKey]['parsingResultInvestments'] = $totalParsingresultInvestments;
             $returnData[$linkedAccountKey]['parsingResultControlVariables'] = $totalParsingresultControlVariables;
@@ -271,10 +265,7 @@ echo __FILE__. " " . __LINE__ . "\n";
             $returnData[$linkedAccountKey]['startDate'] = $data['startDate'];  
             $returnData[$linkedAccountKey]['finishDate'] = $data['finishDate'];
             $returnData[$linkedAccountKey]['dashboard2ConfigurationParameters'] = $dashboard2ConfigurationParameters;
-            $returnData[$linkedAccountKey]['controlVariables'] = $data['totalParsingresultControlVariables'];
-echo "Control Variables\n";
-print_r($returnData[$linkedAccountKey]['controlVariables']);        
-//print_r($returnData[$linkedAccountKey]);            
+            $returnData[$linkedAccountKey]['controlVariables'] = $data['totalParsingresultControlVariables'];         
           
 // check if we have new loans for this calculation period. Only collect the amortization tables of loans that have not already finished         
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
@@ -313,14 +304,16 @@ print_r($returnData[$linkedAccountKey]['controlVariables']);
                             if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                         //      generate a statechange record, state is changed to "active"
                                 $dateKeys = array_keys($totalParsingresultTransactions);
-                                $key = $dateKeys[count($dateKeys) - 1];
-                                $totalParsingresultTransactions[$loanId][100]['date'] = $key;
-                                $totalParsingresultTransactions[$loanId][100]['investment_loanId'] = $loanId;
-                                $totalParsingresultTransactions[$loanId][100]['internalName'] = "activeStateChange";
+                                $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
+                                $totalParsingresultTransactions[$key][$loanId][100]['date'] = $key;
+                                $totalParsingresultTransactions[$key][$loanId][100]['investment_loanId'] = $loanId;
+                                $totalParsingresultTransactions[$key][$loanId][100]['internalName'] = "activeStateChange";
+echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanId\n";
                                 unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
                             }
                             if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+echo __FUNCTION__ . " " . __LINE__ . " Loan $loanid detected with state WAITINGTOBEFORMALIZED\n";                                
                                 unset($data['listOfReservedInvestments'][$loanKey]);
                                 continue;
                             } 
@@ -328,9 +321,9 @@ print_r($returnData[$linkedAccountKey]['controlVariables']);
                     }
                     // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
 
-                    $this->array_keys_recursive($myArray, 4, "internalName", "disinvestment");
+                    $this->array_keys_recursive($data['listOfReservedInvestments'], 4, "internalName", "disinvestment");
                     $foundArrays = $this->getlevel();
-                    print_r($foundArrays);
+ //                   print_r($foundArrays);
                     if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
                         echo "some error occurred in PFP, but we will mark all Ghosts";
                     }

@@ -36,7 +36,7 @@ class UserDataShell extends AppShell {
         
     }
 
-    /* not finished yet
+    /** not finished yet
      * Internally the control variables are calculated for each "DAY", but the checking is only done for 
      * the date of the readout. This means that if a reading period covers a week, the checking SHOULD be done 
      * only for the last calculation (= last day).
@@ -51,12 +51,11 @@ class UserDataShell extends AppShell {
      *                     integer: Error Number
      * 
      */
-
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
         $error = 0;
         echo "external = \n";
         print_r($externalControlVariables);
-        echo "internal = \n";
+        echo "\ninternal = \n";
         print_r($internalControlVariables);
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
@@ -80,6 +79,13 @@ class UserDataShell extends AppShell {
         return $error;
     }
 
+
+    /**
+     * STILL PENDING
+     * 
+     *  @param type $database
+     *  @return type
+     */     
     public function consolidatePlatformData(&$database) {
         return;
         echo "FxF";
@@ -100,13 +106,13 @@ class UserDataShell extends AppShell {
         // also using a loop
     }
 
-    /* OK
+    /** OK
      *  Get the amount which corresponds to the "PartialPrincipalPayment" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function calculatePartialPrincipalBuyback() {
         $this->Paymenttotal = ClassRegistry::init('Paymenttotal');
         $sum = 0;
@@ -121,18 +127,17 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-    /* 
+    /** 
      *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function calculateOutstandingPrincipal(&$transactionData, &$resultData) {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
-        echo "/////////////////////////////////////";
+
         if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
         }
@@ -160,17 +165,16 @@ class UserDataShell extends AppShell {
         if (isset($resultData['investment']['investment_disinvestment'])) {
             $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
         }
-        print_r($resultData['investment']['investment_disinvestment']);
         return $result;
     }
 
-    /* var 38 not fuly tested
-     * Get the amount which corresponds to the "ReceivedPrepayments" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
+    /** var 38 not fully tested
+     *  Get the amount which corresponds to the "ReceivedPrepayments" concept
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
      */
-
     public function calculateReceivedRepayment(&$transactionData, &$resultData) {
         $result = '0.0';
         if (isset($resultData['payment']['payment_capitalRepayment'])) {
@@ -196,13 +200,13 @@ class UserDataShell extends AppShell {
         return $result;
     }
 
-    /*
-     * Get the amount which corresponds to the "TotalGrossIncome" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
+    /**
+     *  Get the amount which corresponds to the "TotalGrossIncome" concept
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
      */
-
     public function xxxconsolidateTotalGrossIncome() {
         $sum = 0;
         return;
@@ -217,13 +221,13 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-    /*
-     * Get the amount which corresponds to the "InterestgrossIncome" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
+    /**
+     *  Get the amount which corresponds to the "InterestgrossIncome" concept
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
      */
-
     public function consolidateInterestgrossIncome() {
         $sum = 0;
         return;
@@ -238,13 +242,13 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-    /* NOT YET
-     * Get the amount which corresponds to the "TotalLoanCost" concept CHECK
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
+    /** NOT YET
+     *  Get the amount which corresponds to the "TotalLoanCost" concept CHECK
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
      */
-
     public function calculateTotalLoanCost(&$transactionData, &$resultData) {
         $result = 0.0;
 
@@ -272,37 +276,37 @@ class UserDataShell extends AppShell {
         return $result;
     }
 
-    /* NOT YET
-     * Get the amount which corresponds to the "NextPaymentDate" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
+    /** NOT YET
+     *  Get the amount which corresponds to the "NextPaymentDate" concept
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
      */
-
     public function consolidateNextPaymentDate() {
         $sum = 0;
         return $sum;
     }
 
-    /* NOT YET
-     * Get the amount which corresponds to the "EstimatedNextPayment" concept
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB
-     * @return string      the string representation of a large integer
+    /** NOT YET
+     *  Get the amount which corresponds to the "EstimatedNextPayment" concept
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
      */
-
     public function consolidateEstimatedNextPayment() {
         $sum = 0;
         return $sum;
     }
 
-    /* NOT YET
+    /** NOT YET
      *  Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function calculateTotalGrossIncome(&$transactionData, &$resultData) {
         $result = 0.0;
 
@@ -336,64 +340,70 @@ class UserDataShell extends AppShell {
         return $result;
     }
 
-    /* NOT YET
+    /** NOT YET
      *  Get the amount which corresponds to the "InstallmentPaymentProgress" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      */
-
     public function consolidateInstalmentPaymentProgress() {
         $sum = 0;
         return $sum;
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "Primary_market_investment" concept, which is a new investment
+     * 
      *  @param  $transactionData    array      array with the current transaction data
      *  @param  $resultData         array       array of shadow database with all data so far calculated and to be written to DB
      *  @return string      the string representation of a float
      * 12
      */
-
     public function calculateMyInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
-    
+    /**
+     * STILL PENDING
+     * 
+     * @param type $database
+     * @return type
+     */    
     public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
         echo "----------------->  BBBBBBBBB\n";
         print_r($transactionData);
         return $transactionData['investment']['investment_myInvestment'];
     }
-
-    /*
-     *  Get the amount which corresponds to the "late payment fee" concept
+    
+    /**
+     *  Get the amount which corresponds to the "Remaining Term" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
      * 17
      */
-
     public function calculateRemainingTerm(&$transactionData, &$resultData) {
         return $transactionData['amount'];
         //investment.investment_remainingDuration
     }
-
-    /*
+    
+    /**
      *  Get the amount which corresponds to the "late payment fee" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
      * 47
      */
-
     public function calculateLatePaymentFeeIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
-    /*
+    
+    /**
      *  Get the amount which corresponds to the "capitalRepayment Winvestify Format" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
@@ -403,57 +413,58 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
      * 45
      */
-
     public function calculateDelayedInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "InterestIncomeBuyback" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
      * 44
      */
-
     public function calculateInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
      * 36
      */
-
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
         echo "PRINCIPAL BUYBACK, amount =  " . $transactionData['amount'];
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "DelayedInterestIncomeBuyback" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
      * 46
      */
-
     public function calculateDelayedInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
-    /* DONE
+    
+    /** DONE
      *  Get the amount which corresponds to the "PlatformDeposit" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
@@ -464,8 +475,9 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /* DONE
+    /** 
      *  Get the amount which corresponds to the "Platformwithdrawal" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
@@ -476,8 +488,9 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "Regular Gross Interest Income" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
@@ -487,18 +500,18 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
       
-    /*
-     * Calculates the number of active investments. Various investments in the same loan 
-     * are counted as 1 investment
-     * Note that some platforms use rounding for some of the concepts that determines if
-     * the outstanding principal = 0, which means that our absolute values ARE NOT ALWAYS 
-     * 0 for a "fully amortized loan".
-     * Due to this a parameter, $precision, is used to decide how many decimals are taken into
-     * account for deciding if the return value is really 0.  
+    /**
+     *  Calculates the number of active investments. Various investments in the same loan 
+     *  are counted as 1 investment
+     *  Note that some platforms use rounding for some of the concepts that determines if
+     *  the outstanding principal = 0, which means that our absolute values ARE NOT ALWAYS 
+     *  0 for a "fully amortized loan".
+     *  Due to this a parameter, $precision, is used to decide how many decimals are taken into
+     *  account for deciding if the return value is really 0.  
      * 
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB 
-     * @return int         number of active loans
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB 
+     *  @return int         number of active loans
      * 
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
@@ -559,6 +572,7 @@ class UserDataShell extends AppShell {
  
 // the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
+            $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
             return "FINISHED";             
         }    
         
@@ -566,6 +580,7 @@ class UserDataShell extends AppShell {
             if ($resultData['investment']['investment_technicalStateTemp'] <> 'FINISHED') {
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
+                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
                 return "FINISHED";              
             }
         }        
@@ -573,33 +588,35 @@ class UserDataShell extends AppShell {
         if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
+            
             return "INITIAL";               
-        }       
+        } 
+        $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
         return "ACTIVE";                    
     }
     
  
     
-    /*
+    /**
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
      * 55
      */
-
     public function calculatePlatformBankCharges(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
 
-    /* NOT YET  checck if the index is investment or payment
-     * Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     * @return string      amount expressed as a string
+    /** NOT YET  checck if the index is investment or payment
+     *  Get the result of the fields: 'Total gross income [42] - 'Loan Total cost' [53]
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      amount expressed as a string
      */
-
     public function calculateTotalNetIncome(&$transactionData, &$resultData) {
         if (empty($resultData['investment']['investment_loanTotalCost'])) {
             $resultData['investment_loanTotalCost'] = 0.0;
@@ -611,18 +628,14 @@ class UserDataShell extends AppShell {
         return $result;
     }
 
-    /*
+    /**
+     *  Get the amount which corresponds to the "totalOutstandingPrincipal" concept
+     *  for the controlVariables check
      * 
-     * 
-     * 
-     * Get the amount which corresponds to the "totalOutstandingPrincipal" concept
-     * for the controlVariables check
-     * 
-     * @param  array       array with the current transaction data
-     * @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     * @return string      the string representation of a large integer
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      the string representation of a large integer
      */
-
     public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
@@ -630,47 +643,47 @@ class UserDataShell extends AppShell {
         return $result;
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "cost secondary market" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
      * 47
      */
-
     public function calculateCostSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "income secondary market" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
      * 
      */
-
     public function calculateIncomeSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
-    /*
+    /**
      *  Get the amount which corresponds to the "SecondaryMarketInvestment" concept
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
      * 26
      */
-
     public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
 
     
- //************************************************************************* 
-    
-    /*
+   
+    /**
      *  Calculates the sum of all payment concepts that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      don't care
@@ -684,8 +697,9 @@ class UserDataShell extends AppShell {
     
     
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "LatePaymentFeeIncome" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -695,8 +709,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_latePaymentFeeIncome']);    
     }   
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -707,8 +722,9 @@ class UserDataShell extends AppShell {
     }    
  
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "PrincipalBuyback" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -718,8 +734,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_principalBuyback']);            
     }    
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "InterestIncomeBuyback" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -729,8 +746,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_interestIncomeBuyback']);
     }    
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "RegularGrossInterestIncome" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -741,8 +759,9 @@ class UserDataShell extends AppShell {
     }
 
  
-    /*
+    /**
      *  Calculates the sum of the payment concept "myInvestment" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -753,8 +772,9 @@ class UserDataShell extends AppShell {
     }      
     
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "secondaryMarketInvestment" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -764,8 +784,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_secondaryMarketInvestment']);    
     }      
     
-     /*
+    /**
      *  Calculates the sum of the payment concept "costSecondaryMarket" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -777,14 +798,15 @@ class UserDataShell extends AppShell {
     
     
     
-    /* NOT FINISHED YET. Only taking into account the simple model of Mintos, 1 investment and 1 investmentSlice
+    /** NOT FINISHED YET. Only taking into account the simple model of Mintos, 1 investment and 1 investmentSlice
      *  
-     * If more slices, then the paidInstalments is the same for all slices
+     *  If more slices, then the paidInstalments is the same for all slices
      * 
      *  Get the amount which corresponds to the "paidInstalments" concept. 
      * 
      *  It can distinguish on an per investmentSlice base, i.e. each investmentslice can have their own amortization table
      *  with its own repayment amount.
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a large integer
@@ -796,18 +818,16 @@ class UserDataShell extends AppShell {
     
     
     /**
-     *  Calculates the effect of a disinvestment of an investment which never matured to a real investment, i.e. it 
-     *  started with state "reserved" and never reached status "active". It basically means that the platform returns the
+     *  Calculates the effect of a disinvestment of an investment of the primary market which never matured to a real investment, 
+     *  i.e. it started with state "reserved" and never reached status "active". It basically means that the platform returns the
      *  money which the investor had assigned to the "failed" investment
      *   
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      the string representation of a float
      */
-    public function calculateDisinvestment(&$transactionData, &$resultData) {
-        $investment = $resultData['investment']['investment_myInvestment'];
-        
-        return -$investment;
+    public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
+        return $resultData['investment']['investment_myInvestment'];
     }   
     
     
@@ -822,11 +842,9 @@ class UserDataShell extends AppShell {
     public function calculateCancellationState(&$transactionData, &$resultData) {
         return WIN_LOANSTATUS_CANCELLED;
     }    
-  
  
     
     /**
-     *  
      *  Determines the writtenOff amount, which is to be stored in the variable WrittenOff
      *
      *  @param  array       array with the current transaction data
@@ -852,7 +870,6 @@ class UserDataShell extends AppShell {
     } 
 
     /**
-     *  
      *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets
      *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
      * 
@@ -865,8 +882,8 @@ class UserDataShell extends AppShell {
     } 
     
     /**
-     *  
      *  Determines the reservedAssets amount, which is to be stored in the variable reservedAssets. 
+     *  The amount is taken from "CashInPlatform" and moved to "reservedAssets".
      *  The amount allocated to "reserved funds" is taken into account when calculating concept "cash" 
      *
      *  @param  array       array with the current transaction data
@@ -874,12 +891,12 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large amount to be stored in reservedAssets field
      */  
     public function calculateReservedComplex(&$transactionData, &$resultData) {
-        return WIN_LOANSTATUS_CANCELLED;
+        return $transactionData['amount'];
     }    
     
   
     /**
-     * Get the amount which corresponds to the "principalAndInterestPayment" concept 
+     *  Get the amount which corresponds to the "principalAndInterestPayment" concept 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -889,7 +906,7 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the amount which corresponds to the "partialPrincipalAndInterestPayment" concept 
+     *  Get the amount which corresponds to the "partialPrincipalAndInterestPayment" concept 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -899,7 +916,7 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the amount which corresponds to the "loanCompensation" concept 
+     *  Get the amount which corresponds to the "loanCompensation" concept 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -909,17 +926,17 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the amount which corresponds to the "Platform Compensation" concept 
+     *  Get the amount which corresponds to the "Platform Compensation Positive" concept 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      */
-    public function calculatePlatformCompensation(&$transactionData, &$resultData) {
+    public function calculatePlatformCompensationPositive(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
     
     /**
-     * Get the amount which corresponds to the "tax VAT" concept 
+     *  Get the amount which corresponds to the "tax VAT" concept 
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -929,22 +946,23 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
+     *  Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
-        if (!isset($resultData['payment']['payment_principalAndInterestPayment'])) {
+        if (!isset($resultData['payment']['payment_principalAndInterestPayment']) || empty($resultData['payment']['payment_principalAndInterestPayment'])) {
             return;
         }
+        
         if (empty($resultData['payment']['payment_capitalRepayment'])) {
             $capitalRepayment = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_capitalRepayment'] = $capitalRepayment;
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
-        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {       
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
@@ -953,13 +971,13 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
+     *  Get the "capital repayment" or the "regular gross interest" concept payments from principalAndInterestPayment
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfPartialCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
-        if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
+        if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
             return;
         }
         
@@ -980,28 +998,29 @@ class UserDataShell extends AppShell {
     }
     
     /**
-     * Get the amount which corresponds to the "payment_taxVAT" concept
+     *  Get the amount which corresponds to the "payment_taxVAT" concept
      * 
-     * @param type $transactionData
-     * @param type $resultData
-     * @return type
+     *  @param type $transactionData
+     *  @param type $resultData
+     *  @return type
      */
     public function calculatePaymentTax(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
+    
     /**
-     * Get the amount which corresponds to the "payment_incomeWithholdingTax" concept
+     *  Get the amount which corresponds to the "payment_incomeWithholdingTax" concept
      * 
-     * @param type $transactionData
-     * @param type $resultData
-     * @return type
+     *  @param type $transactionData
+     *  @param type $resultData
+     *  @return type
      */
     public function calculateIncomeWithholdingTax(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
     
    
-    /*
+    /**
      *  Calculates the sum of the payment concept "PartialPrincipalRepayment" that happened during a day
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
@@ -1012,8 +1031,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_partialPrincipalRepayment']);    
     }    
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "DelayedInterestIncome" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -1023,8 +1043,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_delayedInterestIncome']);    
     } 
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "Commission Paid" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -1034,8 +1055,9 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_commissionPaid']);    
     } 
     
-    /*
+    /**
      *  Calculates the sum of the payment concept "Tax VAT" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
@@ -1045,7 +1067,8 @@ class UserDataShell extends AppShell {
         return($resultData['payment']['payment_taxVAT']);    
     } 
     
-    /*  Get the amount which corresponds to the "commission paid" concept.
+    /**  
+     *  Get the amount which corresponds to the "commission paid" concept.
      *  Note that this is both the in case a transaction record contains a loanId or not
      * 
      *  @param  array       array with the current transaction data
@@ -1067,63 +1090,44 @@ class UserDataShell extends AppShell {
      * 
      */
     public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
+        $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
+        return $result;      
     }
+ 
+    
+    /**
+     *  Get the amount which corresponds to the "Platform Compensation Negative" concept
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculatePlatformCompensationNegative(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }   
+    
+    /**
+     *  Deals with the internals actions when an investments changes from state "pre-active" to "active"
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return int         new status of the loan
+     */
+    public function calculateActiveStateChange(&$transactionData, &$resultData) {
+        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+        // move the corresponding part of the money from reserved funds to outstanding principal
+            
+        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_PREACTIVE) {
+            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
+                                                $resultData['investment']['investment_myInvestment']);
+            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
+                                                $resultData['investment']['investment_myInvestment']);     
+            return WIN_LOANSTATUS_ACTIVE;
+        }
+    }  
+ 
     
     
 }
 
-/*
-  // these are the total values per PFP
 
-  if ($this->variablesConfig[30]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // principal and interest payment [30]
-  $varName = $this->variablesConfig[30]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidatePrincipalAndInterestPayment($database);
-  $this->variablesConfig[30]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[31]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // installmentPaymentProgress [31]
-  $varName = $this->variablesConfig[31]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateInstallmentPaymentProgress($database);
-  $this->variablesConfig[31]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-
-  if ($this->variablesConfig[35]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // partial principal payment(35
-  $varName = $this->variablesConfig[35]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidatePartialPrincipalPayment($database);
-  $this->variablesConfig[35]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[38]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // received repayments( 38)
-  $varName = $this->variablesConfig[38]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateReceivedPrepayments($database);
-  $this->variablesConfig[38]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[42]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total gross income (42
-  $varName = $this->variablesConfig[42]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateTotalGrossIncome($database);
-  $this->variablesConfig[42]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[43]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // interest gross income (43)
-  $varName = $this->variablesConfig[43]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateInterestgrossIncome($database);
-  $this->variablesConfig[43]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // total cost (53)
-  $varName = $this->variablesConfig[53]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateTotalCost($database);
-  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
-  if ($this->variablesConfig[53]['state'] == WIN_FLOWDATA_VARIABLE_NOT_DONE) {   // estimated next payment (40)
-  $varName = $this->variablesConfig[53]['databaseName'];
-  $database[$varName[0]][$varName[1]] =  $this->consolidateEstimatedNextPayment($database);
-  $this->variablesConfig[53]['state'] = WIN_FLOWDATA_VARIABLE_DONE;
-  }
-
- */
 ?>

@@ -78,7 +78,7 @@
 
 class loanbook extends p2pCompany {
     
-    protected $valuesTransaction = [     // All types/names will be defined as associative index in array
+    protected $valuesTransaction = [     
         [
             "A" => [ 
                 [
@@ -89,35 +89,20 @@ class loanbook extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "C" => [
-                [
-                    "type" => "transactionDetail",                              // Winvestify standardized name   OK
-                    "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
-                        "input2" => [
-                            0 => ["Provisión de Fondos" => "Cash_deposit"],
-                            1 => ["Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Pago de capital" => "Capital_repayment"],
-                            4 => ["Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            5 => ["Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            6 => ["Compensación por incidencia administrativa" => "Compensation"],
-                            7 => ["Comisión pago por tarjeta" => "Bank_charges"],
-                            8 => ["Participación en pagaré" => "Primary_market_investment"],
-                            9 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
-                        ]
-                    ],
-                    "functionName" => "getTransactionDetail",
-                ],
+            
+            "B" => [               
+                "name" => "tempConcept"  
+            ],
+            "C" => [                
                 [
                     "type" => "original_concept",
                     "inputData" => [
-                        "input2" => "",
-                        "input3" => "",
-                        "input4" => 0                    
+                        "input2" => "-",
+                        "input3" => LIFO,
+                        "input4" => "#current.tempConcept",              
                     ],
-                    "functionName" => "extractDataFromString"
-                ]
-                
+                    "functionName" => "joinDataCells"
+                ]             
             ],
             "D" => [
                 [
@@ -134,17 +119,18 @@ class loanbook extends p2pCompany {
                     "inputData" => [                                            // List of all concepts that the platform can generate                                                   // format ["concept string platform", "concept string Winvestify"]
                         "input2" => "#current.original_concept", 
                         "input3" => [
-                            0 => ["Provisión de Fondos" => "Cash_deposit"],
-                            1 => ["Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Participación en préstamo" => "Disinvestment"],
-                            4 => ["Pago de capital" => "Capital_repayment"],
-                            5 => ["Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            6 => ["Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            7 => ["Compensación por incidencia administrativa" => "Compensation"],
-                            8 => ["Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Participación en pagaré" => "Primary_market_investment"],
-                            10 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
+                            0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
+                            1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
+                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment"],
+                            4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
+                            5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
+                            6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
+                                    7 => ["Compensación por incidencia administrativa" => "Compensation"],
+                                    8 => ["Comisión pago por tarjeta" => "Bank_charges"],
+                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment"],
+                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment"],
+                                    11 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
@@ -194,25 +180,57 @@ class loanbook extends p2pCompany {
             "E" => [
                 "name" => "investment_riskRating",
             ],  
-            "F" => [
+            /*"F" => [TAE Inicial  = Expected annual yield
                 [
-                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate1",               
                     "functionName" => "getPercentage",
                 ]     
-            ],
-            "G" => [
-                //TIME LEFT, HOW TO TAKE
-            ],
-  /*
+            ],*/
+            /*"G" => [
+                Remaining term , need add to db
+            ],*/
             "H" => [
-                "name" => "investment_typeOfInvestment"                         // NOT REALLY CORRECT, BUT We store it anyway as transparent data
+                "name" => "investment_loanType"                                 // NOT REALLY CORRECT, BUT We store it anyway as transparent data
             ],
-  */
+            "I" => [
+                "name" => "investment_paymentFrequency"                         // NOT REALLY CORRECT, BUT We store it anyway as transparent data
+            ],           
             "J" => [
-                "name" => "investment_nominalInterestRate1"
+                [
+                    "type" => "investment_nominalInterestRate",               
+                    "functionName" => "getPercentage",
+                ]  
+            ],
+            "K" => [
+                [
+                    "type" => "investment_myInvestmentDate", // Winvestify standardized date  OK
+                    "inputData" => [
+                        "input2" => "D-M-Y",
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+                [
+                    "type" => "investment_issuDate", // Winvestify standardized date  OK
+                    "inputData" => [
+                        "input2" => "D-M-Y",
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+                [
+                    "type" => "investment_statusOfLoan",
+                    "functionName" => "getHash",
+                    
+                ],
             ],
             "N" => [
                 "name" => "investment_sliceIdentifier"
+            ],
+
+            "M" => [            
+                "name" => "investment_originalDuration"
+            ],
+            "O" => [            
+                "name" =>"investment_originalState"
             ],
         ]
     ];
@@ -220,7 +238,7 @@ class loanbook extends p2pCompany {
     protected $valuesAmortizationTable = [
         2 => [
             [
-                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name   OK
+                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "D-M-Y",
                 ],
@@ -258,7 +276,7 @@ class loanbook extends p2pCompany {
         [
         "myWallet" => [
             [
-                "type" => "myWallet",                                           // Winvestify standardized name   OK
+                "type" => "myWallet",                                           // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
                     "input3" => ",",
@@ -309,9 +327,11 @@ class loanbook extends p2pCompany {
     ]; 
     
     protected $amortizationConfigParms = [
+        [
             'offsetStart' => 1,
             'offsetEnd'   => 1,
-            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => "investment_loanId"                               // used to "sort" the array and use $sortParameter as prime index.
+        ]
     ];
     
     protected $controlVariablesConfigParms = [
@@ -327,7 +347,11 @@ class loanbook extends p2pCompany {
             "parserDataCallback" => [
                 "investment_loanType" => "translateLoanType",
                 "investment_amortizationMethod" => "translateAmortizationMethod",
-                "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee'
+                "investment_buyBackGuarantee" => 'translateInvestmentBuyBackGuarantee',
+                "investment_paymentFrequency" => "translatePaymentFrequency",
+                "investment_originalDuration" => "translateDuration",
+                "investment_originalState" => "translateOriginalLoanState",
+                "investment_statusOfLoan" => "translateStatusOfLoan",
             ]
         ]
     ];
@@ -368,12 +392,12 @@ class loanbook extends p2pCompany {
 
     /**
      *
-     * 	Calculates how must it will cost in total to obtain a loan for a certain amount
+     * 	Calculates how much it will cost in total to obtain a loan for a certain amount
      * 	from a company
-     * 	@param  int	$amount 		: The amount (in Eurocents) that you like to borrow 
+     * 	@param  int $amount             : The amount (in Eurocents) that you like to borrow 
      * 	@param	int $duration		: The amortization period (in month) of the loan
      * 	@param	int $interestRate	: The interestrate to be applied (1% = 100)
-     * 	@return int					: Total cost (in Eurocents) of the loan
+     * 	@return int			: Total cost (in Eurocents) of the loan
      *
      */
     function calculateLoanCost($amount, $duration, $interestRate) {
@@ -1262,22 +1286,15 @@ class loanbook extends p2pCompany {
 
                 foreach ($trs as $tr) {
 
-                    $as = $dom->getElementsByTagName('a');
-                    $this->verifyNodeHasElements($as);
-                    if (!$this->hasElements) {
-                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                    }
-                    foreach ($as as $a) {
+                   $as = $tr->getElementsByTagName('a');
+                   foreach ($as as $a) {            
                         if (!empty($a->getAttribute('data-id'))) {
                             $this->UserLoansId[] = $a->getAttribute('data-id');
-                            if (!$this->hasElements) {
-                                return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                            }
                             break;
-                        }
+                        }                      
                     }
                 }
-
+                              
                 $this->UserLoansId = array_unique($this->UserLoansId); //We have duplicate loans because a tag, we use this for delete duplicated loans
                 $this->UserLoansId = array_values($this->UserLoansId);
 
@@ -1332,11 +1349,13 @@ class loanbook extends p2pCompany {
                     //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
                     switch ($key) {
                         case 7:
-                            $str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));
-                            $this->loanArray[$this->j]['A'] = str_replace(")","",explode("(", $str[2])[1]); //Loan Id
-                            $this->loanArray[$this->j]['B'] = $str[0]; //Loan Purpose
-                            $this->loanArray[$this->j]['C'] = $str[1]; //Loan Price target
-                            $this->loanArray[$this->j]['D'] = explode("(", $str[2])[0]; //Loan Location
+                            //$str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));                            
+                            $stringProcessed = $this->handleInvestmentString(mb_convert_encoding($div->nodeValue, "utf8", "auto"));
+                            
+                            $this->loanArray[$this->j]['A'] = $stringProcessed[3]; //Loan Id
+                            $this->loanArray[$this->j]['B'] = $stringProcessed[1]; //Loan Purpose
+                            $this->loanArray[$this->j]['C'] = $stringProcessed[0]; //Loan Price target
+                            $this->loanArray[$this->j]['D'] = $stringProcessed[2]; //Loan Location
                             
                             break;
                         case 8:
@@ -1418,12 +1437,12 @@ class loanbook extends p2pCompany {
                     break;
                 }
 
-                print_r($this->loanArray);
+                print_r($this->loanArray[$this->j]);
                 //$this->loanArray[$this->j]['B'];
 
 
                 if ($this->j < $this->maxUserLoans) {
-                    $this->idForSwitch = 8;
+                    $this->idForSwitch = 7;
                     $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                     break;
                 } else {
@@ -1548,11 +1567,11 @@ class loanbook extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
-                if (empty($this->tempUrl['invesmentUrl'])) {
-                    $this->tempUrl['invesmentUrl'] = array_shift($this->urlSequence);
+                if (empty($this->tempUrl['investmentUrl'])){
+                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = $this->tempUrl['invesmentUrl'] . $this->loanIds[$this->i];
+                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
                 echo "the table url is: " . $url;
                 $this->i++;
                 $this->idForSwitch++;
@@ -1694,6 +1713,40 @@ class loanbook extends p2pCompany {
         return true;
     }
 
+    
+    /**
+     * Function that handle the string that contain purpose, amount, location and investment id.
+     * 
+     * @param type $string
+     * @return type
+     */
+    function handleInvestmentString($multiString) {
+
+        $tempArray = explode("€", $multiString);
+        
+       
+        
+        $purposeAndMoney = explode(",", $tempArray[0]);        
+        $money =  trim($purposeAndMoney[count($purposeAndMoney) -1]);
+        for ($i = 0; $i < count($purposeAndMoney) - 1; $i++) {
+            if ($i !== 0) {
+                $purpose = $purpose . "," . $purposeAndMoney[$i];
+            } else {
+                $purpose = $purposeAndMoney[$i];
+            }
+        }
+
+        $locationAndId = $tempArray[1];            
+        $location = trim(str_replace(",", "",explode("(", $locationAndId)[0]));
+        $id = str_replace(")", "", explode("(", $locationAndId)[1]);
+        
+        return array($money, $purpose, $location, $id);
+    }
+    
+    
+    
+    
+    
     /**
      *
      * 	translate the html of loan state to the winvestify normalized state
@@ -1771,6 +1824,7 @@ class loanbook extends p2pCompany {
     /**
      * Function to translate the company specific payment frequency to the Winvestify standardized
      * payment frequency
+     * 
      * @param string $inputData     company specific payment frequency
      * @return int                  Winvestify standardized payment frequency
      */
@@ -1797,6 +1851,7 @@ class loanbook extends p2pCompany {
     /**
      * Function to translate the company specific loan type to the Winvestify standardized
      * loan type
+     * 
      * @param string $inputData     company specific loan type
      * @return int                  Winvestify standardized loan type
      */
@@ -1815,47 +1870,51 @@ class loanbook extends p2pCompany {
     }
       
     /**
-     * Function to translate the company specific amortization method to the Winvestify standardized
-     * amortization type
+     * Function to translate the company specific duration type to the Winvestify standardized
+     * duration string
+     * 
+     * @param type $inputData
+     * @return type
+     */
+    public function translateDuration($inputData){
+        return $inputData . "d";
+    }
+    
+    
+     /**
+     * Function to translate the company specific payment status type to the Winvestify standardized
+     * payment status 
+     *
+     * @param type $inputData
+     * @return type
+     */
+    public function translateOriginalLoanState($inputData){
+        $inputData = mb_strtoupper($inputData);
+        switch ($inputData) {
+            case "GREEN":
+                $type = 0;
+                break;
+            ca:
+                $type = 1;
+                break;
+        }
+        return $type;
+    }
+    
+    
+    /**
+     * 
+     * 
      * @param string $inputData     company specific amortization method
      * @return int                  Winvestify standardized amortization method
      */
-    public function translateAmortizationMethod($inputData) { //We don't have this in loanbook
+    public function translateStatusOfLoan($inputData) { 
+        return WIN_LOANSTATUS_ACTIVE;
 
     }   
     
-    /**
-     * Function to translate the company specific type of investment to the Winvestify standardized
-     * type of investment
-     * @param string $inputData     company specific type of investment
-     * @return int                  Winvestify standardized type of investment
-     */
-    public function translateTypeOfInvestment($inputData) { //We don't have this in loanbook
 
-    }
-    
-    /**
-     * Function to translate the type of investment market to an to the Winvestify standardized
-     * investment market concept
-     * @param string $inputData     company specific investment market concept
-     * @return int                  Winvestify standardized investment marke concept
-     */
-    public function translateInvestmentMarket($inputData) { //We don't have this in loanbook
-        
-    }
-    
-    /**
-     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
-     * investmentBuyBackGuarantee
-     * @param string $inputData     company specific investmentBuyBackGuarantee
-     * @return int                  Winvestify standardized investmentBuyBackGuarantee
-     */
-    public function translateInvestmentBuyBackGuarantee($inputData) { //we don't have this in loanbook
-        
-       
-    }
-    
-    
+     
     /**
      * Compare amortization table structure from loanbook
      * @param string $node1

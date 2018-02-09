@@ -60,8 +60,6 @@ class Userinvestmentdata extends AppModel {
                 "order" => "date DESC",
             ));
         }
-
-    //    print_r($resultInvestorData);
         return $resultInvestorData;
     }
 

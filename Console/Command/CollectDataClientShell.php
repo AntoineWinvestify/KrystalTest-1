@@ -130,11 +130,13 @@ class CollectDataClientShell extends GearmanClientShell {
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                            echo "\n" . __LINE__ . "   " . __FILE__;
+                            echo "\n company with linkedAccountId " . $linkedaccount['Linkedaccount']['id'] . " was include in the flow \n";
                             $i++;
                         }
                         else {
                             echo "\n" . __LINE__ . "   " . __FILE__;
-                            echo "\n company in flow with linkedAccountId $linkedaccount has a created folder \n Not including company $linkedaccount in flow \n";
+                            echo "\n company with linkedAccountId " . $linkedaccount['Linkedaccount']['id'] . " has a folder created \n Not including company " . $linkedaccount['Linkedaccount']['id'] . " in flow \n";
                         }
                     }
                     if (Configure::read('debug')) {
@@ -169,6 +171,8 @@ class CollectDataClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
+                         echo "\n" . __LINE__ . "   " . __FILE__;
+                         echo "\n sending information to worker \n";
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
                     }
                 }

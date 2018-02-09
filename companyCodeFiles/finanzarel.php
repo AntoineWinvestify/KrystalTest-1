@@ -58,6 +58,11 @@ class finanzarel extends p2pCompany {
     protected $requestFiles = array();
     protected $tempRequest = [];
     
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.05'                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 in order to "close" an active investment
+    ];
+    
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
         [
             "D" =>  [
@@ -125,6 +130,13 @@ class finanzarel extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
+                ]
             ]
         ],
         [
@@ -175,6 +187,13 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
                 ]
             ],
         ],
@@ -279,7 +298,7 @@ class finanzarel extends p2pCompany {
                 ]       
             ],
             "J" =>  [
-                [
+                /*[
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name
                     "inputData" => [
 				"input2" => ".",
@@ -287,6 +306,14 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
+                ]*/
+                [
+                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "",                                // May contain trailing spaces
+                                "input3" => "&",
+                            ],
+                    "functionName" => "extractDataFromString",
                 ]
             ],
             "L" => [
@@ -348,12 +375,12 @@ class finanzarel extends p2pCompany {
             "B" => [
                 "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
-            "C" =>  [
-                "name" => "investment_riskRating",
-            ],
-            "D" => [
+            "C" => [
                 "name" => "investment_typeOfInvestment"
             ], 
+            "D" =>  [
+                "name" => "investment_riskRating",
+            ],
             "E" => [  
                 [
                     "type" => "investment_issueDate",                           // Winvestify standardized name  OK
@@ -448,7 +475,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "investment_statusOfLoan",                        
                     "inputData" => [                                            
-                                "input2" => WIN_LOANSTATUS_WAITINGTOBEFORMALIZED,                                 
+                                "input2" => "PREACTIVE",                                 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -466,12 +493,127 @@ class finanzarel extends p2pCompany {
             ],
         ]
     ];
-
-    protected $valuesAmortizationTable = [  // NOT FINISHED
+    
+    protected $parserValuesAmortizationTable = [
             "A" =>  [
-                "name" => "transaction_id"
-             ],
-        ];
+                "name" => "investment_loanId"                                          // Winvestify standardized name
+            ],
+            "L" => [
+                [
+                    "type" => "capitalRepayment",                        // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "M" => [
+               [
+                    "type" => "interest",                        // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ] 
+            ],
+            "N" => [
+                [
+                    "type" => "scheduledDate",                           // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "O" => [
+                [
+                    "type" => "statusOfLoan",                          
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                                "input2" => "",                               
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
+            ],
+            "P" => [
+                [
+                    "type" => "capitalAndInterestPayment",                // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ]
+    ];
+
+    protected $valuesAmortizationTable = [
+        /*1 => [
+            [
+                "name" => "investment_id"
+            ],
+        ],*/
+        1 => [
+            [
+                "type" => "amortizationtable_capitalRepayment",                 // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 2
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        2 => [
+            [
+                "type" => "amortizationtable_interest",                         // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 2
+                ],
+                "functionName" => "getAmount",
+            ]
+        ],
+        3 => [
+            [
+                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+        4 => [
+            [
+                "type" => "amortizationtable_paymentStatus",                          
+                "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                            "input2" => "",                               
+                            "input3" => "",
+                            "input4" => 0                                   // 'input3' is NOT mandatory. 
+                        ],
+                "functionName" => "extractDataFromString",
+            ]
+        ],
+        5 => [
+            [
+                "type" => "amortizationtable_capitalAndInterestPayment",        // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 2
+                ],
+                "functionName" => "getAmount",
+            ]
+        ]
+    ];
     
     protected $transactionConfigParms = [
         "fileConfigParam" => [
@@ -508,7 +650,7 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
                             'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-                                'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+            //'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
     ];
     
@@ -546,11 +688,17 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
         ]
     ];
-        
- 
+    
+    protected $amortizationConfigParms = array(
+        [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    );
+    
     protected $valuesControlVariables = [
         [
         "myWallet" => [
@@ -558,7 +706,7 @@ class finanzarel extends p2pCompany {
                 "type" => "myWallet",                                           // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "",
-                    "input3" => ",",
+                    "input3" => ".",
                     "input4" => 16
                 ],
                 "functionName" => "getAmount",
@@ -570,6 +718,7 @@ class finanzarel extends p2pCompany {
                 "inputData" => [
                     "input2" => "1",
                     "input3" => "0",
+                    "input4" => ",",
                 ],
                 "functionName" => "handleNumber",
             ]
@@ -602,6 +751,7 @@ class finanzarel extends p2pCompany {
         "investment" => [
             "parserDataCallback" => [
                 "investment_typeOfInvestment" => "translateLoanType",
+                "investment_nominalInterestRate" => "translateNominalInterestRate",
                 "investment_statusOfLoan" => "translateLoanStatus"
             ]
         ],
@@ -1292,22 +1442,19 @@ class finanzarel extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParserFile($str = null) {
-        
-        $this->tempArray['loanTotalIds'] = $this->loanIds;
+        $this->loanTotalIds = $this->loanIds;
         $this->myParser = new Fileparser();                                                                             //Call the parser
         $folder = $this->getFolderPFPFile();
         $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
-        $this->myParser->setConfig($this->investmentConfigParms[0]);                                                    //Set the config 
-        $info = $this->myParser->analyzeFile($file, $this->valuesInvestment[0], $this->typeFileInvestment);             //Parse the file
-
+        $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
+        $info = $this->myParser->analyzeFile($file, $this->parserValuesAmortizationTable, $this->typeFileInvestment);             //Parse the file
         foreach ($info as $key => $value) {
-
+            
             if (!in_array($key, $this->loanIds)) {
                 //echo $key . " dont found, dont compare \n";
                 unset($info[$key]); //Delete old investments that we don't have in loanId.json from parsed array.
                 continue;
             }
-
 
             foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find
                 $this->tempArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the invesment table.                          //                                                                   
@@ -1325,17 +1472,9 @@ class finanzarel extends p2pCompany {
                 unset($this->tempArray['errorTables'][$slice]); //If we can get the amortization table of the investment, delete from errorTables,.
             }
 
-            unset($info[$key][0]["investment_debtor"]);  //Delete info that we dont want in the amortization table
-            unset($info[$key][0]["investment_riskRating"]);
-            unset($info[$key][0]["investment_typeOfInvestment"]);
-            unset($info[$key][0]["investment_fullLoanAmount"]);
-            unset($info[$key][0]["investment_originalDuration"]);
-            unset($info[$key][0]["investment_myInvestmentDate"]);
-
 
             $this->tempArray['tables'][$key] = $this->arrayToTableConversion($info[$key]); //Get the html table from the array         
         }
-        
         //print_r($this->tempArray);
         return $this->tempArray;
     }
@@ -1371,6 +1510,9 @@ class finanzarel extends p2pCompany {
             case "PAGARÉ":
                 $type = WIN_TYPEOFLOAN_PAGARE;
                 break;
+            case "PAGAR? N.O.":
+                $type = WIN_TYPEOFLOAN_PAGARE;
+                break; 
             case "PAGARÉ N.O.":
                 $type = WIN_TYPEOFLOAN_PAGARE;
                 break; 
@@ -1392,6 +1534,9 @@ class finanzarel extends p2pCompany {
         $status = WIN_LOANSTATUS_UNKNOWN;
         $inputData = strtoupper(trim($inputData));
          switch ($inputData) {
+            case "PREACTIVE":
+                $data =  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                break;
             case "PENDIENTE":
                 $data = WIN_LOANSTATUS_ACTIVE;
                 break;
@@ -1469,6 +1614,16 @@ class finanzarel extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         
+    }
+    
+    /**
+     * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
+     * nominalInterestRate
+     * @param string $inputData     company specific nominalInterestRate
+     * @return int                  Winvestify standardized nominalInterestRate
+     */
+    public function translateNominalInterestRate($inputData) {
+        return str_replace(",",".",$inputData);
     }
 
 }

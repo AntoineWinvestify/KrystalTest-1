@@ -103,12 +103,13 @@ class Dashboard2sController extends AppController {
 
         $this->Investment->virtualFields = array(
             'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
-            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
             'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'ProgressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
         );
 
         $this->paginate = array(
-            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
+            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id", "Investment.ProgressFloat"),
             'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.investment_paymentStatus >" => 90, "Investment.linkedaccount_id" => $linkedAccount),
         );
 
@@ -130,11 +131,12 @@ class Dashboard2sController extends AppController {
 
         $this->Investment->virtualFields = array(
             'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
-            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
             'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'ProgressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
         );
         $this->paginate = array(
-            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id"),
+            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id", "Investment.ProgressFloat"),
             'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.linkedaccount_id" => $linkedAccount),
         );
         $this->DataTable->mDataProp = true;
@@ -188,7 +190,6 @@ class Dashboard2sController extends AppController {
         //Get investment data from db
         $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorId);
 
-        print_r($allInvestment);
         //Get global data 
         $this->range = array();
         $global['totalVolume'] = 0;
@@ -209,7 +210,6 @@ class Dashboard2sController extends AppController {
                 continue;
             }
             foreach ($individualPfpData['Userinvestmentdata'] as $key => $individualData) {
-                echo "key = $key \n";
                 switch ($key) {
                     case "linkedaccount_id":
                         //Get the pfp id of the linked acount

@@ -28,7 +28,7 @@
  * function companyUserLogin()										[OK, tested]
  * function companyUserLogout										[OK, tested]
  * function collectUserInvestmentData()									[OK, tested]
- * parallelization on collectUserInvestmentData                                                            [OK, tested]
+ * parallelization on collectUserInvestmentData                                                         [OK, tested]
  *
  * 2016-08-04	  version 2016_0.1
  * Basic version
@@ -67,7 +67,7 @@
  * 2017-10-24 version_0.9
  * Integration of parsing amortization tables with Gearman and fileparser
  * 
- * Parser AmortizationTables                                            [OK, tested]
+ * Parser AmortizationTables                                                    [OK, tested]
  * 
  * Pending:
  * Fecha en duda
@@ -77,12 +77,12 @@
 
 /**
  * Contains the code required for accessing the website of "Zank".
- * function calculateLoanCost()						[Not OK]
- * function collectCompanyMarketplaceData()				[OK, tested]
- * function companyUserLogin()						[OK, tested]
- * function collectUserGlobalFilesParallel                              [OK, tested]
- * function collectAmortizationTablesParallel()                         [Ok, not tested]
- * parallelization                                                      [OK, tested]
+ * function calculateLoanCost()                                                 [Not OK]
+ * function collectCompanyMarketplaceData()                                     [OK, tested]
+ * function companyUserLogin()                                                  [OK, tested]
+ * function collectUserGlobalFilesParallel                                      [OK, tested]
+ * function collectAmortizationTablesParallel()                                 [Ok, not tested]
+ * parallelization                                                              [OK, tested]
  */
 
 
@@ -97,7 +97,7 @@ class zank extends p2pCompany {
        
     protected $dashboard2ConfigurationParameters = [
         'outstandingPrincipalRoundingParm' => '0.01'                            // This *optional* parameter is used to determine what we 
-                                                                                // consider 0 in order to "close" an active investment
+                                                                                // consider 0 € in order to "close" an active investment
     ];
     
     protected $transactionConfigParms = [
@@ -412,11 +412,14 @@ class zank extends p2pCompany {
     ];
 
     
-    protected $amortizationConfigParms = array ('OffsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
-                                 ); 
+    protected $amortizationConfigParms = array (
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'separatorChar' => ";",
+            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    ); 
     
     protected $valuesAmortizationTable = [
         1 => [
@@ -461,7 +464,7 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
-        5 => [
+        /*5 => [
             [
                 "type" => "amortizationtable_comission",                        // Winvestify standardized name  OK
                 "inputData" => [
@@ -482,7 +485,7 @@ class zank extends p2pCompany {
                 ],
                 "functionName" => "getAmount",
             ]
-        ],
+        ],*/
         8 => [
             "name" => "amortizationtable_paymentStatus"
         ]
@@ -2132,7 +2135,7 @@ class zank extends p2pCompany {
                 $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
                 break;
             case "CANCELADO":
-                $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                $data = WIN_LOANSTATUS_FINISHED;
                 break;
             case "COMPLETADO":
                 $data = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;

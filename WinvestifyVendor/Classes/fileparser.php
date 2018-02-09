@@ -75,6 +75,9 @@
  * 2018-02-04   version_0.9.1
  * Added new method, handleNumber, for dealing with numbers
  * 
+ * 2018-02-06   version_0.9.2
+ * Added many new concepts according to the latest contents of FlowData.xlsx
+ * 
  * 
  * 
  * Pending:
@@ -145,7 +148,11 @@ class Fileparser {
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
  //                     an already existing loan if a extra participation is bought
  // REPAYMENT       => An amortization payment has taken place
+ // REMOVE_AM_TABLE => Remove the mark that an amortization table is to be collected
+ // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state   
+    
  /*
+  * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
   */   
@@ -239,10 +246,10 @@ class Fileparser {
                 "type" => "payment_loanIncentivesAndBonus"  
                 ],
             15 => [
-                "detail" => "Compensation",
+                "detail" => "Compensation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensation"    
+                "type" => "globalcashflowdata_platformCompensationPositive"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -254,7 +261,7 @@ class Fileparser {
                 "detail" => "Currency_fluctuation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept17"  
+                "type" => "payment_currencyFluctuationPositive"  
                 ],
             19 => [
                 "detail" => "Recoveries",
@@ -293,10 +300,10 @@ class Fileparser {
                 "type" => "payment_currencyExchangeFee"
                 ],
             25 => [
-                "detail" => "currency_fluctuation_negative",
+                "detail" => "Currency_fluctuation_negative",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "concept25"
+                "type" => "payment_currencyFluctuationNegative"
                 ],                        
             26 => [
                 "detail" => "Tax_VAT",
@@ -323,10 +330,10 @@ class Fileparser {
                 "type" => "concept29"
                 ],
             30 => [
-                "detail" => "Currency_exchange_transaction",
-                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "detail" => "Incoming_currency_exchange_transaction",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "currencyExchangeTransaction"
+                "type" => "incomingCurrencyExchangeTransaction"
                 ],
             31 => [
                 "detail" => "Unknown_income",
@@ -347,79 +354,97 @@ class Fileparser {
                 "type" => "concept33"
                 ], 
             34 => [
-                "detail" => "Default interest income",
+                "detail" => "Default_interest_income",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "DefaultInterestIncome"
+                "type" => "defaultInterestIncome"
                 ],     
             35 => [
                 "detail" => "Partial_principal_and_interest_payment",
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Mix",
                 "type" => "payment_partialPrincipalAndInterestPayment"
                 ],
-        
-  
- /*
-    default interest income should be in globalcashflow table
-
-30	NON		Other	Currency exchange transaction	Outgoing currency exchange transaction/Incoming currency exchange transacion
-Currency exchange fee	FX commission with Exchange Rate:    */        
-        
-        
-        
-        
-            // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
-            // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
-            // matured into a real loan
-            100 => [
-                "detail" => "Disinvestment",
+            36 => [
+                "detail" => "Outgoing_currency_exchange_transaction", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "disinvestment",
-                "chars" => "REMOVE_AM_TABLE",    
+                "type" => "outgoingCurrencyExchangeTransaction",
+                ],
+            37 => [
+                "detail" => "Compensation_negative",  
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "globalcashflowdata_platformCompensationNegative",
+                ],
+            38 => [
+                "detail" => "Disinvestment_primary_market", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestmentPrimaryMarket",
+                "chars" => "REMOVE_AM_TABLE" 
+                ],
+            39 => [
+                "detail" => "Disinvestment_secundary_market", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestmentSecondaryMarket",
                 ],
         
-            101 => [
-                "detail" => "change_to_active_state",       // Move an investment from PRE-ACTIVE to ACTIVE
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "activeStateChange",
-                "chars" => "AM_TABLE"                       // = Collect Amortization table
-                ],
-            102 => [
-                "detail" => "change_to_badDebt_state",      // Move an investment from ACTIVE to WRITTEN_OFF 
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "badDebtStateChange",
-                ],
-            103 => [
-                "detail" => "change_to_cancelled_state",    // Move an investment from PRE-ACTIVE to CANCELLED
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
-                "account" => "PL",
-                "type" => "cancelledStateChange",
-                ],       
-        
-            104 => [
-                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+            40 => [
+                "detail" => "Create_reserved_funds",                            // Move an investment from PRE-ACTIVE to ACTIVE
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
+                "chars" => "PRE-ACTIVE",
                 ],
+        
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "dummy",
                 ],
+
+     
+        
+            // The following are psuedo concepts, and used in cases where an investment in a loan has been done,
+            // but at the end the loan was cancelled BEFORE reaching the 'active' state or if the investment
+            // matured into a real loan
+
+            10001 => [
+                "detail" => "Change_to_active_state",                           // Move an investment from PRE-ACTIVE to ACTIVE
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "investment_activeStateChange",
+                "chars" => "AM_TABLE"                                           // = Collect Amortization table
+                ],
+ /*       Not NEEDED AS THIS IS DONE USING A N ORDINARY TRANSACTION RECORD
+            10002 => [
+                "detail" => "Change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "badDebtStateChange",
+                ],
+    */
+            10003 => [
+                "detail" => "Change_to_cancelled_state",                        // Move an investment from PRE-ACTIVE to CANCELLED
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "investment_cancelledStateChange",
+                ],       
+                
+
         
     /*         105 => [
-                "detail" => "create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
+                "detail" => "Create_reserved_funds",    // Move an investment from PRE-ACTIVE to CANCELLED
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFundsNoImpactCashInPlatform",
                 ]  
-     */       
+     */  
+
+
         
         ];
 
@@ -682,6 +707,7 @@ protected $countries = [
     
     /**
      * Function to analyze a file depending on its extension
+     * 
      * @param string $file FQDN of the file to analyze
      * @param array  $configuration Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
@@ -728,6 +754,7 @@ protected $countries = [
 
     /**
      * Starts the process of analyzing the file and returns the results as an array
+     * 
      *  @param  FILE            FQDN of the file to analyze
      *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
      *  @param  highestRow      Last written row, we need for offsetEnd
@@ -1032,6 +1059,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Returns information of the last occurred error. Can also detect if
      * an unknown "payment" concept was found.
+     * 
      *  @return JSON   
      *         
      */
@@ -1120,15 +1148,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
 
         switch($result) {
-            case WIN_CONCEPT_TYPE_COST:                                  // A result was found.
+            case WIN_CONCEPT_TYPE_COST:                                         // A result was found.
                 return "Unknown_cost";
                 break;
 
-            case WIN_CONCEPT_TYPE_INCOME:                                // A result was found
+            case WIN_CONCEPT_TYPE_INCOME:                                       // A result was found
                 return "Unknown_income";
                 break;
-            default:                                    // Nothing found, so do some maths to
-                return "Unknown_concept";               // see if it is an income or a cost.
+            default:                                                            // Nothing found, so do some maths to
+                return "Unknown_concept";                                       // see if it is an income or a cost.
         }
     }
 
@@ -1418,6 +1446,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     /**
      * Function to get details of transaction but when it is needed to get the content from
      * multiples columns of the file
+     * 
      * @param string $input It is the column value
      * @param array $config Winvestify standardized concept
      * @param array $inputValues Values needed to calculate transaction details from other columns
@@ -1527,6 +1556,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
   
     /**
      * Function to get the loanId from the file name of one amortization table
+     * 
      * @param array $delimiters     array with all the delimiter characters
      * @param string                input string
      *  
@@ -1540,6 +1570,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a file depending on its extension
+     * 
      * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @param string $extension It is the extension of the file
@@ -1558,6 +1589,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to analyze a html file to get its content
+     * 
      * @param string $filePath FQDN of the file to analyze
      * @param array  $parserConfig Array that contains the configuration data of a specific "document"
      * @return array $parsedData
@@ -1687,31 +1719,33 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to join values together
+     * 
      * @param string $input
      * @param string $joinSeparator
      * @param string $order It could be FIFO or LIFO
-     * @param array $inputValues
+     * @param array $inputValues All the values we want to join together
      * @return string
      */
     public function joinDataCells($input, $joinSeparator, $order, ...$inputValues) {
         if ($order == FIFO) {
             foreach ($inputValues as $inputValue) {
-                $input .= $joinSeparator . $inputValue;
+                $input .= $joinSeparator . trim($inputValue);
             }
         }
         else if ($order == LIFO) {
             foreach ($inputValues as $inputValue) {
-                $inputNew .= $inputValue . $joinSeparator ;
+                $inputNew .= trim($inputValue) . $joinSeparator ;
             }
             $inputNew .= $input;
             $input = $inputNew;
         }
         
-        return $input;
+        return trim($input);
     }
     
     /**
      * Function to clean a string of unnecessary characters
+     * 
      * @param string $input cell data
      * @param array $charactersToClean Array of chars to clean
      * @return string Cleaned value to be returned
@@ -1925,6 +1959,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to clear a csv
+     * 
      * @param string $filePath FQDN of the file to analyze
      */
     function clearCsv($filePath) {
@@ -1939,6 +1974,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     
     /**
      * Function to set the finish date when we starting the process
+     * 
      * @param string $defaultFinishDate It is the default date
      */
     function setDefaultFinishDate($defaultFinishDate) {
@@ -1971,6 +2007,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * Function to manipulate a number
      * Example:
      *  21.903 -> 2090
+     * 
      * @param string $input             The number to manipulate. It is assumed that only a *number* is received,
      *                                  with or without a "," or "."
      * @param string $multiplyFactor    The factor which shall be used to multiply the input
