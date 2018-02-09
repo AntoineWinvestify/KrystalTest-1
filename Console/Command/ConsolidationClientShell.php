@@ -122,7 +122,7 @@ class ConsolidationClientShell extends GearmanClientShell {
             else {
                 $inActivityCounter++;
                 echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";                
-                sleep (4); 
+                sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
