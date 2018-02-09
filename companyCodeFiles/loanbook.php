@@ -122,7 +122,7 @@ class loanbook extends p2pCompany {
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
                             2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"],
                             4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
                             5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
                             6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
@@ -210,7 +210,7 @@ class loanbook extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ],
                 [
-                    "type" => "investment_issuDate", // Winvestify standardized date  OK
+                    "type" => "investment_issueDate", // Winvestify standardized date  OK
                     "inputData" => [
                         "input2" => "D-M-Y",
                     ],
