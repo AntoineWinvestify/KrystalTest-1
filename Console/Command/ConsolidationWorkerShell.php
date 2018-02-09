@@ -218,7 +218,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
-                $returnData[$linkedaccountId]['netReturnPastYear'][$keyDate] = $financialClass->XNPV(0, $dataByDate['values'], $dataByDate['dates']);
+                $returnData[$linkedaccountId]['netReturnPastYear'][$keyDate] = $this->consolidateResults($dataByDate['values']);
             }
         }
         $dataArray['tempArray'] = $returnData;
@@ -519,6 +519,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($values as $value) {
             $result = $this->winFormulas->doOperationByType($result, $value, "add");
         }
+        return $result;
     }
     
 }
