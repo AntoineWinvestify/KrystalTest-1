@@ -1090,7 +1090,7 @@ class UserDataShell extends AppShell {
      * 
      */
     public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
-        $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
+        $result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
         return $result;      
     }
  

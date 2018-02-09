@@ -246,7 +246,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n";
                 }
-                sleep(4);                                                       // Just wait a short time and check again
+                sleep(WIN_SLEEP_DURATION);                                                       // Just wait a short time and check again
             }
             if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
@@ -765,6 +765,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
   
                  
+//Define which amortization tables shall be collected 
+    //            $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+
+                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
+                    $investmentSliceToSave[$investmentId] = $tableSliceIdentifier;         
+                }
+    //            $slicesAmortizationTablesToCollect = [];
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
@@ -894,6 +901,25 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 }
             }   
 
+ 
+  
+            foreach ($amortizationTablesNotNeeded as $tableNotNeeded) {
+                $item = array_search($tableNotNeeded, $investmentSliceToSave);
+                if ($item !== false) {
+                    unset($investmentSliceToSave($item));  
+                }
+            }
+            
+            foreach ($investmentSliceToSave as $sliceKey => $slice) {
+                $loanSliceId = $this->linkNewSlice($sliceKey, $slice);
+                $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier; 
+            }
+
+            
+            
+            
+            
+            
             $controlVariables['outstandingPrincipal'] = $database['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'];  // Holds the *last* calculated value so far
             $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];      // Holds the *last* calculated valueso far
             $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']; // Holds the last calculated valueso far
@@ -930,25 +956,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
 
 
 // All transactions have been analyzed. So consolidate the data of the total platform.
-// Define which amortization tables shall be collected 
+// Define which amortization tables shall be collected but remove the unnecessary ids 
         $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
         foreach ($amortizationTablesNotNeeded as $tableToRemove) { // Remove the mark of the investments which already have finished
-            $tableExists = array_search ($tableToRemove, $slicesAmortizationTablesToCollect);
+            $tableExists = array_search ($tableToRemove, $platformData['amortizationTablesOfNewLoans']);
             if ($tableExists !== false) {     
-                echo "----------------------------------------------";
-                echo $tableExists;
-                unset($slicesAmortizationTablesToCollect[$tableExists]);  
+                unset($platformData['amortizationTablesOfNewLoans'][$tableExists]);  
             }                      
         }               
-
-        foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
-            $loanSliceId = $this->linkNewSlice($investmentId, $tableSliceIdentifier);
-            if (!in_array($loanSliceId, $platformData['amortizationTablesOfNewLoans'])) {       // avoid duplicates
-                $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier;
-            }
-        }
-//        $slicesAmortizationTablesToCollect = [];
-                
+        
 
         
 // Deal with the control variables     
@@ -1045,6 +1061,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         return;
     }    
 
+    
     /** is it worth the while to do this? I basically am only interested in the
      *  next payment date and I trust the platform calculates correctly.
      * 
