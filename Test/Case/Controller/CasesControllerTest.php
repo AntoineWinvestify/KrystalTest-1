@@ -309,6 +309,19 @@ class CasesControllerTest extends ControllerTestCase {
         $this->assertEquals($expected, $actual[0]['Defaultdate']);
     }
     
+    public function testHandleNumber() {
+        $expected = array('23', '23.652', '-34.3', '-1402.55', '2342.33', '0.0', '0.0');
+        $actual = $this->testAction("/cases/testHandleNumber");
+                
+        $this->assertEquals($expected[0], $actual[0][0]['number']);
+        $this->assertEquals($expected[1], $actual[0][1]['number']);
+        $this->assertEquals($expected[2], $actual[1][2]['number']);
+        $this->assertEquals($expected[3], $actual[0][3]['number']);
+        $this->assertEquals($expected[4], $actual[1][4]['number']);
+        $this->assertEquals($expected[5], $actual[1][5]['number']);
+        $this->assertEquals($expected[6], $actual[1][6]['number']);
+    }
+
     public function tearDown() {
         parent::tearDown();
         unset($this->Hello);

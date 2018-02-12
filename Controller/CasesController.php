@@ -31,7 +31,7 @@ class CasesController extends AppController {
             , 'testDate1', 'testDate2', 'testDate3', 'testDate4', 'testCurrency', 'testAmount1', 'testAmount2', 'testAmount3', 'testAmount4', 'testAmount5',
             'testAmount6', 'testAmount7', 'testExtracData', 'testExtracData2', 'testHash', 'testRowData', 'testTransactionDetail', "testHtmlData",
             'testDefault', 'testGenerateId', 'testGenerateId2', 'testSortParameter', 'testSeparatorChar', 'testChronoOrder', "testAnalyzeJson", "testConcepts", "testJoinCell",
-            "testDefaultDate"
+            "testDefaultDate", "testHandleNumber"
         ));
         $this->filePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCasesDocument.xlsx';
         $this->TransactionfilePath = DS . 'home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'ParserTestCaseTransaction.xlsx';
@@ -878,7 +878,11 @@ class CasesController extends AppController {
         ];
 
         $myParser = new Fileparser();
-
+        $myParser->setConfig(array(
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'sortParameter' => array()
+        ));
         $result = $myParser->analyzeFile($this->amortizationPath, $parserConfig, "html");
         $this->print_r2($result);
     }
@@ -1453,6 +1457,52 @@ class CasesController extends AppController {
         ));
         $tempResult = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
 
+        $this->print_r2($tempResult);
+        return $tempResult;
+    }
+    
+    public function testHandleNumber(){
+        $parserConfig = [
+            "H" => [
+                ["type" => "number", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "1",
+                        "input3" => "5",
+                        "input4" => ",",
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ]
+        ];
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+
+            $parserConfig = [
+            "H" => [
+                ["type" => "number", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "1",
+                        "input3" => "5",
+                        "input4" => ".",
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ]
+        ];
+        $myParser = new Fileparser();
+        $myParser->setConfig(array(
+            'sortParameter' => null,
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+        ));
+        $tempResult[] = $myParser->analyzeFile($this->filePath, $parserConfig, "xlsx");
+        
         $this->print_r2($tempResult);
         return $tempResult;
     }
