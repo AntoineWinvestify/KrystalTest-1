@@ -135,7 +135,8 @@ class Linkedaccount extends AppModel {
         $linkedAccountData['Linkedaccount'] = array('company_id' => $companyId,
             'investor_id' => $investorId,
             'linkedaccount_username' => $username,
-            'linkedaccount_password' => $password
+            'linkedaccount_password' => $password,
+            'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS
         );
 
         if ($this->save($linkedAccountData, $validation = true)) {
