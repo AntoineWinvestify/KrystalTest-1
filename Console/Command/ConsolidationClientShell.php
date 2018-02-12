@@ -30,7 +30,63 @@ App::import('Shell','GearmanClient');
  */
 class ConsolidationClientShell extends GearmanClientShell {
     
-    protected $services;
+    protected $services = [
+        'netAnnualReturnXirr' => [],
+        'netAnnualTotalFundsReturnXirr' => [],
+        'netAnnualReturnPastYearXirr' => [],
+        'netReturn' => [],
+        'netReturnPastYear' => []
+    ];
+    
+    protected $netAnnualReturnXirr = [
+        'service' => 'calculateNetAnnualReturnXirr',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'table' => 'userinvestmentdata',
+            'variable' => 'userinvestmentdata_netAnualReturnPast12Months',
+            'model' => 'Userinvestmentdata'
+        ]
+    ];
+    
+    protected $netAnnualTotalFundsReturnXirr = [
+        'service' => 'calculateNetAnnualTotalFundsReturnXirr',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'table' => 'userinvestmentdata',
+            'variable' => 'userinvestmentdata_netAnualTotalFundsReturn',
+            'model' => 'Userinvestmentdata'
+        ]
+    ];
+    
+    protected $netAnnualReturnPastYearXirr = [
+        'service' => 'calculateNetAnnualReturnPastYearXirr',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'table' => 'userinvestmentdata',
+            'variable' => 'userinvestmentdata_netAnualReturnPastYear',
+            'model' => 'Userinvestmentdata'
+        ]
+    ];
+    
+    protected $netReturn = [
+        'service' => 'calculateNetReturn',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'table' => 'userinvestmentdata',
+            'variable' => 'userinvestmentdata_netReturn',
+            'model' => 'Userinvestmentdata'
+        ]
+    ];
+    
+    protected $netReturnPastYear = [
+        'service' => 'calculateNetReturnPastYear',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'table' => 'userinvestmentdata',
+            'variable' => 'userinvestmentdata_netReturnPastYear',
+            'model' => 'Userinvestmentdata'
+        ]
+    ];
     
     /**
      * Function to init the process to recollect all the user investment data
@@ -86,6 +142,9 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $data["queue_id"] = $job['Queue']['id'];
                     $data["date"] = $queueInfo['date'];
                     $data["originExecution"] = $queueInfo['originExecution'];
+                    if (empty($queueInfo['services'])) {
+                        $this->getAllServices();
+                    }
                     $this->getConsolidationWorkerFunction();
                     foreach ($this->services as $nameServiceKey => $service) {
                         $data['service'] = $service;
@@ -163,7 +222,14 @@ class ConsolidationClientShell extends GearmanClientShell {
         }
     }
     
-    public function getConsolidationWorkerFunction() {
+    public function getAllServices() {
+        $services = $this->services;
+        foreach ($services as $keyServices => $service) {
+            $this->services[$keyServices] = $this->$keyServices;
+        }
+    }
+    
+    /*public function getConsolidationWorkerFunction() {
         //Future implementation
         //$formulaByInvestor = $this->getFormulasFromDB();
         ///////////////* THIS IS TEMPORAL
@@ -192,6 +258,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         $this->services['netReturn']['database']['table'] = 'userinvestmentdata';
         $this->services['netReturn']['database']['variable'] = 'userinvestmentdata_netReturn';
         $this->services['netReturn']['database']['model'] = 'Userinvestmentdata';
+        
         $this->services['netReturnPastYear']['service'] = "calculateNetReturnPastYear";
         $this->services['netReturnPastYear']['gearmanFunction'] = 'getFormulaCalculate';
         $this->services['netReturnPastYear']['database']['table'] = 'userinvestmentdata';
@@ -202,7 +269,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
         //$services[2]['gearmanFunction'] = 'getFormulaCalculate';
         /////////////////////
-    }
+    }*/
     
     /**
      * Function that runs after a task was complete on the Gearman Worker
