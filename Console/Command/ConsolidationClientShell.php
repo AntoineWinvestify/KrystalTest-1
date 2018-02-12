@@ -131,13 +131,10 @@ class ConsolidationClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
-                
-                $linkedaccountsResults = [];
                 foreach ($pendingJobs as $keyjobs => $job) {
-                    
                     $queueInfo = json_decode($job['Queue']['queue_info'], true);
                     $this->queueInfo[$job['Queue']['id']] = $queueInfo;
-                    
+                    $data['companiesNothingInProgress'] = $this->getLinkAccountsWithNothingInProcess($job['Queue']['queue_userReference']);
                     $data["companies"] = $queueInfo['companiesInFlow'];
                     $this->userLinkaccountIds[$job['Queue']['id']] = $queueInfo['companiesInFlow'];;
                     $data["queue_userReference"] = $job['Queue']['queue_userReference'];
@@ -321,5 +318,30 @@ class ConsolidationClientShell extends GearmanClientShell {
         echo "ID Unique: " . $task->unique() . "\n";
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
+    }
+    
+    public function getLinkAccountsWithNothingInProcess($queueUserReference) {
+        $companyNothingInProcess = [];
+        
+        $jobInvestor = $this->Investor->find("first", array('conditions' =>
+            array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
+            'fields' => 'id',
+            'recursive' => -1,
+        ));
+        print_r($jobInvestor);
+        $investorId = $jobInvestor['Investor']['id'];
+        $filterConditions = array(
+            'investor_id' => $investorId,
+            'linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS
+        );
+        $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
+            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $i = 0;
+            foreach ($linkedaccountResult as $linkedaccount) {
+                $companyNothingInProcess[] = $linkedaccount['Linkedaccount']['id'];
+            }
+        }
+        return $companyNothingInProcess;
     }
 }
