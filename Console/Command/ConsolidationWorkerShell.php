@@ -32,6 +32,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     protected $formula = [];
     protected $config = [];
     protected $originExecution;
+    protected $dashboardOverviewLinkaccountIds = [];
     
    public function startup() {
         parent::startup();
@@ -79,17 +80,13 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
+            $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
             foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
                 $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
             }
-            /*print_r($values);
-            exit;*/
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
-            //print_r($dataMergeByDate);
-            //exit;
-            //$dataMergeByDate = $this->returnDataPreformat();
         }
         $returnData = null;
         Configure::load('p2pGestor.php', 'default');
@@ -100,6 +97,22 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
         
+        /*** IMPROVED STRUCTURE **********/
+        foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
+            $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+        }
+        
+        $keyDataForTable['type'] = 'linkedaccount_id';
+        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
+        
+        foreach ($variables as $variableKey => $variable) {
+            $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+            $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+            $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+        }
+        $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
+        $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        /////////////////////
         $statusCollect = [];
         foreach ($returnData as $linkedaccountIdKey => $variable) {
             $statusCollect[$linkedaccountIdKey] = "0";
