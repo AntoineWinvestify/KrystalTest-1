@@ -273,8 +273,8 @@ class ParseDataClientShell extends GearmanClientShell {
     public function mapData(&$platformData) {
         
         
-ini_set('memory_limit','2048M');      
-$timeStart = time();
+        ini_set('memory_limit', '2048M');
+        $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
         $linkedaccountId = $platformData['linkedaccountId'];
