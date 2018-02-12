@@ -88,6 +88,8 @@ class ConsolidationClientShell extends GearmanClientShell {
         ]
     ];
     
+    protected $dashboardOverviewData = [];
+    
     /**
      * Function to init the process to recollect all the user investment data
      *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
@@ -196,6 +198,9 @@ class ConsolidationClientShell extends GearmanClientShell {
     public function saveConsolidationFields() {
         foreach ($this->tempArray as $queueKey => $tempArray) {
             foreach ($tempArray as $linkedaccountId => $tempArrayByCompany) {
+                if ($linkedaccountId == 'investor') {
+                    $this->dashboardOverviewData[''];
+                }
                 foreach ($tempArrayByCompany as $key => $serviceValues) {
                     if (is_array($serviceValues)) {
                         $serviceValues = array_shift($serviceValues);
