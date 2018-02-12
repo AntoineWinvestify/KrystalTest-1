@@ -94,7 +94,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": queueInfo " . $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][0]);
                         }
                         $dirs = new Folder($subDirectory);
-                        $nameCompany = $dirs->findRecursive();
+//                        $nameCompany = $dirs->findRecursive();
 
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $tempPfpName = explode("/", $allFiles[0]);
@@ -131,7 +131,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
                 }     
-                sleep (4); 
+                sleep (WIN_SLEEP_DURATION); 
             }
             
             $inActivityCounter++;

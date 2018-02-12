@@ -194,7 +194,7 @@ class CollectDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
                 }     
-                sleep (4); 
+                sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
