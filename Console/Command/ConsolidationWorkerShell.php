@@ -99,6 +99,17 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
+        
+        $statusCollect = [];
+        foreach ($returnData as $linkedaccountIdKey => $variable) {
+            $statusCollect[$linkedaccountIdKey] = "0";
+            if ($variable == "0") {
+                $statusCollect[$linkedaccountIdKey] = "1";
+            }
+            else if (!empty($variable)){
+                $statusCollect[$linkedaccountIdKey] = "1";
+            }
+        }
         /*print_r($returnData);
         
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "PHPExcel/PHPExcel/Calculation";          // Load Winvestify class(es)
@@ -109,6 +120,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         */
         print_r($returnData);
+        $dataArray['statusCollect'] = $statusCollect;
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
