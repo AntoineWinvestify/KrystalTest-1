@@ -554,7 +554,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                         $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];   
                         $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];   
                         $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
-                        $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
+        //                $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
                         $database['investment']['id'] = $investmentId;
                     }
                 }
@@ -692,7 +692,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                     }                      
                 }   
                     
-// Now start consolidating of the results on investment level and per day                
+// Now start consolidation of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
 
                 foreach ($internalVariableToHandle as $keyItem => $item) {
@@ -767,10 +767,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
 //Define which amortization tables shall be collected 
     //            $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
 
-                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
-                    $investmentSliceToSave[$investmentId] = $tableSliceIdentifier;         
-                }
-    //            $slicesAmortizationTablesToCollect = [];
+//                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
+//                    $investmentSliceToSave[$investmentId] = $tableSliceIdentifier;         
+//                }
+//                $slicesAmortizationTablesToCollect = [];
 //  print_r($platformData['amortizationTablesOfNewLoans']);
 
     
@@ -955,7 +955,36 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
         }
 
+ 
+        
+        
+        
+echo __FILE__ . " " . __LINE__ . "\n";
+print_r($amortizationTablesNotNeeded);
+            foreach ($amortizationTablesNotNeeded as $tableNotNeeded) {
+                $item = array_search($tableNotNeeded, $investmentSliceToSave);
+                if ($item !== false) {
+                    unset($investmentSliceToSave[$item]);  
+                }
+            }
+           
+echo __FILE__ . " " . __LINE__ . "\n";
+print_r($investmentSliceToSave);           
+            foreach ($investmentSliceToSave as $sliceKey => $slice) {
+                echo __FILE__ . " " . __LINE__ . " slicekey = $sliceKey and slice = $slice\n";
+                $loanSliceId = $this->linkNewSlice($sliceKey, $slice);
+                echo __FILE__ . " " . __LINE__ . " loanSliceId = $loanSliceId and slice = $slice\n";
+                $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier; 
+            }
+echo __FILE__ . " " . __LINE__ . "\n";
+print_r($platformData['amortizationTablesOfNewLoans']); 
+            
+echo __FILE__ . " " . __LINE__ . "\n";            
+ 
 
+
+
+  
 // All transactions have been analyzed. So consolidate the data of the total platform.
 // Define which amortization tables shall be collected but remove the unnecessary ids 
         $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
