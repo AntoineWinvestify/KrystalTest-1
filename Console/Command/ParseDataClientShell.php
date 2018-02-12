@@ -49,7 +49,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-    //    return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -126,7 +126,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     $userReference = $job['Queue']['queue_userReference'];
                     $queueId = $job['Queue']['id'];
                     $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
-                    print_r($this->queueInfo);
+                    //print_r($this->queueInfo);
                    
                     $this->date = $this->queueInfo[$job['Queue']['id']]['date'];                // End date of collection period
                     $this->startDate = $this->queueInfo[$job['Queue']['id']]['startDate'];      // Start date of collection period
@@ -537,7 +537,7 @@ echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and putting
  //                       $database['investment']['investment_new'] = YES;                          // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
                         $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-              //          $database['investment']['investment_sliceIdentifier'] = "ZZAAXXX";        // TO BE DECIDED WHERE THIS ID COMES FROM  
+                        $database['investment']['investment_sliceIdentifier'] = $dateTransaction[0]['investment_loanId'];        // TO BE DECIDED WHERE THIS ID COMES FROM  
              //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 501
                         $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
@@ -563,7 +563,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transaction data of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
 
-                print_r($database);
+                //print_r($database);
                 
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(" ", $transactionData['conceptChars']);
@@ -611,9 +611,9 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-                        print_r($tempResult);
+                        /*print_r($tempResult);
                         echo '-----------------------------';
-                        print_r($transactionDataKey);
+                        print_r($transactionDataKey);*/
                         echo __FILE__ . " " . __LINE__ . "\n";
                         if (!empty($tempResult)) {
                             unset($result);
@@ -716,8 +716,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                 
                 if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                     $amortizationTablesNotNeeded[] = $database['investment']['investment_sliceIdentifier'];
+
                 }
-                
+               
 
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
@@ -899,12 +900,41 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 }
             }   
 
-          
+ 
+  
+            foreach ($amortizationTablesNotNeeded as $tableNotNeeded) {
+                $item = array_search($tableNotNeeded, $investmentSliceToSave);
+                if ($item !== false) {
+                    unset($investmentSliceToSave[$item]);  
+                }
+            }
+            
+            foreach ($investmentSliceToSave as $sliceKey => $slice) {
+                $loanSliceId = $this->linkNewSlice($sliceKey, $slice);
+                $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableSliceIdentifier; 
+            }
+
+            
+            
+            
+            
+             // Determine the number of active investments. NOTE THAT THIS IS A SIMPLE PATCH. THE REAL SOLUTION 
+            // ENTAILS THE INCREMENTING/DECREMENTING OF A COUNTER WHEN A NEW LOAN ENTERS OR WHEN A LOAN FINISHES
+            //      READ FROM investments 
+            $filterConditions = array("AND" => array(array('linkedaccount_id' => $linkedaccountId 
+                                             )),
+                                        "OR" =>  array(array('investment_technicalStateTemp' => 'INITIAL'), 
+                                                      array('investment_technicalStateTemp' => 'ACTIVE')
+                                              ));
+            
+            $activeInvestments = $this->Investment->find('count', array(
+                                        'conditions' => $filterConditions));
             
             $controlVariables['outstandingPrincipal'] = $database['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'];  // Holds the *last* calculated value so far
             $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];      // Holds the *last* calculated valueso far
-            $controlVariables['activeInvestments'] = $database['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']; // Holds the last calculated valueso far
+            $controlVariables['activeInvestments'] = $activeInvestments; // Holds the last calculated valueso far
 
+            print_r($database['Userinvestmentdata']);
             
             unset($database['Userinvestmentdata']);
             unset($database['globalcashflowdata']);
@@ -917,18 +947,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
             $database['globaltotalsdata']['globaltotalsdata_capitalRepaymentPerDay'] = "";              
             $database['globaltotalsdata']['globaltotalsdata_costSecondaryMarketPerDay'] = "";  
             
-            // Determine the number of active investments. NOTE THAT THIS IS A SIMPLE PATCH. THE REAL SOLUTION 
-            // ENTAILS THE INCREMENTING/DECREMENTING OF A COUNTER WHEN A NEW LOAN ENTERS OR WHEN A LOAN FINISHES
-            //      READ FROM investments 
+           
 
-            $filterConditions = array("AND" => array(array('linkedaccount_id' => $linkedaccountId 
-                                             )),
-                                        "OR" =>  array(array('investment_technicalStateTemp' => 'INITIAL'), 
-                                                      array('investment_technicalStateTemp' => 'ACTIVE')
-                                              ));
-            
-            $activeInvestments = $this->Investment->find('count', array(
-                                        'conditions' => $filterConditions));
 
             $tempUserInvestmentDataItem = array('id' => $userInvestmentDataId,
                                                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
@@ -974,15 +994,14 @@ echo __FILE__ . " " . __LINE__ . "\n";
                 unset($platformData['amortizationTablesOfNewLoans'][$tableExists]);  
             }                      
         }               
-        
 
         
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";        
-        print_r($platformData['parsingResultControlVariables']);
-
+        //print_r($platformData['parsingResultControlVariables']);
+        
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, 
-                                                    $platformData['totalParsingresultControlVariables']);
+                                                    $platformData['parsingResultControlVariables']);
         if ($controlVariablesCheck > 0) { // mismatch detected
             echo "DOES NOT PASS CONTROL VARIABLES CHECK \n";
             // STILL TO FINISH
@@ -1000,7 +1019,7 @@ echo __FILE__ . " " . __LINE__ . "\n";
 
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
-print_r($platformData['amortizationTablesOfNewLoans']);
+//print_r($platformData['amortizationTablesOfNewLoans']);
         return true;
     }
     

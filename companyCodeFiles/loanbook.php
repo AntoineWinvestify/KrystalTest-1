@@ -122,7 +122,7 @@ class loanbook extends p2pCompany {
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
                             2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"],
                             4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
                             5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
                             6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
@@ -210,7 +210,7 @@ class loanbook extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ],
                 [
-                    "type" => "investment_issuDate", // Winvestify standardized date  OK
+                    "type" => "investment_issueDate", // Winvestify standardized date  OK
                     "inputData" => [
                         "input2" => "D-M-Y",
                     ],
@@ -1210,13 +1210,13 @@ class loanbook extends p2pCompany {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
-                    foreach ($spans as $span) {
+                    /*foreach ($spans as $span) {
                         if ($span->getAttribute('class') == 'lb_main_menu_bold') {
                             $this->tempArray['global']['myWallet'] = trim($span->nodeValue);
                             echo $this->tempArray['global']['myWallet'];
                             break; //myWallet is only the first span
                         }
-                    }
+                    }*/
 
                     $divs = $dom->getElementsByTagName('div');
                     $this->verifyNodeHasElements($divs);
@@ -1229,8 +1229,11 @@ class loanbook extends p2pCompany {
                             echo $div->nodeValue;
                         }
                     }              
+                                   
                     $outstanding = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[0]->nodeValue;
                     $this->tempArray['global']['outstandingPrincipal'] = trim($outstanding); //$this->getMonetaryValue($spans[0]->nodeValue);
+                    $myWallet = $this->getElements($dom, 'div', 'class', 'lb_textlist_right lb_blue')[2]->nodeValue;
+                    $this->tempArray['global']['myWallet'] = trim($myWallet); 
                 }
                 
                 print_r($this->tempArray);
