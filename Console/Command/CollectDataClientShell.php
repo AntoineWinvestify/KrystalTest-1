@@ -143,6 +143,13 @@ class CollectDataClientShell extends GearmanClientShell {
                         $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "The companies in flow are");
                         print_r($this->queueInfo[$job['Queue']['id']]['companiesInFlow']);
                     }
+                    //We will change the status of linkingProcess to workInProcess
+                    if ($this->queueInfo[$job['Queue']['id']]['originExecution'] != WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                        foreach ($this->queueInfo[$job['Queue']['id']]['companiesInFlow'] as $linkAccountIdToUpdate) {
+                            $this->Linkedaccount->id = $linkAccountIdToUpdate;
+                            $this->Linkedaccount->saveField('linkedaccount_linkingProcess', WIN_LINKING_WORK_IN_PROCESS);
+                        }
+                    }
                     
                 }
                 
