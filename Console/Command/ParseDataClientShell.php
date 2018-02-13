@@ -711,9 +711,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                         else {
                             // Store the information so it can be processed in flow 3B
                         }
-                    }                      
+                    }   */                   
                 }   
-*/                    
+                    
 // Now start consolidation of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
 
