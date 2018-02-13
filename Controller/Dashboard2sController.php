@@ -197,7 +197,7 @@ class Dashboard2sController extends AppController {
         $global['reservedFunds'] = 0;
         $global['cash'] = 0;
         $global['activeInvestment'] = 0;
-
+        $global['writtenOff'] = 0;
         /* $global['netAnnualTotal'] = 0;
           $global['netAnnual12Months'] = 0;
           $global['netAnnualReturnLastYear'] = 0; */
@@ -250,6 +250,8 @@ class Dashboard2sController extends AppController {
                         //get global net deposits:
                         $global['netDeposits'] = bcadd($global['netDeposits'], $individualData, 16);
                         break;
+                    case "userinvestmentdata_writtenOff":
+                        $global['writtenOff'] = bcadd($global['writtenOff'], $individualData, 16);
                 }
             }
         }

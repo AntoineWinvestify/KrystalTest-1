@@ -47,7 +47,7 @@ App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
 class CalculationConsolidationClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue', 'Investment', 'Investmentslice');
+    public $uses = array('Queue2', 'Investment', 'Investmentslice');
 
 
 // Only used for defining a stable testbed definition
@@ -93,11 +93,11 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
-                    $userReference = $job['Queue']['queue_userReference'];
-                    $queueId = $job['Queue']['id'];
-                    $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
+                    $userReference = $job['Queue2']['queue2_userReference'];
+                    $queueId = $job['Queue2']['id'];
+                    $this->queueInfo[$job['Queue2']['id']] = json_decode($job['Queue2']['queue2_info'], true);
                     print_r($this->queueInfo);
-                    $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+                    $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
                     $i = 0;
@@ -107,29 +107,29 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                         $linkedAccountId = $tempName[count($tempName) - 1];
                         $dirs = new Folder($subDirectory);
                         //$allFiles = $dirs->findRecursive();
-                        if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                        if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
                             continue;
                         }
                         $tempPfpName = explode("/", $allFiles[0]);
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
-                        $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
+                        $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
                         $i++;
                         echo "pfp = " . $pfp . "\n";
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
-                            'userReference' => $job['Queue']['queue_userReference'],
+                            'userReference' => $job['Queue2']['queue2_userReference'],
                             'files' => $allFiles,
                             'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
                             'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
 
-                            'queueInfo' => json_decode($job['Queue']['queue_info'], true));
+                            'queueInfo' => json_decode($job['Queue2']['queue2_info'], true));
                     }
                    print_r($params);
 
-                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" .
-                            $workerFunction . ".-;" . $job['Queue']['queue_userReference']);
+                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" .
+                            $workerFunction . ".-;" . $job['Queue2']['queue2_userReference']);
                 }
 
                 if (Configure::read('debug')) {
@@ -177,17 +177,17 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
                             continue;
                         }
                         $userReference = $platformResult['userReference'];
-                        $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+                        $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                         $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
 // Add the status per PFP, 0 or 1
                         
-                        $newFlowState = WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED;
+                        $newFlowState = WIN_queue2_STATUS_CALCULATION_CONSOLIDATION_FINISHED;
 
                     }
 
                     $this->Queue->id = $queueIdKey;
-                    $this->Queue->save(array('queue_status' => $newFlowState,
-                        'queue_info' => json_encode($this->queueInfo[$queueIdKey]),
+                    $this->Queue->save(array('queue2_status' => $newFlowState,
+                        'queue2_info' => json_encode($this->queueInfo[$queueIdKey]),
                             ), $validate = true
                     );
                 }

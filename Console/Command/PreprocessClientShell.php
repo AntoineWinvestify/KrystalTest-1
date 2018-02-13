@@ -67,10 +67,10 @@ class PreprocessClientShell extends GearmanClientShell {
             if (!empty($pendingJobs)) {
                 $linkedaccountsResults = [];
                 foreach ($pendingJobs as $job) {
-                    $queueInfo = json_decode($job['Queue']['queue_info'], true);
-                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
+                    $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
+                    $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
                     $jobInvestor = $this->Investor->find("first", array('conditions' =>
-                        array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
+                        array('Investor.investor_identity' => $job['Queue2']['queue2_userReference']),
                         'fields' => 'id',
                         'recursive' => -1,
                     ));
@@ -82,7 +82,7 @@ class PreprocessClientShell extends GearmanClientShell {
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     echo "linkAccount \n";
                     print_r($linkedaccountsResults);
-                    //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+                    //$linkedaccountsResults[$job['Queue2']['queue2_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
                 
                 $userLinkedaccounts = [];
@@ -93,7 +93,7 @@ class PreprocessClientShell extends GearmanClientShell {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
                         $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                         //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                        $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                        $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                         $i++;
                     }
                 }
@@ -103,8 +103,8 @@ class PreprocessClientShell extends GearmanClientShell {
                 foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
                     foreach ($userLinkedaccount as $typeAccessKey => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
-                        $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
-                        $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
+                        $data["queue_userReference"] = $pendingJobs[$key]['Queue2']['queue2_userReference'];
+                        $data["queue_id"] = $pendingJobs[$key]['Queue2']['id'];
                         $data["date"] = $this->date;
                         if (Configure::read('debug')) {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
@@ -115,7 +115,7 @@ class PreprocessClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }
 
@@ -132,7 +132,7 @@ class PreprocessClientShell extends GearmanClientShell {
             else {
                 $inActivityCounter++;
                 echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";                
-                sleep (4); 
+                sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  

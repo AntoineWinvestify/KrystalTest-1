@@ -61,12 +61,12 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
             print_r($pendingJobs);
             if (!empty($pendingJobs)) {
                 foreach ($pendingJobs as $job) {
-                    $queueInfoJson = $job['Queue']['queue_info'];
+                    $queueInfoJson = $job['Queue2']['queue2_info'];
                     $queueInfo = json_decode($queueInfoJson, true);
-                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
+                    $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
                     $linkAccountIds = [];
                     
-                    $baseDirectory = Configure::read('dashboard2Files') . $job['Queue']['queue_userReference'] . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+                    $baseDirectory = Configure::read('dashboard2Files') . $job['Queue2']['queue2_userReference'] . DS . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                     $dir = new Folder($baseDirectory);
                     $pathToJsonFile = $dir->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
                     foreach ($pathToJsonFile as $key => $path) {
@@ -103,12 +103,12 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
-                        $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable");
+                        $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue2']['queue2_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable");
                         if (!$folderExist) {
                             $linkedaccountId = $linkedaccount['Linkedaccount']['id'];
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                            $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                            $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                             $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key];
                             $i++;
                         }
@@ -121,8 +121,8 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     foreach ($userLinkedaccount as $typeAccessKey => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
                         $data["loanIds"] = $loandIdLinkedaccounts[$key][$typeAccessKey];
-                        $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
-                        $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
+                        $data["queue_userReference"] = $pendingJobs[$key]['Queue2']['queue2_userReference'];
+                        $data["queue_id"] = $pendingJobs[$key]['Queue2']['id'];
                         $data["date"] = $this->queueInfo[$data["queue_id"]]["date"];
                         print_r($data["companies"]);
                         print_r($data["loanIds"]);
@@ -135,7 +135,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }
 
@@ -149,7 +149,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
             else {
                 $inActivityCounter++;
                 echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";                
-                sleep (4); 
+                sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  

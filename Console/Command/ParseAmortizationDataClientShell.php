@@ -30,7 +30,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Queue', 'Amortizationtable');  
+    public $uses = array('Queue2', 'Amortizationtable');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -72,10 +72,10 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $params = [];
-                    $this->queueInfo[$job['Queue']['id']] = json_decode($job['Queue']['queue_info'], true);
+                    $this->queueInfo[$job['Queue2']['id']] = json_decode($job['Queue2']['queue2_info'], true);
                     print_r($this->queueInfo);
-                    $userReference = $job['Queue']['queue_userReference'];
-                    $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue']['id']]['date'] . DS;
+                    $userReference = $job['Queue2']['queue2_userReference'];
+                    $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
 
@@ -87,14 +87,14 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             print_r($tempName);
                         }
                         $linkedAccountId = $tempName[count($tempName) - 1];
-                        if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue']['id']]['companiesInFlow'])) {
+                        if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
                             continue;
                         }
                         if (Configure::read('debug')) {
-                            $this->out(__FUNCTION__ . " " . __LINE__ . ": queueInfo " . $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][0]);
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": queueInfo " . $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'][0]);
                         }
                         $dirs = new Folder($subDirectory);
-                        $nameCompany = $dirs->findRecursive();
+//                        $nameCompany = $dirs->findRecursive();
 
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $tempPfpName = explode("/", $allFiles[0]);
@@ -102,19 +102,19 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
                         echo "pfp = " . $pfp . "\n";
 
-                        $this->userLinkaccountIds[$job['Queue']['id']][$i] = $linkedAccountId;
+                        $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
                         $i++;
                         //$files = $this->readFilteredFiles($allFiles, TRANSACTION_FILE + INVESTMENT_FILE);
                         //$listOfActiveLoans = $this->getListActiveLoans($linkedAccountId);
-                        $params[$linkedAccountId] = array('queue_id' => $job['Queue']['id'],
+                        $params[$linkedAccountId] = array('queue_id' => $job['Queue2']['id'],
                             'pfp' => $pfp,
-                            'userReference' => $job['Queue']['queue_userReference'],
+                            'userReference' => $job['Queue2']['queue2_userReference'],
                             'files' => $allFiles
                                 );
                         
                         echo "PARAM TOTAL";
                     }
-                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
+                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
                 $this->GearmanClient->runTasks();
                 
@@ -131,7 +131,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
                 }     
-                sleep (4); 
+                sleep (WIN_SLEEP_DURATION); 
             }
             
             $inActivityCounter++;

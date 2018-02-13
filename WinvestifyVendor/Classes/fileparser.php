@@ -144,12 +144,15 @@ class Fileparser {
                                 'earning'       => WIN_CONCEPT_TYPE_INCOME
 
                             );   
+ // "char" is a space seperated list of the following lables. Note that more then 1 lable can be assigned to the same concept.
  // Possible lables that can be applied to each concept are:
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
- //                     an already existing loan if a extra participation is bought
+ //                    an already existing loan if a extra participation is bought
  // REPAYMENT       => An amortization payment has taken place
  // REMOVE_AM_TABLE => Remove the mark that an amortization table is to be collected
- // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state   
+ // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state
+ // READ_INVESTMENT_DATA => Re-read the data of the investment from the actual "investment.xls" file (assuming it exists). 
+ //                         This is only aplicable to the content of the investment model   
     
  /*
   * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
@@ -182,7 +185,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "payment_secondaryMarketInvestment",
-                "chars" => "AM_TABLE"
+                "chars" => "AM_TABLE,"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -417,7 +420,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "investment_activeStateChange",
-                "chars" => "AM_TABLE"                                           // = Collect Amortization table
+                "chars" => "AM_TABLE, READ_INVESTMENT_DATA"                      // = Collect Amortization table *and* re-read the current investment data
                 ],
  /*       Not NEEDED AS THIS IS DONE USING A N ORDINARY TRANSACTION RECORD
             10002 => [

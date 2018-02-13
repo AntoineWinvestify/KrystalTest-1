@@ -54,13 +54,13 @@ echo $companyInvestmentDetails[0];
     }
 
     $(function () {
-        $("#defaultedInvestmentTable").dataTable({
+        $("#defaultedInvestmentTable").DataTable({
             "bProcessing": true,
             "bServerSide": true,
-            "sAjaxSource": "ajaxDataTableDefaultedInvestments/" + id,
+            "sAjaxSource": "ajaxDataTableDefaultedInvestments/"+ id,
             "aoColumns": [
                 {"mData": 'Investment.investment_loanId'},
-                {"mData": 'Investment.investment_nextPaymentDate'},
+                {"mData": 'Investment.investment_myInvestmentDate'},
                 {"mData": 'Investment.MyInvestmentFloat', "sType": "numeric", "mRender": function (data, type, row) {
                         return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' €';
                     },
@@ -68,11 +68,14 @@ echo $companyInvestmentDetails[0];
                 {"mData": 'Investment.InterestFloat', "sType": "numeric", "mRender": function (data, type, row) {
                         return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' %';
                     }},
-                {"mData": 'Investment.investment_instalmentsProgress'},
+                 {"mData": 'Investment.ProgressFloat', "sType": "numeric", "mRender": function (data, type, row) {
+                        return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' %';
+                    }},
                 {"mData": 'Investment.OutstandingFloat', "sType": "numeric", "mRender": function (data, type, row) {
                         return parseFloat(+(Math.round(data + "e+2") + "e-2")).toFixed(2) + ' €';
                     }},
-                {"mData": 'Investment.investment_myInvestmentDate'}
+                {"mData": 'Investment.investment_nextPaymentDate'}
+
             ],
         });
     });
@@ -304,7 +307,7 @@ echo $companyInvestmentDetails[0];
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('The total amount, which your linked platforms have so far deducted from your Invested Assets balance because of long-term non-payment by clients.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Written Off') ?></td>
-                                                        <td class="right"><?php echo __('0.00') ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_writtenOff'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . " &euro;"; ?></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
