@@ -119,9 +119,8 @@ class ConsolidationClientShell extends GearmanClientShell {
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
                                                   WIN_QUEUE_STATUS_START_CONSOLIDATION,
                                                 $jobsInParallel);
-
+            echo "Pending jobs in queue:    ";
             print_r($pendingJobs);
-            
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
@@ -132,9 +131,9 @@ class ConsolidationClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
                 foreach ($pendingJobs as $keyjobs => $job) {
-                    $queueInfo = json_decode($job['Queue']['queue_info'], true);
-                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
-                    $data['companiesNothingInProgress'] = $this->getLinkAccountsWithNothingInProcess($job['Queue']['queue_userReference']);
+                    $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
+                    $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
+                    $data['companiesNothingInProgress'] = $this->Linkedaccount->getLinkAccountsWithNothingInProcess($job['Queue2']['queue2_userReference']);
                     $data["companies"] = $queueInfo['companiesInFlow'];
                     $this->userLinkaccountIds[$job['Queue2']['id']] = $queueInfo['companiesInFlow'];;
                     $data["queue_userReference"] = $job['Queue2']['queue2_userReference'];
@@ -144,7 +143,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                     if (empty($queueInfo['services'])) {
                         $this->getAllServices();
                     }
-                    $this->getConsolidationWorkerFunction();
+                    //$this->getConsolidationWorkerFunction();
                     foreach ($this->services as $nameServiceKey => $service) {
                         $data['service'] = $service;
                         if (Configure::read('debug')) {
@@ -231,48 +230,6 @@ class ConsolidationClientShell extends GearmanClientShell {
         }
     }
     
-    /*public function getConsolidationWorkerFunction() {
-        //Future implementation
-        //$formulaByInvestor = $this->getFormulasFromDB();
-        ///////////////* THIS IS TEMPORAL
-        $this->services = [];
-        
-        $this->services['netAnnualReturnXirr']['service'] = "calculateNetAnnualReturnXirr";
-        $this->services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netAnnualReturnXirr']['database']['table'] = 'userinvestmentdata';
-        $this->services['netAnnualReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPast12Months';
-        $this->services['netAnnualReturnXirr']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netAnnualTotalFundsReturnXirr']['service'] = "calculateNetAnnualTotalFundsReturnXirr";
-        $this->services['netAnnualTotalFundsReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netAnnualTotalFundsReturnXirr']['database']['table'] = 'userinvestmentdata';
-        $this->services['netAnnualTotalFundsReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualTotalFundsReturn';
-        $this->services['netAnnualTotalFundsReturnXirr']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netAnnualReturnPastYearXirr']['service'] = "calculateNetAnnualReturnPastYearXirr";
-        $this->services['netAnnualReturnPastYearXirr']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netAnnualReturnPastYearXirr']['database']['table'] = 'userinvestmentdata';
-        $this->services['netAnnualReturnPastYearXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPastYear';
-        $this->services['netAnnualReturnPastYearXirr']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netReturn']['service'] = "calculateNetReturn";
-        $this->services['netReturn']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netReturn']['database']['table'] = 'userinvestmentdata';
-        $this->services['netReturn']['database']['variable'] = 'userinvestmentdata_netReturn';
-        $this->services['netReturn']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netReturnPastYear']['service'] = "calculateNetReturnPastYear";
-        $this->services['netReturnPastYear']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netReturnPastYear']['database']['table'] = 'userinvestmentdata';
-        $this->services['netReturnPastYear']['database']['variable'] = 'userinvestmentdata_netReturnPastYear';
-        $this->services['netReturnPastYear']['database']['model'] = 'Userinvestmentdata';
-        //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
-        //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
-        //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
-        //$services[2]['gearmanFunction'] = 'getFormulaCalculate';
-        /////////////////////
-    }*/
-    
     /**
      * Function that runs after a task was complete on the Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
@@ -304,6 +261,9 @@ class ConsolidationClientShell extends GearmanClientShell {
                 if (empty($this->tempArray[$data[0]][$linkaccountId])) {
                     $this->tempArray[$data[0]][$linkaccountId] = $dataArray;
                 } 
+                /*else if ($linkaccountId == 'investor') {
+                    $this->tempArray[$data[0]][$linkaccountId][$data[2]]
+                }*/
                 else {
                     $keyDataArray = key($dataArray);
                     $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
@@ -320,28 +280,4 @@ class ConsolidationClientShell extends GearmanClientShell {
         echo GEARMAN_SUCCESS;
     }
     
-    public function getLinkAccountsWithNothingInProcess($queueUserReference) {
-        $companyNothingInProcess = [];
-        
-        $jobInvestor = $this->Investor->find("first", array('conditions' =>
-            array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
-            'fields' => 'id',
-            'recursive' => -1,
-        ));
-        print_r($jobInvestor);
-        $investorId = $jobInvestor['Investor']['id'];
-        $filterConditions = array(
-            'investor_id' => $investorId,
-            'linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS
-        );
-        $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
-            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
-            $i = 0;
-            foreach ($linkedaccountResult as $linkedaccount) {
-                $companyNothingInProcess[] = $linkedaccount['Linkedaccount']['id'];
-            }
-        }
-        return $companyNothingInProcess;
-    }
 }
