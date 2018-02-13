@@ -180,14 +180,14 @@ class Linkedaccount extends AppModel {
     public function afterSave($created, $option = array()) {
         if ($created) {
             $this->Investor = ClassRegistry::init('Investor');
-            $this->Queue = ClassRegistry::init('Queue');
+            $this->Queue2 = ClassRegistry::init('Queue2');
             $data = [];
             $linkaccountId = $this->id;
             $investorId = $this->data['Linkedaccount']['investor_id'];
             $data["companiesInFlow"][0] = $linkaccountId;
             $data["originExecution"] = WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT;
             $userReference =  $this->Investor->getInvestorIdentityByInvestorId($investorId);
-            $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data));
+            $result = $this->Queue2->addToQueueDashboard2($userReference, json_encode($data));
             return $result;
         }
     }
