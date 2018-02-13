@@ -246,7 +246,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n";
                 }
-                sleep(WIN_SLEEP_DURATION);                                                       // Just wait a short time and check again
+                sleep(WIN_SLEEP_DURATION);                                      // Just wait a short time and check again
             }
             if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
@@ -281,7 +281,8 @@ class ParseDataClientShell extends GearmanClientShell {
         $userReference = $platformData['userReference'];
         $startDate = $platformData['startDate'];
         $finishDate = $platformData['finishDate'];
-        $amortizationTablesNotNeeded = array();        
+        $amortizationTablesNotNeeded = array(); 
+        $collectTablesIndex = 0;
  //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
             
 
@@ -533,12 +534,10 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
 
 echo "THE LOAN WITH ID " . $dateTransaction[0]['investment_loanId']  . " IS A ZOMBIE LOAN\n";
 echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and setting its state to WIN_LOANSTATUS_ACTIVE\n";
-                        $loanStatus = WIN_LOANSTATUS_ACTIVE;                                        // So amortization data is collected
- //                       $database['investment']['investment_new'] = YES;                          // SO we store it as new loan in the database
+                        $loanStatus = WIN_LOANSTATUS_ACTIVE;                                                                    // So amortization data is collected
                         $database['investment']['investment_myInvestment'] = 0;
                         $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-                        $database['investment']['investment_sliceIdentifier'] = $dateTransaction[0]['investment_loanId'];        // TO BE DECIDED WHERE THIS ID COMES FROM  
-             //           $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";        // Is this needed???? ALREADY DONE IN LINE 501
+                        $database['investment']['investment_sliceIdentifier'] = $dateTransaction[0]['investment_loanId'];       // TO BE DECIDED WHERE THIS ID COMES FROM  
                         $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
                         $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                         $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
@@ -560,11 +559,9 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 }
 
                 // load all the transaction data
-                foreach ($dateTransaction as $transactionKey => $transactionData) {         // read one by one all transaction data of this loanId
+                foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
 
-                //print_r($database);
-                
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(",", $transactionData['conceptChars']);
                         
@@ -576,21 +573,33 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
                         }
                         
-                        if (in_array("AM_TABLE", $conceptChars)) {                          // New, or extra investment, so new amortizationtable shall be collected
+                        if (in_array("AM_TABLE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
                                 unset ($sliceIdentifier);
                                 if (isset($transactionData['sliceIdentifier'])) {                   // For P2P's that have individual slices per investment, like FinBee
                                         $sliceIdentifier = $transactionData['sliceIdentifier'];                                        
-                                    }
-                                // NOT NEEDED FOR THE TIME BEING    
-//                                if (isset($database['investment']['investment_sliceIdentifier'])) {     // 
-//                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
-//                                    }                                    
-                                if (empty($sliceIdentifier)) {                              // Take the default one
+                                    } 
+                                if (isset($database['investment']['investment_sliceIdentifier'])) {     
+                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
+                                    }                                    
+                                if (empty($sliceIdentifier)) {                                      // Take the default one
                                     $sliceIdentifier = $transactionData['investment_loanId'];                                
                                 }
-                                $slicesAmortizationTablesToCollect[$sliceIdentifier] = $transactionData['investment_loanId'];    // For later processing
 
+                                // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                $isNewTable = YES;
+                                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                                    if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                                        $isNewTable = NO;
+                                        break;
+                                    }                                    
+                                }
+                                if ($isNewTable == YES) {     
+                                    $collectTablesIndex++;
+                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                }
                             }
                         }
                         
@@ -598,17 +607,19 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             if (isset($transactionData['sliceIdentifier'])) {
                                     $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
                                 }
-                                // NOT NEEDED FOR THE TIME BEING    
-//                                if (isset($database['investment']['investment_sliceIdentifier'])) {     // 
-//                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
-//                                    }                                    
-                            if (empty($sliceIdentifier)) {                                  // Take the default one
+                                if (isset($database['investment']['investment_sliceIdentifier'])) {     
+                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
+                                    }                                    
+                            if (empty($sliceIdentifier)) {                                          // Take the default one
                                 $sliceIdentifier = $transactionData['investment_loanId'];                                 
                             }
-                            $sliceIdExists = array_search ($sliceIdentifier, $slicesAmortizationTablesToCollect);
-                            if ($sliceIdExists !== false) {                                 // loanSliceId does not exist in newLoans array, so add it
-                                unset($slicesAmortizationTablesToCollect[$sliceIdExists]);  // For later processing
-                            }                          
+                            foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                                if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                                    if ($tableToCollect['loanId'] == $transactionData['investment_loanId']) {
+                                        unset ($slicesAmortizationTablesToCollect[$tableCollectKey]);  
+                                    }
+                                }
+                            }                        
                         }  
  
                         if ((in_array("READ_INVESTMENT_DATA", $conceptChars))) {    
@@ -619,9 +630,9 @@ print_r($platformData['parsingResultInvestments'][$transactionData['investment_l
 echo __FILE__ . " " . __LINE__ . "\n"; 
 // Define clearly WHICH fields to reread
 */
-                            foreach ($platformData['parsingResultInvestments'][$transactionData['investment_loanId'][0]] as $investmentDatumKey => $investmentDatum) {
-                                $database['investment'][$investmentDatumKey] = $investmentDatum;   
-                            }
+      //                      foreach ($platformData['parsingResultInvestments'][$transactionData['investment_loanId'][0]] as $investmentDatumKey => $investmentDatum) {
+        //                        $database['investment'][$investmentDatumKey] = $investmentDatum;   
+          //                  }
 //print_r($database['investment']);
 //echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
                         }
@@ -698,22 +709,10 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                             }        
                         }
                     }       
-/* THIS IS TO BE DONE IN THE FLOW 3B
-echo __FUNCTION__ . " " . __LINE__ . " ALL TRANSACTIONS FOR A LOAN AND DAY HAVE BEEN PROCESSED\n";                       
+                } 
+
+
                 
-                    if (isset($database['investment']['amortizationTableAvailable'])) {     // Write payment data in amortization table
-                        if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
-                            if (in_array("REPAYMENT", $conceptChars)) {    
-echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $dateTransaction[0]['investment_loanId'] . "\n";                                
-                                $this->repaymentReceived($transactionData, $database); 
-                            }                                
-                        }
-                        else {
-                            // Store the information so it can be processed in flow 3B
-                        }
-                    }   */                   
-                }   
-                    
 // Now start consolidation of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
 
@@ -735,13 +734,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                 echo  __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
+
                 
                 if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                     $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
-
                 }
-               
 
+                
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                     $resultCreate = $this->Investment->createInvestment($database['investment']);
@@ -785,16 +784,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
      
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
   
-                 
-//Define which amortization tables shall be collected 
-    //            $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
 
-//                foreach ($slicesAmortizationTablesToCollect as $tableSliceIdentifier) {
-//                    $investmentSliceToSave[$investmentId] = $tableSliceIdentifier;         
-//                }
-//                $slicesAmortizationTablesToCollect = [];
-//  print_r($platformData['amortizationTablesOfNewLoans']);
-
+                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {           // Add: investmentId
+                    if (empty($tableToCollect['investmentId'])) {
+                        $slicesAmortizationTablesToCollect[$tableCollectKey]['investmentId'] = $investmentId; 
+                    }
+                }                
+                
+                
     
                 $internalVariablesToHandle = array(10001,
                                                     10006, 10007, 10008,
@@ -962,37 +959,24 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
        
 
         
-        
- 
 // All transactions have been analyzed. So consolidate the data of the total platform.
-// Define which amortization tables shall be collected but remove the unnecessary ids       
-        foreach ($slicesAmortizationTablesToCollect as $tableToCollect ) {
-           $item = array_search($tableToCollect, $amortizationTablesNotNeeded);
-           if ($item !== false) {
-               unset($slicesAmortizationTablesToCollect[$tableToCollect]);
-           }   
+// Define which amortization tables shall be collected but remove the unnecessary ones 
+        foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+            $item = array_search($tableToCollect['loanId'], $amortizationTablesNotNeeded);
+            if ($item !== false) {           
+                unset ($slicesAmortizationTablesToCollect[$tableCollectKey]);  
+            }
+        } 
+
+        foreach ($slicesAmortizationTablesToCollect as $tableToCollect) {
+            echo __FILE__ . " " . __LINE__ . " investmentId = " . $tableToCollect['investmentId']  . " and slice = " . $tableToCollect['sliceIdentifier'];
+            $loanSliceId = $this->linkNewSlice($tableToCollect['investmentId'], $tableToCollect['sliceIdentifier']);
+            echo  " loanSliceId = $loanSliceId\n";
+            $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier']; 
         }
 
-        $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
-           
-          
-        foreach ($slicesAmortizationTablesToCollect as $tableToCollectKey => $tableToCollect) {
-            echo __FILE__ . " " . __LINE__ . " tableToCollectkey = $tableToCollectKey and slice = $tableToCollect\n";
-            $loanSliceId = $this->linkNewSlice($tableToCollectKey, $tableToCollect);
-            echo __FILE__ . " " . __LINE__ . " loanSliceId = $loanSliceId and slice = $tableToCollect\n";
-            $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollectKey; 
-        }
- 
-        $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
         
-        foreach ($amortizationTablesNotNeeded as $tableToRemove) { // Remove the mark of the investments which already have finished
-            $tableExists = array_search ($tableToRemove, $platformData['amortizationTablesOfNewLoans']);
-            if ($tableExists !== false) {     
-                unset($platformData['amortizationTablesOfNewLoans'][$tableExists]);  
-            }                      
-        }               
-
-  
+        
     
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";        
