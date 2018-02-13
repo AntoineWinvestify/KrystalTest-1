@@ -96,7 +96,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
-        
         /*** IMPROVED STRUCTURE **********/
         foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
             $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
@@ -104,14 +103,16 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         $keyDataForTable['type'] = 'linkedaccount_id';
         $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
-        
+        $values = [];
         foreach ($variables as $variableKey => $variable) {
             $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
             $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
-            $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+            $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
         }
-        $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
-        $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values, $variables);
+        $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+        
+        //print_r($returnData);
         /////////////////////
         $statusCollect = [];
         foreach ($returnData as $linkedaccountIdKey => $variable) {
@@ -161,6 +162,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             $returnData[$linkedaccountId]['netAnnualTotalFundsReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
+        print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
@@ -193,6 +195,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $returnData[$linkedaccountId]['netAnnualReturnPastYearXirr'][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
             }
         }
+        print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
@@ -235,7 +238,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
         }
-        //print_r($dataMergeByDate);
         $returnData = null;
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
@@ -246,6 +248,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $returnData[$linkedaccountId]['netReturnPastYear'][$keyDate] = $this->consolidateResults($dataByDate['values']);
             }
         }
+        print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
@@ -543,6 +546,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $result = "0";
         foreach ($values as $value) {
             $result = $this->winFormulas->doOperationByType($result, $value, "add");
+            /*echo "\n result ====>   ";
+            print_r($result);*/
         }
         return $result;
     }
