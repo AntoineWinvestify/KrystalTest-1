@@ -80,23 +80,23 @@ class CollectDataClientShell extends GearmanClientShell {
                 $linkedaccountsResults = [];
                 $companiesInFlowExist = [];
                 foreach ($pendingJobs as $job) {
-                    $queueInfo = json_decode($job['Queue']['queue_info'], true);
-                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
+                    $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
+                    $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
                     $this->getFinishDate($job);
                     $jobInvestor = $this->Investor->find("first", array('conditions' =>
-                        array('Investor.investor_identity' => $job['Queue']['queue_userReference']),
+                        array('Investor.investor_identity' => $job['Queue2']['queue2_userReference']),
                         'fields' => 'id',
                         'recursive' => -1,
                     ));
                     print_r($jobInvestor);
                     $investorId = $jobInvestor['Investor']['id'];
-                    $companiesInFlowExist[$job['Queue']['id']] = false;
+                    $companiesInFlowExist[$job['Queue2']['id']] = false;
                     $filterConditions = array('investor_id' => $investorId);
                     //We verify that companiesInFlow exists and if exists, 
                     //we only get that companies information from database
                     echo "\n" . __LINE__ . __FILE__ . "\n Verifying that companies from queue exists in DB for that investor \n";
                     if (!empty($queueInfo['companiesInFlow'])) {
-                        $companiesInFlowExist[$job['Queue']['id']] = true;
+                        $companiesInFlowExist[$job['Queue2']['id']] = true;
                         foreach ($queueInfo['companiesInFlow'] as $key => $linkaccountIdInFlow) {
                             $linkAccountId[] = $linkaccountIdInFlow;
                         }
@@ -106,7 +106,7 @@ class CollectDataClientShell extends GearmanClientShell {
                             );
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
-                    //$linkedaccountsResults[$job['Queue']['queue_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+                    //$linkedaccountsResults[$job['Queue2']['queue2_userReference']] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                 }
                 $userLinkedaccounts = [];
                 foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
@@ -114,22 +114,22 @@ class CollectDataClientShell extends GearmanClientShell {
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
                         $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
-                        $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue']['queue_userReference'], $linkedaccount['Linkedaccount']['id']);
+                        $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue2']['queue2_userReference'], $linkedaccount['Linkedaccount']['id']);
                         //We verify that a company doesn't have a folder with information, 
                         //if the folder exists, it means that we get than company previously on that day
                         if (!$folderExist) {
                             //After verify that a folder doesn't exist, 
                             //we verify that companiesInFlow doesn't exist neither
-                            if (!$companiesInFlowExist[$job['Queue']['id']]) {
+                            if (!$companiesInFlowExist[$job['Queue2']['id']]) {
                                 //If not exists, we put all the linkaccounts of the companies 
                                 //that we are going to collect inside the variables companiesInFlow
-                                $this->queueInfo[$job['Queue']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
+                                $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
-                            $this->getStartDate($linkedaccount, $job['Queue']['id']);
+                            $this->getStartDate($linkedaccount, $job['Queue2']['id']);
                             
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
-                            $this->userLinkaccountIds[$pendingJobs[$key]['Queue']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
+                            $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
                             echo "\n" . __LINE__ . "   " . __FILE__;
                             echo "\n company with linkedAccountId " . $linkedaccount['Linkedaccount']['id'] . " was include in the flow \n";
                             $i++;
@@ -141,7 +141,7 @@ class CollectDataClientShell extends GearmanClientShell {
                     }
                     if (Configure::read('debug')) {
                         $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "The companies in flow are");
-                        print_r($this->queueInfo[$job['Queue']['id']]['companiesInFlow']);
+                        print_r($this->queueInfo[$job['Queue2']['id']]['companiesInFlow']);
                     }
                     //We will change the status of linkingProcess to workInProcess
                     if ($this->queueInfo[$job['Queue']['id']]['originExecution'] != WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
@@ -163,10 +163,10 @@ class CollectDataClientShell extends GearmanClientShell {
                 foreach ($userLinkedaccounts as $key => $userLinkedaccount) {
                     foreach ($userLinkedaccount as $typeAccessKey => $linkedaccountsByType) {
                         $data["companies"] = $linkedaccountsByType;
-                        $data["queue_userReference"] = $pendingJobs[$key]['Queue']['queue_userReference'];
-                        $data["queue_id"] = $pendingJobs[$key]['Queue']['id'];
-                        if (!empty($this->queueInfo[$job['Queue']['id']]['originExecution'])) {
-                            $data["originExecution"] = $this->queueInfo[$job['Queue']['id']]['originExecution'];
+                        $data["queue_userReference"] = $pendingJobs[$key]['Queue2']['queue2_userReference'];
+                        $data["queue_id"] = $pendingJobs[$key]['Queue2']['id'];
+                        if (!empty($this->queueInfo[$job['Queue2']['id']]['originExecution'])) {
+                            $data["originExecution"] = $this->queueInfo[$job['Queue2']['id']]['originExecution'];
                         }
                         $data["date"] = $this->date;
                         if (Configure::read('debug')) {
@@ -180,7 +180,7 @@ class CollectDataClientShell extends GearmanClientShell {
                         }
                          echo "\n" . __LINE__ . "   " . __FILE__;
                          echo "\n sending information to worker \n";
-                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }
 
@@ -231,11 +231,11 @@ class CollectDataClientShell extends GearmanClientShell {
      * @param array $job Array that contains everything about the request
      */
     public function getFinishDate($job) {
-        if (empty($this->queueInfo[$job['Queue']['id']]['date'] )) {
-            $this->queueInfo[$job['Queue']['id']]['date'] = $this->date;
+        if (empty($this->queueInfo[$job['Queue2']['id']]['date'] )) {
+            $this->queueInfo[$job['Queue2']['id']]['date'] = $this->date;
         }
         else {
-            $this->date = $this->queueInfo[$job['Queue']['id']]['date'];
+            $this->date = $this->queueInfo[$job['Queue2']['id']]['date'];
         }
     }
     
