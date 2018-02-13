@@ -147,6 +147,36 @@ class Linkedaccount extends AppModel {
             return false;
         }
     }
+    
+    /**
+     * Get linkedaccounts id with nothing in process
+     * @param string $queueUserReference It is the user reference
+     * @return array
+     */
+    public function getLinkAccountsWithNothingInProcess($queueUserReference) {
+        $companyNothingInProcess = [];
+        $this->Investor = ClassRegistry::init('Investor');
+        $jobInvestor = $this->Investor->find("first", array('conditions' =>
+            array('Investor.investor_identity' => $queueUserReference),
+            'fields' => 'id',
+            'recursive' => -1,
+        ));
+        //print_r($jobInvestor);
+        $investorId = $jobInvestor['Investor']['id'];
+        $filterConditions = array(
+            'investor_id' => $investorId,
+            'linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS
+        );
+        $linkedaccountsResults[] = $this->getLinkedaccountDataList($filterConditions);
+        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
+            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $i = 0;
+            foreach ($linkedaccountResult as $linkedaccount) {
+                $companyNothingInProcess[] = $linkedaccount['Linkedaccount']['id'];
+            }
+        }
+        return $companyNothingInProcess;
+    }
 
     /**
      *
