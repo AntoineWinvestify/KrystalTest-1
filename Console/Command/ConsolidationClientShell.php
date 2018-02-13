@@ -77,13 +77,13 @@ class ConsolidationClientShell extends GearmanClientShell {
                 $linkedaccountsResults = [];
                 foreach ($pendingJobs as $keyjobs => $job) {
                     
-                    $queueInfo = json_decode($job['Queue']['queue_info'], true);
-                    $this->queueInfo[$job['Queue']['id']] = $queueInfo;
+                    $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
+                    $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
                     
                     $data["companies"] = $queueInfo['companiesInFlow'];
-                    $this->userLinkaccountIds[$job['Queue']['id']] = $queueInfo['companiesInFlow'];;
-                    $data["queue_userReference"] = $job['Queue']['queue_userReference'];
-                    $data["queue_id"] = $job['Queue']['id'];
+                    $this->userLinkaccountIds[$job['Queue2']['id']] = $queueInfo['companiesInFlow'];;
+                    $data["queue_userReference"] = $job['Queue2']['queue2_userReference'];
+                    $data["queue_id"] = $job['Queue2']['id'];
                     $data["date"] = $queueInfo['date'];
                     $data["originExecution"] = $queueInfo['originExecution'];
                     $this->getConsolidationWorkerFunction();
@@ -98,7 +98,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $nameServiceKey . ".-;" . $job['Queue']['queue_userReference']);
+                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference']);
                     }
                 }
                 

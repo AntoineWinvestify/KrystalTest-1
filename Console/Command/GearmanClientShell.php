@@ -42,7 +42,7 @@ class GearmanClientShell extends AppShell {
     protected $flowName;
     protected $tempArray = [];
     
-    public $uses = array('Company', 'Queue');
+    public $uses = array('Company', 'Queue2');
     
     /**
      * Constructor of the class
@@ -264,7 +264,7 @@ class GearmanClientShell extends AppShell {
 
         if (is_array($presentStatus)) {
             foreach ($presentStatus as $presentStatusKey => $status) {
-                $list[] = array("queue_status" => $status);
+                $list[] = array("queue2_status" => $status);
             }
                 $conditions = array("AND" => array($list));
         }
@@ -274,17 +274,17 @@ class GearmanClientShell extends AppShell {
 
         $userAccess = 0;
 
-        $jobList = $this->Queue->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
+        $jobList = $this->Queue2->getUsersByStatus(FIFO, $presentStatus, $userAccess, $limit);
         if (!empty($jobList)) {
             $tempData = array();
             foreach ($jobList as $job) {
-                $jobListId = $job['Queue']['id'];
+                $jobListId = $job['Queue2']['id'];
                 $tempData[] = array('id' => $jobListId,
-                                  'queue_status' => $newStatus
+                                  'queue2_status' => $newStatus
                                   );
             }
 
-            $this->Queue->saveMany($tempData, array('validate' => true));
+            $this->Queue2->saveMany($tempData, array('validate' => true));
         }
         
         return $jobList;
@@ -375,7 +375,7 @@ class GearmanClientShell extends AppShell {
                 }
             }
             if (!empty($this->queueInfo[$queueId]['companiesInFlow'])) {
-                    $this->Queue->id = $queueId;
+                    $this->Queue2->id = $queueId;
                 if (!$globalDestruction) {
                     $newState = $status;
                     $this->queueInfo[$queueId]['numberTries'] = 0;
@@ -388,9 +388,9 @@ class GearmanClientShell extends AppShell {
                     $newState = $data["newStatus"];
                     $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
                 }
-                $this->Queue->save(array(
-                            'queue_status' => $newState,
-                            'queue_info' => json_encode($this->queueInfo[$queueId])
+                $this->Queue2->save(array(
+                            'queue2_status' => $newState,
+                            'queue2_info' => json_encode($this->queueInfo[$queueId])
                         ),
                         $validate = true
                 );
@@ -426,7 +426,7 @@ class GearmanClientShell extends AppShell {
         if ($numberOfCompanies == 1) {
             $newQueueId = $queueId;
         }
-        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
+        $result = $this->Queue2->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
     }
     
     /**
@@ -467,7 +467,7 @@ class GearmanClientShell extends AppShell {
         if ($numberOfCompanies == 1) {
             $newQueueId = $queueId;
         }
-        $result = $this->Queue->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
+        $result = $this->Queue2->addToQueueDashboard2($userReference, json_encode($data), $newData["newStatus"], $newQueueId);
     }
     
     public function getWarningStatus($queueId, $restartStatus, $nextStatus) {
