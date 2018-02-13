@@ -254,9 +254,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         //print_r($returnData);
         /////////////////////
-
-        print_r($returnData);
-        exit;
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
@@ -278,6 +275,29 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             $returnData[$linkedaccountId]['netReturn'] = $this->consolidateResults($dataByLinkedaccountId['values']);
         }
+        
+         /*** IMPROVED STRUCTURE **********/
+       foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
+            if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
+                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+            }
+           
+        }
+        
+        $keyDataForTable['type'] = 'linkedaccount_id';
+        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
+        $values = [];
+        foreach ($variables as $variableKey => $variable) {
+            $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+            $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+            $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+        }
+        $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
+        $returnData['investor'][$data["queue_userReference"]]['netReturn'] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
+        
+        //print_r($returnData);
+        /////////////////////
+        
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
@@ -302,15 +322,42 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             }
         }
         $returnData = null;
-        Configure::load('p2pGestor.php', 'default');
-        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-        $financialClass = new Financial;
         foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
             foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
                 $returnData[$linkedaccountId]['netReturnPastYear'][$keyDate] = $this->consolidateResults($dataByDate['values']);
             }
         }
+        
+          /*** IMPROVED STRUCTURE **********/
+       foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
+            if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
+                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+            }
+           
+        }
+        
+        $keyDataForTable['type'] = 'linkedaccount_id';
+        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
+        $dates = $this->getPeriodOfTime($data["date"], $this->dashboardOverviewLinkaccountIds);
+        $values = [];
+        $dataMergeByDate = [];
+        
+        foreach ($dates as $keyDate => $dateYear) {
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
+                $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+            }
+            $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values, $variables);
+            //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
+        }
+
+        foreach ($dataMergeByDate as $keyDate => $dataByDate) {
+            $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnPastYearXirr'][$keyDate] = $this->consolidateResults($dataByDate['values']);
+        }
+        
+        /////////////////
+        
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
