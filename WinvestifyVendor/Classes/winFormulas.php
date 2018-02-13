@@ -123,8 +123,8 @@ class WinFormulas {
         "D" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-366",
+            "dateInit" => "-365",
+            "dateFinish" => "-365",
             "intervals" => "latest",
             "operation" => "subtract"
         ]
@@ -253,8 +253,8 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-366",
-            "dateFinish" => "-366",
+            "dateInit" => "-365",
+            "dateFinish" => "-365",
             "intervals" => "latest",
             "operation" => "subtract"
         ],
@@ -428,7 +428,7 @@ class WinFormulas {
                     "globalcashflowdata_bankCharges",             //Finanzarel
                     "globalcashflowdata_currencyExchangeFee",             //Finanzarel
                     "globalcashflowdata_TaxVat",             //Finanzarel
-                    "globalcashflowdata_TaxIncomeWithholdingTax"
+                    //"globalcashflowdata_TaxIncomeWithholdingTax"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -442,8 +442,8 @@ class WinFormulas {
         "E" => [
             "type" => "userinvestmentdata_writtenOff",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
             "intervals" => "latest",
             "operation" => "subtract"
         ]
@@ -471,8 +471,14 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
             "intervals" => "inclusive",
             "operation" => "add"
         ],
@@ -487,8 +493,14 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Globalcashflowdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
             "intervals" => "inclusive",
             "operation" => "add"
         ],
@@ -503,8 +515,14 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
             "intervals" => "inclusive",
             "operation" => "subtract"
         ],
@@ -514,22 +532,34 @@ class WinFormulas {
                     "globalcashflowdata_bankCharges",             //Finanzarel
                     "globalcashflowdata_currencyExchangeFee",             //Finanzarel
                     "globalcashflowdata_TaxVat",             //Finanzarel
-                    "globalcashflowdata_TaxIncomeWithholdingTax"
+                    //"globalcashflowdata_TaxIncomeWithholdingTax"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Globalcashflowdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
+            "dateInit" => [
+                "month" => "1",
+                "day" => "1"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
             "intervals" => "inclusive",
             "operation" => "subtract"
         ],
         "E" => [
             "type" => "userinvestmentdata_writtenOff",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
+            "dateInit" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
             "intervals" => "latest",
             "operation" => "subtract"
         ]
