@@ -53,9 +53,9 @@ class UserDataShell extends AppShell {
      */
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
         $error = 0;
-        echo "external = \n";
+        echo "external values = \n";
         print_r($externalControlVariables);
-        echo "\ninternal = \n";
+        echo "\ninternal values = \n";
         print_r($internalControlVariables);
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {

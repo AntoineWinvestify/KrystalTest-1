@@ -49,7 +49,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+   //     return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -532,7 +532,7 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
                                                     // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
 
 echo "THE LOAN WITH ID " . $dateTransaction[0]['investment_loanId']  . " IS A ZOMBIE LOAN\n";
-echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and putting its state to WIN_LOANSTATUS_ACTIVE\n";
+echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and setting its state to WIN_LOANSTATUS_ACTIVE\n";
                         $loanStatus = WIN_LOANSTATUS_ACTIVE;                                        // So amortization data is collected
  //                       $database['investment']['investment_new'] = YES;                          // SO we store it as new loan in the database
                         $database['investment']['investment_myInvestment'] = 0;
@@ -566,7 +566,11 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                 //print_r($database);
                 
                     if (isset($transactionData['conceptChars'])) {
-                        $conceptChars = explode(" ", $transactionData['conceptChars']);
+                        $conceptChars = explode(",", $transactionData['conceptChars']);
+                        
+                        foreach ($conceptChars as $itemKey => $item) {
+                            $conceptChars[$itemKey] = trim($item);
+                        }
                         
                         if (in_array("PRE-ACTIVE", $conceptChars)) {                         
                             $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
@@ -605,7 +609,23 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             if ($sliceIdExists !== false) {                                 // loanSliceId does not exist in newLoans array, so add it
                                 unset($slicesAmortizationTablesToCollect[$sliceIdExists]);  // For later processing
                             }                          
-                        }                       
+                        }  
+ 
+                        if ((in_array("READ_INVESTMENT_DATA", $conceptChars))) {    
+/*                            
+echo __FILE__ . " " . __LINE__ . " READ_INVESTMENT_DATA label found\n"; 
+print_r($transactionData['investment_loanId']);
+print_r($platformData['parsingResultInvestments'][$transactionData['investment_loanId']]);
+echo __FILE__ . " " . __LINE__ . "\n"; 
+// Define clearly WHICH fields to reread
+*/
+                            foreach ($platformData['parsingResultInvestments'][$transactionData['investment_loanId'][0]] as $investmentDatumKey => $investmentDatum) {
+                                $database['investment'][$investmentDatumKey] = $investmentDatum;   
+                            }
+//print_r($database['investment']);
+//echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
+                        }
+                        
                     }
                     
                     foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
@@ -613,9 +633,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-                        /*print_r($tempResult);
-                        echo '-----------------------------';
-                        print_r($transactionDataKey);*/
+
                         echo __FILE__ . " " . __LINE__ . "\n";
                         if (!empty($tempResult)) {
                             unset($result);
@@ -680,7 +698,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                             }        
                         }
                     }       
-
+/* THIS IS TO BE DONE IN THE FLOW 3B
+echo __FUNCTION__ . " " . __LINE__ . " ALL TRANSACTIONS FOR A LOAN AND DAY HAVE BEEN PROCESSED\n";                       
+                
                     if (isset($database['investment']['amortizationTableAvailable'])) {     // Write payment data in amortization table
                         if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
                             if (in_array("REPAYMENT", $conceptChars)) {    
@@ -693,7 +713,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $
                         }
                     }                      
                 }   
-                    
+*/                    
 // Now start consolidation of the results on investment level and per day                
                 $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
 
@@ -964,6 +984,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         }
  
         $slicesAmortizationTablesToCollect = array_unique($slicesAmortizationTablesToCollect);
+        
         foreach ($amortizationTablesNotNeeded as $tableToRemove) { // Remove the mark of the investments which already have finished
             $tableExists = array_search ($tableToRemove, $platformData['amortizationTablesOfNewLoans']);
             if ($tableExists !== false) {     
