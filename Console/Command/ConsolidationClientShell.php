@@ -261,9 +261,10 @@ class ConsolidationClientShell extends GearmanClientShell {
                 if (empty($this->tempArray[$data[0]][$linkaccountId])) {
                     $this->tempArray[$data[0]][$linkaccountId] = $dataArray;
                 } 
-                /*else if ($linkaccountId == 'investor') {
-                    $this->tempArray[$data[0]][$linkaccountId][$data[2]]
-                }*/
+                else if ($linkaccountId == 'investor') {
+                    $keyDataArray = key($dataArray[$data[2]]);
+                    $this->tempArray[$data[0]][$linkaccountId][$data[2]][$keyDataArray] = $dataArray[$data[2]][$keyDataArray];
+                }
                 else {
                     $keyDataArray = key($dataArray);
                     $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
@@ -272,7 +273,6 @@ class ConsolidationClientShell extends GearmanClientShell {
             }
             
         }
-
 //        print_r($this->userResult);
 //        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
