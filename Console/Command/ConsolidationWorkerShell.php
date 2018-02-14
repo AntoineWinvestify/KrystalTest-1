@@ -215,8 +215,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
                     $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+                    $valuesForGlobal[$dateYear][$linkedaccountId][$variableKey] = $values[$linkedaccountId][$variableKey];
                 }
-                $valuesForGlobal[$linkedaccountId][$dateYear][$variableKey] = $values[$linkedaccountId][$variableKey];
                 $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
@@ -251,36 +251,24 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 foreach ($variables as $variableKey => $variable) {
                     $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
-                    $valuesForGlobal[$linkedaccountId][$dateYear][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+                    $valuesForGlobal[$dateYear][$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
                 }
             }
         }
+        $values = [];
         $datesForGlobal = $this->mergeDatesByYear($datesForGlobal);
         foreach ($datesForGlobal as $keyDate => $dateYear) {
-            
+            $values[$dateYear] = $this->joinTwoDimensionArrayTogether($valuesForGlobal[$dateYear]);
         }
-        
-        $values = $this->joinTwoDimensionArrayTogether($values);
-        $dates = $this->getPeriodOfTime($data["date"], $this->dashboardOverviewLinkaccountIds);
-        print_r($dates);
-        $values = [];
         $dataMergeByDate = [];
         
         foreach ($dates as $keyDate => $dateYear) {
-            foreach ($variables as $variableKey => $variable) {
-                $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
-                $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
-                $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
-            }
-            $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values, $variables);
+            $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values[$dateYear], $variables);
             //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
         }
-
         foreach ($dataMergeByDate as $keyDate => $dataByDate) {
             $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnPastYearXirr'][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
         }
-        
-        //print_r($returnData);
         /////////////////////
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
@@ -733,13 +721,17 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return $fullArray;
     }
     
-    public function mergeDatesByYear($dates) {
+    public function mergeDatesByYear($datesByLinkaccount) {
         $datesForGlobal = [];
-        foreach ($dates as $date) {
-            if (!in_array($keyDate, $datesVariable[$key])) {
-                $datesVariable[$key][] = $keyDate;
+        foreach ($datesByLinkaccount as $dates) {
+            foreach ($dates as $date) {
+                if (!in_array($date, $datesForGlobal)) {
+                    $datesForGlobal[] = $date;
+                }
             }
         }
+        rsort($datesForGlobal);
+        return $datesForGlobal;
     }
     
 }
