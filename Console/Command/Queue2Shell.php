@@ -29,7 +29,7 @@ class Queue2Shell extends AppShell {
         }
 
         foreach ($investors as $investor) {
-            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'company_id' => $hasPreprocess], ['id', 'company_id']);
+            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'company_id' => $hasPreprocess, 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
         }
 
         foreach ($linkaccounts as $investorIdentity => $linkaccount) {
@@ -67,7 +67,7 @@ class Queue2Shell extends AppShell {
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
 
         foreach ($investors as $investor) {
-            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id']], ['id', 'company_id']);
+            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
         }
 
         foreach ($linkaccounts as $investorIdentity => $linkaccount) {
