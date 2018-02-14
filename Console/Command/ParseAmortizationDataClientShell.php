@@ -145,7 +145,8 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
     }
     
     /**
-     * Function to save all the amortization tables in DB per user and per linked account
+     * Function to save all the new amortization tables in DB per user and per linked account. It is assumed that these 
+     * tables are completely updated until today. Although it seems that Zank takes its time to repay an amortization 
      */
     public function saveAmortizationtablesToDB() {
 $timeStart = time();
