@@ -158,6 +158,14 @@ class Fileparser {
   * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
   * Note that the index "detail" and "type" are unique and are NOT repeated. This means that a search through this
   * array can be done using both "detail" or "type" as search key
+  * 
+  * Format:
+  * "detail" => name of internal Winvestify concept as defined in Flow Data
+  * "transactionType" => Identifies if it is a cost or an income
+  * "account" => NOT REALLY USED. MAY BE DELETED 
+  * "type" => link to the variables as defined in 'internalVariablesConfiguration.php'
+  * "chars" =>  a comma seperated list of lables as defined above
+  * 
   */   
 
     protected $transactionDetails = [  
@@ -395,7 +403,7 @@ class Fileparser {
                 ],
         
             40 => [
-                "detail" => "Create_reserved_funds",                            // Move an investment from PRE-ACTIVE to ACTIVE
+                "detail" => "Create_reserved_funds",                            
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "createReservedFunds",
@@ -420,7 +428,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "investment_activeStateChange",
-                "chars" => "AM_TABLE, READ_INVESTMENT_DATA"                      // = Collect Amortization table *and* re-read the current investment data
+                "chars" => "AM_TABLE, READ_INVESTMENT_DATA"                     // = Collect Amortization table *and* re-read the current investment data
                 ],
  /*       Not NEEDED AS THIS IS DONE USING A N ORDINARY TRANSACTION RECORD
             10002 => [
