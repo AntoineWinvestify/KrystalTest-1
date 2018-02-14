@@ -353,7 +353,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
 
         foreach ($dataMergeByDate as $keyDate => $dataByDate) {
-            $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnPastYearXirr'][$keyDate] = $this->consolidateResults($dataByDate['values']);
+            $returnData['investor'][$data["queue_userReference"]]['netReturnPastYear'][$keyDate] = $this->consolidateResults($dataByDate['values']);
         }
         
         /////////////////
