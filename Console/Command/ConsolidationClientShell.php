@@ -195,6 +195,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                 }
 
                 $this->GearmanClient->runTasks();
+                print_r($this->tempArray);
                 // ######################################################################################################
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
@@ -249,15 +250,12 @@ class ConsolidationClientShell extends GearmanClientShell {
                     }
                     //print_r($this->services);
                     $model = ClassRegistry::init($this->services[$key]['database']['platform']['model']);
-                    $id = $model->find('first',
-                        array( 'conditions' => array('date' => date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']))),
-                               'recursive' => -1,
-                               'fields' => array('id')
-                        )  
-                    ); 
+                    $dateTime = date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']));
+                    $conditions = array(
+                        'date <=' => $dateTime,
+                        'linkedaccount_id' => $linkedaccountId);
+                    $id = $model->getData($conditions,['id'],'id DESC',null,'first');
                     $model->id = $id;
-                    //echo "\n this is the variable ===>>> " . $this->services[$key]['database']['platform']['variable'];
-                    //echo "\n this is the value =====>>>>  " . $serviceValues;
                     $model->saveField($this->services[$key]['database']['platform']['variable'], $serviceValues);
                 }
             }
