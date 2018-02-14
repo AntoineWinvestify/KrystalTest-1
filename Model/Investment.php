@@ -188,4 +188,23 @@ var $validate = array(
     }
 
 
+    /** NOT YET TESTED
+     * 
+     *  Reads the references of the all the investmentslices of an investment
+     * 
+     *  @param  bigint  database reference of Investment, i.e. investmentId
+     *  @return array   slices (database references) and sliceIdentifier of each slice
+     */
+    public function getInvestmentSlices ($investmentId) {
+
+	$this->Behaviors->load('Containable');
+	$this->contain('Investmentslice');  	
+
+        $slices = $this->find("all", array("conditions" => array("investment_id" => $investmentId),
+                                            "fields" => array("id", "investmentslice_identifier"),
+                                            "recursive" => 0,
+                                          )); 
+        return $slices;        
+    }  
+    
 }

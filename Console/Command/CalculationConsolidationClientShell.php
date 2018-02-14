@@ -126,7 +126,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 
                             'queueInfo' => json_decode($job['Queue2']['queue2_info'], true));
                     }
-                   print_r($params);
+                    print_r($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue2']['queue2_userReference']);

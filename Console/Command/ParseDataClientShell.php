@@ -983,9 +983,9 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     
     
     
-    /** Is needed for partial payments???
+    /** PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION
      *  Updates the amortization table of an loan when a repayment is detected.
-     *  This method is executed AFTER the transaction has been processed by the main flow.
+     *  This method is executed AFTER all the transactions for the loan have been processed by the main flow.
      *  This method is NOT used during the account linking procedure
      * 
      *  @param  array   array with the current transaction data
@@ -995,55 +995,48 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
         
-        $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
-        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table \n";      
-        return;
-        print_r($transactionData);
-        print_r($resultData);
-        // getTable and analyze result
-        // updateTable
-   
-
-    /** 
-     * array sliceIdentifier getInvestmentSlices (pfp, investmentId or similar, userReference)
-     * getAmortizationTable(sliceIdentifier, loanId?, filterCondition
-     * UpdateAmortizationTable(sliceIdentifier, loanId?, amortizationTableReference? 
-     * DeleteAmortizationTable(sliceIdentifier, loanId?, amortizationTableReference? 
-     * 
-     * 
-     * transaction data contains loanId and slice identifier in case of Finbee.
-     * I just implement loanId (as for Mintos)
-     * store repayment data in amortization table
-     * get next repayment data (date and amount)
-     * As this is a repayment, so an investmentId already exists.not IN CASE OF A ACCOUNT LINKING PROCEDURE
-     * 
-     * get all slices where investment_id = XXXXX;
-     * for those investmentslices get the amortization table(s)
-     * 
-     * 
-     * 
-     */
-        $resultData['investment']['investment_paymentStatus'] = 0;
-        // determine which amortization table is to be updated, get 
-        $conditions = array("AND" => array('investor_id' => $resultData['investment']['investment_loanId']));        
- 	$this->Investment->Behaviors->load('Containable');
-	$this->Investment->contain('Investmentslice');  
-        print_r($conditions);
-	$resultInvestmentData = $this->Investment->find("all", $params = array('recursive' => 2,
-										'conditions'	=> $conditions,
-												));
+  
+        if (isset($transactionData['payment']['payment_principalAndInterestPayment']) || !empty($transactionData['payment']['payment_payment_principalAndInterestPayment'])) {
+            $table['amortizationtable_capitalAndInterestPayment'] = $transactionData['payment']['payment_principalAndInterestPayment'];
+            if (isset($transactionData['payment']['payment_capitalRepayment']) || !empty($transactionData['payment']['payment_payment_capitalRepayment'])) {
+                $table['amortizationtable_capitalRepayment'] = $transactionData['payment']['payment_capitalRepayment'];
+                $table['amortizationtable_interest'] = bcsub($transactionData['payment']['payment_principalAndInterestPayment'], $transactionData['payment']['payment_capitalRepayment'] ,16);
+            }
+            else {
+                $table['amortizationtable_capitalRepayment'] = bcsub($transactionData['payment']['payment_principalAndInterestPayment'], $transactionData['payment']['payment_regularGrossInterestIncome'] ,16);
+                $table['amortizationtable_interest'] = $transactionData['payment']['payment_regularGrossInterestIncome'];
+            } 
+        }            
+        $table['amortizationtable_paymentDate'] = $transactionData['date'];
+        
+  
+        $sliceIdentifier = $this->Investment->getSliceIdentifiers($transactionData, $resultData);   
+        $slices = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);   
        
-        print_r($resultInvestmentData);
-        if (!empty($resultInvestmentData)) {
-            
+        foreach ($slices as $slice) {                                                               
+            if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
+                $sliceDbreference = $slice['id'];
+                break;
+            }
         }
-        else {      // An error occurred, I cannot find the investmentslice model
-            
+        
+//       $filterCondition = array("payment_capitalRepayment" <> "")------  // also use first, all,..or put in chronological order ...
+        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterCondition);  // for instance all entries of table which are
+        $tableDbReference = $amortizationTable['id'];                                                       // not yet paid Normally ask for first one with capitalRepayment = "" or 0;
+
+        $table['id'] = $tableDbReference;
+        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table wth reference = $tableDbReference\n";       
+        if ($this->Investmentslice->updateAmortizationTable($table)) {
+            echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n"; 
         }
-        echo "Exiting from " . __FUNCTION__ ;
-        exit;
-        return;
-    }    
+        else {
+            echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n"; 
+        }
+
+        return;       
+    }
+
+        
        
     /** 
      *  Searches in the investments and expired_investment arrays for an *investment* done on 
