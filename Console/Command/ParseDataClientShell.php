@@ -698,7 +698,20 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 echo  __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
+
                 
+                if (isset($database['investment']['amortizationTableAvailable'])) {     // Write payment data in amortization table
+                    if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
+                        if (in_array("REPAYMENT", $conceptChars)) {    
+echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $dateTransaction[0]['investment_loanId'] . "\n";                                
+                            $this->repaymentReceived($transactionData, $database); 
+                        }                                
+                    }
+                    else {
+                        // Store the information so it can be processed in flow 3B
+                    }
+                } 
+    
                 if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                     $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
                 }
@@ -994,7 +1007,10 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-        
+echo __FUNCTION__ . " " . __LINE__ . " \n";          
+print_r($transactionData);
+print_r($resultData);
+
   
         if (isset($transactionData['payment']['payment_principalAndInterestPayment']) || !empty($transactionData['payment']['payment_payment_principalAndInterestPayment'])) {
             $table['amortizationtable_capitalAndInterestPayment'] = $transactionData['payment']['payment_principalAndInterestPayment'];
@@ -1008,7 +1024,8 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
             } 
         }            
         $table['amortizationtable_paymentDate'] = $transactionData['date'];
-        
+echo __FUNCTION__ . " " . __LINE__ . " \n";        
+print_r($table);        
   
         $sliceIdentifier = $this->Investment->getSliceIdentifiers($transactionData, $resultData);   
         $slices = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);   
@@ -1019,9 +1036,10 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
                 break;
             }
         }
-        
-//       $filterCondition = array("payment_capitalRepayment" <> "")------  // also use first, all,..or put in chronological order ...
-        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterCondition);  // for instance all entries of table which are
+        $filterConditions = array ('amortizationtable_paymentDate =' => "");
+        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);  // for instance all entries of table which are
+echo __FUNCTION__ . " " . __LINE__ . " \n";        
+print_r($amortizationTable); 
         $tableDbReference = $amortizationTable['id'];                                                       // not yet paid Normally ask for first one with capitalRepayment = "" or 0;
 
         $table['id'] = $tableDbReference;
@@ -1032,7 +1050,6 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         else {
             echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n"; 
         }
-
         return;       
     }
 
@@ -1097,8 +1114,5 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         return $sliceIdentifier;
     }
     
-    
-    
-    
-    
+ 
 }
