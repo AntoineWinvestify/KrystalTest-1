@@ -76,14 +76,14 @@ class WinFormulas {
                     "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
                     "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
                     "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
-                    //"globaltotalsdata_interestGrossIncomePerDay",
-                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
-                    //"globaltotalsdata_loanRecoveriesPerDay",
-                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    //"globaltotalsdata_loanCompensationPerDay",
-                    //"globaltotalsdata_incomeSecondaryMarket",
-                    //"globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -193,14 +193,14 @@ class WinFormulas {
                     "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
                     "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
                     "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
-                    //"globaltotalsdata_interestGrossIncomePerDay",
-                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
-                    //"globaltotalsdata_loanRecoveriesPerDay",
-                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    //"globaltotalsdata_loanCompensationPerDay",
-                    //"globaltotalsdata_incomeSecondaryMarket",
-                    //"globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -283,14 +283,14 @@ class WinFormulas {
                     "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
                     "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
                     "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
-                    //"globaltotalsdata_interestGrossIncomePerDay",
-                    //"globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    //"globaltotalsdata_latePaymentFeeIncomePerDay",
-                    //"globaltotalsdata_loanRecoveriesPerDay",
-                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    //"globaltotalsdata_loanCompensationPerDay",
-                    //"globaltotalsdata_incomeSecondaryMarket",
-                    //"globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_interestGrossIncomePerDay",
+                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
+                    "globaltotalsdata_latePaymentFeeIncomePerDay",
+                    "globaltotalsdata_loanRecoveriesPerDay",
+                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
+                    "globaltotalsdata_loanCompensationPerDay",
+                    "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_principalBuybackPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
