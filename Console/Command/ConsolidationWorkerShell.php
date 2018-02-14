@@ -84,7 +84,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
-                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
             }
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
         }
@@ -97,25 +97,29 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
         }
         /*** IMPROVED STRUCTURE **********/
+        $companiesNotInProgress = [];
         foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
             if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
-                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+                $companiesNotInProgress[] = $companyNothingInProgress;
             }
            
         }
-        
-        $keyDataForTable['type'] = 'linkedaccount_id';
-        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
-        $values = [];
-        foreach ($variables as $variableKey => $variable) {
-            $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
-            $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
-            $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+        foreach ($companiesNotInProgress as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+            }
+            //$dataMergeByDate[$linkedaccountId] 
         }
+        $values = $this->joinTwoDimensionArrayTogether($values);
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnXirr'] = $financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']);
         
-        //print_r($returnData);
+        print_r($returnData);
+        exit;
         /////////////////////
         $statusCollect = [];
         foreach ($returnData as $linkedaccountIdKey => $variable) {
@@ -152,7 +156,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
-                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
             }
             $dataMergeByDate[$linkedaccountId] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
             //$dataMergeByDate = $this->returnDataPreformat();
@@ -168,21 +172,24 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         
         /*** IMPROVED STRUCTURE **********/
-       foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
+       $companiesNotInProgress = [];
+        foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
             if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
-                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+                $companiesNotInProgress[] = $companyNothingInProgress;
             }
            
         }
-        
-        $keyDataForTable['type'] = 'linkedaccount_id';
-        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
-        $values = [];
-        foreach ($variables as $variableKey => $variable) {
-            $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
-            $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
-            $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+        foreach ($companiesNotInProgress as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+            }
+            //$dataMergeByDate[$linkedaccountId] 
         }
+        $values = $this->joinTwoDimensionArrayTogether($values);
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         $returnData['investor'][$data["queue_userReference"]]['netAnnualTotalFundsReturnXirr'] = $financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']);
         
@@ -202,12 +209,14 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $keyDataForTable['value'] = $linkedaccountId;
             $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
             $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+            $datesForGlobal[$linkedaccountId] = $dates; 
             foreach ($dates as $keyDate => $dateYear) {
                 foreach ($variables as $variableKey => $variable) {
                     $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
                     $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
                 }
+                $valuesForGlobal[$linkedaccountId][$dateYear][$variableKey] = $values[$linkedaccountId][$variableKey];
                 $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
             }
@@ -225,14 +234,33 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         
         /*** IMPROVED STRUCTURE **********/
+        $companiesNotInProgress = [];
         foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
             if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
-                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+                $companiesNotInProgress[] = $companyNothingInProgress;
             }
            
         }
-        $keyDataForTable['type'] = 'linkedaccount_id';
-        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
+        foreach ($companiesNotInProgress as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
+            $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+            $datesForGlobal[$linkedaccountId] = $dates; 
+            foreach ($dates as $keyDate => $dateYear) {
+                foreach ($variables as $variableKey => $variable) {
+                    $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
+                    $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
+                    $valuesForGlobal[$linkedaccountId][$dateYear][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+                }
+            }
+        }
+        $datesForGlobal = $this->mergeDatesByYear($datesForGlobal);
+        foreach ($datesForGlobal as $keyDate => $dateYear) {
+            
+        }
+        
+        $values = $this->joinTwoDimensionArrayTogether($values);
         $dates = $this->getPeriodOfTime($data["date"], $this->dashboardOverviewLinkaccountIds);
         print_r($dates);
         $values = [];
@@ -277,20 +305,22 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         
          /*** IMPROVED STRUCTURE **********/
-       foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
+        $companiesNotInProgress = [];
+        foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
             if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
-                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+                $companiesNotInProgress[] = $companyNothingInProgress;
             }
            
         }
-        
-        $keyDataForTable['type'] = 'linkedaccount_id';
-        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
-        $values = [];
-        foreach ($variables as $variableKey => $variable) {
-            $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
-            $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
-            $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date);
+        foreach ($companiesNotInProgress as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            foreach ($variables as $variableKey => $variable) {
+                $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
+                $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
+                $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+            }
+            //$dataMergeByDate[$linkedaccountId] 
         }
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         $returnData['investor'][$data["queue_userReference"]]['netReturn'] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
@@ -550,6 +580,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             }
             else {
                 $options = [];
+                $options['conditions'] = array($keyValue['type'] => $keyValue['value']);
                 $options['fields'] = array('date');
                 $options['order'] = array('date' => 'asc');
                 $options['recursive'] = -1;
@@ -660,6 +691,55 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             print_r($result);*/
         }
         return $result;
+    }
+    
+    /**
+     * Join together two or more arrays with the same keys with two levels
+     * 
+     * @param array $array It is an array of arrays
+     * @param array $orderParam With orderParams if needed
+     */
+    public function joinTwoDimensionArrayTogether($arrays, $orderParam) {
+        $dates = [];
+        foreach ($arrays as $array) {
+            foreach ($array as $key => $variableArray) {
+                foreach ($variableArray as $keyDate => $value) {
+                    if (!in_array($keyDate, $datesVariable[$key])) {
+                        $datesVariable[$key][] = $keyDate;
+                    }
+                }
+            }
+        }
+        foreach ($datesVariable as $key => $date) {
+            sort($datesVariable[$key]);
+        }
+        $fullArray = [];
+        //$fullArray = array_shift($arrays);
+        $i = 0;
+        foreach ($datesVariable as $key => $variableKey) {
+            foreach ($variableKey as $key2 => $date) {
+                $value = null;
+                foreach ($arrays as $arrayKey => $array) {
+                    if (empty($array[$key][$date])) {
+                        continue;
+                    }
+                    if (empty($fullArray[$key][$date])) {
+                        $fullArray[$key][$date] = "0";
+                    }
+                    $fullArray[$key][$date] = $this->winFormulas->doOperationByType($fullArray[$key][$date], $array[$key][$date], "add");
+                }
+            }
+        }
+        return $fullArray;
+    }
+    
+    public function mergeDatesByYear($dates) {
+        $datesForGlobal = [];
+        foreach ($dates as $date) {
+            if (!in_array($keyDate, $datesVariable[$key])) {
+                $datesVariable[$key][] = $keyDate;
+            }
+        }
     }
     
 }
