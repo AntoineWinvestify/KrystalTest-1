@@ -329,11 +329,14 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $keyDataForTable['value'] = $linkedaccountId;
             $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
             $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+            $datesForGlobal[$linkedaccountId] = $dates; 
             foreach ($dates as $keyDate => $dateYear) {
                 foreach ($variables as $variableKey => $variable) {
                     $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
                     $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+                    $valuesForGlobal[$dateYear][$linkedaccountId][$variableKey] = $values[$linkedaccountId][$variableKey];
+                    
                 }
                 $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
@@ -347,26 +350,36 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         
           /*** IMPROVED STRUCTURE **********/
-       foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
+        $companiesNotInProgress = [];
+        foreach ($data['companiesNothingInProgress'] as $companyNothingInProgress) {
             if (!in_array($companyNothingInProgress, $this->dashboardOverviewLinkaccountIds)) {
-                $this->dashboardOverviewLinkaccountIds[] = $companyNothingInProgress;
+                $companiesNotInProgress[] = $companyNothingInProgress;
             }
            
         }
-        
-        $keyDataForTable['type'] = 'linkedaccount_id';
-        $keyDataForTable['value'] = $this->dashboardOverviewLinkaccountIds;
-        $dates = $this->getPeriodOfTime($data["date"], $this->dashboardOverviewLinkaccountIds);
+        foreach ($companiesNotInProgress as $linkedaccountId) {
+            $keyDataForTable['type'] = 'linkedaccount_id';
+            $keyDataForTable['value'] = $linkedaccountId;
+            $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
+            $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
+            $datesForGlobal[$linkedaccountId] = $dates; 
+            foreach ($dates as $keyDate => $dateYear) {
+                foreach ($variables as $variableKey => $variable) {
+                    $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
+                    $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
+                    $valuesForGlobal[$dateYear][$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
+                }
+            }
+        }
         $values = [];
+        $datesForGlobal = $this->mergeDatesByYear($datesForGlobal);
+        foreach ($datesForGlobal as $keyDate => $dateYear) {
+            $values[$dateYear] = $this->joinTwoDimensionArrayTogether($valuesForGlobal[$dateYear]);
+        }
         $dataMergeByDate = [];
         
         foreach ($dates as $keyDate => $dateYear) {
-            foreach ($variables as $variableKey => $variable) {
-                $date['init'] = $this->getDateForSum($dateYear, $variable['dateInit']);
-                $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
-                $values[$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
-            }
-            $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values, $variables);
+            $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values[$dateYear], $variables);
             //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
         }
 
