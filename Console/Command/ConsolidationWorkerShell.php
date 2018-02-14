@@ -118,8 +118,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnXirr'] = $financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']);
         
-        print_r($returnData);
-        exit;
         /////////////////////
         $statusCollect = [];
         foreach ($returnData as $linkedaccountIdKey => $variable) {
@@ -131,15 +129,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 $statusCollect[$linkedaccountIdKey] = "1";
             }
         }
-        /*print_r($returnData);
-        
-        $vendorBaseDirectoryClasses = Configure::read('vendor') . "PHPExcel/PHPExcel/Calculation";          // Load Winvestify class(es)
-        require_once($vendorBaseDirectoryClasses . DS . 'Financial.php');
-        $financialClass = new PHPExcel_Calculation_Financial;
-        foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-            $returnData[$linkedaccountId]['netAnnualReturnXirr'] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
-        }
-        */
         print_r($returnData);
         $dataArray['statusCollect'] = $statusCollect;
         $dataArray['tempArray'] = $returnData;
@@ -244,7 +233,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($companiesNotInProgress as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
-            $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
             $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
             $datesForGlobal[$linkedaccountId] = $dates; 
             foreach ($dates as $keyDate => $dateYear) {
@@ -270,6 +258,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData['investor'][$data["queue_userReference"]]['netAnnualReturnPastYearXirr'][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
         }
         /////////////////////
+        print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         return json_encode($dataArray);
     }
@@ -360,7 +349,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($companiesNotInProgress as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
-            $this->dashboardOverviewLinkaccountIds[] = $linkedaccountId;
             $dates = $this->getPeriodOfTime($data["date"], $linkedaccountId);
             $datesForGlobal[$linkedaccountId] = $dates; 
             foreach ($dates as $keyDate => $dateYear) {
