@@ -49,7 +49,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-   //     return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -261,8 +261,8 @@ class ParseDataClientShell extends GearmanClientShell {
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values"
      * and writes all values to the database.
+     * 
      *  @param  $array          Array which holds the data (per PFP) as received from the Worker
-     *
      *  @return boolean true
      *                  false
      *
@@ -351,15 +351,8 @@ class ParseDataClientShell extends GearmanClientShell {
 
 
         
-        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {    // these are all the transactions, PER day
+        foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
-
-if ($dateKey == "2019-03-13"){ 
-    echo "Exiting when date = " . $dateKey . "\n";
-    $timeStop = time();
-    echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
-    exit;
-}
 
             unset ($investmentListToCheck);
             unset ($loanStatus);
@@ -370,21 +363,9 @@ if ($dateKey == "2019-03-13"){
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey; 
-            $database['configParms']['outstandingPrincipalRoundingParm'] = $precision;      // configuration parameter 
+            $database['configParms']['outstandingPrincipalRoundingParm'] = $precision;          // configuration parameter 
     
-            foreach ($dates as $keyDateTransaction => $dateTransaction) {           // read all *individual* transactions of a loanId per day
-
-/*
- * if ($keyDateTransaction == "29016-01") {   
-        echo "Reached LoanId $keyDateTransaction, so quitting\n ";
-        continue;
-        echo "Exiting\n";
-        $timeStop = time();
-        echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart); 
-        exit;
-} 
-*/ 
-              
+            foreach ($dates as $keyDateTransaction => $dateTransaction) {                       // read all *individual* transactions of a loanId per day           
 // Do some pre-processing in order to see if a *global* loanId really is a global loanId, i.e. 
 // convert the global loanId to a real loanId, this works for new investments only  
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
@@ -418,7 +399,7 @@ if ($dateKey == "2019-03-13"){
                 if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
-                        if ($transactionDataKey == "internalName") {        // 'dirty trick' to keep it simple
+                        if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }  
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
@@ -514,7 +495,6 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
                         case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
                         case WIN_LOANSTATUS_ACTIVE:
                         case WIN_LOANSTATUS_FINISHED:    
-//                            $database['investment']['investment_new'] = YES;                  // Serves for writing it to the DB as a NEW loan  
                             $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                             $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
                         break;
@@ -575,17 +555,9 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                         
                         if (in_array("AM_TABLE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
                             if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
-                                unset ($sliceIdentifier);
-                                if (isset($transactionData['sliceIdentifier'])) {                   // For P2P's that have individual slices per investment, like FinBee
-                                        $sliceIdentifier = $transactionData['sliceIdentifier'];                                        
-                                    } 
-                                if (isset($database['investment']['investment_sliceIdentifier'])) {     
-                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
-                                    }                                    
-                                if (empty($sliceIdentifier)) {                                      // Take the default one
-                                    $sliceIdentifier = $transactionData['investment_loanId'];                                
-                                }
+//                                unset ($sliceIdentifier);
 
+                                $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
                                 // if not then reate a new array with the data available so far, sliceIdentifier and loanId
                                 $isNewTable = YES;
@@ -604,15 +576,7 @@ echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transacti
                         }
                         
                         if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
-                            if (isset($transactionData['sliceIdentifier'])) {
-                                    $sliceIdentifier = $transactionData['sliceIdentifier'];                                      
-                                }
-                                if (isset($database['investment']['investment_sliceIdentifier'])) {     
-                                        $sliceIdentifier = $database['investment']['investment_sliceIdentifier'];                                         
-                                    }                                    
-                            if (empty($sliceIdentifier)) {                                          // Take the default one
-                                $sliceIdentifier = $transactionData['investment_loanId'];                                 
-                            }
+                            $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                             foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                                 if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
                                     if ($tableToCollect['loanId'] == $transactionData['investment_loanId']) {
@@ -734,12 +698,10 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                 echo  __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
-
                 
                 if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                     $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
                 }
-
                 
                 if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
@@ -1021,9 +983,10 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
     
     
     
-    /**is needed for partial payments???
-     *  Deals with all the actions of a repayment of a loan. This is AFTER all the
-     *  changes in the database by the main flow
+    /** Is needed for partial payments???
+     *  Updates the amortization table of an loan when a repayment is detected.
+     *  This method is executed AFTER the transaction has been processed by the main flow.
+     *  This method is NOT used during the account linking procedure
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
@@ -1031,26 +994,37 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-
+        
+        $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table \n";      
         return;
         print_r($transactionData);
         print_r($resultData);
-        
-        /* transaction data contains loanId and slice identifier in case of Finbee.
-         * I just implement loanId (as for Mintos)
-         * store repayment data in amortization table
-         * get next repayment data (date and amount)
-         * As this is a repayment, so an investmentId already exists.not IN CASE OF A ACCOUNT LINKING PROCEDURE
-         * 
-         * get all slices where investment_id = XXXXX;
-         * for those investmentslices get the amortization table(s)
-         * 
-         * 
-         * 
-         */
+        // getTable and analyze result
+        // updateTable
+   
+
+    /** 
+     * array sliceIdentifier getInvestmentSlices (pfp, investmentId or similar, userReference)
+     * getAmortizationTable(sliceIdentifier, loanId?, filterCondition
+     * UpdateAmortizationTable(sliceIdentifier, loanId?, amortizationTableReference? 
+     * DeleteAmortizationTable(sliceIdentifier, loanId?, amortizationTableReference? 
+     * 
+     * 
+     * transaction data contains loanId and slice identifier in case of Finbee.
+     * I just implement loanId (as for Mintos)
+     * store repayment data in amortization table
+     * get next repayment data (date and amount)
+     * As this is a repayment, so an investmentId already exists.not IN CASE OF A ACCOUNT LINKING PROCEDURE
+     * 
+     * get all slices where investment_id = XXXXX;
+     * for those investmentslices get the amortization table(s)
+     * 
+     * 
+     * 
+     */
         $resultData['investment']['investment_paymentStatus'] = 0;
-        
+        // determine which amortization table is to be updated, get 
         $conditions = array("AND" => array('investor_id' => $resultData['investment']['investment_loanId']));        
  	$this->Investment->Behaviors->load('Containable');
 	$this->Investment->contain('Investmentslice');  
@@ -1070,96 +1044,8 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         exit;
         return;
     }    
-
-    
-    /** is it worth the while to do this? I basically am only interested in the
-     *  next payment date and I trust the platform calculates correctly.
-     * 
-     *  Queues the repayment data as no amortization table(s) are stored yet.
-     *  This data is read when the tables are collected from the P2P.
-     *  This function is typically called for active investments at time of linking 
-     *  a new account
-     * 
-     *  @param  array   array with the current transaction data
-     *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return 
-     *                  
-     */
-    public function queueRepaymentData(&$transactionData, &$resultData) {
-        echo __FUNCTION__ . __LINE__ . "\n";
-        print_r($transactionData);
-        print_r($resultData);
-        
-        if (isset($resultData['investment']['investment_queuedPaymentData'])) {
-            
-        }
-        
-
-        echo "Exiting from " . __FUNCTION__ ;
-        exit;
-        return;
-    }       
- 
-    
+       
     /** 
-     *  Reads the queued repaymentData and update the amortization tables
-     *  THIS IMPLEMENTATION ONLY COVERS MINTOS, ZANK AND DOES *NOT* HANDLE
-     *  FINBEE
-     * 
-     *  @param  array   array with the current transaction data
-     *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return 
-     *                  
-     */
-    public function getRepaymentDataFromQueue($loanId, $sliceIdentifier) {
-        echo __FUNCTION__ . __LINE__ . "\n";
-        print_r($transactionData);
-        print_r($resultData);
-        
-        if (isset($resultData['investment']['investment_queuedPaymentData'])) {
-            
-        }
-        
-
-        echo "Exiting from " . __FUNCTION__ ;
-        exit;
-        return;
-    } 
-
-  
-    
-    
-    
-    
-    
-    
-     function arrayToExcel($array, $excelName) {
-        /*$array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
-        $excelName = "prueba";*/
-        $keyArray = array();
-        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
-        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-
-        foreach ($array as $key => $val) {
-            $keyArray[] = $key;
-        }
-
-        $filter = null;
-        $objPHPExcel = new PHPExcel();
-        $objPHPExcel->getProperties()->setTitle($excelName);
-
-        $objPHPExcel->setActiveSheetIndex(0)
-                ->fromArray($keyArray, NULL, 'A1')
-                ->fromArray($array, NULL, 'A2');
-        
-        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-        $objWriter->save($excelName);
-        echo "FILE $excelName has been written\n";
-
-    }   
-    
-    
-     /** 
      *  Searches in the investments and expired_investment arrays for an *investment* done on 
      *  the date as defined in the dateTransaction array. Also the amount is checked
      *  and investments without the mark: "InvestmentAlreadyDetected"
@@ -1194,6 +1080,32 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
         }
         return null;
     }    
+    
+ 
+    /** 
+     *  Determines the sliceIdentifier (.i.e. the amortization table) to be used
+     * 
+     *  @param  array   array with the current transaction data
+     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @return string  sliceIndentifier
+     *                  
+     */ 
+    public function getSliceIdentifier(&$transactionData, &$resultData) {
+     
+        if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that have individual slices per investment, like FinBee
+            $sliceIdentifier = $transactionData['sliceIdentifier'];                                        
+        } 
+        if (isset($resultData['investment']['investment_sliceIdentifier'])) {     
+            $sliceIdentifier = $resultData['investment']['investment_sliceIdentifier'];                                         
+        }                                    
+        if (empty($sliceIdentifier)) {                                          // Take the default one
+            $sliceIdentifier = $transactionData['investment_loanId'];                                
+        }   
+        return $sliceIdentifier;
+    }
+    
+    
+    
     
     
 }

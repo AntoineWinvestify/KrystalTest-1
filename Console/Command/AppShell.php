@@ -317,5 +317,37 @@ class AppShell extends Shell {
             die;
         }
     }
+  
+    /**
+     * Function to print the contents of an array to an excel file
+     * THIS IS A DEBUG FUNCTION
+     * 
+     * @param string $this->args[0] | $scriptName It is the name of the client that will be checked
+     */    
+    function arrayToExcel($array, $excelName) {
+        /*$array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
+        $excelName = "prueba";*/
+        $keyArray = array();
+        App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
+        App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
+
+        foreach ($array as $key => $val) {
+            $keyArray[] = $key;
+        }
+
+        $filter = null;
+        $objPHPExcel = new PHPExcel();
+        $objPHPExcel->getProperties()->setTitle($excelName);
+
+        $objPHPExcel->setActiveSheetIndex(0)
+                ->fromArray($keyArray, NULL, 'A1')
+                ->fromArray($array, NULL, 'A2');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+        $objWriter->save($excelName);
+        echo "FILE $excelName has been written\n";
+
+    }    
+    
     
 }
