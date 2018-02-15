@@ -160,11 +160,14 @@ class Investmentslice extends AppModel
     public function getAmortizationTable($slice, $filterConditions) {
         
         $conditions = array_merge(array("id" => $slice), $filterConditions);
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($conditions);        
         $result = $this->Amortizationtable->find('all', array(
                 'conditions' => $conditions, 
                 'recursive' => 1, 
             ));
-        
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($conditions);           
         return $result;
     }
     
@@ -176,10 +179,13 @@ class Investmentslice extends AppModel
      *  @return array   boolean  
      */
     public function UpdateAmortizationTable($data)  {
-        
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($data);           
         if ($this->Amortizationtable->save($data, $validate = true)) {
+echo __FUNCTION__ . " " . __LINE__ . "\n";            
            return true;
         }
+echo __FUNCTION__ . " " . __LINE__ . "\n";        
         return false;
     }  
     
@@ -191,8 +197,10 @@ class Investmentslice extends AppModel
      *  @param  bigint  Database reference of model investmentslice
      *  @return array   boolean     
      */
-    public function DeleteAmortizationTable($slice)  {
+    public function DeleteAmortizationTable($slice)  {       
         $conditions = array('investmentslice_id' => $slice);
+echo __FUNCTION . " " . __LINE__ . "\n";
+print_r($conditions); 
         $result = $this->Amortizationtable->deleteAll($conditions, false, false);
         return $result;
     } 

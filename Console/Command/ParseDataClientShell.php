@@ -498,7 +498,7 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
                             $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                             $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
                         break;
-                    }   
+                    }  
                 } 
                 else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
                     $filterConditions = array("investment_loanId" => $dateTransaction[0]['investment_loanId'] ,
@@ -506,7 +506,8 @@ echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction
                     $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
                         "investment_priceInSecondaryMarket" , "investment_outstandingPrincipal", "investment_totalGrossIncome",
                         "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
-                        "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan", "investment_sliceIdentifier"));
+                        "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan", 
+                        "investment_sliceIdentifier", "investment_amortizationTableAvailable"));
  
                     $investmentId = $tempInvestmentData[0]['Investment']['id'];
                     if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
@@ -534,6 +535,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                         $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];   
                         $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
                         $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
+                        $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
                         $database['investment']['id'] = $investmentId;
                     }
                 }
@@ -541,7 +543,7 @@ echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an e
                 // load all the transaction data
                 foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
 echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
-
+print_r($database);
                     if (isset($transactionData['conceptChars'])) {
                         $conceptChars = explode(",", $transactionData['conceptChars']);
                         
@@ -699,11 +701,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
               
                 $database['investment']['linkedaccount_id'] = $linkedaccountId;
 
-                
-                if (isset($database['investment']['amortizationTableAvailable'])) {     // Write payment data in amortization table
-                    if ($database['investment']['amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
-                        if (in_array("REPAYMENT", $conceptChars)) {    
-echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table for " . $dateTransaction[0]['investment_loanId'] . "\n";                                
+                if (isset($database['investment']['investment_amortizationTableAvailable'])) {     // Write payment data in amortization table
+                    if ($database['investment']['investment_amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
+                        if (in_array("REPAYMENT", $conceptChars)) {        
                             $this->repaymentReceived($transactionData, $database); 
                         }                                
                     }
@@ -1007,36 +1007,43 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-echo __FUNCTION__ . " " . __LINE__ . " \n";          
-print_r($transactionData);
-print_r($resultData);
 
-  
-        if (isset($transactionData['payment']['payment_principalAndInterestPayment']) || !empty($transactionData['payment']['payment_payment_principalAndInterestPayment'])) {
-            $table['amortizationtable_capitalAndInterestPayment'] = $transactionData['payment']['payment_principalAndInterestPayment'];
-            if (isset($transactionData['payment']['payment_capitalRepayment']) || !empty($transactionData['payment']['payment_payment_capitalRepayment'])) {
-                $table['amortizationtable_capitalRepayment'] = $transactionData['payment']['payment_capitalRepayment'];
-                $table['amortizationtable_interest'] = bcsub($transactionData['payment']['payment_principalAndInterestPayment'], $transactionData['payment']['payment_capitalRepayment'] ,16);
+        if ($resultData['payment']['payment_principalAndInterestPayment'] <> 0) {
+            $table['amortizationtable_capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
+            if ($resultData['payment']['payment_capitalRepayment'] <> 0 ) {
+                $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
+                $table['amortizationtable_interest'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'] ,16);
             }
             else {
-                $table['amortizationtable_capitalRepayment'] = bcsub($transactionData['payment']['payment_principalAndInterestPayment'], $transactionData['payment']['payment_regularGrossInterestIncome'] ,16);
-                $table['amortizationtable_interest'] = $transactionData['payment']['payment_regularGrossInterestIncome'];
+                $table['amortizationtable_capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'] ,16);
+                $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
             } 
-        }            
-        $table['amortizationtable_paymentDate'] = $transactionData['date'];
-echo __FUNCTION__ . " " . __LINE__ . " \n";        
+        } 
+        else {
+            $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
+            $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];            
+        }
+        $table['amortizationtable_paymentDate'] = $transactionData['date'];     
+echo __FUNCTION__ . " " . __LINE__ . " \n";
 print_r($table);        
-  
-        $sliceIdentifier = $this->Investment->getSliceIdentifiers($transactionData, $resultData);   
-        $slices = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);   
-       
-        foreach ($slices as $slice) {                                                               
+
+        $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);   
+echo __FUNCTION__ . " " . __LINE__ . " \n";
+        $slices = $this->Investment->getInvestmentSlices ($resultData['investment']['id']+12);   
+echo __FUNCTION__ . " " . __LINE__ . " \n";      
+        foreach ($slices as $slice) {   
+echo __FUNCTION__ . " " . __LINE__ . " \n";
+            print_r($slice);
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
+echo __FUNCTION__ . " " . __LINE__ . " \n";                  
                 $sliceDbreference = $slice['id'];
                 break;
             }
         }
+      
         $filterConditions = array ('amortizationtable_paymentDate =' => "");
+        print_r($filterConditions);
+echo __FUNCTION__ . " " . __LINE__ . " \n";         
         $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);  // for instance all entries of table which are
 echo __FUNCTION__ . " " . __LINE__ . " \n";        
 print_r($amortizationTable); 
@@ -1101,7 +1108,7 @@ print_r($amortizationTable);
      *                  
      */ 
     public function getSliceIdentifier(&$transactionData, &$resultData) {
-     
+  
         if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that have individual slices per investment, like FinBee
             $sliceIdentifier = $transactionData['sliceIdentifier'];                                        
         } 
@@ -1110,7 +1117,7 @@ print_r($amortizationTable);
         }                                    
         if (empty($sliceIdentifier)) {                                          // Take the default one
             $sliceIdentifier = $transactionData['investment_loanId'];                                
-        }   
+        }
         return $sliceIdentifier;
     }
     
