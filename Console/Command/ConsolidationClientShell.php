@@ -271,6 +271,9 @@ class ConsolidationClientShell extends GearmanClientShell {
         }
     }
     
+    /**
+     * Function to get all the services in the flow4
+     */
     public function getAllServices() {
         $services = $this->services;
         foreach ($services as $keyServices => $service) {
