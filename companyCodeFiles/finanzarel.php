@@ -59,8 +59,17 @@ class finanzarel extends p2pCompany {
     protected $tempRequest = [];
     
     protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.05'                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.05',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 in order to "close" an active investment
+        'recalculateRoundingErrors' => [
+            "values" => [                                                       //Values needed to modify due to rounding errors of the platform
+                "from" => ["investment_outstandingPrincipal"],                  //From are all the values we take the values
+                "to" => [""]                                                    //To are all the values we modify the values
+            ],
+            "sign" => "positive"                                                //Sign could be positive or negative
+                                                                                //If it is positive, the + will be + and the - will be -
+                                                                                //If it is negative, the + will be - and the - will be +
+        ]
     ];
     
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
@@ -327,8 +336,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            //"M" FUTURE DATA Number 41
-            "N" => [
+            "M" => [
                 [
                     "type" => "investment_dueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -338,7 +346,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "O" => [
+            "N" => [
                 [
                     "type" => "investment_statusOfLoan",                          
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
@@ -356,7 +364,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getDefaultValue",
                 ]
             ],
-            "P" => [
+            "O" => [
                 [
                     "type" => "investment_estimatedNextPayment",                // Winvestify standardized name
                     "inputData" => [
@@ -781,11 +789,10 @@ class finanzarel extends p2pCompany {
                                     "J" => "Mi oferta",
                                     "K" => "Importeasignado",
                                     "L" => "Mi oferta(precio)",
-                                    "M" => "Plusval?ainicial",
-                                    "N" => "Fecha de vencimiento",
-                                    "O" => "Estado",
-                                    "P" => "Amortizaci?nPendiente",
-                                    "Q" => " ");
+                                    "M" => "Fecha de vencimiento",
+                                    "N" => "Estado",
+                                    "O" => "Amortizaci?nPendiente",
+                                    "P" => " ");
 
     protected $investment2Header = array(
                                     "A" => "Subasta",
