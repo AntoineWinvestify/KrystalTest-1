@@ -583,6 +583,13 @@ class WinFormulas {
         
     ];
     
+    /**
+     * Function to make an operation depending of its type
+     * @param string $inputA Value for inputA
+     * @param string $inputB Value for inputB
+     * @param string $type Type of operation
+     * @return string
+     */
     public function doOperationByType($inputA, $inputB, $type) {
         
         switch ($type) {
@@ -607,31 +614,71 @@ class WinFormulas {
         return $result;
     }
     
+    /**
+     * Function to add two values
+     * @param string $inputA Value for inputA
+     * @param string $inputB Value for inputB
+     * @return string
+     */
     public function addTwoValues($inputA, $inputB) {
         return bcadd($inputA, $inputB, 16);
     }
     
+    /**
+     * Function to subtract two values
+     * @param string $inputA Value for inputA
+     * @param string $inputB Value for inputB
+     * @return string
+     */
     public function subtractTwoValues($inputA, $inputB) {
         return bcsub($inputA, $inputB, 16);
     } 
     
+    /**
+     * Function to divide two values
+     * @param string $inputA Value for inputA
+     * @param string $inputB Value for inputB
+     * @return string
+     */
     public function divideTwoValues($inputA, $inputB) {
         return bcdiv($inputA, $inputB, 16);
     } 
     
+    /**
+     * Function to multiply two values
+     * @param string $inputA Value for inputA
+     * @param string $inputB Value for inputB
+     * @return string
+     */
     public function multiplyTwoValues($inputA, $inputB) {
         return bcmul($inputA, $inputB, 16);
     } 
     
+    /**
+     * Function to elevate one value by another value
+     * @param string $inputA Value to be elevate
+     * @param string $inputB Value pow
+     * @return string
+     */
     public function powTwoValues($inputA, $inputB) {
         return bcpow($inputA, $inputB, 16);
     }
     
+    /**
+     * Function to return the variable in function of a type
+     * @param string $type Name of the variable
+     * @return array
+     */
     public function getFormulaParams($type) {
         $variableName = "variablesFormula_" . $type;  
         return $this->$variableName;
     }
     
+    /**
+     * Function to get the variable in function of a type
+     * @param string $type Name of the variable
+     * @return array
+     */
     public function getFormula($type) {
         
         switch($type) {
