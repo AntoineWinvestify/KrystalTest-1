@@ -80,6 +80,10 @@ class ParseDataClientShell extends GearmanClientShell {
         $this->AmortizationTable = ClassRegistry::init('AmortizationTable');
         $this->AmortizationTable->deleteAll(array('AmortizationTable.id >' => 0), false);        
         
+        echo "Deleting Dashboardoverview table\n";
+        $this->AmortizationTable = ClassRegistry::init('Dashboardoverviewdata');
+        $this->AmortizationTable->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);        
+        
         return;
     }
 
@@ -759,7 +763,8 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
-                                                    10017, 10018, 10019);      
+                                                    10017, 10018, 10019,
+                                                    10020, 10021, 10022);      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
