@@ -1124,6 +1124,42 @@ class UserDataShell extends AppShell {
             return WIN_LOANSTATUS_ACTIVE;
         }
     }  
+    
+    /**
+     *  Calculates the sum of the payment concept "Currency Exchange Fee" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_currencyExchangeFee']);  
+    }
+    
+    /**
+     *  Calculates the sum of the payment concept "Currency Exchange Transaction" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCurrencyExchangeTransactionPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_currencyExchangeTransaction']);  
+    }
+    
+    /**
+     *  Calculates the sum of the payment concept "Income with holding Tax" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalIncomeWithholdingTaxPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_incomeWithholdingTax']);  
+    }
  
     
     
