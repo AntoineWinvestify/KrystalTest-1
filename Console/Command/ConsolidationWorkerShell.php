@@ -299,6 +299,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             }
             //$dataMergeByDate[$linkedaccountId] 
         }
+        $values = $this->joinTwoDimensionArrayTogether($values);
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         $returnData['investor'][$data["queue_userReference"]]['netReturn'] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
         
