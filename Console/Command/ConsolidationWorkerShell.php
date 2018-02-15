@@ -254,11 +254,11 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         $dataMergeByDate = [];
         
-        foreach ($dates as $keyDate => $dateYear) {
+        foreach ($datesForGlobal as $keyDate => $dateYear) {
             $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values[$dateYear], $variables);
             //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
         }
-
+        
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             foreach ($dataMergeByDate as $keyDate => $dataByDate) {
                 $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
@@ -273,6 +273,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         /////////////////////
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
+        exit;
         return json_encode($dataArray);
     }
     
@@ -735,6 +736,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
             }
         }
+        print_r($datesForGlobal);
         rsort($datesForGlobal);
         return $datesForGlobal;
     }
