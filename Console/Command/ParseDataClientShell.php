@@ -1025,33 +1025,27 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
             $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];            
         }
         $table['amortizationtable_paymentDate'] = $transactionData['date'];     
-echo __FUNCTION__ . " " . __LINE__ . " \n";
-print_r($table);        
+       
 
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);   
-echo __FUNCTION__ . " " . __LINE__ . " \n";
-        $slices = $this->Investment->getInvestmentSlices ($resultData['investment']['id']+12);   
-echo __FUNCTION__ . " " . __LINE__ . " \n";      
+        $slices = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);   
+     
         foreach ($slices as $slice) {   
-echo __FUNCTION__ . " " . __LINE__ . " \n";
-            print_r($slice);
-            if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
-echo __FUNCTION__ . " " . __LINE__ . " \n";                  
+            if ($slice['investmentslice_identifier'] == $sliceIdentifier) {                
                 $sliceDbreference = $slice['id'];
                 break;
             }
         }
       
-        $filterConditions = array ('amortizationtable_paymentDate =' => "");
-        print_r($filterConditions);
-echo __FUNCTION__ . " " . __LINE__ . " \n";         
+        $filterConditions = array ('amortizationtable_paymentDate =' => null);
+       
         $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);  // for instance all entries of table which are
-echo __FUNCTION__ . " " . __LINE__ . " \n";        
+echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";        
 print_r($amortizationTable); 
-        $tableDbReference = $amortizationTable['id'];                                                       // not yet paid Normally ask for first one with capitalRepayment = "" or 0;
+        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                                       // not yet paid Normally ask for first one with capitalRepayment = "" or 0;
 
         $table['id'] = $tableDbReference;
-        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table wth reference = $tableDbReference\n";       
+        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";       
         if ($this->Investmentslice->updateAmortizationTable($table)) {
             echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n"; 
         }

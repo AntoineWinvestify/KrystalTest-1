@@ -163,11 +163,11 @@ class Investmentslice extends AppModel
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 print_r($conditions);        
         $result = $this->Amortizationtable->find('all', array(
-                'conditions' => $conditions, 
+                'conditions' => $filterConditions,  // QUICK TEST
                 'recursive' => 1, 
             ));
 echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($conditions);           
+print_r($result);           
         return $result;
     }
     
