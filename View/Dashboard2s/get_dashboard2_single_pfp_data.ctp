@@ -260,11 +260,11 @@ echo $companyInvestmentDetails[0];
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo __('0.00') ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netReturnPast12Months'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year') ?></td>
-                                                        <td class="right"><?php echo __('0.00') ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netReturnPastYear'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>

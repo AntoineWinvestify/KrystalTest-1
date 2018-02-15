@@ -30,7 +30,94 @@ App::import('Shell','GearmanClient');
  */
 class ConsolidationClientShell extends GearmanClientShell {
     
-    protected $services;
+    protected $services = [
+        'netAnnualReturnXirr' => [],
+        'netAnnualTotalFundsReturnXirr' => [],
+        'netAnnualReturnPastYearXirr' => [],
+        'netReturn' => [],
+        'netReturnPastYear' => []
+    ];
+    
+    protected $netAnnualReturnXirr = [
+        'service' => 'calculateNetAnnualReturnXirr',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'platform' => [
+                'table' => 'userinvestmentdata',
+                'variable' => 'userinvestmentdata_netAnnualReturnPast12Months',
+                'model' => 'Userinvestmentdata'
+            ],
+            'dashboardOverview' => [
+                'variable' => 'dashboardoverviewdata_netAnnualReturnPast12Months',
+            ]
+        ]
+    ];
+    
+    protected $netAnnualTotalFundsReturnXirr = [
+        'service' => 'calculateNetAnnualTotalFundsReturnXirr',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'platform' => [
+                'table' => 'userinvestmentdata',
+                'variable' => 'userinvestmentdata_netAnnualTotalFundsReturn',
+                'model' => 'Userinvestmentdata'
+            ],
+            'dashboardOverview' => [
+                'variable' => 'dashboardoverviewdata_netAnnualTotalFundsReturn',
+            ]
+            
+        ]
+    ];
+    
+    protected $netAnnualReturnPastYearXirr = [
+        'service' => 'calculateNetAnnualReturnPastYearXirr',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'platform' => [
+                'table' => 'userinvestmentdata',
+                'variable' => 'userinvestmentdata_netAnnualReturnPastYear',
+                'model' => 'Userinvestmentdata'
+            ],
+            'dashboardOverview' => [
+                'variable' => 'dashboardoverviewdata_netAnnualReturnPastYear',
+            ]
+            
+        ]
+    ];
+    
+    protected $netReturn = [
+        'service' => 'calculateNetReturn',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'platform' => [
+                'table' => 'userinvestmentdata',
+                'variable' => 'userinvestmentdata_netReturnPast12Months',
+                'model' => 'Userinvestmentdata'
+            ],
+            'dashboardOverview' => [
+                'variable' => 'dashboardoverviewdata_netReturnPast12Months',
+            ]
+            
+        ]
+    ];
+    
+    protected $netReturnPastYear = [
+        'service' => 'calculateNetReturnPastYear',
+        'gearmanFunction' => 'getFormulaCalculate',
+        'database' => [
+            'platform' => [
+                'table' => 'userinvestmentdata',
+                'variable' => 'userinvestmentdata_netReturnPastYear',
+                'model' => 'Userinvestmentdata'
+            ],
+            'dashboardOverview' => [
+                'variable' => 'dashboardoverviewdata_netReturnPastYear',
+            ]
+            
+        ]
+    ];
+    
+    protected $dashboardOverviewData = [];
     
     /**
      * Function to init the process to recollect all the user investment data
@@ -61,9 +148,8 @@ class ConsolidationClientShell extends GearmanClientShell {
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
                                                   WIN_QUEUE_STATUS_START_CONSOLIDATION,
                                                 $jobsInParallel);
-
+            echo "Pending jobs in queue:    ";
             print_r($pendingJobs);
-            
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
@@ -73,20 +159,20 @@ class ConsolidationClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
-                
-                $linkedaccountsResults = [];
                 foreach ($pendingJobs as $keyjobs => $job) {
-                    
                     $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
                     $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
-                    
+                    $data['companiesNothingInProgress'] = $this->Linkedaccount->getLinkAccountsWithNothingInProcess($job['Queue2']['queue2_userReference']);
                     $data["companies"] = $queueInfo['companiesInFlow'];
                     $this->userLinkaccountIds[$job['Queue2']['id']] = $queueInfo['companiesInFlow'];;
                     $data["queue_userReference"] = $job['Queue2']['queue2_userReference'];
                     $data["queue_id"] = $job['Queue2']['id'];
                     $data["date"] = $queueInfo['date'];
                     $data["originExecution"] = $queueInfo['originExecution'];
-                    $this->getConsolidationWorkerFunction();
+                    if (empty($queueInfo['services'])) {
+                        $this->getAllServices();
+                    }
+                    //$this->getConsolidationWorkerFunction();
                     foreach ($this->services as $nameServiceKey => $service) {
                         $data['service'] = $service;
                         if (Configure::read('debug')) {
@@ -135,13 +221,34 @@ class ConsolidationClientShell extends GearmanClientShell {
      * Function to save all the amortization tables on DB per user and per linkaccount
      */
     public function saveConsolidationFields() {
+        $this->Investor = ClassRegistry::init('Investor');
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
         foreach ($this->tempArray as $queueKey => $tempArray) {
             foreach ($tempArray as $linkedaccountId => $tempArrayByCompany) {
+                if ($linkedaccountId == 'investor') {
+                    $dashboardOverviewData = [];
+                    $keyInvestorIdentity = key($tempArrayByCompany);
+                    foreach ($tempArrayByCompany[$keyInvestorIdentity] as $key => $serviceValues) {
+                         if (is_array($serviceValues)) {
+                            $serviceValues = array_shift($serviceValues);
+                        }
+                        $dashboardOverviewData[$this->services[$key]['database']['dashboardOverview']['variable']] = $serviceValues;
+                    }
+                    $investorId = $this->Investor->getData(
+                                                        ['investor_identity' => $keyInvestorIdentity],
+                                                        ['id']
+                                                    );
+                    $dashboardOverviewData['date'] = date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']));
+                    $dashboardOverviewData['investor_id'] = $investorId[0]['Investor']['id'];
+                    $this->Dashboardoverviewdata->save($dashboardOverviewData);
+                    continue;
+                }
                 foreach ($tempArrayByCompany as $key => $serviceValues) {
                     if (is_array($serviceValues)) {
                         $serviceValues = array_shift($serviceValues);
                     }
-                    $model = ClassRegistry::init($this->services[$key]['database']['model']);
+                    //print_r($this->services);
+                    $model = ClassRegistry::init($this->services[$key]['database']['platform']['model']);
                     $id = $model->find('first',
                         array( 'conditions' => array('date' => date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']))),
                                'recursive' => -1,
@@ -149,7 +256,9 @@ class ConsolidationClientShell extends GearmanClientShell {
                         )  
                     ); 
                     $model->id = $id;
-                    $model->saveField($this->services[$key]['database']['variable'], $serviceValues);
+                    //echo "\n this is the variable ===>>> " . $this->services[$key]['database']['platform']['variable'];
+                    //echo "\n this is the value =====>>>>  " . $serviceValues;
+                    $model->saveField($this->services[$key]['database']['platform']['variable'], $serviceValues);
                 }
             }
         }
@@ -159,49 +268,16 @@ class ConsolidationClientShell extends GearmanClientShell {
             foreach ($this->queueInfo[$queueId]['companiesInFlow'] as $linkaccountId) {
                 $this->Linkedaccount->id = $linkaccountId;
                 $this->Linkedaccount->saveField('linkedaccount_lastAccessed', $lastAccess);
+                $this->Linkedaccount->saveField('linkedaccount_linkingProcess', WIN_LINKING_NOTHING_IN_PROCESS);
             }
         }
     }
     
-    public function getConsolidationWorkerFunction() {
-        //Future implementation
-        //$formulaByInvestor = $this->getFormulasFromDB();
-        ///////////////* THIS IS TEMPORAL
-        $this->services = [];
-        
-        $this->services['netAnnualReturnXirr']['service'] = "calculateNetAnnualReturnXirr";
-        $this->services['netAnnualReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netAnnualReturnXirr']['database']['table'] = 'userinvestmentdata';
-        $this->services['netAnnualReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPast12Months';
-        $this->services['netAnnualReturnXirr']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netAnnualTotalFundsReturnXirr']['service'] = "calculateNetAnnualTotalFundsReturnXirr";
-        $this->services['netAnnualTotalFundsReturnXirr']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netAnnualTotalFundsReturnXirr']['database']['table'] = 'userinvestmentdata';
-        $this->services['netAnnualTotalFundsReturnXirr']['database']['variable'] = 'userinvestmentdata_netAnualTotalFundsReturn';
-        $this->services['netAnnualTotalFundsReturnXirr']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netAnnualReturnPastYearXirr']['service'] = "calculateNetAnnualReturnPastYearXirr";
-        $this->services['netAnnualReturnPastYearXirr']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netAnnualReturnPastYearXirr']['database']['table'] = 'userinvestmentdata';
-        $this->services['netAnnualReturnPastYearXirr']['database']['variable'] = 'userinvestmentdata_netAnualReturnPastYear';
-        $this->services['netAnnualReturnPastYearXirr']['database']['model'] = 'Userinvestmentdata';
-        
-        $this->services['netReturn']['service'] = "calculateNetReturn";
-        $this->services['netReturn']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netReturn']['database']['table'] = 'userinvestmentdata';
-        $this->services['netReturn']['database']['variable'] = 'userinvestmentdata_netReturn';
-        $this->services['netReturn']['database']['model'] = 'Userinvestmentdata';
-        $this->services['netReturnPastYear']['service'] = "calculateNetReturnPastYear";
-        $this->services['netReturnPastYear']['gearmanFunction'] = 'getFormulaCalculate';
-        $this->services['netReturnPastYear']['database']['table'] = 'userinvestmentdata';
-        $this->services['netReturnPastYear']['database']['variable'] = 'userinvestmentdata_netReturnPastYear';
-        $this->services['netReturnPastYear']['database']['model'] = 'Userinvestmentdata';
-        //$services[1]['service'] = "calculateNetAnnualTotalFundsXirr";
-        //$services[1]['gearmanFunction'] = 'getFormulaCalculate';
-        //$services[2]['service'] = "calculateNetAnnualPastReturnXirr";
-        //$services[2]['gearmanFunction'] = 'getFormulaCalculate';
-        /////////////////////
+    public function getAllServices() {
+        $services = $this->services;
+        foreach ($services as $keyServices => $service) {
+            $this->services[$keyServices] = $this->$keyServices;
+        }
     }
     
     /**
@@ -235,6 +311,10 @@ class ConsolidationClientShell extends GearmanClientShell {
                 if (empty($this->tempArray[$data[0]][$linkaccountId])) {
                     $this->tempArray[$data[0]][$linkaccountId] = $dataArray;
                 } 
+                else if ($linkaccountId == 'investor') {
+                    $keyDataArray = key($dataArray[$data[2]]);
+                    $this->tempArray[$data[0]][$linkaccountId][$data[2]][$keyDataArray] = $dataArray[$data[2]][$keyDataArray];
+                }
                 else {
                     $keyDataArray = key($dataArray);
                     $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
@@ -243,11 +323,11 @@ class ConsolidationClientShell extends GearmanClientShell {
             }
             
         }
-
 //        print_r($this->userResult);
 //        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }
+    
 }
