@@ -84,6 +84,7 @@ class WinFormulas {
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -102,6 +103,8 @@ class WinFormulas {
                     "globaltotalsdata_secondaryMarketInvestmentPerDay",
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
+                    "globaltotalsdata_currencyExchangeFeePerDay",
+                    "globaltotalsdata_currencyExchangeTransactionPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -127,61 +130,38 @@ class WinFormulas {
             "dateFinish" => "-365",
             "intervals" => "latest",
             "operation" => "subtract"
-        ]
-    ];
-    
-    protected $variablesFormula_B = [
-        "A" => [
-            [
-                "type" => "userinvestmentdata_totalGrossIncome",
-                "table" => "Userinvestmentdata",
-                "dateInit" => [
-                    "year" => -1,
-                    "month" => "1",
-                    "day" => "1"
-                ],
-                "dateFinish" => [
-                    "year" => -1,
-                    "month" => "12",
-                    "day" => "31"
-                ],
-                "intervals" => "inclusive"
-            ],
-            [
-                "type" => "userinvestmentdata_totalLoansCost",
-                "table" => "Userinvestmentdata",
-                "operation" => "subtract",
-                "dateInit" => [
-                    "year" => -1,
-                    "month" => "1",
-                    "day" => "1"
-                ],
-                "dateFinish" => [
-                    "year" => -1,
-                    "month" => "12",
-                    "day" => "31"
-                ],
-                "intervals" => "inclusive"
-            ]
         ],
-        "B" => [
-            [
-                "type" => "userinvestmentdata_outstandingPrincipal",
-                "table" => "userinvestmentdata",
-                "operation" => "add",
-                "dateInit" => [
-                    "year" => -1,
-                    "month" => "1",
-                    "day" => "1"
+        "E" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_writtenOff",
+                    //need more data to take values from database
                 ],
-                "dateFinish" => [
-                    "year" => -1,
-                    "month" => "12",
-                    "day" => "31"
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
+            "intervals" => "latest",
+            "operation" => "subtract"
+        ],
+        "F" => [
+            "type" => [
+                "variables" => [
+                    "globalcashflowdata_platformCompensationPositive",            
+                    "globalcashflowdata_platformRecoveries",            
+                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    "globalcashflowdata_regularGrossInterestIncome",
+                    //need more data to take values from database
                 ],
-                "intervals" => "inclusive"
-            ]
-        ]
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
     ];
     
     protected $variablesFormula_netAnnualTotalFundsReturn_xirr = [
@@ -201,6 +181,7 @@ class WinFormulas {
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -219,6 +200,8 @@ class WinFormulas {
                     "globaltotalsdata_secondaryMarketInvestmentPerDay",
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
+                    "globaltotalsdata_currencyExchangeFeePerDay",
+                    "globaltotalsdata_currencyExchangeTransactionPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -272,6 +255,37 @@ class WinFormulas {
             "intervals" => "latest",
             "operation" => "add"
         ],
+        "F" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_writtenOff",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
+            "intervals" => "latest",
+            "operation" => "subtract"
+        ],
+        "G" => [
+            "type" => [
+                "variables" => [
+                    "globalcashflowdata_platformCompensationPositive",            
+                    "globalcashflowdata_platformRecoveries",            
+                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    "globalcashflowdata_regularGrossInterestIncome",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
     ];
     
     protected $variablesFormula_netAnnualPastReturn_xirr = [
@@ -291,6 +305,7 @@ class WinFormulas {
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -315,6 +330,8 @@ class WinFormulas {
                     "globaltotalsdata_secondaryMarketInvestmentPerDay",
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
+                    "globaltotalsdata_currencyExchangeFeePerDay",
+                    "globaltotalsdata_currencyExchangeTransactionPerDay",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -360,7 +377,44 @@ class WinFormulas {
             ],
             "intervals" => "latest",
             "operation" => "subtract"
-        ]
+        ],
+        "E" => [
+            "type" => [
+                "variables" => [
+                    "userinvestmentdata_writtenOff",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Userinvestmentdata",
+            "dateInit" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "dateFinish" => [
+                "month" => "12",
+                "day" => "31"
+            ],
+            "intervals" => "latest",
+            "operation" => "subtract"
+        ],
+        "F" => [
+            "type" => [
+                "variables" => [
+                    "globalcashflowdata_platformCompensationPositive",            
+                    "globalcashflowdata_platformRecoveries",            
+                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    "globalcashflowdata_regularGrossInterestIncome",
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globaltotalsdata",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
+            "intervals" => "inclusive",
+            "operation" => "add"
+        ],
     ];
     
     protected $variablesFormula_netReturn = [
@@ -562,6 +616,60 @@ class WinFormulas {
             ],
             "intervals" => "latest",
             "operation" => "subtract"
+        ]
+    ];
+    
+    protected $variablesFormula_B = [
+        "A" => [
+            [
+                "type" => "userinvestmentdata_totalGrossIncome",
+                "table" => "Userinvestmentdata",
+                "dateInit" => [
+                    "year" => -1,
+                    "month" => "1",
+                    "day" => "1"
+                ],
+                "dateFinish" => [
+                    "year" => -1,
+                    "month" => "12",
+                    "day" => "31"
+                ],
+                "intervals" => "inclusive"
+            ],
+            [
+                "type" => "userinvestmentdata_totalLoansCost",
+                "table" => "Userinvestmentdata",
+                "operation" => "subtract",
+                "dateInit" => [
+                    "year" => -1,
+                    "month" => "1",
+                    "day" => "1"
+                ],
+                "dateFinish" => [
+                    "year" => -1,
+                    "month" => "12",
+                    "day" => "31"
+                ],
+                "intervals" => "inclusive"
+            ]
+        ],
+        "B" => [
+            [
+                "type" => "userinvestmentdata_outstandingPrincipal",
+                "table" => "userinvestmentdata",
+                "operation" => "add",
+                "dateInit" => [
+                    "year" => -1,
+                    "month" => "1",
+                    "day" => "1"
+                ],
+                "dateFinish" => [
+                    "year" => -1,
+                    "month" => "12",
+                    "day" => "31"
+                ],
+                "intervals" => "inclusive"
+            ]
         ]
     ];
     
