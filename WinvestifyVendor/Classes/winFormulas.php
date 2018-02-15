@@ -434,6 +434,7 @@ class WinFormulas {
                     "globaltotalsdata_loanIncentivesAndBonusPerDay",
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -520,6 +521,7 @@ class WinFormulas {
                     "globaltotalsdata_loanIncentivesAndBonusPerDay",
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -539,9 +541,9 @@ class WinFormulas {
         "B" => [
             "type" => [
                 "variables" => [
-                    "globalcashflowdata_platformRecoveries",             //Finanzarel
-                    "globalcashflowdata_platformIncentivesAndBonus",             //Finanzarel
-                    "globalcashflowdata_platformCompensationPositive",             //Finanzarel
+                    "globalcashflowdata_platformRecoveries",             
+                    "globalcashflowdata_platformIncentivesAndBonus",             
+                    "globalcashflowdata_platformCompensationPositive",             
                     //need more data to take values from database
                 ],
                 "operation" => "add"
