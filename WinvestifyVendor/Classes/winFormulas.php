@@ -156,7 +156,7 @@ class WinFormulas {
                 ],
                 "operation" => "add"
             ],
-            "table" => "Globaltotalsdata",
+            "table" => "Globalcashflowdata",
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
@@ -280,7 +280,7 @@ class WinFormulas {
                 ],
                 "operation" => "add"
             ],
-            "table" => "Globaltotalsdata",
+            "table" => "Globalcashflowdata",
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
@@ -409,7 +409,7 @@ class WinFormulas {
                 ],
                 "operation" => "add"
             ],
-            "table" => "Globaltotalsdata",
+            "table" => "Globalcashflowdata",
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
