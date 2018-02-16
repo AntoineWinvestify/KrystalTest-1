@@ -83,7 +83,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         $jsonLoanIds = $file->read(true, 'r');
                         $loanIds = json_decode($jsonLoanIds, true);
                         $linkAccountIds[] = $linkedAccountId;
-                        $queueInfos[] = $loanIds;
+                        $loanIdsPerCompany[$linkedAccountId] = $loanIds;
                     }
                     $filterConditions = array('id' => $linkAccountIds);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
@@ -109,7 +109,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
-                            $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key];
+                            $loandIdLinkedaccounts[$key][$companyType][$i] = $loanIdsPerCompany[$linkedaccountId];
                             $i++;
                         }
                     }
