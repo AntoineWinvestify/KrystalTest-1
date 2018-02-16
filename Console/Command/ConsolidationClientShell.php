@@ -367,7 +367,25 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $globalDestruction = true;
                     break;
                 }
-                if (!$result) {
+                if ($linkaccountId == 'investor') {
+                    $keyUserReference = key($result);
+                    foreach ($result[$keyUserReference] as $keyFunction => $resultFunctionStatus) {
+                        if (!$resultFunctionStatus) {
+                            $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
+                        }
+                    }
+                    continue;
+                }
+                else {
+                    if (!$result) {
+                        $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
+                        if (!empty($this->tempArray)) {
+                            unset($this->tempArray[$queueId][$linkaccountId]);
+                        }
+                        continue;
+                    }
+                }
+                /*if (!$result) {
                     $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
                     if (!empty($this->tempArray)) {
                         unset($this->tempArray[$queueId][$linkaccountId]);
@@ -383,7 +401,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                         unset($this->tempArray[$queueId][$linkaccountId]);
                     }
                     continue;
-                }
+                }*/
                 $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
             }
             /*
