@@ -127,7 +127,7 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-    /** 
+    /** STILL NOT FINISHED
      *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
      * 
      *  @param  array       array with the current transaction data
@@ -564,11 +564,13 @@ class UserDataShell extends AppShell {
   CANCELLED : The investment never materialized, i.e. never went to ACTIVE or INITIAL
   WRITTEN-OFF : The investment is completely lost
 
-
-WIN_LOANSTATUS_WAITINGTOBEFORMALIZED - WIN_LOANSTATUS_ACTIVE - WIN_LOANSTATUS_FINISHED
-WIN_LOANSTATUS_CANCELLED - WIN_LOANSTATUS_WRITTEN_OFF - WIN_LOANSTATUS_UNKNOWN
- 
-  
+statusOfLoan can have the following values: 
+    WIN_LOANSTATUS_WAITINGTOBEFORMALIZED 
+    WIN_LOANSTATUS_ACTIVE 
+    WIN_LOANSTATUS_FINISHED
+    WIN_LOANSTATUS_CANCELLED  
+    WIN_LOANSTATUS_WRITTEN_OFF 
+    WIN_LOANSTATUS_UNKNOWN
  */
         $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
@@ -578,7 +580,7 @@ WIN_LOANSTATUS_CANCELLED - WIN_LOANSTATUS_WRITTEN_OFF - WIN_LOANSTATUS_UNKNOWN
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }       
- 
+        
 // the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
             $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
@@ -1134,6 +1136,75 @@ WIN_LOANSTATUS_CANCELLED - WIN_LOANSTATUS_WRITTEN_OFF - WIN_LOANSTATUS_UNKNOWN
         }
     }  
  
+ 
+    /**
+     *  State Change Management.
+     *  Implements the state changes based on events. These events can be:
+     *      a transaction record
+     *      a state of a variable (example outstanding principle for a loan, investment_outstandingPrincipal 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @event  int         changeToBadDebtState
+     *                      ChangeToCancelState
+     *                      ChangeToActiveState
+     *                      OutstandingPrincipal = 0;
+     *  variables taken into consideration:
+     *                 $resultData['investment']['investment_statusOfLoan']
+     *              
+     *  @return boolean
+     */
+    public function calculateState(&$transactionData, &$resultData, $event) {
+        
+        
+        $statusOfLoan = $resultData['investment']['investment_statusOfLoan'];       // NEEDS FURTHER CHECKING
+        
+        switch ($statusOfLoan) {
+            case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
+            break;
+        
+            case WIN_LOANSTATUS_ACTIVE:
+                if ($tempOutstandingPrincipal == 0) {
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
+                    $resultData['investment']['investment_statusOfLoan'] = FINISHED;              
+                }           
+            break;
+            
+            case WIN_LOANSTATUS_FINISHED:
+                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;              
+            break;
+        
+            case WIN_LOANSTATUS_CANCELLED:
+                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+            break;
+        
+            case WIN_LOANSTATUS_WRITTEN_OFF:
+                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+            break;
+
+            case WIN_LOANSTATUS_UNKNOWN:        
+            break;       
+        }
+        
+        
+        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+        // move the corresponding part of the money from reserved funds to outstanding principal
+            
+        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
+                                                $resultData['investment']['investment_myInvestment']);
+            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
+                                                $resultData['investment']['investment_myInvestment']);     
+            return WIN_LOANSTATUS_ACTIVE;
+        }
+        
+        
+        
+    }    
+    
     
     
 }

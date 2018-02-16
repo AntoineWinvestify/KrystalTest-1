@@ -58,7 +58,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+   //     return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -1077,9 +1077,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         } 
 
         foreach ($slicesAmortizationTablesToCollect as $tableToCollect) {
-            echo __FILE__ . " " . __LINE__ . " investmentId = " . $tableToCollect['investmentId']  . " and slice = " . $tableToCollect['sliceIdentifier'];
             $loanSliceId = $this->linkNewSlice($tableToCollect['investmentId'], $tableToCollect['sliceIdentifier']);
-            echo  " loanSliceId = $loanSliceId\n";
             $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier']; 
         }
 
@@ -1107,26 +1105,29 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         $calculationClassHandle->consolidatePlatformData($database);
 
         
- /* NOT YET TESTED       
+     
         // Make sure that we have an entry in Userinvestmentdata for yesterday       
         $date = new DateTime(date("Y-m-d"));                                    // = today
         $date->modify('-1 day');
         $lastDateToCalculate = $date->format('Y-m-d');
         
-        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
-            if ($dateKey <> $lastDateToCalculate) {
-echo "WIN_ACTION_ORIGIN_ACCOUNT_LINKING: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {                
+            if ($dateKey <> $lastDateToCalculate) {               
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);   
-                $tempDatabase['date'] = $lastDateToCalculate;
-                unset($tempDatabase['id']);                    
-                $this->Userinvestment->save($tempDatabase, $validate = true);
+  
+                $this->Userinvestmentdata->create();
+                $tempDatabase['Userinvestmentdata']['date'] = $lastDateToCalculate;    
+                $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+                $this->Userinvestmentdata->save($tempDatabase, $validate = true);
             }            
         }
- 
+ /*
         // Copy the userinvestmentdata for all missing days
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
-            if ($dateKey <> $lastDateToCalculate) {     
+echo __FUNCTION__ . " " . __LINE__ .  " \n"; 
+            if ($dateKey <> $lastDateToCalculate) {
+echo __FUNCTION__ . " " . __LINE__ .  " \n";                 
                 $actualDate = $dateKey;                                         // at least one record should be copied      
                 while ($actualDate <> $lastDateToCalculate) {
 echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
@@ -1134,11 +1135,12 @@ echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: lastDateToCalculate = " . $lastDateToCal
                         $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                         $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
                         unset($tempDatabase['id']);
+echo __FUNCTION__ . " " . __LINE__ .  " \n";                         
                     }
                     
                     $tempDatabase['date'] = $actualDate;                   
                     $this->Userinvestment->save($tempDatabase, $validate = true); 
-
+echo __FUNCTION__ . " " . __LINE__ .  " \n"; 
                     $tempActualDate = $actualDate;
                     $date = new DateTime($tempActualDate);  
                     $date->modify('+1 day');
@@ -1146,9 +1148,7 @@ echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: lastDateToCalculate = " . $lastDateToCal
                 }  
             }  
         }
-
-        
- */       
+*/             
         
         
         
