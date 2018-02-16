@@ -102,7 +102,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @param integer $typeOfFormula It is the type of formula, NAR or Net Return
      * @return json We return all the variable
      */
-    public function calculatePast12Moths($data, $nameVariables, $nameFunction, $typeOfFormula) {
+    public function calculatePast12Months($data, $nameVariables, $nameFunction, $typeOfFormula) {
         $variables = $this->winFormulas->getFormulaParams($nameVariables);
         $values = [];
         $dashboardOverviewLinkaccountIds = [];
@@ -162,10 +162,28 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
         }
         
-        /////////////////////
+        /////////////////////FINISHED
+        
+        /***** START VERIFICATION OF STATUS***********/
+        
+        $statusCollect = [];
+        foreach ($returnData as $linkedaccountIdKey => $variableService) {
+            $keyService = key($variableService);
+            if (empty($result)) {
+                $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_ERROR;
+            }
+            else if ($result == "0") {
+                $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+            }
+            else {
+                $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+            }
+        }
+
         
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
+        $dataArray['statusCollect'] = $statusCollect;
         return json_encode($dataArray);
     }
     
@@ -271,8 +289,27 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         
         /////////////////////
+        
+        $statusCollect = [];
+        foreach ($returnData as $linkedaccountIdKey => $variableService) {
+            $keyService = key($variableService);
+            foreach ($variableService as $dateKey => $result) {
+                if (empty($result)) {
+                    $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_ERROR;
+                }
+                else if ($result == "0") {
+                    $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
+                }
+                else {
+                    $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
+                }
+
+            }
+        }
+        
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
+        $dataArray['statusCollect'] = $statusCollect;
         return json_encode($dataArray);
     }
     
@@ -282,7 +319,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualReturnXirr($data) {
-        return $this->calculatePast12Moths($data, "netAnnualReturn_xirr", 'netAnnualReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
+        return $this->calculatePast12Months($data, "netAnnualReturn_xirr", 'netAnnualReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
     /**
@@ -291,7 +328,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualTotalFundsReturnXirr($data) {
-        return $this->calculatePast12Moths($data, "netAnnualTotalFundsReturn_xirr", 'netAnnualTotalFundsReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
+        return $this->calculatePast12Months($data, "netAnnualTotalFundsReturn_xirr", 'netAnnualTotalFundsReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
     /**
@@ -309,7 +346,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetReturn($data) {
-        return $this->calculatePast12Moths($data, "netReturn", 'netReturn', WIN_FORMULAS_NET_RETURN);
+        return $this->calculatePast12Months($data, "netReturn", 'netReturn', WIN_FORMULAS_NET_RETURN);
     }
     
     /**
