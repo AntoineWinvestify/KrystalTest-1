@@ -557,9 +557,18 @@ class UserDataShell extends AppShell {
 
 /*
   Technical states description:
-  INITIAL   : investment has started succesfully. No amortization has yet taken place
-  ACTIVE    : one or more amortizations have taken place
-  FINISHED  : the investment has finished, either succesfully or as writtenOff 
+  PREACTIVE : Investment is still to be formalized
+  INITIAL   : Investment has started succesfully. No amortization has yet taken place
+  ACTIVE    : One or more amortizations have taken place
+  FINISHED  : The investment has finished, either succesfully or as writtenOff 
+  CANCELLED : The investment never materialized, i.e. never went to ACTIVE or INITIAL
+  WRITTEN-OFF : The investment is completely lost
+
+
+WIN_LOANSTATUS_WAITINGTOBEFORMALIZED - WIN_LOANSTATUS_ACTIVE - WIN_LOANSTATUS_FINISHED
+WIN_LOANSTATUS_CANCELLED - WIN_LOANSTATUS_WRITTEN_OFF - WIN_LOANSTATUS_UNKNOWN
+ 
+  
  */
         $tempOutstandingPrincipal = 1;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
@@ -1116,7 +1125,7 @@ class UserDataShell extends AppShell {
         $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
         // move the corresponding part of the money from reserved funds to outstanding principal
             
-        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_PREACTIVE) {
+        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
             $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
                                                 $resultData['investment']['investment_myInvestment']);
             $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
