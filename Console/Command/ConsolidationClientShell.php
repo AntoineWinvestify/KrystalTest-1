@@ -196,6 +196,8 @@ class ConsolidationClientShell extends GearmanClientShell {
 
                 $this->GearmanClient->runTasks();
                 print_r($this->tempArray);
+                print_r($this->gearmanErrors);
+                print_r($this->userResult);
                 // ######################################################################################################
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
@@ -300,10 +302,17 @@ class ConsolidationClientShell extends GearmanClientShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $dataWorker = json_decode($task->data(), true);
-        
         if (!empty($dataWorker['statusCollect'])) {
             foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
-                $this->userResult[$data[0]][$linkaccountId] = $status;
+                if ($linkaccountId == 'investor') {
+                    $keyForInvestor = key($status[$data[2]]);
+                    $dataForInvestor = $status[$data[2]];
+                    $this->userResult[$data[0]]['investor'][$data[2]][$keyForInvestor] = $dataForInvestor;
+                }
+                else {
+                    $keyFunction = key($status);
+                    $this->userResult[$data[0]][$linkaccountId][$keyFunction] = $status;
+                }
                 $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
             }
         }
@@ -320,7 +329,6 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $keyDataArray = key($dataArray);
                     $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
                 }
-                $this->userResult[$data[0]][$linkaccountId] = 1;
             }
             
         }
