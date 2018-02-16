@@ -167,6 +167,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         /***** START VERIFICATION OF STATUS***********/
         
         $statusCollect = [];
+        $error = [];
         foreach ($returnData as $linkedaccountIdKey => $variableService) {
             if ($linkedaccountIdKey == 'investor') {
                 $keyInvestor = key($variableService);
@@ -176,6 +177,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
                 else if (empty($variableService[$keyInvestor][$keyService])) {
                     $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService] = WIN_STATUS_COLLECT_ERROR;
+                    $error[$linkedaccountIdKey][$keyInvestor][$keyService] = [
+                            'typeOfError' => "There was an error calculating the $keyService",
+                            'detailedErrorInformation' => "The service $keyService has given an error with the calculation",
+                            'line' => __LINE__,
+                            'file' => __FILE__,
+                            'urlsequenceUrl' => null,
+                            'typeErrorId' => WIN_ERROR_GEARMAN_FLOW4,
+                            'subtypeErrorId' => WIN_ERROR_FLOW4_SERVICE_NOT_CALCULATE
+                        ];
                 }
                 else {
                     $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService] = WIN_STATUS_COLLECT_CORRECT;
@@ -188,6 +198,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
                 else if  (empty($variableService[$keyService])){
                     $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_ERROR;
+                    $error[$linkedaccountIdKey][$keyService] = [
+                            'typeOfError' => "There was an error calculating the $keyService",
+                            'detailedErrorInformation' => "The service $keyService has given an error with the calculation",
+                            'line' => __LINE__,
+                            'file' => __FILE__,
+                            'urlsequenceUrl' => null,
+                            'typeErrorId' => WIN_ERROR_GEARMAN_FLOW4,
+                            'subtypeErrorId' => WIN_ERROR_FLOW4_SERVICE_NOT_CALCULATE
+                        ];
                 }
                 else {
                     $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
@@ -200,6 +219,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         $dataArray['statusCollect'] = $statusCollect;
+        $dataArray['errors'] = $error;
         return json_encode($dataArray);
     }
     
@@ -307,6 +327,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         /////////////////////
         
         $statusCollect = [];
+        $error = [];
         foreach ($returnData as $linkedaccountIdKey => $variableService) {
             if ($linkedaccountIdKey == 'investor') {
                 $keyInvestor = key($variableService);
@@ -317,6 +338,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     }
                     else if (empty($result)) {
                         $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService][$dateKey] = WIN_STATUS_COLLECT_ERROR;
+                        $error[$linkedaccountIdKey][$keyInvestor][$keyService][$dateKey] = [
+                            'typeOfError' => "There was an error calculating the $keyService",
+                            'detailedErrorInformation' => "The service $keyService has given an error with the calculation",
+                            'line' => __LINE__,
+                            'file' => __FILE__,
+                            'urlsequenceUrl' => null,
+                            'typeErrorId' => WIN_ERROR_GEARMAN_FLOW4,
+                            'subtypeErrorId' => WIN_ERROR_FLOW4_SERVICE_NOT_CALCULATE
+                        ];
                     }
                     else {
                         $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
@@ -331,6 +361,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     }
                     else if (empty($result)) {
                         $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_ERROR;
+                        $error[$linkedaccountIdKey][$keyService][$dateKey] = [
+                            'typeOfError' => "There was an error calculating the $keyService",
+                            'detailedErrorInformation' => "The service $keyService has given an error with the calculation",
+                            'line' => __LINE__,
+                            'file' => __FILE__,
+                            'urlsequenceUrl' => null,
+                            'typeErrorId' => WIN_ERROR_GEARMAN_FLOW4,
+                            'subtypeErrorId' => WIN_ERROR_FLOW4_SERVICE_NOT_CALCULATE
+                        ];
                     }
                     else {
                         $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
@@ -344,9 +383,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         print_r($statusCollect);
         echo "\nTempData  ======> $nameFunction ===>  ";
         print_r($returnData);
-        exit;
         $dataArray['tempArray'] = $returnData;
         $dataArray['statusCollect'] = $statusCollect;
+        $dataArray['errors'] = $error;
         return json_encode($dataArray);
     }
     
