@@ -87,7 +87,7 @@ ajax spinner
 								<div class="row">
 									<div class="col-sm-10 col-sm-offset-1">
 										<?php
-											$options = array(0 => "0", 1 => "1", 2 => "2", 3 => "3",  4 => "4", 5 => "5", 6 => "6", 7 => "7", 8 => "8",  9 => "9", 10 => "10", 99 => " > 10");
+											$options = array(1 => "1", 2 => "2", 3 => "3",  4 => "4", 5 => "5", 6 => "6", 7 => "7", 8 => "8",  9 => "9", 10 => "10", 99 => " > 10");
 											
 											echo "<label>" . __('In how many crowdlending platforms do you have active investments?') . "</label>";
 										?>
@@ -101,6 +101,10 @@ ajax spinner
 													'class' => 'form-control blue_noborder4'
 												));
 											?>
+                                                                                    	<div class="errorInputMessage ErrorPlatformNumber col-xs-offset-1">
+											   <i class="fa fa-exclamation-circle"></i>
+											   <span id="ContentPlaceHolder_ErrorPlatformNumber" class="errorMessage"><?php echo "Error";?></span>
+											</div>
 										</div>
 									</div>
 								</div> <!-- /row -->
@@ -150,10 +154,10 @@ ajax spinner
 										<div class="form-group">
 											<?php
 												echo $this->Form->button(__('NEXT'), $options = array('name' 	=> 'btnRegisterUser',
-																									   'id' 	=> 'btnSendDataInvestedCompanies',
-																									   'href'	=> '/users/registerPanelD',
-																									   'class' 	=> 'btn btn-green pull-right btnSendInvestedCompanies')
-																					 );
+                                                                                                                                                        'id' 	=> 'btnSendDataInvestedCompanies',
+																			'href'	=> '/users/registerPanelD',
+																			'class' => 'btn btn-green pull-right btnSendInvestedCompanies')
+																			);
 												echo $this->Form->end();
 											?>
 										</div>
