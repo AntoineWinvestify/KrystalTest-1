@@ -404,86 +404,44 @@ echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalcula
                 }  
             }  
         }
-
-        
-        // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
-        $oldDateKey = $firstTransactionDate;  
-
-        $date1 = new DateTime($oldDateKey);  
-        $date1->modify('+1 day');
-        $actualDate = $date1->format('Y-m-d'); 
-        
-
-        if ($actualDate <> $dateKey) {
-            while ($actualDate <> $dateKey) {
-echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
-                if (empty($tempDatabase)) {
-                    $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-                    $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                    unset($tempDatabase['id']);
-                }
-
-                $tempDatabase['date'] = $actualDate;                   
-                $this->Userinvestment->save($tempDatabase, $validate = true); 
-
-                $tempActualDate = $actualDate;
-                $date = new DateTime($tempActualDate);  
-                $date->modify('+1 day');
-                $actualDate = $date->format('Y-m-d');                    
-            }   
-        }
-        $oldDateKey = $dateKey;
-        
-        
-        
+      
  */       
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+  
         
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
 
  /* TO BE TESTED 
         // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
-        $oldDateKey = $firstTransactionDate;  
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) { 
+            $oldDateKey = $firstTransactionDate;  
 
-        $date1 = new DateTime($oldDateKey);  
-        $date1->modify('+1 day');
-        $actualDate = $date1->format('Y-m-d'); 
-        
+            $date1 = new DateTime($oldDateKey);  
+            $date1->modify('+1 day');
+            $actualDate = $date1->format('Y-m-d'); 
 
-        if ($actualDate <> $dateKey) {
-            while ($actualDate <> $dateKey) {
+
+            if ($actualDate <> $dateKey) {
+                while ($actualDate <> $dateKey) {
 echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
-                if (empty($tempDatabase)) {
-                    $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-                    $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                    unset($tempDatabase['id']);
-                }
+                    if (empty($tempDatabase)) {
+                        $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                        unset($tempDatabase['id']);
+                    }
 
-                $tempDatabase['date'] = $actualDate;                   
-                $this->Userinvestment->save($tempDatabase, $validate = true); 
+                    $tempDatabase['date'] = $actualDate;                   
+                    $this->Userinvestment->save($tempDatabase, $validate = true); 
 
-                $tempActualDate = $actualDate;
-                $date = new DateTime($tempActualDate);  
-                $date->modify('+1 day');
-                $actualDate = $date->format('Y-m-d');                    
-            }   
+                    $tempActualDate = $actualDate;
+                    $date = new DateTime($tempActualDate);  
+                    $date->modify('+1 day');
+                    $actualDate = $date->format('Y-m-d');                    
+                }   
+            }
+            $oldDateKey = $dateKey;
         }
-        $oldDateKey = $dateKey;
 */
 
             unset ($investmentListToCheck);
