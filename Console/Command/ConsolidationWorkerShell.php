@@ -159,7 +159,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
-            $returnData['investor'][$data["queue_userReference"]]['netReturn'] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
+            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
         }
         
         /////////////////////
@@ -273,7 +273,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         /////////////////////
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
-        exit;
         return json_encode($dataArray);
     }
     
