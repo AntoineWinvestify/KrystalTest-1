@@ -154,7 +154,7 @@ class mytriplea extends p2pCompany {
 
                     $headers = $row->getElementsByTagName('header');
                     foreach ($headers as $header) {
-                        $tempArray['marketplace_purpose'] = trim($header->nodeValue);
+                        $tempArray['marketplace_purpose'] = utf8_decode(trim($header->nodeValue));
                     }
 
                     $li = $row->getElementsByTagName('li');
@@ -170,11 +170,11 @@ class mytriplea extends p2pCompany {
                         }
 
                         if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
-                            $tempArray['marketplace_sector'] = $contentCheckedAttribute;
+                            $tempArray['marketplace_sector'] = utf8_decode($contentCheckedAttribute);
                         }
 
                         if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
-                            $tempArray['marketplace_requestorLocation'] = $contentCheckedAttribute;
+                            $tempArray['marketplace_requestorLocation'] = utf8_decode($contentCheckedAttribute);
                         }
 
                         if (strncasecmp($checkedAttribute, 'Importe', 7) == 0) {
@@ -384,7 +384,7 @@ class mytriplea extends p2pCompany {
 
                 $headers = $row->getElementsByTagName('header');
                 foreach ($headers as $header) {
-                    $tempArray['marketplace_purpose'] = trim($header->nodeValue);
+                    $tempArray['marketplace_purpose'] = utf8_decode(trim($header->nodeValue));
                 }
 
                 $li = $row->getElementsByTagName('li');
@@ -400,7 +400,7 @@ class mytriplea extends p2pCompany {
                     }
 
                     if (strncasecmp($checkedAttribute, 'Sector', 6) == 0) {
-                        $tempArray['marketplace_sector'] = $contentCheckedAttribute;
+                        $tempArray['marketplace_sector'] = utf8_decode($contentCheckedAttribute);
                     }
 
                     if (strncasecmp($checkedAttribute, 'Lugar', 5) == 0) {
