@@ -168,19 +168,35 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         $statusCollect = [];
         foreach ($returnData as $linkedaccountIdKey => $variableService) {
-            $keyService = key($variableService);
-            if (empty($result)) {
-                $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_ERROR;
-            }
-            else if ($result == "0") {
-                $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+            if ($linkedaccountIdKey == 'investor') {
+                $keyInvestor = key($variableService);
+                $keyService = key($variableService[$keyInvestor]);
+                if ($variableService[$keyInvestor][$keyService] == "0") {
+                    $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+                }
+                else if (empty($variableService[$keyInvestor][$keyService])) {
+                    $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService] = WIN_STATUS_COLLECT_ERROR;
+                }
+                else {
+                    $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+                }
             }
             else {
-                $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+                $keyService = key($variableService);
+                if ($variableService[$keyService] == "0") {
+                    $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+                }
+                else if  (empty($variableService[$keyService])){
+                    $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_ERROR;
+                }
+                else {
+                    $statusCollect[$linkedaccountIdKey][$keyService] = WIN_STATUS_COLLECT_CORRECT;
+                }
             }
         }
-
-        
+        echo "\nStatus collect ======>   ";
+        print_r($statusCollect);
+        echo "\nTempData  ======> $nameFunction ===>  ";
         print_r($returnData);
         $dataArray['tempArray'] = $returnData;
         $dataArray['statusCollect'] = $statusCollect;
@@ -292,22 +308,43 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         $statusCollect = [];
         foreach ($returnData as $linkedaccountIdKey => $variableService) {
-            $keyService = key($variableService);
-            foreach ($variableService as $dateKey => $result) {
-                if (empty($result)) {
-                    $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_ERROR;
+            if ($linkedaccountIdKey == 'investor') {
+                $keyInvestor = key($variableService);
+                $keyService = key($variableService[$keyInvestor]);
+                foreach ($variableService[$keyInvestor][$keyService] as $dateKey => $result) {
+                    if ($result == "0") {
+                    $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
+                    }
+                    else if (empty($result)) {
+                        $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService][$dateKey] = WIN_STATUS_COLLECT_ERROR;
+                    }
+                    else {
+                        $statusCollect[$linkedaccountIdKey][$keyInvestor][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
+                    }
                 }
-                else if ($result == "0") {
-                    $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
-                }
-                else {
-                    $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
-                }
-
             }
+            else {
+                $keyService = key($variableService);
+                foreach ($variableService[$keyService] as $dateKey => $result) {
+                    if ($result == "0")  {
+                        $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
+                    }
+                    else if (empty($result)) {
+                        $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_ERROR;
+                    }
+                    else {
+                        $statusCollect[$linkedaccountIdKey][$keyService][$dateKey] = WIN_STATUS_COLLECT_CORRECT;
+                    }
+
+                }
+            }
+            
         }
-        
+        echo "\nStatus collect ======>   ";
+        print_r($statusCollect);
+        echo "\nTempData  ======> $nameFunction ===>  ";
         print_r($returnData);
+        exit;
         $dataArray['tempArray'] = $returnData;
         $dataArray['statusCollect'] = $statusCollect;
         return json_encode($dataArray);
