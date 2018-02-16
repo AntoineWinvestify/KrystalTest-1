@@ -1,7 +1,7 @@
 <?php
 /**
  * +----------------------------------------------------------------------------+
- * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * | Copyright (C) 2018, http://www.winvestify.com                   	  	|
  * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
@@ -15,8 +15,8 @@
  *
  *
  * @author
- * @version 0.3
- * @date 2018-01-05
+ * @version 0.4
+ * @date 2018-02-15
  * @package
  *
  * This client deals with parsing of the files that have been downloaded
@@ -35,9 +35,18 @@
  * deal with the flows for reserved funds
  * introduction of state management
  * 
+ * 2018-02-15		version 0.4
+ * Code for copying userinvestmentdata records in case the transactions don't cover all the natural days (after
+ * an account linking)
+ * new method, repaymentReceived added. This method updates the amortization tables of a loan
+ * 
+ * 
+ * 
+ * 
+ * 
  *
  * PENDING:
- * check if outstanding principal = 0 in order to determine if a prestamo has finalized (good for Finanzarel as no expiredLoans exists
+ * -
  * 
  */
 App::import('Shell', 'GearmanClient');
@@ -157,7 +166,6 @@ class ParseDataClientShell extends GearmanClientShell {
                         $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
                         
                         $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE. ".*", true);
-
                         
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
@@ -261,19 +269,19 @@ class ParseDataClientShell extends GearmanClientShell {
     /**
      * Maps the data to its corresponding database table + variables, calculates the "Missing values"
      * and writes all values to the database.
+     * An 'userinvestmentdatas' table is generated for each day, i.e. even if no activity exists. This is only
+     * done for the regular backups, not for the initial account linking procedure
      * 
      *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      *  @return boolean true
      *                  false
      *
-     * the principal data is available in two or three sub-arrays which are to be written
+     * the principal data is available in various sub-arrays which are to be written
      * (before checking if it is a duplicate) to the corresponding database table.
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
         
-        
-        ini_set('memory_limit', '2048M');
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
@@ -351,8 +359,132 @@ class ParseDataClientShell extends GearmanClientShell {
 
 
         
+        
+        
+        
+        
+        
+     
+        
+
+  
+
+/* NOT YET TESTED
+        // Copy the last userinvestmentdata for the "missing" dates before we start analyzing transaction records 
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) { 
+            $dateKeys = array_keys($platformData['parsingResultTransactions']);
+            $firstTransactionDate = $dateKeys[0];
+            
+            $date = new DateTime($firstTransactionDate);  
+            $date->modify('-1 day');
+            $lastDateToCalculate = $date->format('Y-m-d');             
+
+            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+            $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+            $lastDate = $tempdatabase['date'];
+
+        // Copy the userinvestmentdata for all missing days BEFORE these new transactions
+            if ($lastDate <> $lastDateToCalculate) {     
+                $actualDate = $lastDate;                                         // at least one record should be copied      
+                while ($actualDate <> $firstTransactionDate) {
+echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
+                    if (empty($tempDatabase)) {
+                        $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                        unset($tempDatabase['id']);
+                    }
+                    
+                    $tempDatabase['date'] = $actualDate;                   
+                    $this->Userinvestment->save($tempDatabase, $validate = true); 
+
+                    $tempActualDate = $actualDate;
+                    $date = new DateTime($tempActualDate);  
+                    $date->modify('+1 day');
+                    $actualDate = $date->format('Y-m-d');                    
+                }  
+            }  
+        }
+
+        
+        // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
+        $oldDateKey = $firstTransactionDate;  
+
+        $date1 = new DateTime($oldDateKey);  
+        $date1->modify('+1 day');
+        $actualDate = $date1->format('Y-m-d'); 
+        
+
+        if ($actualDate <> $dateKey) {
+            while ($actualDate <> $dateKey) {
+echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
+                if (empty($tempDatabase)) {
+                    $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                    $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                    unset($tempDatabase['id']);
+                }
+
+                $tempDatabase['date'] = $actualDate;                   
+                $this->Userinvestment->save($tempDatabase, $validate = true); 
+
+                $tempActualDate = $actualDate;
+                $date = new DateTime($tempActualDate);  
+                $date->modify('+1 day');
+                $actualDate = $date->format('Y-m-d');                    
+            }   
+        }
+        $oldDateKey = $dateKey;
+        
+        
+        
+ */       
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
 echo "\ndateKey = $dateKey \n";
+
+ /* TO BE TESTED 
+        // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
+        $oldDateKey = $firstTransactionDate;  
+
+        $date1 = new DateTime($oldDateKey);  
+        $date1->modify('+1 day');
+        $actualDate = $date1->format('Y-m-d'); 
+        
+
+        if ($actualDate <> $dateKey) {
+            while ($actualDate <> $dateKey) {
+echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
+                if (empty($tempDatabase)) {
+                    $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                    $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                    unset($tempDatabase['id']);
+                }
+
+                $tempDatabase['date'] = $actualDate;                   
+                $this->Userinvestment->save($tempDatabase, $validate = true); 
+
+                $tempActualDate = $actualDate;
+                $date = new DateTime($tempActualDate);  
+                $date->modify('+1 day');
+                $actualDate = $date->format('Y-m-d');                    
+            }   
+        }
+        $oldDateKey = $dateKey;
+*/
 
             unset ($investmentListToCheck);
             unset ($loanStatus);
@@ -974,6 +1106,58 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
        
         $calculationClassHandle->consolidatePlatformData($database);
 
+        
+ /* NOT YET TESTED       
+        // Make sure that we have an entry in Userinvestmentdata for yesterday       
+        $date = new DateTime(date("Y-m-d"));                                    // = today
+        $date->modify('-1 day');
+        $lastDateToCalculate = $date->format('Y-m-d');
+        
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+            if ($dateKey <> $lastDateToCalculate) {
+echo "WIN_ACTION_ORIGIN_ACCOUNT_LINKING: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
+                $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);   
+                $tempDatabase['date'] = $lastDateToCalculate;
+                unset($tempDatabase['id']);                    
+                $this->Userinvestment->save($tempDatabase, $validate = true);
+            }            
+        }
+ 
+        // Copy the userinvestmentdata for all missing days
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
+            if ($dateKey <> $lastDateToCalculate) {     
+                $actualDate = $dateKey;                                         // at least one record should be copied      
+                while ($actualDate <> $lastDateToCalculate) {
+echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
+                    if (empty($tempDatabase)) {
+                        $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                        unset($tempDatabase['id']);
+                    }
+                    
+                    $tempDatabase['date'] = $actualDate;                   
+                    $this->Userinvestment->save($tempDatabase, $validate = true); 
+
+                    $tempActualDate = $actualDate;
+                    $date = new DateTime($tempActualDate);  
+                    $date->modify('+1 day');
+                    $actualDate = $date->format('Y-m-d');                    
+                }  
+            }  
+        }
+
+        
+ */       
+        
+        
+        
+        
+        
+        
+        
+        
+        
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 //print_r($platformData['amortizationTablesOfNewLoans']);
@@ -1043,7 +1227,12 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
 echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";        
 print_r($amortizationTable); 
         $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                                       // not yet paid Normally ask for first one with capitalRepayment = "" or 0;
-
+/*
+ * check if date if reception of money == date previsto
+ * 
+ * 
+ * 
+ */
         $table['id'] = $tableDbReference;
         echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";       
         if ($this->Investmentslice->updateAmortizationTable($table)) {
