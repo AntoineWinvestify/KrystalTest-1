@@ -145,7 +145,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         //$this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
                                                   WIN_QUEUE_STATUS_START_CONSOLIDATION,
                                                 $jobsInParallel);
             echo "Pending jobs in queue:    ";
@@ -204,7 +204,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                 }
                 $this->saveConsolidationFields();
                 
-                //$this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
+                $this->verifyStatus(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, "Data successfuly downloaded", WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_CONSOLIDATION_FINISHEDD);
 
             }
             else {
@@ -308,12 +308,17 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $keyForInvestor = key($status[$data[2]]);
                     $dataForInvestor = $status[$data[2]];
                     $this->userResult[$data[0]]['investor'][$data[2]][$keyForInvestor] = $dataForInvestor;
+                    if (!empty($dataWorker['errors']['investor'][$data[2]][$keyForInvestor])) {
+                        $this->gearmanErrors[$data[0]]['investor'][$data[2]][$keyForInvestor] = $dataWorker['errors']['investor'][$data[2]][$keyForInvestor];
+                    }
                 }
                 else {
                     $keyFunction = key($status);
                     $this->userResult[$data[0]][$linkaccountId][$keyFunction] = $status;
+                    if (!empty($dataWorker['errors'][$linkaccountId][$keyFunction])) {
+                        $this->gearmanErrors[$data[0]][$linkaccountId][$keyFunction] = $dataWorker['errors'][$linkaccountId][$keyFunction];
+                    }
                 }
-                $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
             }
         }
         if (!empty($dataWorker['tempArray'])) {
@@ -337,6 +342,84 @@ class ConsolidationClientShell extends GearmanClientShell {
         echo "ID Unique: " . $task->unique() . "\n";
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
+    }
+    
+    /**
+     * Function to verify that the job was successful per user and per company
+     * @param int $status It is the Id of the next queue status
+     * @param string $message It is the message to show on console
+     * @param int $restartStatus It is the Id of the queue if something fail
+     * @param int $errorStatus It is the Id of the queue if the error repeats and it is irrecoverable
+     * @param array $this->userResult This array is a variable class where we save the completion status of a pfp
+     *                                The variable is created as: this->userResult[$queueId][$linkedaccountId]
+     */
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {       
+        foreach ($this->userResult as $queueId => $userResult) {
+            $globalDestruction = false;
+            unset($this->queueInfo[$queueId]['companiesInFlow']);
+            /*
+             * foreach to verify if there was an error in the worker collecting the data
+             * $linkaccountId if it's defined as global, there was a crash error in the worker
+             * $result it is true if everything was correct and false if there was an error
+             */
+            foreach ($userResult as $linkaccountId => $result) {
+                if ($linkaccountId == WIN_STATUS_COLLECT_GLOBAL_ERROR) {
+                    $globalDestruction = true;
+                    break;
+                }
+                if (!$result) {
+                    $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                    continue;
+                }
+                else if ($result === WIN_STATUS_COLLECT_WARNING) {
+                    $dataStatus['nextStatus'] = $status;
+                    $dataStatus['restartStatus'] = $restartStatus;
+                    $dataStatus['errorStatus'] = $errorStatus;
+                    $this->requeueCompanyWithWarning($queueId, $linkaccountId, $dataStatus, count($userResult));
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                    continue;
+                }
+                $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
+            }
+            /*
+             * When there is a globalDestruction, all content of the files are deleted
+             */
+            if ($globalDestruction) {
+                foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
+                    $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                }
+            }
+            if (!empty($this->queueInfo[$queueId]['companiesInFlow'])) {
+                    $this->Queue2->id = $queueId;
+                if (!$globalDestruction) {
+                    $newState = $status;
+                    $this->queueInfo[$queueId]['numberTries'] = 0;
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
+                    }
+                } 
+                else {
+                    $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+                    $newState = $data["newStatus"];
+                    $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
+                }
+                $this->Queue2->save(array(
+                            'queue2_status' => $newState,
+                            'queue2_info' => json_encode($this->queueInfo[$queueId])
+                        ),
+                        $validate = true
+                );
+            }
+            //$statusProcess = $this->consolidationResult($userResult, $queueId);
+        }
     }
     
 }
