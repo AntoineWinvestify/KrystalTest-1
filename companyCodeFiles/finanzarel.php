@@ -231,7 +231,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "internalName",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "investment_myInvestment",                                // 'input3' is NOT mandatory. 
+                                "input2" => "createReservedFunds",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ]
@@ -336,7 +336,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "M" => [
+            "N" => [
                 [
                     "type" => "investment_dueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -346,7 +346,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "N" => [
+            "O" => [
                 [
                     "type" => "investment_statusOfLoan",                          
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
@@ -364,7 +364,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getDefaultValue",
                 ]
             ],
-            "O" => [
+            "P" => [
                 [
                     "type" => "investment_estimatedNextPayment",                // Winvestify standardized name
                     "inputData" => [
