@@ -43,8 +43,15 @@ class Dashboardoverviewdata extends AppModel {
 
     );
 
+    /**
+     * Get data of the last global Overview of an investor.
+     * @param string $investorId             investor database id.
+     * @return array Last Dashboardoverviewdata rows for the user
+     */
+    public function getLastOverview($investorId) {
+        return $this->getData(["investor_id" => $investorId], ['*'], ["date DESC"], 1, "first");
+    }
 
-    
     public $belongsTo = array(
         'Investor' => array(
             'className' => 'Investor',

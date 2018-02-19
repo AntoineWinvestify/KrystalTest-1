@@ -234,7 +234,7 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Actual Yield.') ?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield') ?></strong></p>
-                                            <h3 class="title">0</h3>
+                                            <h3 class="title"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPast12Months'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">

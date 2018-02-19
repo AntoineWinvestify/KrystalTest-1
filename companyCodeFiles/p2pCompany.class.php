@@ -2848,10 +2848,10 @@ FRAGMENT
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
 
         if (!empty(array_diff($this->headerComparation, $data)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
-            if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
-                return $this->compareMulti();
-            } else {
-                return $this->compareSimple();
+            if (!empty($configParam[0]['chunkInit'])) {  
+                return $this->compareMulti();                                   //Multi sheet
+            } else {    
+                return $this->compareSimple();                                  //Single sheet
             }
         }
         echo "OK";

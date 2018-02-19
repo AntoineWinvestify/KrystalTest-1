@@ -1,5 +1,30 @@
 <?php
 
+/**
+ * +-----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
+ * +-----------------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify 		|
+ * | it under the terms of the GNU General Public License as published by  	|
+ * | the Free Software Foundation; either version 2 of the License, or 		|
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | GNU General Public License for more details.        			|
+ * +-----------------------------------------------------------------------------+
+ *
+ *
+ * @author 
+ * @version 0.1
+ * @date 2018-02-13
+ * @package
+ *
+ *
+ *  Shell for cron methods of queues2
+ *
+ */
+
 require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
@@ -29,7 +54,7 @@ class Queue2Shell extends AppShell {
         }
 
         foreach ($investors as $investor) {
-            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'company_id' => $hasPreprocess], ['id', 'company_id']);
+            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'company_id' => $hasPreprocess, 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
         }
 
         foreach ($linkaccounts as $investorIdentity => $linkaccount) {
@@ -40,18 +65,18 @@ class Queue2Shell extends AppShell {
             $infoString = '{"originExecution":2,"companiesInFlow":[' . rtrim($inFlow, ",") . ']}';
 
             if (!empty($inFlow)) {
-                $data[] = array(
+                $data = array(
                     "queue2_userReference" => $investorIdentity,
                     "queue2_info" => $infoString,
                     "queue2_type" => FIFO,
                     "queue2_status" => WIN_QUEUE_STATUS_START_PREPROCESS,
                 );
 
+                $this->Queue2->save($data);
+                $inFlow = '';
                 $inFlow = '';
             }
         }
-
-        $this->Queue2->saveMany($data);
     }
 
     /**
@@ -67,7 +92,7 @@ class Queue2Shell extends AppShell {
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
 
         foreach ($investors as $investor) {
-            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id']], ['id', 'company_id']);
+            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
         }
 
         foreach ($linkaccounts as $investorIdentity => $linkaccount) {
@@ -78,19 +103,19 @@ class Queue2Shell extends AppShell {
             $infoString = '{"originExecution":2,"companiesInFlow":[' . rtrim($inFlow, ",") . ']}';
 
             if (!empty($inFlow)) {
-                $data[] = array(
+                $data = array(
                     "queue2_userReference" => $investorIdentity,
                     "queue2_info" => $infoString,
                     "queue2_type" => FIFO,
                     "queue2_status" => WIN_QUEUE_STATUS_START_COLLECTING_DATA,
                 );
-
+                
+                //print_r($data);
+                $this->Queue2->create();
+                $this->Queue2->save($data);
                 $inFlow = '';
             }
         }
-
-        //print_r($data);
-        $this->Queue2->saveMany($data);
     }
 
 }
