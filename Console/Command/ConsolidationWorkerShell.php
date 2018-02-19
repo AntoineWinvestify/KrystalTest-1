@@ -467,14 +467,17 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return array
      */
     public function getDatesForPastReturn($dateInit, $dateFinish) {
-        $dateInitYear = date("Y",  strtotime($dateInit));
-        //$dateInitTotal = date("Ymd",  strtotime($dateInit));
-        $dateFinishYear = date("Y",  strtotime($dateFinish));
-        //$dateFinishTotal = date("Ymd",  strtotime($dateFinish));
-        $totalYears = $dateFinishYear - $dateInitYear;
-        $dates = [];
-        for ($i = 1; $i <= $totalYears; $i++) {
-            $dates[] = $dateFinishYear - $i;
+        $dates = null;
+        if (!empty($dateInit)) {
+            $dateInitYear = date("Y",  strtotime($dateInit));
+            //$dateInitTotal = date("Ymd",  strtotime($dateInit));
+            $dateFinishYear = date("Y",  strtotime($dateFinish));
+            //$dateFinishTotal = date("Ymd",  strtotime($dateFinish));
+            $totalYears = $dateFinishYear - $dateInitYear;
+            $dates = [];
+            for ($i = 1; $i <= $totalYears; $i++) {
+                $dates[] = $dateFinishYear - $i;
+            }
         }
         return $dates;
         //$resultDate1 = $dateFinishTotal - $dateInitTotal;
