@@ -53,12 +53,12 @@ App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
 class ParseDataClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Amortizationtable');
+    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable');
     protected $variablesConfig;
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-   //     return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -358,92 +358,73 @@ class ParseDataClientShell extends GearmanClientShell {
         $database['globaltotalsdata']['globaltotalsdata_costSecondaryMarketPerDay'] = "";       
 
 
-        
-        
-        
-        
-        
-        
-     
+       
         
 
-  
-
-/* NOT YET TESTED
         // Copy the last userinvestmentdata for the "missing" dates before we start analyzing transaction records 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) { 
             $dateKeys = array_keys($platformData['parsingResultTransactions']);
-            $firstTransactionDate = $dateKeys[0];
-            
-            $date = new DateTime($firstTransactionDate);  
-            $date->modify('-1 day');
-            $lastDateToCalculate = $date->format('Y-m-d');             
+            $firstnewTransactionDate = $dateKeys[0];
 
             $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-            $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
-            $lastDate = $tempdatabase['date'];
+            $tempDatabase = $this->Userinvestmentdata->find('first', array(
+                                             'conditions'   => $filterConditions,
+                                             'recursive'    => -1,
+                                             'order'        => 'Userinvestmentdata.date'
+                                            )); 
+            unset($tempDatabase['Userinvestmentdata']['id']);
+            $lastSavedTransaction =  $tempDatabase['Userinvestmentdata']['date'];         
+            $date2 = new DateTime($lastSavedTransaction);  
+            $date2->modify('+1 day');
+            $nextTransactiondateToSave = $date2->format('Y-m-d');       
 
         // Copy the userinvestmentdata for all missing days BEFORE these new transactions
-            if ($lastDate <> $lastDateToCalculate) {     
-                $actualDate = $lastDate;                                         // at least one record should be copied      
-                while ($actualDate <> $firstTransactionDate) {
-echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
-                    if (empty($tempDatabase)) {
-                        $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-                        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                        unset($tempDatabase['id']);
-                    }
-                    
-                    $tempDatabase['date'] = $actualDate;                   
-                    $this->Userinvestment->save($tempDatabase, $validate = true); 
-
-                    $tempActualDate = $actualDate;
-                    $date = new DateTime($tempActualDate);  
+            if ($nextTransactiondateToSave < $firstnewTransactionDate) {         
+                while ($nextTransactiondateToSave <> $firstnewTransactionDate) {
+                    $this->Userinvestmentdata->create();
+                    $tempDatabase['Userinvestmentdata']['date'] = $nextTransactiondateToSave; 
+                    $this->Userinvestmentdata->save($tempDatabase, $validate = true); 
+                    $date = new DateTime($nextTransactiondateToSave);  
                     $date->modify('+1 day');
-                    $actualDate = $date->format('Y-m-d');                    
+                    $nextTransactiondateToSave = $date->format('Y-m-d');                    
                 }  
             }  
         }
-      
- */       
-        
-  
-        
+
+        unset($tempDatabase);
+       
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
-echo "\ndateKey = $dateKey \n";
+echo __FUNCTION__ .  " " . __LINE__ . "\ndateKey = $dateKey \n";
 
- /* TO BE TESTED 
-        // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
-        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) { 
-            $oldDateKey = $firstTransactionDate;  
+            // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
+            if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
+                echo __FUNCTION__ . " " . __LINE__ . " actualDate = $actualDate \n";
 
-            $date1 = new DateTime($oldDateKey);  
-            $date1->modify('+1 day');
-            $actualDate = $date1->format('Y-m-d'); 
+                $date1 = new DateTime($oldDateKey);  
+                $date1->modify('+1 day');
+                $actualDate = $date1->format('Y-m-d'); 
 
-
-            if ($actualDate <> $dateKey) {
-                while ($actualDate <> $dateKey) {
-echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: BEFORE START OF LOOPS: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
-                    if (empty($tempDatabase)) {
+                if ($actualDate <> $dateKey) {
+                    while ($actualDate <> $dateKey) {
                         $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-                        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                        unset($tempDatabase['id']);
-                    }
+                        if (empty($tempDatabase)) {
+                            $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                            $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+                        }
 
-                    $tempDatabase['date'] = $actualDate;                   
-                    $this->Userinvestment->save($tempDatabase, $validate = true); 
-
-                    $tempActualDate = $actualDate;
-                    $date = new DateTime($tempActualDate);  
-                    $date->modify('+1 day');
-                    $actualDate = $date->format('Y-m-d');                    
-                }   
+                        $this->Userinvestmentdata->create();
+                        $tempDatabase['Userinvestmentdata']['date'] = $actualDate; 
+                        $this->Userinvestmentdata->save($tempDatabase, $validate = true); 
+                        $tempActualDate = $actualDate;
+                        $date = new DateTime($tempActualDate);  
+                        $date->modify('+1 day');
+                        $actualDate = $date->format('Y-m-d');                    
+                    }   
+                }  
             }
-            $oldDateKey = $dateKey;
-        }
-*/
-
+            
+            $oldDateKey = $dateKey;               
+        
             unset ($investmentListToCheck);
             unset ($loanStatus);
             $filterConditions = array("linkedaccount_id" => $linkedaccountId);
@@ -1061,15 +1042,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         }
        
         $calculationClassHandle->consolidatePlatformData($database);
-
+   
         
-     
-        // Make sure that we have an entry in Userinvestmentdata for yesterday       
-        $date = new DateTime(date("Y-m-d"));                                    // = today
-        $date->modify('-1 day');
-        $lastDateToCalculate = $date->format('Y-m-d');
-        
-        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {                
+        unset ($tempDatabase);
+        // Make sure that we have an entry in Userinvestmentdata for yesterday as required for yield calculation     
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) { 
+            $date = new DateTime(date("Y-m-d"));                                    // = today
+            $date->modify('-1 day');
+            $lastDateToCalculate = $date->format('Y-m-d');            
             if ($dateKey <> $lastDateToCalculate) {               
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);   
@@ -1080,33 +1060,31 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 $this->Userinvestmentdata->save($tempDatabase, $validate = true);
             }            
         }
- /*
+        
+        
         // Copy the userinvestmentdata for all missing days
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
-echo __FUNCTION__ . " " . __LINE__ .  " \n"; 
-            if ($dateKey <> $lastDateToCalculate) {
-echo __FUNCTION__ . " " . __LINE__ .  " \n";                 
-                $actualDate = $dateKey;                                         // at least one record should be copied      
-                while ($actualDate <> $lastDateToCalculate) {
-echo "WIN_ACTION_ORIGIN_REGULAR_UPDATE: lastDateToCalculate = " . $lastDateToCalculate . "\n";                
-                    if (empty($tempDatabase)) {
-                        $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-                        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
-                        unset($tempDatabase['id']);
-echo __FUNCTION__ . " " . __LINE__ .  " \n";                         
-                    }
-                    
-                    $tempDatabase['date'] = $actualDate;                   
-                    $this->Userinvestment->save($tempDatabase, $validate = true); 
-echo __FUNCTION__ . " " . __LINE__ .  " \n"; 
-                    $tempActualDate = $actualDate;
-                    $date = new DateTime($tempActualDate);  
-                    $date->modify('+1 day');
-                    $actualDate = $date->format('Y-m-d');                    
-                }  
+            $date = new DateTime($dateKey);  
+            $date->modify('+1 day');
+            $actualDate = $date->format('Y-m-d');
+
+            while ($actualDate <= $lastDateToCalculate) {               
+                if (empty($tempDatabase)) {                   
+                    $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+                    $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions); 
+                    unset($tempDatabase['Userinvestmentdata']['id']);
+                }
+                $this->Userinvestmentdata->create();
+                $tempDatabase['Userinvestmentdata']['date'] = $actualDate;
+                $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+                $this->Userinvestmentdata->save($tempDatabase, $validate = true); 
+                $tempActualDate = $actualDate;
+                $date = new DateTime($tempActualDate);  
+                $date->modify('+1 day');
+                $actualDate = $date->format('Y-m-d');                  
             }  
         }
-*/             
+            
         
         
         

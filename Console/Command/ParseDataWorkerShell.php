@@ -321,9 +321,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Loan $loanid detected with state WAITINGT
                     }
                     // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
 
-                    $this->array_keys_recursive($data['listOfReservedInvestments'], 4, "internalName", "disinvestment");
-                    $foundArrays = $this->getlevel();
- //                   print_r($foundArrays);
+                 
+                    $temp = new BaseClass();
+                    $temp->array_keys_recursive($data['listOfReservedInvestments'], 4, "internalName", "disinvestment");
+                    $foundArrays = $temp->getlevel();
+                    echo __FUNCTION__ . " " . __LINE__ . " \n";
+                    print_r($foundArrays);
+                    
+                    
+                    
                     if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
                         echo "some error occurred in PFP, but we will mark all Ghosts";
                     }
@@ -845,6 +851,44 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         return $result;
     }
    
+    
+    /**
+     * Clean the array of unnecessary dates
+     * @param array $tempArray the array to clean
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with values to use to delete
+     * @return null if $config not exist or $startDate is empty
+     */
+    public function cleanDatesTempArray(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        if (empty($this->startDate)) {
+            return;
+        }
+        $rangeDates = $this->createDateRange($this->startDate, $this->finishDate);
+        array_shift($rangeDates);
+        array_push($rangeDates, $this->finishDate);
+        foreach ($tempArray as $keyDate => $data) {
+            $date = date("Ymd", strtotime($keyDate));
+            if (!in_array($date, $rangeDates)) {
+                unset($tempArray[$keyDate]);
+            }
+        }
+    }
+    
+}
+
+class BaseClass {
+    public $filteredArray;
+    public $tempKey = array();
+    public $tempDepth = 0;      // Required to see if the $depth is decreasing
+ 
+ 
+function getlevel() {
+    return $this->filteredArray;
+  }  
+    
     /**
      * Recursively extracts arrays from a list of arrays according to filter conditions (name-value of the array fields)
      * 
@@ -887,32 +931,7 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
             }
         }
     } 
-    
-    /**
-     * Clean the array of unnecessary dates
-     * @param array $tempArray the array to clean
-     * @param object $companyHandle It is the company instance
-     * @param array $config Configuration array with values to use to delete
-     * @return null if $config not exist or $startDate is empty
-     */
-    public function cleanDatesTempArray(&$tempArray, $companyHandle, $config) {
-        if (empty($config)) {
-            return;
-        }
-        if (empty($this->startDate)) {
-            return;
-        }
-        $rangeDates = $this->createDateRange($this->startDate, $this->finishDate);
-        array_shift($rangeDates);
-        array_push($rangeDates, $this->finishDate);
-        foreach ($tempArray as $keyDate => $data) {
-            $date = date("Ymd", strtotime($keyDate));
-            if (!in_array($date, $rangeDates)) {
-                unset($tempArray[$keyDate]);
-            }
-        }
-    }
-    
+  
 }
 
 
