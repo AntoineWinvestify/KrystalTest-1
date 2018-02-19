@@ -143,6 +143,6 @@ $(document).ready(function() {
             </a>
         </li>*/ ?>
         <li class="treeview">
-          <a href="/admin/users/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
+          <a href="/admin/users/admin/logout"><i class="fa fa-power-off"></i> <span><?php echo __('Logout')?></a></span>
         </li>
     </ul>

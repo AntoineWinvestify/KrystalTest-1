@@ -73,7 +73,7 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actons.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login', 'loginAction', 'readMLDatabase');    // allow the actions without logon
+	$this->Auth->allow('login', 'loginAction', 'readMLDatabase','logout');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
 
 }
