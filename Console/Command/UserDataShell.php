@@ -864,9 +864,9 @@ statusOfLoan can have the following values:
      */
     public function calculateBadDebt(&$transactionData, &$resultData) {
         
-        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
-            return $resultData['investment']['investment_writtenOff'];
-        }
+//        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
+//            return $resultData['payment']['payment_writtenOff'];
+//        }
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
         
         if (isset( $transactionData['amount'])) {           // We take the value as provided in the transaction record by the P2P
@@ -1102,7 +1102,7 @@ statusOfLoan can have the following values:
      */
     public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
         //$result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
-        return $resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'];      
+        return $resultData['payment']['payment_writtenOff'];      
     }
  
     

@@ -332,7 +332,7 @@ class Fileparser {
                 "detail" => "Write-off",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "investment_writtenOff"
+                "type" => "payment_writtenOff"
                 ],
             29 => [
                 "detail" => "Registration",
