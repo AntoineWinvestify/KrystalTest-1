@@ -494,14 +494,14 @@ class WinFormulas {
             "intervals" => "inclusive",
             "operation" => "subtract"
         ],
-        "E" => [
+        /*"E" => [
             "type" => "userinvestmentdata_writtenOff",
             "table" => "Userinvestmentdata",
             "dateInit" => "-0",
             "dateFinish" => "-0",
             "intervals" => "latest",
             "operation" => "subtract"
-        ]
+        ]*/
     ];
     
     protected $variablesFormula_netPastReturn = [
@@ -605,7 +605,7 @@ class WinFormulas {
             "intervals" => "inclusive",
             "operation" => "subtract"
         ],
-        "E" => [
+        /*"E" => [
             "type" => "userinvestmentdata_writtenOff",
             "table" => "Userinvestmentdata",
             "dateInit" => [
@@ -618,7 +618,7 @@ class WinFormulas {
             ],
             "intervals" => "latest",
             "operation" => "subtract"
-        ]
+        ]*/
     ];
     
     protected $variablesFormula_B = [
