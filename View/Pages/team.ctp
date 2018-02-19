@@ -104,19 +104,6 @@
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 teamBox teamBoxcris" id="cris">
-                            <img src="/img/teamfiles/team_CristinaOrtega.png" class="img-responsive center-block teamImg"/>
-                            <div id="team_cris">
-                                <span class="teamName"><center><i class="fa fa-circle-o" style="color: #47badf;"></i>&nbsp;&nbsp;<?php echo __('Cristina Ortega')?></center></span>
-                                <span class="teamPosition"><center><?php echo __('Software Designer')?></center></span>
-                                <a href="https://www.linkedin.com/in/crisortegadc/" target="_blank"><button class="btn btn1CR btnRounded center-block" type="button"><i class="fa fa-linkedin"></i></button></a>
-                                <br/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
-                    <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 teamBox teamBoxantonio" id="antonio">
                             <img src="/img/teamfiles/team_AntonioIbanez.png" class="img-responsive center-block teamImg"/>
                             <div id="team_antonio">
