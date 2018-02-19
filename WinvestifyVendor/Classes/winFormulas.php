@@ -105,6 +105,7 @@ class WinFormulas {
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_currencyExchangeTransactionPerDay",
+                    "globaltotalsdata_writtenOff"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -132,20 +133,6 @@ class WinFormulas {
             "operation" => "subtract"
         ],
         "E" => [
-            "type" => [
-                "variables" => [
-                    "userinvestmentdata_writtenOff",
-                    //need more data to take values from database
-                ],
-                "operation" => "add"
-            ],
-            "table" => "Userinvestmentdata",
-            "dateInit" => "-0",
-            "dateFinish" => "-0",
-            "intervals" => "latest",
-            "operation" => "subtract"
-        ],
-        "F" => [
             "type" => [
                 "variables" => [
                     "globalcashflowdata_platformCompensationPositive",            
@@ -168,65 +155,18 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
-                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
-                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
-                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
-                    "globaltotalsdata_interestGrossIncomePerDay",
-                    "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
-                    "globaltotalsdata_latePaymentFeeIncomePerDay",
-                    "globaltotalsdata_loanRecoveriesPerDay",
-                    "globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    "globaltotalsdata_loanCompensationPerDay",
-                    "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_principalBuybackPerDay",
-                    "globaltotalsdata_incomeWithholdingTaxPerDay"
-                    //need more data to take values from database
-                ],
-                "operation" => "add"
-            ],
-            "table" => "Globaltotalsdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
-            "intervals" => "inclusive",
-            "operation" => "add"
-        ],
-        "B" => [
-            "type" => [
-                "variables" => [
-                    "globaltotalsdata_myInvestmentPerDay",
-                    "globaltotalsdata_costSecondaryMarketPerDay",
-                    "globaltotalsdata_secondaryMarketInvestmentPerDay",
-                    "globaltotalsdata_commissionPaidPerDay",
-                    "globaltotalsdata_taxVATPerDay",
-                    "globaltotalsdata_currencyExchangeFeePerDay",
-                    "globaltotalsdata_currencyExchangeTransactionPerDay",
-                    //need more data to take values from database
-                ],
-                "operation" => "add"
-            ],
-            "table" => "Globaltotalsdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
-            "intervals" => "inclusive",
-            "operation" => "subtract"
-        ],
-        "C" => [
-            "type" => [
-                "variables" => [
                     "userinvestmentdata_outstandingPrincipal",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
             "intervals" => "latest",
             "operation" => "add"
         ],
-        "D" => [
+        "B" => [
             "type" => [
                 "variables" => [
                     "userinvestmentdata_outstandingPrincipal",
@@ -241,7 +181,7 @@ class WinFormulas {
             "intervals" => "latest",
             "operation" => "subtract"
         ],
-        "E" => [
+        "C" => [
             "type" => [
                 "variables" => [
                     "userinvestmentdata_cashInPlatform",
@@ -255,27 +195,24 @@ class WinFormulas {
             "intervals" => "latest",
             "operation" => "add"
         ],
-        "F" => [
+        "D" => [
             "type" => [
                 "variables" => [
-                    "userinvestmentdata_writtenOff",
+                    "userinvestmentdata_cashInPlatform",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-0",
-            "dateFinish" => "-0",
+            "dateInit" => "-365",
+            "dateFinish" => "-365",
             "intervals" => "latest",
             "operation" => "subtract"
         ],
-        "G" => [
+        "E" => [
             "type" => [
-                "variables" => [
-                    "globalcashflowdata_platformCompensationPositive",            
-                    "globalcashflowdata_platformRecoveries",            
-                    "globalcashflowdata_platformIncentivesAndBonus",                  
-                    "globalcashflowdata_regularGrossInterestIncome",
+                "variables" => [        
+                    "globalcashflowdata_platformWithdrawals",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -285,6 +222,20 @@ class WinFormulas {
             "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "add"
+        ],
+        "F" => [
+            "type" => [
+                "variables" => [
+                    "globalcashflowdata_platformDeposits",            
+                    //need more data to take values from database
+                ],
+                "operation" => "add"
+            ],
+            "table" => "Globalcashflowdata",
+            "dateInit" => "-365",
+            "dateFinish" => "-0",
+            "intervals" => "inclusive",
+            "operation" => "subtract"
         ],
     ];
     
@@ -332,6 +283,7 @@ class WinFormulas {
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_currencyExchangeTransactionPerDay",
+                    "globaltotalsdata_writtenOff"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -381,26 +333,6 @@ class WinFormulas {
         "E" => [
             "type" => [
                 "variables" => [
-                    "userinvestmentdata_writtenOff",
-                    //need more data to take values from database
-                ],
-                "operation" => "add"
-            ],
-            "table" => "Userinvestmentdata",
-            "dateInit" => [
-                "month" => "12",
-                "day" => "31"
-            ],
-            "dateFinish" => [
-                "month" => "12",
-                "day" => "31"
-            ],
-            "intervals" => "latest",
-            "operation" => "subtract"
-        ],
-        "F" => [
-            "type" => [
-                "variables" => [
                     "globalcashflowdata_platformCompensationPositive",            
                     "globalcashflowdata_platformRecoveries",            
                     "globalcashflowdata_platformIncentivesAndBonus",                  
@@ -423,9 +355,7 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
-                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
-                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
+                    "globaltotalsdata_delayedInterestIncomePerDay",               //Finanzarel
                     "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
                     "globaltotalsdata_interestGrossIncomePerDay",
                     "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
@@ -434,7 +364,6 @@ class WinFormulas {
                     "globaltotalsdata_loanIncentivesAndBonusPerDay",
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -451,6 +380,7 @@ class WinFormulas {
                     "globalcashflowdata_platformRecoveries",             //Finanzarel
                     "globalcashflowdata_platformIncentivesAndBonus",             //Finanzarel
                     "globalcashflowdata_platformCompensationPositive",             //Finanzarel
+                    //
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -467,6 +397,9 @@ class WinFormulas {
                     "globaltotalsdata_costSecondaryMarketPerDay",
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
+                    "globaltotalsdata_currencyExchangeFeePerDay",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay",
+                    "globaltotalsdata_writtenOff"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -511,8 +444,6 @@ class WinFormulas {
                 "variables" => [
                     "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
                     "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
-                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
                     "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
                     "globaltotalsdata_interestGrossIncomePerDay",
                     "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
@@ -521,7 +452,6 @@ class WinFormulas {
                     "globaltotalsdata_loanIncentivesAndBonusPerDay",
                     "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -566,6 +496,9 @@ class WinFormulas {
                     "globaltotalsdata_costSecondaryMarketPerDay",
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
+                    "globaltotalsdata_currencyExchangeFeePerDay",
+                    "globaltotalsdata_incomeWithholdingTaxPerDay",
+                    "globaltotalsdata_writtenOff"
                     //need more data to take values from database
                 ],
                 "operation" => "add"
