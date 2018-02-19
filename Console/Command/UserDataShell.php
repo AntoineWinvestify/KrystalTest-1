@@ -966,8 +966,7 @@ class UserDataShell extends AppShell {
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
-        
-        $resultData['payment']['payment_principalAndInterestPayment'] = 0;
+        return $transactionData['amount'];
     }
     
     /**
@@ -993,8 +992,7 @@ class UserDataShell extends AppShell {
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
-         print_r($resultData);
-        //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
+        return $transactionData['amount'];
     }
     
     /**
