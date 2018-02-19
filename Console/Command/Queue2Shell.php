@@ -65,18 +65,18 @@ class Queue2Shell extends AppShell {
             $infoString = '{"originExecution":2,"companiesInFlow":[' . rtrim($inFlow, ",") . ']}';
 
             if (!empty($inFlow)) {
-                $data[] = array(
+                $data = array(
                     "queue2_userReference" => $investorIdentity,
                     "queue2_info" => $infoString,
                     "queue2_type" => FIFO,
                     "queue2_status" => WIN_QUEUE_STATUS_START_PREPROCESS,
                 );
 
+                $this->Queue2->save($data);
+                $inFlow = '';
                 $inFlow = '';
             }
         }
-
-        $this->Queue2->saveMany($data);
     }
 
     /**
@@ -103,19 +103,19 @@ class Queue2Shell extends AppShell {
             $infoString = '{"originExecution":2,"companiesInFlow":[' . rtrim($inFlow, ",") . ']}';
 
             if (!empty($inFlow)) {
-                $data[] = array(
+                $data = array(
                     "queue2_userReference" => $investorIdentity,
                     "queue2_info" => $infoString,
                     "queue2_type" => FIFO,
                     "queue2_status" => WIN_QUEUE_STATUS_START_COLLECTING_DATA,
                 );
-
+                
+                //print_r($data);
+                $this->Queue2->create();
+                $this->Queue2->save($data);
                 $inFlow = '';
             }
         }
-
-        //print_r($data);
-        $this->Queue2->saveMany($data);
     }
 
 }
