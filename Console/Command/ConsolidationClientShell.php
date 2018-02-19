@@ -370,38 +370,58 @@ class ConsolidationClientShell extends GearmanClientShell {
                 if ($linkaccountId == 'investor') {
                     $keyUserReference = key($result);
                     foreach ($result[$keyUserReference] as $keyFunction => $resultFunctionStatus) {
+                        if (is_array($resultFunctionStatus)) {
+                            foreach ($resultFunctionStatus as $keyDate => $dateResult) {
+                                if (!$dateResult) {
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                            . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['subtypeErrorId'] ;
+                                    print_r($this->gearmanErrors);
+                                    $this->saveGearmanError($this->gearmanErrors[$queueId]['investor'][$keyUserReference][$keyFunction][$keyDate]);
+                                }
+                            }
+                        }
                         if (!$resultFunctionStatus) {
+                            //$this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                    . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['subtypeErrorId'] ;
+                            print_r($this->gearmanErrors);
                             $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
                         }
                     }
                     continue;
                 }
                 else {
-                    if (!$result) {
-                        $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
-                        if (!empty($this->tempArray)) {
-                            unset($this->tempArray[$queueId][$linkaccountId]);
+                    $keyFunction = key($result);
+                    if (is_array($result[$keyFunction])) {
+                        foreach ($result[$keyFunction] as $keyDate => $dateResult) {
+                            if (!$dateResult) {
+                                $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                                $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                                $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                        . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['subtypeErrorId'] ;
+                                print_r($this->gearmanErrors);
+                                $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]);
+                            }
                         }
-                        continue;
+                    }
+                    if (!$result[$keyFunction]) {
+                        //$this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
+                        /*if (!empty($this->tempArray)) {
+                            unset($this->tempArray[$queueId][$linkaccountId]);
+                        }*/
+                        //$keyDataArray = key($dataArray[$data[2]]);
+                        $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                        $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                        $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['subtypeErrorId'] ;
+                        print_r($this->gearmanErrors);
+                        $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]);
                     }
                 }
-                /*if (!$result) {
-                    $this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
-                    if (!empty($this->tempArray)) {
-                        unset($this->tempArray[$queueId][$linkaccountId]);
-                    }
-                    continue;
-                }
-                else if ($result === WIN_STATUS_COLLECT_WARNING) {
-                    $dataStatus['nextStatus'] = $status;
-                    $dataStatus['restartStatus'] = $restartStatus;
-                    $dataStatus['errorStatus'] = $errorStatus;
-                    $this->requeueCompanyWithWarning($queueId, $linkaccountId, $dataStatus, count($userResult));
-                    if (!empty($this->tempArray)) {
-                        unset($this->tempArray[$queueId][$linkaccountId]);
-                    }
-                    continue;
-                }*/
                 $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
             }
             /*
