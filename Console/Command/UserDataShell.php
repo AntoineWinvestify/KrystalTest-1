@@ -977,8 +977,7 @@ statusOfLoan can have the following values:
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
-        
-        $resultData['payment']['payment_principalAndInterestPayment'] = 0;
+        return $transactionData['amount'];
     }
     
     /**
@@ -1004,8 +1003,7 @@ statusOfLoan can have the following values:
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
-         print_r($resultData);
-        //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
+        return $transactionData['amount'];
     }
     
     /**
@@ -1135,6 +1133,42 @@ statusOfLoan can have the following values:
             return WIN_LOANSTATUS_ACTIVE;
         }
     }  
+    
+    /**
+     *  Calculates the sum of the payment concept "Currency Exchange Fee" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_currencyExchangeFee']);  
+    }
+    
+    /**
+     *  Calculates the sum of the payment concept "Currency Exchange Transaction" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalCurrencyExchangeTransactionPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_currencyExchangeTransaction']);  
+    }
+    
+    /**
+     *  Calculates the sum of the payment concept "Income with holding Tax" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     *
+     */
+    public function calculateGlobalTotalIncomeWithholdingTaxPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_incomeWithholdingTax']);  
+    }
  
  
     /**
