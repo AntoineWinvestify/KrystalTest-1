@@ -145,6 +145,70 @@ class Investmentslice extends AppModel
         
     }    
 
+
+
+
+
+
+    /** NOT YET TESTED
+     *  Reads the amortization table of an investment slice
+     * 
+     *  @param  array   $slice      Database reference of investmentslice model  
+     *  @param  $filterConditions   filter conditions which apply to the amortization data
+     *  @return array   
+     */
+    public function getAmortizationTable($slice, $filterConditions) {
+        
+        $conditions = array_merge(array("id" => $slice), $filterConditions);
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($conditions);        
+        $result = $this->Amortizationtable->find('all', array(
+                'conditions' => $filterConditions,  // QUICK TEST
+                'recursive' => 1, 
+            ));
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($result);           
+        return $result;
+    }
+    
+ 
+    /** NOT YET TESTED
+     *  Updates the amortization table of an investment slice
+     * 
+     *  @param  array   array with the current transaction data, including database reference of table
+     *  @return array   boolean  
+     */
+    public function UpdateAmortizationTable($data)  {
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($data);           
+        if ($this->Amortizationtable->save($data, $validate = true)) {
+echo __FUNCTION__ . " " . __LINE__ . "\n";            
+           return true;
+        }
+echo __FUNCTION__ . " " . __LINE__ . "\n";        
+        return false;
+    }  
+    
+    
+    /** NOT YET TESTED
+     *  Deletes the *amortization table* of an investment slice. The sliceIdentifier model 
+     *  IS NOT DELETED, 
+     * 
+     *  @param  bigint  Database reference of model investmentslice
+     *  @return array   boolean     
+     */
+    public function DeleteAmortizationTable($slice)  {       
+        $conditions = array('investmentslice_id' => $slice);
+echo __FUNCTION . " " . __LINE__ . "\n";
+print_r($conditions); 
+        $result = $this->Amortizationtable->deleteAll($conditions, false, false);
+        return $result;
+    } 
+
+
+
+
+
     
 
 }

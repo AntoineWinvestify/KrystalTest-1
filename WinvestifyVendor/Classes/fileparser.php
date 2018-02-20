@@ -160,7 +160,7 @@ class Fileparser {
   * array can be done using both "detail" or "type" as search key
   * 
   * Format:
-  * "detail" => name of internal Winvestify concept as defined in Flow Data
+  * "detail" => name of internal Winvestify concept as defined in Flow Data. Can be considered as en event
   * "transactionType" => Identifies if it is a cost or an income
   * "account" => NOT REALLY USED. MAY BE DELETED 
   * "type" => link to the variables as defined in 'internalVariablesConfiguration.php'
@@ -332,7 +332,7 @@ class Fileparser {
                 "detail" => "Write-off",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "investment_writtenOff"
+                "type" => "payment_writtenOff"
                 ],
             29 => [
                 "detail" => "Registration",

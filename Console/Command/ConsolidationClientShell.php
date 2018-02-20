@@ -145,7 +145,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         //$this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
-            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
                                                   WIN_QUEUE_STATUS_START_CONSOLIDATION,
                                                 $jobsInParallel);
             echo "Pending jobs in queue:    ";
@@ -195,13 +195,16 @@ class ConsolidationClientShell extends GearmanClientShell {
                 }
 
                 $this->GearmanClient->runTasks();
+                print_r($this->tempArray);
+                print_r($this->gearmanErrors);
+                print_r($this->userResult);
                 // ######################################################################################################
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
                 $this->saveConsolidationFields();
                 
-                //$this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
+                $this->verifyStatus(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, "Data successfuly downloaded", WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED);
 
             }
             else {
@@ -249,15 +252,12 @@ class ConsolidationClientShell extends GearmanClientShell {
                     }
                     //print_r($this->services);
                     $model = ClassRegistry::init($this->services[$key]['database']['platform']['model']);
-                    $id = $model->find('first',
-                        array( 'conditions' => array('date' => date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']))),
-                               'recursive' => -1,
-                               'fields' => array('id')
-                        )  
-                    ); 
+                    $dateTime = date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']));
+                    $conditions = array(
+                        'date <=' => $dateTime,
+                        'linkedaccount_id' => $linkedaccountId);
+                    $id = $model->getData($conditions,['id'],'id DESC',null,'first');
                     $model->id = $id;
-                    //echo "\n this is the variable ===>>> " . $this->services[$key]['database']['platform']['variable'];
-                    //echo "\n this is the value =====>>>>  " . $serviceValues;
                     $model->saveField($this->services[$key]['database']['platform']['variable'], $serviceValues);
                 }
             }
@@ -273,6 +273,9 @@ class ConsolidationClientShell extends GearmanClientShell {
         }
     }
     
+    /**
+     * Function to get all the services in the flow4
+     */
     public function getAllServices() {
         $services = $this->services;
         foreach ($services as $keyServices => $service) {
@@ -299,11 +302,23 @@ class ConsolidationClientShell extends GearmanClientShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $dataWorker = json_decode($task->data(), true);
-        
         if (!empty($dataWorker['statusCollect'])) {
             foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
-                $this->userResult[$data[0]][$linkaccountId] = $status;
-                $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
+                if ($linkaccountId == 'investor') {
+                    $keyForInvestor = key($status[$data[2]]);
+                    $dataForInvestor = $status[$data[2]];
+                    $this->userResult[$data[0]]['investor'][$data[2]][$keyForInvestor] = $dataForInvestor;
+                    if (!empty($dataWorker['errors']['investor'][$data[2]][$keyForInvestor])) {
+                        $this->gearmanErrors[$data[0]]['investor'][$data[2]][$keyForInvestor] = $dataWorker['errors']['investor'][$data[2]][$keyForInvestor];
+                    }
+                }
+                else {
+                    $keyFunction = key($status);
+                    $this->userResult[$data[0]][$linkaccountId][$keyFunction] = $status;
+                    if (!empty($dataWorker['errors'][$linkaccountId][$keyFunction])) {
+                        $this->gearmanErrors[$data[0]][$linkaccountId][$keyFunction] = $dataWorker['errors'][$linkaccountId][$keyFunction];
+                    }
+                }
             }
         }
         if (!empty($dataWorker['tempArray'])) {
@@ -319,7 +334,6 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $keyDataArray = key($dataArray);
                     $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
                 }
-                $this->userResult[$data[0]][$linkaccountId] = 1;
             }
             
         }
@@ -328,6 +342,122 @@ class ConsolidationClientShell extends GearmanClientShell {
         echo "ID Unique: " . $task->unique() . "\n";
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
+    }
+    
+    /**
+     * Function to verify that the job was successful per user and per company
+     * @param int $status It is the Id of the next queue status
+     * @param string $message It is the message to show on console
+     * @param int $restartStatus It is the Id of the queue if something fail
+     * @param int $errorStatus It is the Id of the queue if the error repeats and it is irrecoverable
+     * @param array $this->userResult This array is a variable class where we save the completion status of a pfp
+     *                                The variable is created as: this->userResult[$queueId][$linkedaccountId]
+     */
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {       
+        foreach ($this->userResult as $queueId => $userResult) {
+            $globalDestruction = false;
+            unset($this->queueInfo[$queueId]['companiesInFlow']);
+            /*
+             * foreach to verify if there was an error in the worker collecting the data
+             * $linkaccountId if it's defined as global, there was a crash error in the worker
+             * $result it is true if everything was correct and false if there was an error
+             */
+            foreach ($userResult as $linkaccountId => $result) {
+                if ($linkaccountId == WIN_STATUS_COLLECT_GLOBAL_ERROR) {
+                    $globalDestruction = true;
+                    break;
+                }
+                if ($linkaccountId == 'investor') {
+                    $keyUserReference = key($result);
+                    foreach ($result[$keyUserReference] as $keyFunction => $resultFunctionStatus) {
+                        if (is_array($resultFunctionStatus)) {
+                            foreach ($resultFunctionStatus as $keyDate => $dateResult) {
+                                if (!$dateResult) {
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                            . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['subtypeErrorId'] ;
+                                    print_r($this->gearmanErrors);
+                                    $this->saveGearmanError($this->gearmanErrors[$queueId]['investor'][$keyUserReference][$keyFunction][$keyDate]);
+                                }
+                            }
+                        }
+                        if (!$resultFunctionStatus) {
+                            //$this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                    . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['subtypeErrorId'] ;
+                            print_r($this->gearmanErrors);
+                            $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
+                        }
+                    }
+                    continue;
+                }
+                else {
+                    $keyFunction = key($result);
+                    if (is_array($result[$keyFunction])) {
+                        foreach ($result[$keyFunction] as $keyDate => $dateResult) {
+                            if (!$dateResult) {
+                                $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                                $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                                $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                        . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]['subtypeErrorId'] ;
+                                print_r($this->gearmanErrors);
+                                $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]][$keyDate]);
+                            }
+                        }
+                    }
+                    if (!$result[$keyFunction]) {
+                        //$this->requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, count($userResult));
+                        /*if (!empty($this->tempArray)) {
+                            unset($this->tempArray[$queueId][$linkaccountId]);
+                        }*/
+                        //$keyDataArray = key($dataArray[$data[2]]);
+                        $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+                        $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
+                        $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['detailedErrorInformation'] = "ERROR on " . $this->flowName
+                                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]['subtypeErrorId'] ;
+                        print_r($this->gearmanErrors);
+                        $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$result[$keyFunction]]);
+                    }
+                }
+                $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
+            }
+            /*
+             * When there is a globalDestruction, all content of the files are deleted
+             */
+            if ($globalDestruction) {
+                foreach ($this->userLinkaccountIds[$queueId] as $key => $userLinkaccountId) {
+                    $this->queueInfo[$queueId]['companiesInProcess'][] = $userLinkaccountId;
+                    if (!empty($this->tempArray)) {
+                        unset($this->tempArray[$queueId][$linkaccountId]);
+                    }
+                }
+            }
+            if (!empty($this->queueInfo[$queueId]['companiesInFlow'])) {
+                    $this->Queue2->id = $queueId;
+                if (!$globalDestruction) {
+                    $newState = $status;
+                    $this->queueInfo[$queueId]['numberTries'] = 0;
+                    if (Configure::read('debug')) {
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
+                    }
+                } 
+                /*else {
+                    $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
+                    $newState = $data["newStatus"];
+                    $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
+                }*/
+                $this->Queue2->save(array(
+                            'queue2_status' => $newState,
+                            'queue2_info' => json_encode($this->queueInfo[$queueId])
+                        ),
+                        $validate = true
+                );
+            }
+            //$statusProcess = $this->consolidationResult($userResult, $queueId);
+        }
     }
     
 }
