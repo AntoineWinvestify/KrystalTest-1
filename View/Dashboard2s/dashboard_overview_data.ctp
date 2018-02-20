@@ -286,22 +286,22 @@
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Actual Yield.')?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield')?></strong></p>
-                                            <h3 class="title"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualReturnPast12Months'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></h3>
+                                            <h3 class="title"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds')?></td>
-                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualTotalFundsReturn'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
+                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualTotalFundsReturn']*100, WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR')?></td>
-                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualReturnPast12Months'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
+                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return past year.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year')?></td>
-                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualReturnPastYear'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
+                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netAnnualReturnPastYear']*100, WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
@@ -312,11 +312,11 @@
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netReturnPast12Months'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
+                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netReturnPast12Months'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . " €"?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs.')?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year')?></td>
-                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netReturnPastYear'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
+                                                        <td class="right"><?php echo number_format(round($overviewNet['Dashboardoverviewdata']['dashboardoverviewdata_netReturnPastYear'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . " €"?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>
@@ -421,7 +421,7 @@
                                 <td><?php echo number_format($total, WIN_SHOW_DECIMAL) . " &euro;"?></td>
                                 <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . " &euro;"?></td>
                                 <td><?php echo number_format(round(bcmul(bcdiv($total, $global['totalVolume'],16), 100, 16), WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
-                                <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
+                                <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
                                 <td><?php echo number_format(round($individualInfo['Userinvestmentdata']['current'], WIN_SHOW_DECIMAL, PHP_ROUND_HALF_UP), WIN_SHOW_DECIMAL) . "%"?></td>
                             </tr>
                             <?php } ?>
