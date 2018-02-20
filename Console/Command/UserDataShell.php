@@ -876,6 +876,7 @@ statusOfLoan can have the following values:
         else {
             $tempOutstandingPrincipal = $resultData['investment']['investment_outstandingPrincipal'];
         }
+        $resultData['investment']['investment_writtenOff'] = $tempOutstandingPrincipal;
         $resultData['investment']['investment_outstandingPrincipal'] = 0;
         return $tempOutstandingPrincipal;
     } 
@@ -1098,7 +1099,7 @@ statusOfLoan can have the following values:
      *  @return string      amount expressed as a string
      * 
      */
-    public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
+    public function calculateGlobalTotalWrittenOffPerDay(&$transactionData, &$resultData) {
         //$result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
         return $resultData['payment']['payment_writtenOff'];      
     }
@@ -1248,7 +1249,9 @@ statusOfLoan can have the following values:
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateDashboard2GlobalWrittenOff(&$transactionData, &$resultData) {
-        return $resultData['globaltotalsdata']['globaltotalsdata_writtenOff'];
+        if (isset($resultData['payment']['payment_writtenOff'])) {
+            return $resultData['payment']['payment_writtenOff'];
+        }
     }   
  
     
