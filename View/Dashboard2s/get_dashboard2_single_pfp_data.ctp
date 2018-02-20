@@ -234,22 +234,22 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Actual Yield.') ?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield') ?></strong></p>
-                                            <h3 class="title"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPast12Months']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></h3>
+                                            <h3 class="title"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualTotalFundsReturn']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualTotalFundsReturn']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPast12Months']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return past year.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPastYear']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPastYear']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
