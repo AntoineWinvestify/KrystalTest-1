@@ -101,7 +101,7 @@ public function addToQueue($queueReference, $queueType, $queueAction) {
      * @return boolean true queueItem created
      *                 false undefined error, item NOT created
      */
-    public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_queue2_STATUS_START_COLLECTING_DATA, $queueId = null, $queueType = FIFO) {
+    public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_QUEUE_STATUS_START_COLLECTING_DATA, $queueId = null, $queueType = FIFO) {
         
         $data = array(
             "id" => $queueId,

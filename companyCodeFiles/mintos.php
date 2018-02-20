@@ -118,10 +118,16 @@ class mintos extends p2pCompany {
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
                                             13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
-                                            16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
-                                            ]                      
-                            ],
+                                  //          15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+                                  //          16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
+                                            17 => ["Cashback bonus" => "Incentives_and_bonus"],                                    
+                                            18 => ["Incoming currency exchange transaction" => "Incoming_currency_exchange_transaction"],
+                                            19 => ["Outgoing currency exchange transaction" => "Outgoing_currency_exchange_transaction"],                           
+                                            20 => ["Reversed late payment fee income" => "Compensation_negative"], 
+                                            21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
+                                            22 => ["Cashback bonus" => "Incentives_and_bonus"],
+                                        ],
+                                ],
                     "functionName" => "getTransactionDetail",
                 ]
             ],
@@ -145,7 +151,7 @@ class mintos extends p2pCompany {
                                                                                 // depending if the amount is positive or negative
                                 "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
                                             1 => ["Investment principal increase" => "Primary_market_investment"],
-                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                                            2 => ["Investment share buyer pays to a seller." => "Secondary_market_investment"],
                                             3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
                                             4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
                                             5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
@@ -158,9 +164,14 @@ class mintos extends p2pCompany {
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
                                             13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
-                                            16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
-                                            ]                    
+ //                                           15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+ //                                           16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
+                                            18 => ["Incoming currency exchange transaction" => "Incoming_currency_exchange_transaction"],
+                                            19 => ["Outgoing currency exchange transaction" => "Outgoing_currency_exchange_transaction"],                           
+                                            20 => ["Reversed late payment fee income" => "Compensation_negative"], 
+                                            21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
+                                            22 => ["Cashback bonus" => "Incentives_and_bonus"],
+                                        ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
                 ],                

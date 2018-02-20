@@ -398,8 +398,6 @@ echo __FUNCTION__ .  " " . __LINE__ . "\ndateKey = $dateKey \n";
 
             // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
             if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
-                echo __FUNCTION__ . " " . __LINE__ . " actualDate = $actualDate \n";
-
                 $date1 = new DateTime($oldDateKey);  
                 $date1->modify('+1 day');
                 $actualDate = $date1->format('Y-m-d'); 
@@ -661,17 +659,21 @@ print_r($database);
  
                         if ((in_array("READ_INVESTMENT_DATA", $conceptChars))) {    
 /*                            
-echo __FILE__ . " " . __LINE__ . " READ_INVESTMENT_DATA label found\n"; 
+ * check which variables are to be rescued from state pre-active to active and avoid that they are overwritten
+ */ 
+echo __FILE__ . " " . __LINE__ . " READ_INVESTMENT_DATA label found, print existing data\n"; 
 print_r($transactionData['investment_loanId']);
+echo __FILE__ . " " . __LINE__ . " READ_INVESTMENT_DATA print the 'new' investment data\n";
 print_r($platformData['parsingResultInvestments'][$transactionData['investment_loanId']]);
 echo __FILE__ . " " . __LINE__ . "\n"; 
-// Define clearly WHICH fields to reread
-*/
+// Define clearly WHICH fields to reread, I simply re-read everything, and this means the value of myInvestment is overwritten by 0
+
       //                      foreach ($platformData['parsingResultInvestments'][$transactionData['investment_loanId'][0]] as $investmentDatumKey => $investmentDatum) {
         //                        $database['investment'][$investmentDatumKey] = $investmentDatum;   
           //                  }
 //print_r($database['investment']);
-//echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
+echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
+  //                      exit;
                         }
                         
                     }
@@ -843,7 +845,9 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
-                                                    10017, 10018, 10019);      
+                                                    10017, 10018, 10019,
+                                                    10023
+                                                    );      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
@@ -1047,8 +1051,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         unset ($tempDatabase);
         // Make sure that we have an entry in Userinvestmentdata for yesterday as required for yield calculation     
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) { 
-            $date = new DateTime(date("Y-m-d"));                                    // = today
-            $date->modify('-1 day');
+            $date = new DateTime(date($finishDate));                           
             $lastDateToCalculate = $date->format('Y-m-d');            
             if ($dateKey <> $lastDateToCalculate) {               
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
@@ -1066,7 +1069,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $date = new DateTime($dateKey);  
             $date->modify('+1 day');
-            $actualDate = $date->format('Y-m-d');
+            $actualDate = $date->format($finishDate);
 
             while ($actualDate <= $lastDateToCalculate) {               
                 if (empty($tempDatabase)) {                   
