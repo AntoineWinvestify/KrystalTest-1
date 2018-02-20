@@ -58,7 +58,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -850,7 +850,8 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                                                     10009, 10010, 10011, 
                                                     10012, 10013, 10016,
                                                     10017, 10018, 10019,
-                                                    10020, 10021, 10022);      
+                                                    10020, 10021, 10022,
+                                                    10023);      
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];                      
