@@ -178,8 +178,8 @@ class CollectDataClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                         echo "\n" . __LINE__ . "   " . __FILE__;
-                         echo "\n sending information to worker \n";
+                        echo "\n" . __LINE__ . "   " . __FILE__;
+                        echo "\n sending information to worker \n";
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }

@@ -46,7 +46,7 @@ class Dashboard2sController extends AppController {
     var $name = 'Dashboard2s';
     var $helpers = array('Html', 'Js');
     public $components = array('DataTable');
-    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment");
+    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment", "Dashboardoverviewdata");
 
     function beforeFilter() {
 
@@ -273,6 +273,11 @@ class Dashboard2sController extends AppController {
         $graphLabel = array(__("Jan"), __("Feb"), __("Mar"), __("Apr"), __("May"), __("Jun"), __("Jul"), __("Aug"), __("Sep"), __("Oct"), __("Nov"), __("Dec"));
         $this->set('graphLabel', json_encode($graphLabel, true));
         $this->set('graph', json_encode($graphData));
+        
+        //Overview net data
+        $overviewNet = $this->Dashboardoverviewdata->getLastOverview($investorId);
+        $this->set('overviewNet', $overviewNet);
+        
     }
 
     /**

@@ -59,8 +59,17 @@ class finanzarel extends p2pCompany {
     protected $tempRequest = [];
     
     protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.05'                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.05',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 in order to "close" an active investment
+        'recalculateRoundingErrors' => [
+            "values" => [                                                       //Values needed to modify due to rounding errors of the platform
+                "from" => ["investment_outstandingPrincipal"],                  //From are all the values we take the values
+                "to" => [""]                                                    //To are all the values we modify the values
+            ],
+            "sign" => "positive"                                                //Sign could be positive or negative
+                                                                                //If it is positive, the + will be + and the - will be -
+                                                                                //If it is negative, the + will be - and the - will be +
+        ]
     ];
     
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
@@ -222,7 +231,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "internalName",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "investment_myInvestment",                                // 'input3' is NOT mandatory. 
+                                "input2" => "createReservedFunds",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ]
@@ -327,7 +336,6 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            //"M" FUTURE DATA Number 41
             "N" => [
                 [
                     "type" => "investment_dueDate",                           // Winvestify standardized name  OK
@@ -781,11 +789,10 @@ class finanzarel extends p2pCompany {
                                     "J" => "Mi oferta",
                                     "K" => "Importeasignado",
                                     "L" => "Mi oferta(precio)",
-                                    "M" => "Plusval?ainicial",
-                                    "N" => "Fecha de vencimiento",
-                                    "O" => "Estado",
-                                    "P" => "Amortizaci?nPendiente",
-                                    "Q" => " ");
+                                    "M" => "Fecha de vencimiento",
+                                    "N" => "Estado",
+                                    "O" => "Amortizaci?nPendiente",
+                                    "P" => " ");
 
     protected $investment2Header = array(
                                     "A" => "Subasta",
@@ -856,6 +863,8 @@ class finanzarel extends p2pCompany {
                                                   'chunkInit' => 1,
                                                   'chunkSize' => 1 );
 
+    
+    
 
     /*protected $callbacks = [
         "investment" => [
@@ -1144,7 +1153,11 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                              
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain"){  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }              
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
@@ -1182,7 +1195,11 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                      
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain"){  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }                           
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
@@ -1207,6 +1224,11 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain"){  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }                      
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
@@ -1285,6 +1307,11 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain"){  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }                      
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
@@ -1316,6 +1343,11 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain"){  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }                      
                 $headerError = $this->compareHeader();
                 echo $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
@@ -1353,6 +1385,11 @@ class finanzarel extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain"){  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }                      
                 $headerError = $this->compareHeader();
                 echo $this->compareHeader();
                 
