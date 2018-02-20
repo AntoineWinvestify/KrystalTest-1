@@ -90,12 +90,20 @@ Pending:
                                     </div>
                                 </div>
                             </div>
+                            
                             <button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
                             id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                             onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                             "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                class="btn btn-default btnRounded form submitButton deleteLinkedAccount center-block"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
+                class="btn btn-default btnRounded form submitButton deleteLinkedAccount"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
                             </button>
+                            
+                        <button type="button" href="/investors/changePasswordLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                            id="PassCompany_<?php echo $account['Linkedaccount']['company_id'] ?>"                            
+                class="btn btn-default btnRounded form submitButton changePassLinkedAccount"><i class="ion ion-compose"></i> <small><?php echo __('Edit Password')?></small>
+                            </button>
+                            
+                            
                         </div> <!-- /crowdlending company -->
                         <div class="col-xs-12 col-md-12 col-md-7 col-lg-7">
                             <div class="row">

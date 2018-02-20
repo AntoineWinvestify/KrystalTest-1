@@ -356,9 +356,51 @@ public function editUserProfileData() {
     }
 
     
-    
-    
-    
+    function changePasswordLinkedAccount() {
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
+        else {
+            $this->layout = 'ajax';
+            $this->disableCache();
+
+            $error = false;
+            $this->layout = 'ajax';
+            $this->disableCache();
+
+            $linkaccountId = $this->request->params['id'];
+            $newPass = $this->request->params['password'];
+            $user = $this->request->params['username'];       
+            
+            $linkaccountData = $this->Linkedaccount->getData(['id' => $linkaccountId], ['company_id']);
+            $companyId = $linkaccountData[0]['Linkedaccount']['company_id'];
+            
+            //try login for thew new password
+            $companyFilterConditions = array('id' => $companyId);
+            $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
+            $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGIN_SEQUENCE);
+            $newComp = $this->companyClass($companyResults[$companyId]['company_codeFile']);
+            $newComp->setUrlSequence($urlSequenceList);
+            $configurationParameters = array('tracingActive' => true,
+                'traceID' => $this->Auth->user('Investor.investor_identity'),
+            );
+            $newComp->defineConfigParms($configurationParameters);
+            $newComp->generateCookiesFile();
+            $userInvestment = $newComp->companyUserLogin($this->request->data['userName'], $this->request->data['password']);
+
+
+
+            //If we can login, change the password
+            if($userInvestment){
+                $this->Linkedaccount->changePasswordLinkaccount($linkaccountId, $newPass);
+            } 
+            else {
+                
+            }
+        }
+    }
+
     /**
      *
      * 	Generates the basic panel for accessing investor's data, like personal data, linked

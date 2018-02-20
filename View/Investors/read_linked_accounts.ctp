@@ -120,9 +120,13 @@ function errorAdd(data){
 	$('.addLinkedAccount').removeClass('hide');	
 }
 
+function successChange(data){
+    
+}
 
-
-
+function errorChange(data){
+    
+}
 	
 $(document).ready(function() {
 
@@ -144,6 +148,7 @@ $(document).on("click", "#linkNewAccount", function(event) {
 		getServerData(link, data, successAdd, errorAdd);
 	}
 });
+
 
 
 $(document).on("click", "#addNewAccount", function(event) {
@@ -175,6 +180,26 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
 	
 	getServerData(link, data, successDelete, errorDelete);
 });
+
+$(document).on("click", ".changePassLinkedAccount",function(event) {
+
+        /*var link = $(this).attr( "href");
+	var index =  $(this).val();
+        var password = $("#name" + index).val();
+        var username = $("#password" + index).val();
+        
+	var params = { id:index,
+            password: password,
+            username: username,   
+        };
+	var data = jQuery.param( params );
+
+	event.stopPropagation();
+	event.preventDefault();
+	
+	getServerData(link, data, successChange, errorChange);*/
+});
+
 
     //tooltip
     $(document).on('click', '#tooltipLA', function() {
@@ -236,8 +261,14 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                     id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                                     onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                                     "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                        class="btn btn-default btnRounded form submitButton deleteLinkedAccount center-block"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
+                        class="btn btn-default btnRounded form submitButton deleteLinkedAccount "><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
                                     </button>
+                                    
+                                    <button type="button" href="/investors/changePasswordLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                                                    id="PassCompany_<?php echo $account['Linkedaccount']['company_id'] ?>"                            
+                                                    class="btn btn-default btnRounded form submitButton changePassLinkedAccount "><i class="ion ion-compose"></i> <small><?php echo __('Edit Password') ?></small>
+                                    </button>
+                                    
                                 </div> <!-- /crowdlending company -->
                                 <div class="col-xs-12 col-md-12 col-md-7 col-lg-7">
                                     <div class="row">
@@ -245,7 +276,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                             <div class="form-group">
                                                 <label><small><?php echo __('Your User')?></small></label>
                                                 <?php
-										echo $this->Form->input('name', array(
+										echo $this->Form->input('name' . $account['Linkedaccount']['id'], array(
 											'label' 		=> false,
 											'class' 		=> 'form-control blue_noborder2',
                                                                                         'type'                  => 'text',
@@ -261,7 +292,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                             <div class="form-group">
                                                 <label><small><?php echo __('Your Password')?></small></label>
                     <?php
-                                                                                    echo $this->Form->input('password', array(
+                                                                                    echo $this->Form->input('password' . $account['Linkedaccount']['id'], array(
                                                                                             'label' 		=> false,
                                                                                             'type'			=> 'password',
                                                                                             'class' 		=> 'form-control blue_noborder2',
