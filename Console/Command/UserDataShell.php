@@ -1239,6 +1239,19 @@ statusOfLoan can have the following values:
         
     }    
     
+  
+     /**
+     *  Get the amount which corresponds to the "Global WrittenOff" concept for visualization
+     *  on dashboard2
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateDashboard2GlobalWrittenOff(&$transactionData, &$resultData) {
+        return $resultData['globaltotalsdata']['globaltotalsdata_writtenOff'];
+    }   
+ 
+    
     
     
 }

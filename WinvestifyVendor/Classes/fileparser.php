@@ -308,7 +308,7 @@ class Fileparser {
                 "detail" => "Payment_currency_exchange_fee",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "payment_currencyExchangeFee"
+                "type" => "payment_ExchangeFee"
                 ],
             25 => [
                 "detail" => "Currency_fluctuation_negative",
@@ -409,6 +409,16 @@ class Fileparser {
                 "type" => "createReservedFunds",
                 "chars" => "PRE-ACTIVE",
                 ],
+
+            41 => [
+                "detail" => "Cashback_bonus",                            
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFunds",
+                ],
+
+  
+        
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept

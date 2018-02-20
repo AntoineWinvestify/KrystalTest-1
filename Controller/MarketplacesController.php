@@ -131,7 +131,7 @@ class MarketPlacesController extends AppController {
 //	$this->Security->requireAuth();
         $this->Auth->allow(array('listMarketPlace', 'getGlobalMarketPlaceData',
             'readInvestmentData', 'readGlobalDashboardData', 'cronQueueEvent',
-            'test_linkingAccount', 'cronQueueEventParallel'));
+            'test_linkingAccount', 'cronQueueEventParallel', 'location'));
     }
 
     /**
@@ -159,7 +159,7 @@ class MarketPlacesController extends AppController {
      * Stores the location data of the user in the session
      *
      */
-    function location11() {
+    function location() {
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
