@@ -53,7 +53,7 @@ App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
 class ParseDataClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable');
+    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
     protected $variablesConfig;
 
 // Only used for defining a stable testbed definition
@@ -849,7 +849,19 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
                     }
                 }                
                 
-                
+                if (!empty($database['roundingerrorcompensation'])) {
+                    $database['roundingerrorcompensation']['investment_id'] = $investmentId;
+                    $database['roundingerrorcompensation']['date'] = $dateKey;
+                    $this->Roundingerrorcompensation->create();
+                    if ($this->Roundingerrorcompensation->save($database['roundingerrorcompensation'], $validate = true)) {
+                        echo "Done\n";
+                    } 
+                    else {
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['roundingerrorcompensation']['investment_id'] . "\n";
+                        }
+                    }
+                }
     
                 $internalVariablesToHandle = array(10001,
                                                     10006, 10007, 10008,
@@ -909,6 +921,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $function
                 $database['payment']['payment_currencyExchangeFee'] = "";        
                 $database['payment']['payment_currencyExchangeTransaction'] = "";    
                 $database['payment']['payment_incomeWithholdingTax'] = ""; 
+                unset($database['roundingerrorcompensation']);
             }
 
             
