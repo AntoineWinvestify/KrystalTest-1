@@ -308,6 +308,7 @@ class ParseDataClientShell extends GearmanClientShell {
             if (empty($precision)) {
                 $precision = '0.00001';                                         // Default precision
             }
+            
             $countArray1 = count($platformData['workingNewLoans']);
             
             foreach ($expiredLoanValues as $key => $value) {
@@ -437,6 +438,9 @@ echo __FUNCTION__ .  " " . __LINE__ . "\ndateKey = $dateKey \n";
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey; 
             $database['configParms']['outstandingPrincipalRoundingParm'] = $precision;          // configuration parameter 
+            if (!empty($platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'])) {
+                $database['configParms']['recalculateRoundingErrors'] = $platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'];
+            }
     
             foreach ($dates as $keyDateTransaction => $dateTransaction) {                       // read all *individual* transactions of a loanId per day           
 // Do some pre-processing in order to see if a *global* loanId really is a global loanId, i.e. 
@@ -757,22 +761,24 @@ echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDa
 
                 
 // Now start consolidation of the results on investment level and per day                
-                $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
+                $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065, 200037);
 
                 foreach ($internalVariableToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
                     echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1].  "\n";
-                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);   
-                    if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                        if (!isset($database[$varName[0]][$varName[1]])) {
-                            $database[$varName[0]][$varName[1]] = 0;
-                        }
-                        $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
-                    } 
-                    else {
-                        $database[$varName[0]][$varName[1]] = $result;
-                    }                     
+                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                    if (!empty($result)) {
+                        if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                            if (!isset($database[$varName[0]][$varName[1]])) {
+                                $database[$varName[0]][$varName[1]] = 0;
+                            }
+                            $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
+                        } 
+                        else {
+                            $database[$varName[0]][$varName[1]] = $result;
+                        }                   
+                    }  
                 }                  
                 echo  __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
               
