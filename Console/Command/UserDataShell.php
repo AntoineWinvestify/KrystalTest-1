@@ -1258,29 +1258,47 @@ statusOfLoan can have the following values:
         }
     }   
  
+    /**
+     * Call a function to fix rounding errors happened on the platform.
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
     public function recalculateRoundingErrors(&$transactionData, &$resultData) {
         $tempOustanding = null;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
         }
-        if (!empty($resultData['configParms']['recalculateRoundingErrors']) && bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0){
+        if (!empty($resultData['configParms']['recalculateRoundingErrors']) 
+                && bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0
+                && bccomp("0", $resultData['investment']['investment_outstandingPrincipal'], 16) != 0) {
             $function = $resultData['configParms']['recalculateRoundingErrors']['function'];
             $this->$function($transactionData, $resultData);
-        }  
-        return $tempOustanding;
+        }
     }
     
+    /**
+     *  Recalculate variables with rounding errors adjusting the variables as need
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
     public function recalculationOfRoundingErrors(&$transactionData, &$resultData) {
         $variables = $resultData['configParms']['recalculateRoundingErrors']['values'];
+        $i = 1;
         foreach ($variables as $variable) {
             $modelFrom = explode("_", $variable["from"][0]);
             $modelTo = explode("_", $variable["to"][0]);
-            $value = $resultData[$modelFrom][$variable["from"][0]];
+            $value = $resultData[$modelFrom[0]][$variable["from"][0]];
             if ($variable["sign"] == "negative") {
                 $value = 0 - $value;
             }
-            $resultData[$modelTo][$variable["to"][0]] = bcadd($resultData[$modelTo][$variable["to"][0]], $value, 16);
-        }
+            $resultData[$modelTo[0]][$variable["to"][0]] = bcadd($resultData[$modelTo[0]][$variable["to"][0]], $value, 16);
+            $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "From"] = $variable["from"][0];
+            $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "To"] = $variable["to"][0];
+            $resultData['roundingerrorcompensation']['roundingerrorcompensation_roundingError' . $i] = $value;
+            $i++;
+        }   
     }
     
     
