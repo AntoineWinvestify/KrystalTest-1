@@ -62,13 +62,24 @@ class finanzarel extends p2pCompany {
         'outstandingPrincipalRoundingParm' => '0.05',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 in order to "close" an active investment
         'recalculateRoundingErrors' => [
+            "function" => ["recalculationOfRoundingErrors"],
             "values" => [                                                       //Values needed to modify due to rounding errors of the platform
-                "from" => ["investment_outstandingPrincipal"],                  //From are all the values we take the values
-                "to" => [""]                                                    //To are all the values we modify the values
-            ],
-            "sign" => "positive"                                                //Sign could be positive or negative
+                0 => [
+                    "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
+                    "to" => ["payment_regularGrossInterestIncome"],              //To are all the values we modify the values
+                    "sign" => "negative"                                         //Sign could be positive or negative
                                                                                 //If it is positive, the + will be + and the - will be -
                                                                                 //If it is negative, the + will be - and the - will be +
+                ],
+                1 => [
+                    "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
+                    "to" => ["payment_capitalRepayment"],                       //To are all the values we modify the values
+                    "sign" => "positive"                                         //Sign could be positive or negative
+                                                                                //If it is positive, the + will be + and the - will be -
+                                                                                //If it is negative, the + will be - and the - will be +
+                ]                                        
+            ],
+                                                                               
         ]
     ];
     
