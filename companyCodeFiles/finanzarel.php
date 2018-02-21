@@ -62,7 +62,7 @@ class finanzarel extends p2pCompany {
         'outstandingPrincipalRoundingParm' => '0.05',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 in order to "close" an active investment
         'recalculateRoundingErrors' => [
-            "function" => ["recalculationOfRoundingErrors"],
+            "function" => "recalculationOfRoundingErrors",
             "values" => [                                                       //Values needed to modify due to rounding errors of the platform
                 0 => [
                     "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
@@ -77,7 +77,14 @@ class finanzarel extends p2pCompany {
                     "sign" => "positive"                                         //Sign could be positive or negative
                                                                                 //If it is positive, the + will be + and the - will be -
                                                                                 //If it is negative, the + will be - and the - will be +
-                ]                                        
+                ],
+                2 => [
+                    "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
+                    "to" => ["investment_outstandingPrincipal"],              //To are all the values we modify the values
+                    "sign" => "negative"                                         //Sign could be positive or negative
+                                                                                //If it is positive, the + will be + and the - will be -
+                                                                                //If it is negative, the + will be - and the - will be +
+                ]
             ],
                                                                                
         ]
