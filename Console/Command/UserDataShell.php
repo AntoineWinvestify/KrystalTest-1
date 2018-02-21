@@ -1101,7 +1101,7 @@ statusOfLoan can have the following values:
      */
     public function calculateGlobalTotalWrittenOffPerDay(&$transactionData, &$resultData) {
         //$result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
-        $result = "0";
+        $result = "0.0";
         if (!empty($resultData['payment']['payment_writtenOff'])) {
             $result = $resultData['payment']['payment_writtenOff'];
         }
@@ -1259,7 +1259,28 @@ statusOfLoan can have the following values:
     }   
  
     public function recalculateRoundingErrors(&$transactionData, &$resultData) {
-        
+        $tempOustanding = null;
+        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
+            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        }
+        if (!empty($resultData['configParms']['recalculateRoundingErrors']) && bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0){
+            $function = $resultData['configParms']['recalculateRoundingErrors']['function'];
+            $this->$function($transactionData, $resultData);
+        }  
+        return $tempOustanding;
+    }
+    
+    public function recalculationOfRoundingErrors(&$transactionData, &$resultData) {
+        $variables = $resultData['configParms']['recalculateRoundingErrors']['values'];
+        foreach ($variables as $variable) {
+            $modelFrom = explode("_", $variable["from"][0]);
+            $modelTo = explode("_", $variable["to"][0]);
+            $value = $resultData[$modelFrom][$variable["from"][0]];
+            if ($variable["sign"] == "negative") {
+                $value = 0 - $value;
+            }
+            $resultData[$modelTo][$variable["to"][0]] = bcadd($resultData[$modelTo][$variable["to"][0]], $value, 16);
+        }
     }
     
     
