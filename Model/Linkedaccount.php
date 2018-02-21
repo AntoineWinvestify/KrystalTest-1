@@ -177,6 +177,16 @@ class Linkedaccount extends AppModel {
         }
         return $companyNothingInProcess;
     }
+    
+    /**
+     * 
+     * @param type $linkaccountId id of the linkaccount
+     * @param type $newPass new password
+     * @return boolean  
+     */
+    public function changePasswordLinkaccount($linkaccountId, $newPass){
+        $this->save(['id' => $linkaccountId, 'linkedaccount_password' => $newPass]);
+    }
 
     /**
      *

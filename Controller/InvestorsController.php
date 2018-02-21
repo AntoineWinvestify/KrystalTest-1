@@ -28,6 +28,10 @@
   2017-09-06        version 0.2
   Updated data saving to do again a query to show correctly the data 
   
+ * 
+ * 2018-02-20
+ * Change password in link account  changePasswordLinkedAccount() function
+ * 
   Pending:
   Generate a miniview for the extended notification of the event "newAccountLinked"     [OK, not yet tested]
  * A more consistent andpermanent solution will be implemented with 1CR for all "confirmed" data items,
@@ -364,18 +368,16 @@ public function editUserProfileData() {
         else {
             $this->layout = 'ajax';
             $this->disableCache();
-
-            $error = false;
-            $this->layout = 'ajax';
-            $this->disableCache();
-
-            $linkaccountId = $this->request->params['id'];
-            $newPass = $this->request->params['password'];
-            $user = $this->request->params['username'];       
+ 
+            $linkaccountId = $this->request->data['id'];
+            $newPass = $this->request->data['password'];
+            $user = $this->request->data['username'];       
             
+           
             $linkaccountData = $this->Linkedaccount->getData(['id' => $linkaccountId], ['company_id']);
             $companyId = $linkaccountData[0]['Linkedaccount']['company_id'];
             
+          
             //try login for thew new password
             $companyFilterConditions = array('id' => $companyId);
             $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
@@ -387,16 +389,15 @@ public function editUserProfileData() {
             );
             $newComp->defineConfigParms($configurationParameters);
             $newComp->generateCookiesFile();
-            $userInvestment = $newComp->companyUserLogin($this->request->data['userName'], $this->request->data['password']);
-
-
-
+            $userLogin = $newComp->companyUserLogin($user, $newPass);
+            //echo $userLogin;
             //If we can login, change the password
-            if($userInvestment){
+            if($userLogin){
                 $this->Linkedaccount->changePasswordLinkaccount($linkaccountId, $newPass);
+                $this->set('chagePasswordResponse', '1');
             } 
             else {
-                
+                $this->set('chagePasswordResponse', '0');
             }
         }
     }
