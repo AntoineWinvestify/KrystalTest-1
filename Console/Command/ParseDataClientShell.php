@@ -58,7 +58,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -374,7 +374,7 @@ class ParseDataClientShell extends GearmanClientShell {
             $tempDatabase = $this->Userinvestmentdata->find('first', array(
                                              'conditions'   => $filterConditions,
                                              'recursive'    => -1,
-                                             'order'        => 'Userinvestmentdata.date'
+                                             'order'        => 'Userinvestmentdata.date DESC'
                                             )); 
             unset($tempDatabase['Userinvestmentdata']['id']);
             $lastSavedTransaction =  $tempDatabase['Userinvestmentdata']['date'];         
