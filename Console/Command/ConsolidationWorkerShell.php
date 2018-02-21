@@ -254,7 +254,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
                     $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
                     $valuesForGlobal[$dateYear][$linkedaccountId][$variableKey] = $values[$linkedaccountId][$variableKey];
-                    
                 }
                 $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
@@ -441,22 +440,22 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return array
      */
     public function getPeriodOfTime($dateFinish, $linkedaccountId) {
-        if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
-            $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
-            $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
-        }
+        $dates = null;
+        //if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
+        $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
+        $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
+        //}
         //Else is not working yet
-        else {
+        /*else {
             print_r($this->originExecution);
-            echo "\n";
-            exit;
             $dateFinishYear = date("Y",  strtotime($dateFinish));
             $pastReturnExist = $this->verifyPastReturnThisYearExist($dateFinishYear);
             $dates = null;
             if (!$pastReturnExist) {
                 $dates = $dateFinishYear;
             }
-        }
+            print_r($dates);
+        }*/
         return $dates;
     }
     
