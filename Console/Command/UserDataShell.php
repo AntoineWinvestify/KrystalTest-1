@@ -1101,7 +1101,11 @@ statusOfLoan can have the following values:
      */
     public function calculateGlobalTotalWrittenOffPerDay(&$transactionData, &$resultData) {
         //$result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
-        return $resultData['payment']['payment_writtenOff'];      
+        $result = "0";
+        if (!empty($resultData['payment']['payment_writtenOff'])) {
+            $result = $resultData['payment']['payment_writtenOff'];
+        }
+        return $result;      
     }
  
     
@@ -1254,6 +1258,9 @@ statusOfLoan can have the following values:
         }
     }   
  
+    public function recalculateRoundingErrors(&$transactionData, &$resultData) {
+        
+    }
     
     
     
