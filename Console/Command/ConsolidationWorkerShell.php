@@ -168,6 +168,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         $statusCollect = [];
         $error = [];
+        
         foreach ($returnData as $linkedaccountIdKey => $variableService) {
             if ($linkedaccountIdKey == 'investor') {
                 $keyInvestor = key($variableService);
@@ -441,20 +442,16 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      */
     public function getPeriodOfTime($dateFinish, $linkedaccountId) {
         $dates = null;
-        //if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
         $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
         $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
-        //}
-        //Else is not working yet
-        /*else {
+        //future implementation
+        /*if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
+            $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
+            $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
+        }
+        else {
             print_r($this->originExecution);
-            $dateFinishYear = date("Y",  strtotime($dateFinish));
-            $pastReturnExist = $this->verifyPastReturnThisYearExist($dateFinishYear);
-            $dates = null;
-            if (!$pastReturnExist) {
-                $dates = $dateFinishYear;
-            }
-            print_r($dates);
+            $dates= $this->verifyPastReturnThisYearExist($dateFinish);
         }*/
         return $dates;
     }
@@ -850,9 +847,22 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
             }
         }
-        print_r($datesForGlobal);
         rsort($datesForGlobal);
         return $datesForGlobal;
+    }
+    
+    /**
+     * Function to verify if it is a new year to calculate the past year NAR or Net Return
+     * @param string $date It is the date we calculate the data
+     */
+    public function verifyPastReturnThisYearExist($date) {
+        $dates = null;
+        $dateYearNextDay = date("Y",  strtotime($date . "+ 1 day"));
+        $dateYearToday = date("Y",  strtotime($date));
+        if ($dateYearNextDay !== $dateYearToday) {
+            $dates[] = $dateYearToday;
+        }
+        return $dates;
     }
     
 }
