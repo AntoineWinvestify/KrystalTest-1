@@ -33,6 +33,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     protected $config = [];
     protected $originExecution;
     protected $dashboardOverviewLinkaccountIds = [];
+    protected $financialClass;
     
    public function startup() {
         parent::startup();
@@ -80,6 +81,13 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //$investorId = $this->investor->find("userReference");
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
+        if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
+            Configure::load('p2pGestor.php', 'default');
+            $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+            require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+            $this->financialClass = new Financial;  
+        }
+        
         $service = $data['service'];
         $serviceFunction = $service['service'];
         $result = $this->$serviceFunction($data);
@@ -120,12 +128,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             $returnData = [];
-            Configure::load('p2pGestor.php', 'default');
-            $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-            require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-            $financialClass = new Financial;
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-                $returnData[$linkedaccountId][$nameFunction] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+                $returnData[$linkedaccountId][$nameFunction] = $this->financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
             }
         }
         else if ($typeOfFormula == WIN_FORMULAS_NET_RETURN) {
@@ -156,7 +160,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
-            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
+            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
             $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
@@ -262,13 +266,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             $returnData = null;
-            Configure::load('p2pGestor.php', 'default');
-            $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-            require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-            $financialClass = new Financial;
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
                 foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
-                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
                 }
             }
         }
@@ -315,7 +315,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             foreach ($dataMergeByDate as $keyDate => $dataByDate) {
-                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
             }
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
