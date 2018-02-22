@@ -978,7 +978,7 @@ statusOfLoan can have the following values:
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
-        return $transactionData['amount'];
+        return;
     }
     
     /**
@@ -1004,7 +1004,7 @@ statusOfLoan can have the following values:
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
-        return $transactionData['amount'];
+        return;
     }
     
     /**
