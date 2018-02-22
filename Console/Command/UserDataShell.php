@@ -557,7 +557,7 @@ class UserDataShell extends AppShell {
 
 /*
   Technical states description:
-  PREACTIVE : Investment is still to be formalized
+  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED : Investment is still to be formalized
   INITIAL   : Investment has started succesfully. No amortization has yet taken place
   ACTIVE    : One or more amortizations have taken place
   FINISHED  : The investment has finished, either succesfully or as writtenOff 
@@ -584,6 +584,7 @@ statusOfLoan can have the following values:
 // the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
             $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to FINISHED\n";         
             return "FINISHED";             
         }    
         
@@ -592,6 +593,7 @@ statusOfLoan can have the following values:
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
                 $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to FINISHED due to 0 outstanding principle\n";   
                 return "FINISHED";              
             }
         }        
@@ -599,10 +601,11 @@ statusOfLoan can have the following values:
         if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
-            
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";            
             return "INITIAL";               
         } 
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";         
         return "ACTIVE";                    
     }
     
@@ -1177,66 +1180,71 @@ statusOfLoan can have the following values:
      *      a transaction record
      *      a state of a variable (example outstanding principle for a loan, investment_outstandingPrincipal 
      * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @event  int         changeToBadDebtState
-     *                      ChangeToCancelState
-     *                      ChangeToActiveState
+     *  @param  array       Array with the current transaction data
+     *  @param  array       Array with all data so far calculated and to be written to DB
+     *  @event  string      This is an optional parameter and may NOT always be needed or present
+     *                      'ChangeToBadDebtState'
+     *                      'ChangeToCancelState'
+     *                      'ChangeToActiveState'
      *                      OutstandingPrincipal = 0;
+     * statusOfLoan can have the following values: 
+     *   WIN_LOANSTATUS_WAITINGTOBEFORMALIZED 
+     *   WIN_LOANSTATUS_ACTIVE 
+     *   WIN_LOANSTATUS_FINISHED
+     *   WIN_LOANSTATUS_CANCELLED  
+     *   WIN_LOANSTATUS_WRITTEN_OFF 
+     *   WIN_LOANSTATUS_UNKNOWN
      *  variables taken into consideration:
      *                 $resultData['investment']['investment_statusOfLoan']
      *              
-     *  @return boolean
+     *  @return new state
      */
-    public function calculateState(&$transactionData, &$resultData, $event) {
+    public function manageState(&$transactionData, &$resultData, $event) {
+      
+        $initialStatusOfLoan = $resultData['investment']['investment_statusOfLoan'];       
+        $tempOutstandingPrincipal = 21;
         
-        
-        $statusOfLoan = $resultData['investment']['investment_statusOfLoan'];       // NEEDS FURTHER CHECKING
-        
-        switch ($statusOfLoan) {
+        switch ($initialStatusOfLoan) {
             case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
-                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
+                if ($event == "changeToActiveState") {
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
+                }
+                if ($event == "changeToCancelledState") {
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;
+
+                }
+                return $resultData['investment']['investment_statusOfLoan'];
             break;
         
             case WIN_LOANSTATUS_ACTIVE:
-                if ($tempOutstandingPrincipal == 0) {
+                if ($tempOutstandingPrincipal == 0) {       // A loan has finished
                     $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
-                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
                     $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
-                    $resultData['investment']['investment_statusOfLoan'] = FINISHED;              
-                }           
+                } 
+                if ($event == "changeToBadDebtState") {
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
+                }
+                return $resultData['investment']['investment_statusOfLoan'];
             break;
             
-            case WIN_LOANSTATUS_FINISHED:
-                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;              
+            case WIN_LOANSTATUS_FINISHED:                                       // Don't do anything 
+                return WIN_LOANSTATUS_WRITTEN_FINISHED;           
+            break;           
+        
+            case WIN_LOANSTATUS_CANCELLED:                                      // Don't do anything    
+                return WIN_LOANSTATUS_CANCELLED;
             break;
         
-            case WIN_LOANSTATUS_CANCELLED:
-                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
-            break;
-        
-            case WIN_LOANSTATUS_WRITTEN_OFF:
-                $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+            case WIN_LOANSTATUS_WRITTEN_OFF:                                    // Don't do anything    
+                return WIN_LOANSTATUS_WRITTEN_OFF;
             break;
 
-            case WIN_LOANSTATUS_UNKNOWN:        
+            case WIN_LOANSTATUS_UNKNOWN:                                        // Don't do anything    
+                return WIN_LOANSTATUS_UNKNOWN;  
             break;       
-        }
-        
-        
-        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-        // move the corresponding part of the money from reserved funds to outstanding principal
-            
-        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
-                                                $resultData['investment']['investment_myInvestment']);
-            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
-                                                $resultData['investment']['investment_myInvestment']);     
-            return WIN_LOANSTATUS_ACTIVE;
-        }
-        
-        
-        
+        } 
     }    
     
   
