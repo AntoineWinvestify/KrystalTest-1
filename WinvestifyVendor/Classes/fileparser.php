@@ -1443,7 +1443,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
 
     /**
-     * Search for a something within a string, starting AFTER $search
+     * Search for something within a string, starting AFTER $search
      * and ending when $separator is found
      * If $search == "" then $extractedString starts from beginning of $input.
      * If $separator = "" then $extractedString contains the $input starting from $search to end
