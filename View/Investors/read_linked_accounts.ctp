@@ -120,19 +120,24 @@ function errorAdd(data){
 	$('.addLinkedAccount').removeClass('hide');	
 }
 
+function successChange(data){
+    $("#feedbackContainer").html('<div id="messageErrorLinkAccount" role="alert" class="alert bg-success alert-dismissible fade in"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px; margin-top:5px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Password changed correctly.") ?></strong></div>');
+}
 
-
-
+function errorChange(data){
+    $("#feedbackContainer").html('<div id="messageErrorLinkAccount" role="alert" class="alert bg-success alert-dismissible alert-win-warning fade in"><button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-right: 30px; margin-top:5px;"><span aria-hidden="true">&times;</span></button><strong><?php echo __("Incorrect password.") ?></strong></div>');
+}
 	
 $(document).ready(function() {
 
 $(document).on("click", "#linkNewAccount", function(event) {
-	console.log("try to link a new account, link this account btn pressed");	
+	console.log("try to link a new account, link this account btn pressed");
+        
 	var link = $(this).attr( "href" );	
 	var username = $("#ContentPlaceHolder_userName").val(); 	
 	var password = $("#ContentPlaceHolder_password").val(); 
 	var companyId = $("#linkedaccount_companyId").val();
-
+        
 	event.stopPropagation();
 	event.preventDefault();	 
 	console.log("check for input errors");
@@ -144,6 +149,7 @@ $(document).on("click", "#linkNewAccount", function(event) {
 		getServerData(link, data, successAdd, errorAdd);
 	}
 });
+
 
 
 $(document).on("click", "#addNewAccount", function(event) {
@@ -175,6 +181,42 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
 	
 	getServerData(link, data, successDelete, errorDelete);
 });
+
+$(document).on("click", ".changePassLinkedAccount",function(event) {
+    
+    var index =  $(this).val();
+    $(this).removeClass('changePassLinkedAccount');
+    $(this).addClass('confirmChangePassLinkedAccount');
+    $(this).html('<i class="ion ion-compose"></i> <small><?php echo __('Confirm Password') ?></small>');
+    $("#password" + index).prop('disabled', false);
+    
+    
+});
+
+$(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
+
+        var link = $(this).attr( "href");
+	var index =  $(this).val();
+        var password = $("#password" + index).val();
+        var username = $("#name" + index).val();
+
+        $(this).addClass('changePassLinkedAccount');
+        $(this).removeClass('confirmChangePassLinkedAccount');
+        $(this).html('<i class="ion ion-compose"></i> <small><?php echo __('Edit Password') ?></small>');
+        $("#password" + index).prop('disabled', true);   
+        
+	var params = { id:index,
+            password: password,
+            username: username,   
+        };
+	var data = jQuery.param( params );
+
+	event.stopPropagation();
+	event.preventDefault();
+	
+	getServerData(link, data, successChange, errorChange);
+});
+
 
     //tooltip
     $(document).on('click', '#tooltipLA', function() {
@@ -217,6 +259,9 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                 ?></p>
                         </div>
                     </div>
+                                            <div id="feedbackContainer">
+                            
+                        </div>
                     <div class="row allAccounts">
                         <?php
                             if (!empty($linkedAccountResult)) {
@@ -236,8 +281,14 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                     id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                                     onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                                     "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                        class="btn btn-default btnRounded form submitButton deleteLinkedAccount center-block"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
+                        class="btn btn-default btnRounded form submitButton deleteLinkedAccount "><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
                                     </button>
+                                    
+                                    <button type="button" href="/investors/changePasswordLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                                                    id="PassCompany_<?php echo $account['Linkedaccount']['company_id'] ?>"                            
+                                                    class="btn btn-default btnRounded form submitButton changePassLinkedAccount "><i class="ion ion-compose"></i> <small><?php echo __('Edit Password') ?></small>
+                                    </button>
+                                    
                                 </div> <!-- /crowdlending company -->
                                 <div class="col-xs-12 col-md-12 col-md-7 col-lg-7">
                                     <div class="row">
@@ -245,7 +296,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                             <div class="form-group">
                                                 <label><small><?php echo __('Your User')?></small></label>
                                                 <?php
-										echo $this->Form->input('name', array(
+										echo $this->Form->input('name' . $account['Linkedaccount']['id'], array(
 											'label' 		=> false,
 											'class' 		=> 'form-control blue_noborder2',
                                                                                         'type'                  => 'text',
@@ -261,7 +312,7 @@ $(document).on("click", ".deleteLinkedAccount",function(event) {
                                             <div class="form-group">
                                                 <label><small><?php echo __('Your Password')?></small></label>
                     <?php
-                                                                                    echo $this->Form->input('password', array(
+                                                                                    echo $this->Form->input('password' . $account['Linkedaccount']['id'], array(
                                                                                             'label' 		=> false,
                                                                                             'type'			=> 'password',
                                                                                             'class' 		=> 'form-control blue_noborder2',

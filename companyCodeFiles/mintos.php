@@ -592,7 +592,7 @@ class mintos extends p2pCompany {
                 "type" => "myWallet",                                           // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "",
-                    "input3" => ",",
+                    "input3" => ".",
                     "input4" => 16
                 ],
                 "functionName" => "getAmount",
@@ -613,7 +613,7 @@ class mintos extends p2pCompany {
                 "type" => "outstandingPrincipal",                               // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
-                    "input3" => ",",
+                    "input3" => ".",
                     "input4" => 16
                 ],
                 "functionName" => "getAmount",
@@ -1055,10 +1055,10 @@ class mintos extends p2pCompany {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     foreach($tds as $key => $td){
-                        //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
+                        echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
-                        $tempArray["global"]["outstandingPrincipal"] = $tds[37]->nodeValue;   
-                        //$tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
+                        $tempArray["global"]["outstandingPrincipal"] = $tds[3]->nodeValue;   
+                       //$tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
 
 
                     }
@@ -1071,6 +1071,7 @@ class mintos extends p2pCompany {
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
                     }*/
+                    break;
 
                 }
                 $lis = $boxes[0]->getElementsByTagName('li');
@@ -1083,7 +1084,7 @@ class mintos extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
-                $tempArray["global"]["activeInvestment"] = $divs[2]->nodeValue;
+                $tempArray["global"]["activeInvestment"] = trim($divs[2]->nodeValue);
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
         }

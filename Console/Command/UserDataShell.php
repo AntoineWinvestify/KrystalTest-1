@@ -162,8 +162,8 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
-        if (isset($resultData['investment']['investment_disinvestment'])) {
-            $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
+        if (isset($resultData['payment']['payment_disinvestment'])) {
+            $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
         }
         return $result;
     }
@@ -361,6 +361,9 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
+        if(strpos($resultData['investment']['investment_loanId'], 'global') !== false){
+            $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+        }
         return $transactionData['amount'];
     }
 
@@ -614,7 +617,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     /**
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      * 
-     *  @param  array       array with the current transaction data
+     *  @param  array       array with the current transaction data$resultData
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
      * 55
@@ -654,6 +657,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
+        $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
+        $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = 0;
+        $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
+        $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = 0;
         return $result;
     }
 
@@ -841,9 +848,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
-        return $resultData['investment']['investment_myInvestment'];
+        return $transactionData['amount'];
     }   
-    
+    public function calculateDisinvestmentPrimaryMarketWinouthLoanReference(&$transactionData, &$resultData) {
+        $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+        return $transactionData['amount'];
+    }  
     
     /**
      *  Calculates the new state of a cancelled investment.  It never matured to a real investment, i.e. it 
@@ -1309,6 +1319,17 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         }   
     }
     
+    /**
+     * 
+     *  @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateIncentivesAndBonus(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+
+    function calculateDashboard2GlobalWrittenOff(){}
     
     
 }
