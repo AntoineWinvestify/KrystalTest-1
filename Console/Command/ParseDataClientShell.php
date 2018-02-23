@@ -86,12 +86,16 @@ class ParseDataClientShell extends GearmanClientShell {
         $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
         
         echo "Deleting AmortizationTable\n";
-        $this->AmortizationTable = ClassRegistry::init('AmortizationTable');
-        $this->AmortizationTable->deleteAll(array('AmortizationTable.id >' => 0), false);        
+        $this->AmortizationTable = ClassRegistry::init('Amortizationtable');
+        $this->AmortizationTable->deleteAll(array('Amortizationtable.id >' => 0), false);        
         
         echo "Deleting Dashboardoverview table\n";
-        $this->AmortizationTable = ClassRegistry::init('Dashboardoverviewdata');
-        $this->AmortizationTable->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);        
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $this->Dashboardoverviewdata->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);        
+        
+        echo "Deleting Roundingerrorcompensation table\n";
+        $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
+        $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);   
         
         return;
     }
