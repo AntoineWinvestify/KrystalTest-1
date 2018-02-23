@@ -213,7 +213,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 
 
     /** FLOW 3C
-     * This method writes the 'nextPaymentDateTech' in the investment object. 
+     * This method writes the 'nextPaymentDate' in the investment object. 
      * This is done for the loanIds/loanslices whose amortization tables
      * are stored in the directory currently under processing. 
      * These files are of format:  amortizationtable_[investmentslice_id][loanId].html 
@@ -235,9 +235,9 @@ $timeStart = time();
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
                 $tempIdData = explode(".", $name[2]);
-                $nameIdData[0] = $tempIdData[0];
-                $nameIdData[1] = $name[1];
-                $loanDataId[] = $nameIdData;
+      //          $nameIdData[0] = $tempIdData[0];
+     //           $nameIdData[1] = $name[1];
+                $loanDataId[] = $tempIdData[0];
             }
 
 
