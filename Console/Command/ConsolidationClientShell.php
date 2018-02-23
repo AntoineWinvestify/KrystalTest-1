@@ -448,11 +448,11 @@ class ConsolidationClientShell extends GearmanClientShell {
                         echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                     }
                 } 
-                /*else {
+                else {
                     $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
                     $newState = $data["newStatus"];
                     $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
-                }*/
+                }
                 $this->Queue2->save(array(
                             'queue2_status' => $newState,
                             'queue2_info' => json_encode($this->queueInfo[$queueId])
