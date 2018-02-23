@@ -245,7 +245,7 @@ $timeStart = time();
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
-                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId[1]),
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId[0]),
                                                                            'recursive' => 1)
                                                                         );
 
