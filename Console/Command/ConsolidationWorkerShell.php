@@ -81,13 +81,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         //$investorId = $this->investor->find("userReference");
         Configure::load('internalVariablesConfiguration.php', 'default');
         $this->variablesConfig = Configure::read('internalVariables');
-        if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
-            Configure::load('p2pGestor.php', 'default');
-            $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-            require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-            $this->financialClass = new Financial;  
-        }
-        
         $service = $data['service'];
         $serviceFunction = $service['service'];
         $result = $this->$serviceFunction($data);
@@ -395,6 +388,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualReturnXirr($data) {
+        $this->includeVendorFolder();
         return $this->calculatePast12Months($data, "netAnnualReturn_xirr", 'netAnnualReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
@@ -404,6 +398,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualTotalFundsReturnXirr($data) {
+        $this->includeVendorFolder();
         return $this->calculatePast12Months($data, "netAnnualTotalFundsReturn_xirr", 'netAnnualTotalFundsReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
@@ -413,6 +408,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualReturnPastYearXirr($data) {
+        $this->includeVendorFolder();
         return $this->calculatePastYears($data, "netAnnualPastReturn_xirr", 'netAnnualReturnPastYearXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
@@ -863,6 +859,13 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $dates[] = $dateYearToday;
         }
         return $dates;
+    }
+    
+    public function includeVendorFolder() {
+        Configure::load('p2pGestor.php', 'default');
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+        $this->financialClass = new Financial;
     }
     
 }
