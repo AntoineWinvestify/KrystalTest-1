@@ -361,6 +361,9 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
+        if(strpos($resultData['investment']['investment_loanId'], 'global') !== false){
+            $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+        }
         return $transactionData['amount'];
     }
 
@@ -652,7 +655,9 @@ statusOfLoan can have the following values:
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
         $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
-
+        $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = 0;
+        $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
+        $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = 0;
         return $result;
     }
 
@@ -1243,6 +1248,17 @@ statusOfLoan can have the following values:
         
         
     }    
+    
+    /**
+     * 
+     *  @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateIncentivesAndBonus(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+
     function calculateDashboard2GlobalWrittenOff(){}
     
     

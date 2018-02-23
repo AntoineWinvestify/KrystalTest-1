@@ -58,7 +58,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -324,7 +324,8 @@ class ParseDataClientShell extends GearmanClientShell {
 
  // Lets allocate a userinvestmentdata for this calculation period (normally daily)
             // reset the relevant variables before going to next date
-        $database = array();                                                    // Start with a clean shadow database
+        $database = array();                                                    // Start with a clean shadow database       
+        $database['investment']['investment_loanId'] = "";
         $database['investment']['investment_totalLoanCost'] = "";
         $database['investment']['investment_paidInstalments'] = "";
         $database['payment']['payment_latePaymentFeeIncome'] = "";
