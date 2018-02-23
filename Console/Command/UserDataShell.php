@@ -162,8 +162,8 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
-        if (isset($resultData['investment']['investment_disinvestment'])) {
-            $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
+        if (isset($resultData['payment']['payment_disinvestment'])) {
+            $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
         }
         return $result;
     }
@@ -611,7 +611,7 @@ statusOfLoan can have the following values:
     /**
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      * 
-     *  @param  array       array with the current transaction data
+     *  @param  array       array with the current transaction data$resultData
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
      * 55
@@ -651,6 +651,8 @@ statusOfLoan can have the following values:
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
+        $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
+
         return $result;
     }
 
@@ -838,9 +840,12 @@ statusOfLoan can have the following values:
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
-        return $resultData['investment']['investment_myInvestment'];
+        return $transactionData['amount'];
     }   
-    
+    public function calculateDisinvestmentPrimaryMarketWinouthLoanReference(&$transactionData, &$resultData) {
+        $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+        return $transactionData['amount'];
+    }  
     
     /**
      *  Calculates the new state of a cancelled investment.  It never matured to a real investment, i.e. it 
@@ -1238,7 +1243,7 @@ statusOfLoan can have the following values:
         
         
     }    
-    
+    function calculateDashboard2GlobalWrittenOff(){}
     
     
 }

@@ -360,7 +360,7 @@ class ParseDataClientShell extends GearmanClientShell {
         $database['globaltotalsdata']['globaltotalsdata_principalBuybackPerDay'] = "";
         $database['globaltotalsdata']['globaltotalsdata_capitalRepaymentPerDay'] = "";              
         $database['globaltotalsdata']['globaltotalsdata_costSecondaryMarketPerDay'] = "";       
-
+        $database['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = "";
 
        
         
@@ -477,7 +477,13 @@ echo __FUNCTION__ .  " " . __LINE__ . "\ndateKey = $dateKey \n";
                         if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }  
+                        
+                        echo '|||||||||||||||||||||||';
+                        var_dump($transaction);
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
+                        var_dump($tempResult);
+                        echo '|||||||||||||||||||||||';        
+                 
                         if (!empty($tempResult)) {                            
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -492,12 +498,16 @@ echo __FUNCTION__ .  " " . __LINE__ . "\ndateKey = $dateKey \n";
 
                             if (!empty($functionToCall)) {
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-
+                                //print_r($result);
+                                //echo "\n " . $functionToCall . "llllllllllllllllllllllllllll \n";      
+                                //print_r($dateTransaction);
                                 // update the field userinvestmentdata_cashInPlatform   
-                                $cashflowOperation = $tempResult['cashflowOperation'];
+                                $cashflowOperation = $tempResult['cashflowOperation']; 
                                 if (!empty($cashflowOperation)) {
+                                    //print_r($database);
                                     $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
-                                        $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $result, 16);                          
+                                        $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $result, 16);
+                                   // print_r($database);
                                 }                                
 
                                 if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
@@ -513,336 +523,350 @@ echo __FUNCTION__ .  " " . __LINE__ . "\ndateKey = $dateKey \n";
                             }
                         }
                     }
-                    continue;
+                    
+                    /*$internalVariableToHandle = array(10001);
+                    foreach ($internalVariableToHandle as $keyItem => $item) {
+                            $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                            $functionToCall = $this->variablesConfig[$item]['function'];
+                            echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1] . "\n";
+                            $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
+                            if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                if (!isset($database[$varName[0]][$varName[1]])) {
+                                    $database[$varName[0]][$varName[1]] = 0;
+                                }
+                                $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
+                            }
+                            else {
+                                $database[$varName[0]][$varName[1]] = $result;
+                            }
+                        }
+                        echo 'qazwsx';
+                        print_r($database);*/
+                    //continue;
                 }
- 
-echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " .  $dateTransaction[0]['investment_loanId'] . "\n";
-
-                if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
-                    echo "THIS IS AN ACTIVE LOAN\n";
-                    $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                    $loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
-                }
-
-                if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
-                    echo "THIS IS AN ALREADY EXPIRED LOAN\n";
-                    $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                    $loanStatus = WIN_LOANSTATUS_FINISHED;
-                }
-                if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])) {          // check if loanId is new
-                    $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
-                    echo "FOUND in Newloans\n";
-                    if ($arrayIndex !== false) {        // Deleting the array from new loans list
-                        unset($platformData['workingNewLoans'][$arrayIndex]);
+                else {
+                    echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " . $dateTransaction[0]['investment_loanId'] . "\n";
+                    if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
+                        echo "THIS IS AN ACTIVE LOAN\n";
+                        $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                        $loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
                     }
 
-                    echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
-                    $database['investment']['investment_myInvestment'] = 0;
-                    $database['investment']['investment_secondaryMarketInvestment'] = 0;  
+                    if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
+                        echo "THIS IS AN ALREADY EXPIRED LOAN\n";
+                        $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                        $loanStatus = WIN_LOANSTATUS_FINISHED;
+                    }
+                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])) {          // check if loanId is new
+                        $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
+                        echo "FOUND in Newloans\n";
+                        if ($arrayIndex !== false) {        // Deleting the array from new loans list
+                            unset($platformData['workingNewLoans'][$arrayIndex]);
+                        }
+
+                        echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
+                        $database['investment']['investment_myInvestment'] = 0;
+                        $database['investment']['investment_secondaryMarketInvestment'] = 0;
 
 //$database['investment']['technicalState'] = WIN_TECH_STATE_ACTIVE;
 
 
-                    $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
- 
-             //       $platformData['newLoans'][]= $transactionData['investment_loanId'];
-                   
-             //       if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
-             //           if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {         // used for currently active loans and for Zombie loans
-             //               $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
-             //           }
-             //       }
-            //        $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM    
-                    
-                    // Load all the data of the investment  
-                    foreach ($investmentListToCheck as $investmentDataKey => $investmentData) {
-                        $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
+                        $controlVariableActiveInvestments = $controlVariableActiveInvestments + 1;
 
-                        if (!empty($tempResult)) {
-                            $dataInformation = explode(".", $tempResult['databaseName']);
-                            $dbTable = $dataInformation[0];
-                            $database[$dbTable][$investmentDataKey] = $investmentData;
+                        //       $platformData['newLoans'][]= $transactionData['investment_loanId'];
+                        //       if ($transactionData['conceptChars'] == "AM_TABLE") {       // Add loanId so new amortizationtable shall be collected
+                        //           if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {         // used for currently active loans and for Zombie loans
+                        //               $database['investment']['markCollectNewAmortizationTable'] = "AM_TABLE";
+                        //           }
+                        //       }
+                        //        $database['investment']['investment_sliceIdentifier'] = "ZZXXXX";  //TO BE DECIDED WHERE THIS ID COMES FROM    
+                        // Load all the data of the investment  
+                        foreach ($investmentListToCheck as $investmentDataKey => $investmentData) {
+                            $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
+
+                            if (!empty($tempResult)) {
+                                $dataInformation = explode(".", $tempResult['databaseName']);
+                                $dbTable = $dataInformation[0];
+                                $database[$dbTable][$investmentDataKey] = $investmentData;
+                            }
+                        }
+
+
+                        switch ($database['investment']['investment_statusOfLoan']) {
+                            case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                            case WIN_LOANSTATUS_ACTIVE:
+                            case WIN_LOANSTATUS_FINISHED:
+                                $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
+                                $database['investment']['investment_technicalStateTemp'] = "INITIAL";
+                                break;
                         }
                     }
-                    
-                    
-                    switch($database['investment']['investment_statusOfLoan']) {
-                        case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
-                        case WIN_LOANSTATUS_ACTIVE:
-                        case WIN_LOANSTATUS_FINISHED:    
+                    else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
+                        $filterConditions = array("investment_loanId" => $dateTransaction[0]['investment_loanId'],
+                            "linkedaccount_id" => $linkedaccountId);
+                        $tempInvestmentData = $this->Investment->getData($filterConditions, array("id",
+                            "investment_priceInSecondaryMarket", "investment_outstandingPrincipal", "investment_totalGrossIncome",
+                            "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
+                            "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan",
+                            "investment_sliceIdentifier", "investment_amortizationTableAvailable"));
+
+                        $investmentId = $tempInvestmentData[0]['Investment']['id'];
+                        if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
+                            // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
+                            echo "THE LOAN WITH ID " . $dateTransaction[0]['investment_loanId'] . " IS A ZOMBIE LOAN\n";
+                            echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and setting its state to WIN_LOANSTATUS_ACTIVE\n";
+                            $loanStatus = WIN_LOANSTATUS_ACTIVE;                                                                    // So amortization data is collected
+                            $database['investment']['investment_myInvestment'] = 0;
+                            $database['investment']['investment_secondaryMarketInvestment'] = 0;
+                            $database['investment']['investment_sliceIdentifier'] = $dateTransaction[0]['investment_loanId'];       // TO BE DECIDED WHERE THIS ID COMES FROM  
+                            $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;
+                            $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                             $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
-                            $database['investment']['investment_technicalStateTemp'] = "INITIAL";                            
-                        break;
-                    }  
-                } 
-                else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
-                    $filterConditions = array("investment_loanId" => $dateTransaction[0]['investment_loanId'] ,
-                                                "linkedaccount_id" => $linkedaccountId);
-                    $tempInvestmentData = $this->Investment->getData($filterConditions, array("id", 
-                        "investment_priceInSecondaryMarket" , "investment_outstandingPrincipal", "investment_totalGrossIncome",
-                        "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
-                        "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan", 
-                        "investment_sliceIdentifier", "investment_amortizationTableAvailable"));
- 
-                    $investmentId = $tempInvestmentData[0]['Investment']['id'];
-                    if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
-                                                    // We mark to collect amortization table and hope that the PFP will return amortizationtable data.       
-
-echo "THE LOAN WITH ID " . $dateTransaction[0]['investment_loanId']  . " IS A ZOMBIE LOAN\n";
-echo "Storing the data of a 'NEW ZOMBIE LOAN' in the shadow DB table and setting its state to WIN_LOANSTATUS_ACTIVE\n";
-                        $loanStatus = WIN_LOANSTATUS_ACTIVE;                                                                    // So amortization data is collected
-                        $database['investment']['investment_myInvestment'] = 0;
-                        $database['investment']['investment_secondaryMarketInvestment'] = 0;  
-                        $database['investment']['investment_sliceIdentifier'] = $dateTransaction[0]['investment_loanId'];       // TO BE DECIDED WHERE THIS ID COMES FROM  
-                        $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;  
-                        $database['investment']['investment_technicalStateTemp'] = "INITIAL";
-                        $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
-                    }
-                    else {  // A normal regular loan, which is already defined in our database
-                    // Copy the information to the shadow database, for processing later on
-echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
-                        $database['investment']['investment_statusOfLoan'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
-                        $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
-                        $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
-                        $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
-                        $database['investment']['investment_outstandingPrincipalOriginal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
-                        $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];   
-                        $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];   
-                        $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
-                        $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
-                        $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
-                        $database['investment']['id'] = $investmentId;
-                    }
-                }
-
-                // load all the transaction data
-                foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
-echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
-print_r($database);
-                    if (isset($transactionData['conceptChars'])) {
-                        $conceptChars = explode(",", $transactionData['conceptChars']);
-                        
-                        foreach ($conceptChars as $itemKey => $item) {
-                            $conceptChars[$itemKey] = trim($item);
                         }
-                        
-                        if (in_array("PRE-ACTIVE", $conceptChars)) {                         
-                            $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                        else {  // A normal regular loan, which is already defined in our database
+                            // Copy the information to the shadow database, for processing later on
+                            echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
+                            $database['investment']['investment_statusOfLoan'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
+                            $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
+                            $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
+                            $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+                            $database['investment']['investment_outstandingPrincipalOriginal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
+                            $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];
+                            $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];
+                            $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
+                            $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
+                            $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
+                            $database['investment']['id'] = $investmentId;
                         }
-                        
-                        if (in_array("AM_TABLE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
-                            if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
+                    }
+
+                    // load all the transaction data
+                    foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
+                        echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                        print_r($database);
+                        if (isset($transactionData['conceptChars'])) {
+                            $conceptChars = explode(",", $transactionData['conceptChars']);
+
+                            foreach ($conceptChars as $itemKey => $item) {
+                                $conceptChars[$itemKey] = trim($item);
+                            }
+
+                            if (in_array("PRE-ACTIVE", $conceptChars)) {
+                                $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                            }
+
+                            if (in_array("AM_TABLE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
+                                if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
 //                                unset ($sliceIdentifier);
 
+                                    $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
+                                    // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                                    // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                    $isNewTable = YES;
+                                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                                        if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                                            $isNewTable = NO;
+                                            break;
+                                        }
+                                    }
+                                    if ($isNewTable == YES) {
+                                        $collectTablesIndex++;
+                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                    }
+                                }
+                            }
+
+                            if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
-                                // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
-                                $isNewTable = YES;
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                                     if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
-                                        $isNewTable = NO;
-                                        break;
-                                    }                                    
+                                        if ($tableToCollect['loanId'] == $transactionData['investment_loanId']) {
+                                            unset($slicesAmortizationTablesToCollect[$tableCollectKey]);
+                                        }
+                                    }
                                 }
-                                if ($isNewTable == YES) {     
-                                    $collectTablesIndex++;
-                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
-                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                            }
+
+                            if ((in_array("READ_INVESTMENT_DATA", $conceptChars))) {
+                                /*
+                                  echo __FILE__ . " " . __LINE__ . " READ_INVESTMENT_DATA label found\n";
+                                  print_r($transactionData['investment_loanId']);
+                                  print_r($platformData['parsingResultInvestments'][$transactionData['investment_loanId']]);
+                                  echo __FILE__ . " " . __LINE__ . "\n";
+                                  // Define clearly WHICH fields to reread
+                                 */
+                                //                      foreach ($platformData['parsingResultInvestments'][$transactionData['investment_loanId'][0]] as $investmentDatumKey => $investmentDatum) {
+                                //                        $database['investment'][$investmentDatumKey] = $investmentDatum;   
+                                //                  }
+//print_r($database['investment']);
+//echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
+                            }
+                        }
+
+                        foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
+                            if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
+                                $transactionDataKey = $transaction;
+                            }
+                            $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
+
+                            echo __FILE__ . " " . __LINE__ . "\n";
+                            if (!empty($tempResult)) {
+                                unset($result);
+
+                                $functionToCall = $tempResult['function'];
+
+                                echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
+                                $dataInformation = explode(".", $tempResult['databaseName']);
+                                $dbTable = $dataInformation[0];
+                                $dbVariableName = $dataInformation[1];
+
+                                echo "Execute calculationfunction: $functionToCall\n";
+                                if (!empty($functionToCall)) {
+                                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+
+                                    echo "Result = $result and index = " . $tempResult['internalIndex'] . "\n";
+                                    if (isset($tempResult['linkedIndex'])) {
+                                        echo ">>>>>>>>>>>>>>>> LINKED INDEX\n";
+                                        $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
+                                        $dbTableInternalIndex = $dataInformationInternalIndex[0];
+
+                                        if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                            echo "ADDING $result to existing result " . $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] . "\n";
+                                            $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+                                        }
+                                        else {
+                                            echo "POSSIBLY overwriting existing result\n";
+                                            $database[$dbTable][$dbVariableName] = $result;
+                                        }
+                                    }
+
+                                    // update the field userinvestmentdata_cashInPlatform   
+                                    $cashflowOperation = $tempResult['cashflowOperation'];
+                                    if (!empty($cashflowOperation)) {
+                                        echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . " and dbTableInternalIndex = $dbTableInternalIndex\n";
+                                        //echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result . "\n";
+                                        $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $result, 16);
+                                        //echo "#########========> database_cashInPlatform = " . $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] . "\n";
+                                    }
+
+                                    if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                        echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
+                                        $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+                                    }
+                                    else {
+                                        echo "possibly overwriting existing result\n";
+                                        //echo $dbTable . " ";
+                                        //echo $dbVariableName;
+                                        $database[$dbTable][$dbVariableName] = $result;
+                                    }
+                                    echo $database[$dbTable][$dbVariableName] . "\n";
+                                }
+                                else {
+                                    $database[$dbTable][$dbVariableName] = $transaction;
+                                    if (isset($tempResult['linkedIndex'])) {   // THIS IS UNTESTED AND PROBABLY NOT NEEDED ANYWAY
+                                        echo "LINKED-INDEX";
+                                        $dataInformationInternIndex = explode(".", $tempResult['databaseName']);
+                                        $dbTableInternalIndex = $dataInformationInternalIndex[0];
+                                        $database[[$dbTableInternalIndex][0]][[$dbTableInternalIndex][1]] = $transaction;
+                                    }
                                 }
                             }
                         }
-                        
-                        if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
-                            $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
-                            foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                                if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
-                                    if ($tableToCollect['loanId'] == $transactionData['investment_loanId']) {
-                                        unset ($slicesAmortizationTablesToCollect[$tableCollectKey]);  
-                                    }
-                                }
-                            }                        
-                        }  
- 
-                        if ((in_array("READ_INVESTMENT_DATA", $conceptChars))) {    
-/*                            
-echo __FILE__ . " " . __LINE__ . " READ_INVESTMENT_DATA label found\n"; 
-print_r($transactionData['investment_loanId']);
-print_r($platformData['parsingResultInvestments'][$transactionData['investment_loanId']]);
-echo __FILE__ . " " . __LINE__ . "\n"; 
-// Define clearly WHICH fields to reread
-*/
-      //                      foreach ($platformData['parsingResultInvestments'][$transactionData['investment_loanId'][0]] as $investmentDatumKey => $investmentDatum) {
-        //                        $database['investment'][$investmentDatumKey] = $investmentDatum;   
-          //                  }
-//print_r($database['investment']);
-//echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
-                        }
-                        
                     }
-                    
-                    foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
-                        if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
-                            $transactionDataKey = $transaction;
-                        }
-                        $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-
-                        echo __FILE__ . " " . __LINE__ . "\n";
-                        if (!empty($tempResult)) {
-                            unset($result);
-                            
-                            $functionToCall = $tempResult['function'];
-
-                            echo __FILE__ . " " . __LINE__ . " Function to call = $functionToCall, transactionDataKey = $transactionDataKey\n";
-                            $dataInformation = explode(".", $tempResult['databaseName']);
-                            $dbTable = $dataInformation[0];
-                            $dbVariableName = $dataInformation[1];
-
-                            echo "Execute calculationfunction: $functionToCall\n";
-                            if (!empty($functionToCall)) { 
-                                $result = $calculationClassHandle->$functionToCall($transactionData, $database);
-
-echo "Result = $result and index = " . $tempResult['internalIndex'] ."\n";
-                                if (isset($tempResult['linkedIndex'])) {
-                                    echo ">>>>>>>>>>>>>>>> LINKED INDEX\n";
-                                    $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
-                                    $dbTableInternalIndex = $dataInformationInternalIndex[0];
-                                 
-                                    if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {   
-                                        echo "ADDING $result to existing result " . $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] . "\n";
-                                        $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = 
-                                                bcadd($database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]], $result, 16);
-                                    } 
-                                    else {
-                                        echo "POSSIBLY overwriting existing result\n";
-                                        $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = $result;
-                                    }                                        
-                                }
-
-                                // update the field userinvestmentdata_cashInPlatform   
-                                $cashflowOperation = $tempResult['cashflowOperation'];
-                                if (!empty($cashflowOperation)) {
-echo "[dbTable] = " . $dbTable . " and [transactionDataKey] = " . $transactionDataKey . " and dbTableInternalIndex = $dbTableInternalIndex\n";
-//echo "================>>  " . $cashflowOperation . " ADDING THE AMOUNT OF " . $result ."\n";
-                                    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = 
-                                                $cashflowOperation($database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
-                                                $result, 16); 
-//echo "#########========> database_cashInPlatform = " .    $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] ."\n";                            
-                                }
-             
-                                if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                    echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
-                                    $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
-                                } 
-                                else {
-                                    echo "possibly overwriting existing result\n";
-                                    $database[$dbTable][$dbVariableName] = $result;
-                                } 
-                                echo $database[$dbTable][$dbVariableName] . "\n";
-                            } 
-                            else {
-                                $database[$dbTable][$dbVariableName] = $transaction;
-                                if (isset($tempResult['linkedIndex'])) {   // THIS IS UNTESTED AND PROBABLY NOT NEEDED ANYWAY
-                                    echo "LINKED-INDEX";
-                                    $dataInformationInternIndex = explode(".", $tempResult['databaseName']);
-                                    $dbTableInternalIndex = $dataInformationInternalIndex[0];
-                                    $database[[$dbTableInternalIndex][0]][[$dbTableInternalIndex][1]] = $transaction;
-                                }
-                            }        
-                        }
-                    }       
-                } 
 
 
-                
+
 // Now start consolidation of the results on investment level and per day                
-                $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
+                    $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065);
 
-                foreach ($internalVariableToHandle as $keyItem => $item) {
-                    $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                    $functionToCall = $this->variablesConfig[$item]['function'];
-                    echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1].  "\n";
-                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);   
-                    if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                        if (!isset($database[$varName[0]][$varName[1]])) {
-                            $database[$varName[0]][$varName[1]] = 0;
+                    foreach ($internalVariableToHandle as $keyItem => $item) {
+                        $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
+                        $functionToCall = $this->variablesConfig[$item]['function'];
+                        echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1] . "\n";
+                        $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                        if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                            if (!isset($database[$varName[0]][$varName[1]])) {
+                                $database[$varName[0]][$varName[1]] = 0;
+                            }
+                            $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                         }
-                        $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
-                    } 
+                        else {
+                            $database[$varName[0]][$varName[1]] = $result;
+                        }
+                    }
+                    echo __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
+
+                    $database['investment']['linkedaccount_id'] = $linkedaccountId;
+
+                    if (isset($database['investment']['investment_amortizationTableAvailable'])) {     // Write payment data in amortization table
+                        if ($database['investment']['investment_amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
+                            if (in_array("REPAYMENT", $conceptChars)) {
+                                $this->repaymentReceived($transactionData, $database);
+                            }
+                        }
+                        else {
+                            // Store the information so it can be processed in flow 3B
+                        }
+                    }
+
+                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
+                        $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
+                    }
+
+                    if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
+                        $resultCreate = $this->Investment->createInvestment($database['investment']);
+
+                        if (!empty($resultCreate)) {
+                            $investmentId = $resultCreate;
+                            echo "Saving 'NEW' loan with investmentId = $investmentId, Done\n";
+                            $database['investment']['id'] = $resultCreate;
+                        }
+                        else {
+                            if (Configure::read('debug')) {
+                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
+                            }
+                        }
+                    }
                     else {
-                        $database[$varName[0]][$varName[1]] = $result;
-                    }                     
-                }                  
-                echo  __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
-              
-                $database['investment']['linkedaccount_id'] = $linkedaccountId;
+                        $database['investment']['id'] = $investmentId;
+                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
+                        $result = $this->Investment->save($database['investment']);
+                        if ($result) {
+                            echo "Saving existing loan with investmentId = $investmentId, Done\n";
+                        }
+                        else {
+                            if (Configure::read('debug')) {
+                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
+                            }
+                        }
+                    }
 
-                if (isset($database['investment']['investment_amortizationTableAvailable'])) {     // Write payment data in amortization table
-                    if ($database['investment']['investment_amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
-                        if (in_array("REPAYMENT", $conceptChars)) {        
-                            $this->repaymentReceived($transactionData, $database); 
-                        }                                
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
+                    $database['payment']['investment_id'] = $investmentId;
+                    $database['payment']['date'] = $dateKey;
+                    $this->Payment->create();
+                    if ($this->Payment->save($database['payment'], $validate = true)) {
+                        echo "Done\n";
                     }
                     else {
-                        // Store the information so it can be processed in flow 3B
-                    }
-                } 
-    
-                if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
-                    $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
-                }
-                
-                if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
-                    $resultCreate = $this->Investment->createInvestment($database['investment']);
-
-                    if (!empty($resultCreate)) {
-                        $investmentId = $resultCreate;
-                        echo "Saving 'NEW' loan with investmentId = $investmentId, Done\n";
-                        $database['investment']['id'] = $resultCreate;
-                    } else {
                         if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
                         }
                     }
-                } 
-                else {
-                    $database['investment']['id'] = $investmentId;
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
-                    $result = $this->Investment->save($database['investment']);
-                    if ($result) {
-                        echo "Saving existing loan with investmentId = $investmentId, Done\n";
-                    } else {
-                        if (Configure::read('debug')) {
-                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
+
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
+
+
+                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {           // Add: investmentId
+                        if (empty($tableToCollect['investmentId'])) {
+                            $slicesAmortizationTablesToCollect[$tableCollectKey]['investmentId'] = $investmentId;
                         }
                     }
-                    
                 }
-                
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
-                $database['payment']['investment_id'] = $investmentId;
-                $database['payment']['date'] = $dateKey;
-                $this->Payment->create();
-                if ($this->Payment->save($database['payment'], $validate = true)) {
-                    echo "Done\n";
-                } 
-                else {
-                    if (Configure::read('debug')) {
-                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
-                    }
-                }
-     
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
-  
 
-                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {           // Add: investmentId
-                    if (empty($tableToCollect['investmentId'])) {
-                        $slicesAmortizationTablesToCollect[$tableCollectKey]['investmentId'] = $investmentId; 
-                    }
-                }                
-                
-                
-    
+
                 $internalVariablesToHandle = array(10001,
                                                     10006, 10007, 10008,
                                                     10009, 10010, 10011, 

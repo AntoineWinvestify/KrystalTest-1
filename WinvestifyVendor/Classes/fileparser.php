@@ -409,6 +409,13 @@ class Fileparser {
                 "type" => "createReservedFunds",
                 "chars" => "PRE-ACTIVE",
                 ],
+            42 => [
+                "detail" => "Disinvestment_without_loanReference", 
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestmentWithoutLoanReference",
+            ],
+        
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept
