@@ -1321,15 +1321,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     
     /**
      * 
-     *  @param  array $transactionData array with the current transaction data    
+     * @param  array $transactionData array with the current transaction data    
      * @param  array $resultData array with all data so far calculated and to be written to DB
      * @return string bonus amount
      */
     function calculateIncentivesAndBonus(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
-    function calculateDashboard2GlobalWrittenOff(){}
     
     
 }
