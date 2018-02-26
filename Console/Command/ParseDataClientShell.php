@@ -746,7 +746,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Ghost loan found\n";
 
                                     echo "Result = $result and index = " . $tempResult['internalIndex'] . "\n";
                                     if (isset($tempResult['linkedIndex'])) {
-                                        echo ">>>>>>>>>
+                                        echo ">>>>>>>>>";
                                         $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
                                         $dbTableInternalIndex = $dataInformationInternalIndex[0];
 
@@ -789,6 +789,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Ghost loan found\n";
                                         $dbTableInternalIndex = $dataInformationInternalIndex[0];
                                         $database[[$dbTableInternalIndex][0]][[$dbTableInternalIndex][1]] = $transaction;
                                     }
+                                }
+                            }
                         
                         if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                             $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
