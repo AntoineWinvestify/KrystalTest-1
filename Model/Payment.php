@@ -87,15 +87,13 @@ var $validate = array(
                                                         'conditions' => array('investment_id' => $this->data['Payment']['investment_id']),
                                                         'order' => array('Paymenttotal.id DESC'),
                                                          ) );
-
-        $this->Paymenttotal->create();
-    
+        
         // Copy all the 'totalvalue's data of the latest paymenttotal, if it exists
         if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {
             foreach ($latestValuesPaymenttotals['Paymenttotal'] as $paymentTotalsKey => $paymentItem) {
                 $paymentTotalsKeyNames = explode("_", $paymentTotalsKey);
                 if ($paymentTotalsKeyNames[0] == $paymentTotalPrefix) {
-                    $data [$paymentTotalsKey] = $paymentItem;
+                    $data[$paymentTotalsKey] = $paymentItem;
                 }              
             }
         }   
@@ -126,7 +124,7 @@ var $validate = array(
         if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {  // probably NOT necessary to save status
             $this->Paymenttotal->create();
             $this->Paymenttotal->id = $latestValuesPaymenttotals['Paymenttotal']['id'];
-            $this->Paymenttotal->save(array("status" => WIN_PAYMENTTOTALS_OLD)); 
+            $this->Paymenttotal->saveField(array("status" => WIN_PAYMENTTOTALS_OLD)); 
         }
     }
 }
