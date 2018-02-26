@@ -33,6 +33,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     protected $config = [];
     protected $originExecution;
     protected $dashboardOverviewLinkaccountIds = [];
+    protected $financialClass;
     
    public function startup() {
         parent::startup();
@@ -120,12 +121,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             $returnData = [];
-            Configure::load('p2pGestor.php', 'default');
-            $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-            require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-            $financialClass = new Financial;
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-                $returnData[$linkedaccountId][$nameFunction] = $financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+                $returnData[$linkedaccountId][$nameFunction] = $this->financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
             }
         }
         else if ($typeOfFormula == WIN_FORMULAS_NET_RETURN) {
@@ -156,7 +153,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
-            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
+            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
             $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
@@ -168,6 +165,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         $statusCollect = [];
         $error = [];
+        
         foreach ($returnData as $linkedaccountIdKey => $variableService) {
             if ($linkedaccountIdKey == 'investor') {
                 $keyInvestor = key($variableService);
@@ -254,7 +252,6 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                     $date['finish'] = $this->getDateForSum($dateYear, $variable['dateFinish']);
                     $values[$linkedaccountId][$variableKey] = $this->getSumValuesOrderedByDate($variable['table'], $variable['type'], $keyDataForTable, $date, $variable['intervals']);
                     $valuesForGlobal[$dateYear][$linkedaccountId][$variableKey] = $values[$linkedaccountId][$variableKey];
-                    
                 }
                 $dataMergeByDate[$linkedaccountId][$dateYear] = $this->mergeArraysByKey($values[$linkedaccountId], $variables);
                 //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
@@ -262,13 +259,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         }
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             $returnData = null;
-            Configure::load('p2pGestor.php', 'default');
-            $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
-            require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
-            $financialClass = new Financial;
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
                 foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
-                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
                 }
             }
         }
@@ -315,7 +308,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             foreach ($dataMergeByDate as $keyDate => $dataByDate) {
-                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
             }
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
@@ -395,6 +388,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualReturnXirr($data) {
+        $this->includeVendorFolder();
         return $this->calculatePast12Months($data, "netAnnualReturn_xirr", 'netAnnualReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
@@ -404,6 +398,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualTotalFundsReturnXirr($data) {
+        $this->includeVendorFolder();
         return $this->calculatePast12Months($data, "netAnnualTotalFundsReturn_xirr", 'netAnnualTotalFundsReturnXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
@@ -413,6 +408,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return json Json that contain all the information needed to store in database
      */
     public function calculateNetAnnualReturnPastYearXirr($data) {
+        $this->includeVendorFolder();
         return $this->calculatePastYears($data, "netAnnualPastReturn_xirr", 'netAnnualReturnPastYearXirr', WIN_FORMULAS_NET_ANNUAL_RETURN);
     }
     
@@ -441,22 +437,18 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @return array
      */
     public function getPeriodOfTime($dateFinish, $linkedaccountId) {
-        if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
+        $dates = null;
+        $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
+        $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
+        //future implementation
+        /*if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) {
             $dateInit = $this->getFirstInvestmentDateByLinkedaccount($linkedaccountId);
             $dates = $this->getDatesForPastReturn($dateInit, $dateFinish);
         }
-        //Else is not working yet
         else {
             print_r($this->originExecution);
-            echo "\n";
-            exit;
-            $dateFinishYear = date("Y",  strtotime($dateFinish));
-            $pastReturnExist = $this->verifyPastReturnThisYearExist($dateFinishYear);
-            $dates = null;
-            if (!$pastReturnExist) {
-                $dates = $dateFinishYear;
-            }
-        }
+            $dates= $this->verifyPastReturnThisYearExist($dateFinish);
+        }*/
         return $dates;
     }
     
@@ -851,9 +843,29 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
                 }
             }
         }
-        print_r($datesForGlobal);
         rsort($datesForGlobal);
         return $datesForGlobal;
+    }
+    
+    /**
+     * Function to verify if it is a new year to calculate the past year NAR or Net Return
+     * @param string $date It is the date we calculate the data
+     */
+    public function verifyPastReturnThisYearExist($date) {
+        $dates = null;
+        $dateYearNextDay = date("Y",  strtotime($date . "+ 1 day"));
+        $dateYearToday = date("Y",  strtotime($date));
+        if ($dateYearNextDay !== $dateYearToday) {
+            $dates[] = $dateYearToday;
+        }
+        return $dates;
+    }
+    
+    public function includeVendorFolder() {
+        Configure::load('p2pGestor.php', 'default');
+        $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
+        require_once($vendorBaseDirectoryClasses . DS . 'financial_class.php');
+        $this->financialClass = new Financial;
     }
     
 }

@@ -62,13 +62,31 @@ class finanzarel extends p2pCompany {
         'outstandingPrincipalRoundingParm' => '0.05',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 in order to "close" an active investment
         'recalculateRoundingErrors' => [
+            "function" => "recalculationOfRoundingErrors",
             "values" => [                                                       //Values needed to modify due to rounding errors of the platform
-                "from" => ["investment_outstandingPrincipal"],                  //From are all the values we take the values
-                "to" => [""]                                                    //To are all the values we modify the values
-            ],
-            "sign" => "positive"                                                //Sign could be positive or negative
+                0 => [
+                    "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
+                    "to" => ["payment_regularGrossInterestIncome"],              //To are all the values we modify the values
+                    "sign" => "negative"                                         //Sign could be positive or negative
                                                                                 //If it is positive, the + will be + and the - will be -
                                                                                 //If it is negative, the + will be - and the - will be +
+                ],
+                1 => [
+                    "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
+                    "to" => ["payment_capitalRepayment"],                       //To are all the values we modify the values
+                    "sign" => "positive"                                         //Sign could be positive or negative
+                                                                                //If it is positive, the + will be + and the - will be -
+                                                                                //If it is negative, the + will be - and the - will be +
+                ],
+                2 => [
+                    "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
+                    "to" => ["investment_outstandingPrincipal"],              //To are all the values we modify the values
+                    "sign" => "negative"                                         //Sign could be positive or negative
+                                                                                //If it is positive, the + will be + and the - will be -
+                                                                                //If it is negative, the + will be - and the - will be +
+                ]
+            ],
+                                                                               
         ]
     ];
     
@@ -336,7 +354,15 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "N" => [
+            "M" => [
+                [
+                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ],
                 [
                     "type" => "investment_dueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -346,7 +372,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "O" => [
+            "N" => [
                 [
                     "type" => "investment_statusOfLoan",                          
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
@@ -364,7 +390,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getDefaultValue",
                 ]
             ],
-            "P" => [
+            "O" => [
                 [
                     "type" => "investment_estimatedNextPayment",                // Winvestify standardized name
                     "inputData" => [
@@ -389,7 +415,16 @@ class finanzarel extends p2pCompany {
             "D" =>  [
                 "name" => "investment_riskRating",
             ],
+            
             "E" => [  
+                [
+                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ],
                 [
                     "type" => "investment_issueDate",                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -518,17 +553,6 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             "M" => [
-               [
-                    "type" => "interest",                        // Winvestify standardized name   OK
-                    "inputData" => [
-				"input2" => "",
-                                "input3" => ",",
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ] 
-            ],
-            "N" => [
                 [
                     "type" => "scheduledDate",                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -538,7 +562,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
             ],
-            "O" => [
+            "N" => [
                 [
                     "type" => "statusOfLoan",                          
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
@@ -549,7 +573,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ]
             ],
-            "P" => [
+            "O" => [
                 [
                     "type" => "capitalAndInterestPayment",                // Winvestify standardized name
                     "inputData" => [
@@ -563,11 +587,17 @@ class finanzarel extends p2pCompany {
     ];
 
     protected $valuesAmortizationTable = [
-        /*1 => [
+        0 => [
             [
-                "name" => "investment_id"
-            ],
-        ],*/
+                "type" => "investment_id",                          
+                "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                            "input2" => "",                               
+                            "input3" => "",
+                            "input4" => 0                                   // 'input3' is NOT mandatory. 
+                        ],
+                "functionName" => "extractDataFromString",
+            ]
+        ],
         1 => [
             [
                 "type" => "amortizationtable_capitalRepayment",                 // Winvestify standardized name  OK
@@ -581,17 +611,6 @@ class finanzarel extends p2pCompany {
         ],
         2 => [
             [
-                "type" => "amortizationtable_interest",                         // Winvestify standardized name  OK
-                "inputData" => [
-                    "input2" => "",
-                    "input3" => ".",
-                    "input4" => 2
-                ],
-                "functionName" => "getAmount",
-            ]
-        ],
-        3 => [
-            [
                 "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "Y-M-D",
@@ -599,7 +618,7 @@ class finanzarel extends p2pCompany {
                 "functionName" => "normalizeDate",
             ]
         ],
-        4 => [
+        3 => [
             [
                 "type" => "amortizationtable_paymentStatus",                          
                 "inputData" => [                                            // Get the "original" Zank concept, which is used later on
@@ -610,7 +629,7 @@ class finanzarel extends p2pCompany {
                 "functionName" => "extractDataFromString",
             ]
         ],
-        5 => [
+        4 => [
             [
                 "type" => "amortizationtable_capitalAndInterestPayment",        // Winvestify standardized name  OK
                 "inputData" => [

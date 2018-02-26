@@ -305,7 +305,7 @@ class Fileparser {
                 "type" => "concept23"
                 ],           
             24 => [
-                "detail" => "Payment_currency_exchange_fee",
+                "detail" => "Currency_exchange_fee",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "payment_currencyExchangeFee"
@@ -378,17 +378,17 @@ class Fileparser {
                 ],
             36 => [
                 "detail" => "Outgoing_currency_exchange_transaction", 
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "outgoingCurrencyExchangeTransaction",
                 ],
             37 => [
                 "detail" => "Compensation_negative",  
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "globalcashflowdata_platformCompensationNegative",
                 ],
-            38 => [
+            38 => [     // This is the "normal case" for disinvestments WITH a loan id (LoanBook)
                 "detail" => "Disinvestment_primary_market", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
@@ -409,12 +409,20 @@ class Fileparser {
                 "type" => "createReservedFunds",
                 "chars" => "PRE-ACTIVE",
                 ],
-            42 => [
-                "detail" => "Disinvestment_without_loanReference", 
+
+            41 => [
+                "detail" => "Cashback_bonus",                            
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFunds",
+                ],
+
+            42 => [ // This is for so-called Ghost Loans (example: Zank)
+                "detail" => "Disinvestment_without_loanReference",                            
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestmentWithoutLoanReference",
-            ],
+                ], 
         
         
             105 => [
@@ -437,7 +445,7 @@ class Fileparser {
                 "type" => "investment_activeStateChange",
                 "chars" => "AM_TABLE, READ_INVESTMENT_DATA"                     // = Collect Amortization table *and* re-read the current investment data
                 ],
- /*       Not NEEDED AS THIS IS DONE USING A N ORDINARY TRANSACTION RECORD
+ /*       Not NEEDED AS THIS IS DONE USING AN ORDINARY TRANSACTION RECORD
             10002 => [
                 "detail" => "Change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
@@ -1322,7 +1330,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             return $result;
         }
         else {
-            echo "unknown concept [$input] for complex, so start doing some guessing for concept $originalConcept\n";  
+            echo "unknown concept [$input] for complex, so start doing some guessing for concept '$originalConcept'\n";  
         }
     } 
     
@@ -1435,7 +1443,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
 
     /**
-     * Search for a something within a string, starting AFTER $search
+     * Search for something within a string, starting AFTER $search
      * and ending when $separator is found
      * If $search == "" then $extractedString starts from beginning of $input.
      * If $separator = "" then $extractedString contains the $input starting from $search to end

@@ -77,13 +77,15 @@ class Investmentslice extends AppModel
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
      *  @param          string  $sliceIdentifier        Unique identifier of the slice
+     *  @param          date    $date                   Date of creation
      * 	@return 	bigint                          Database Id of the slice   
      * 			
      */
-    public function getNewSlice ($investmentId, $sliceIdentifier) {
+    public function getNewSlice ($investmentId, $sliceIdentifier, $date) {
 
         $investmentSliceData = array('investment_id' => $investmentId,
-                                     'investmentslice_identifier' => $sliceIdentifier);
+                                     'investmentslice_identifier' => $sliceIdentifier,
+                                     'date' => $date);
 
         $this->create();
         if ($this->save($investmentSliceData, $validation = true)) {   // OK

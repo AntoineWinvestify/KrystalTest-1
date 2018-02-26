@@ -89,7 +89,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                 }
                 $configParameters = $companyHandle->getParserAmortizationConfigParms();
                 $this->myParser->setConfig($configParameters[0]);
-                $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFileAmortization($file, $parserConfig, $extensionFile);
+                $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFile($file, $parserConfig, $extensionFile);
                 echo "tempResult " . $loanId . "\n";
                 $i++;
             }
