@@ -457,6 +457,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 print_r($dateTransaction);
 
                 if ($keyDateTransactionNames[0] == "global") {
+
                     if ($dateTransaction[0]['conceptChars'] === "AM_TABLE") {        // new investment
                         // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
                         // a reference exists to the loan and, if succesfull, assign the loanId.
@@ -511,10 +512,10 @@ class ParseDataClientShell extends GearmanClientShell {
                             if (!empty($functionToCall)) {
                                 echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                                //print_r($result);
-                                //echo "\n " . $functionToCall . "llllllllllllllllllllllllllll \n";      
-                                //print_r($dateTransaction);
-                                // update the field userinvestmentdata_cashInPlatform   
+                                print_r($result);
+                                echo "\n " . $functionToCall . "llllllllllllllllllllllllllll \n";      
+                                print_r($dateTransaction);
+                                //update the field userinvestmentdata_cashInPlatform   
                                 $cashflowOperation = $tempResult['cashflowOperation'];
                                 if (!empty($cashflowOperation)) {
                                     //print_r($database);
@@ -882,36 +883,37 @@ class ParseDataClientShell extends GearmanClientShell {
                                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['investment']['investment_loanId'] . "\n";
                             }
                         }
+                    }
+                    
+                    if ($dateKey > $finishDate) {
+                        $database['investment']['backupCopyId'] = $this->copyInvestment($investmentId);
+                    }
 
-                        if ($dateKey > $finishDate) {
-                            $database['investment']['backupCopyId'] = $this->copyInvestment($investmentId);
-                        }
-
-                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
-                        $database['payment']['investment_id'] = $investmentId;
-                        $database['payment']['date'] = $dateKey;
-                        $this->Payment->create();
-                        if ($this->Payment->save($database['payment'], $validate = true)) {
-                            echo "Done\n";
-                        }
-                        else {
-                            if (Configure::read('debug')) {
-                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
-                            }
-                        }
-
-                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
-
-
-                        echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
-
-
-                        foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {           // Add: investmentId
-                            if (empty($tableToCollect['investmentId'])) {
-                                $slicesAmortizationTablesToCollect[$tableCollectKey]['investmentId'] = $investmentId;
-                            }
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
+                    $database['payment']['investment_id'] = $investmentId;
+                    $database['payment']['date'] = $dateKey;
+                    $this->Payment->create();
+                    if ($this->Payment->save($database['payment'], $validate = true)) {
+                        echo "Done\n";
+                    }
+                    else {
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
                         }
                     }
+
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
+
+
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
+
+
+                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {           // Add: investmentId
+                        if (empty($tableToCollect['investmentId'])) {
+                            $slicesAmortizationTablesToCollect[$tableCollectKey]['investmentId'] = $investmentId;
+                        }
+                    }
+
 
                     if (!empty($database['roundingerrorcompensation'])) {
                         $database['roundingerrorcompensation']['investment_id'] = $investmentId;
