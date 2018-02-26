@@ -658,9 +658,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
         $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
-        $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = 0;
+        unset($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp']);
         $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
-        $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = 0;
+        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);
         return $result;
     }
 
