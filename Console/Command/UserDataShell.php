@@ -361,7 +361,7 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
-        if(empty($resultData['investment']['investment_loanId'])){
+        if(empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])){
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
         }
         return $transactionData['amount'];
