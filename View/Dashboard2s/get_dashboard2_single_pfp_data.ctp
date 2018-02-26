@@ -180,7 +180,7 @@ echo $companyInvestmentDetails[0];
                         <div class="tab-pane active" id="<?php echo $companyInvestmentDetails[1]['name'] ?>Tab">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-2 col-md-offset-5 col-lg-2 col-lg-offset-5">
-                                    <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/> <i class="ion ion-ios-information-outline tooltipPFP"></i>
+                                    <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/>
                                 </div>
                             </div>
                             <div class="row" style="display:none;" id="tooltipPFP">
