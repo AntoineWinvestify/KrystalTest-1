@@ -1335,6 +1335,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return $transactionData['amount'];
     }
     
+    function getStatusFromInvestment(&$transactionData, &$resultData) {
+        $status = $resultData['investment']['investment_statusOfLoan'];
+        return $status;
+    }
+    
     
 }
 
