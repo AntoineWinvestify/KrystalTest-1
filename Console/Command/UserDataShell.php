@@ -63,28 +63,32 @@ class UserDataShell extends AppShell {
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
-                    $tempResult = bccomp($internalControlVariables['myWallet'], $externalControlVariables['myWallet']);
-                    if ($tempResult) {
-                        $difference = bcsub($internalControlVariables['myWallet'], $externalControlVariables['myWallet']);
+                    $tempResult = bccomp($internalControlVariables['myWallet'], $externalControlVariables['myWallet'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['myWallet'], $externalControlVariables['myWallet'], 16);
                     }
                     else {
-                        $difference = bcsub($externalControlVariables['myWallet'], $internalControlVariables['myWallet']);
+                        $difference = bcsub($externalControlVariables['myWallet'], $internalControlVariables['myWallet'], 16);
                     }
-                    if (bcmod($difference, $globalPrecision))  { 
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;  
-                    }                   
+                    }                  
                     break;
-                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-                    $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal']);
-                    if ($tempResult) {
-                        $difference = bcsub($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal']);
+                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL
+                    $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
                     }
                     else {
-                        $difference = bcsub($externalControlVariables['outstandingPrincipal'], $internalControlVariables['outstandingPrincipal']);
+                        $difference = bcsub($externalControlVariables['outstandingPrincipal'], $internalControlVariables['outstandingPrincipal'], 16);
                     }
-                    if (bcmod($difference, $globalPrecision))  { 
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;  
-                    }                    
+                    }                                       
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
                     if ($internalControlVariables['activeInvestments'] <> $externalControlVariables['activeInvestments'] ) {
@@ -602,7 +606,9 @@ statusOfLoan can have the following values:
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
         }
-
+// Determine properly if the outstandingPrincipal is within the precision limit. NOTE THAT the
+// outstanding principal can be negative. In that case I don't count them properly
+        
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }       
