@@ -701,6 +701,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             //TO CHANGE STATUS TO ACTIVE
                             if (in_array("AM_TABLE", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                                echo "AM TABLE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOAN_STATUS_ACTIVE . " \n";
                             }
 
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
@@ -837,14 +838,21 @@ class ParseDataClientShell extends GearmanClientShell {
                         if (!empty($database['configParms']['changeStatusToActive'])) {
                             $functionToCall = $database['configParms']['changeStatusToActive']['function'];
                             $database['investment']['investment_tempState'] = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                            if (database['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                                $calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
-                                
+                            if ($database['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                                //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
+                                echo "echo eco echo Finanzarel ola ola ola";
+                                echo "    ACTIVE \n";
                                 ///MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL
                             }
                             else {
-                                
+                                echo "echo eco echo Finanzarel ola ola ola";
+                                echo "    PREACTIVE \n";
                             }
+                        }
+                        else {
+                            $database['investment']['investment_reservedFunds'] = $database['investment']['investment_myInvestment'];
+                            echo " reservedFUNDSSSSSS =>>>>>>>>>>>>>><* \n";
+                            print_r($database);
                         }
                     }
 
