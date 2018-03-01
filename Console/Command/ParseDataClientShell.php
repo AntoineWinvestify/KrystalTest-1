@@ -800,20 +800,9 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
   
-                    if ($database['investment']['investment_myInvestment'] == "0.0000000000000000" || empty($database['investment']['investment_myInvestment'])) {   //Dont rewrite investment value with 0
-                        unset($database['investment']['investment_myInvestment']);
-                    }
-                    foreach ($database['payment'] as $key => $value) {   
-                        if (empty($value) || $value == '0.0000000000000000') {   //Dont write empty payments in db
-                            unset($database['payment'][$key]);   
-                        }
-                        if (empty($database['payment'])) {
-                            unset($database['payment']);
-                        }
-                    }
+
                     
-                    echo "filtered database";
-                    print_r($database['payment']);
+                    
                     
                     // Now start consolidation of the results on investment level and per day  
                     $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065, 200037);
@@ -832,6 +821,20 @@ class ParseDataClientShell extends GearmanClientShell {
                             else {
                                 $database[$varName[0]][$varName[1]] = $result;
                             }
+                        }
+                    }
+                    
+                    echo "filtered database";
+                    print_r($database['payment']);
+                    if ($database['investment']['investment_myInvestment'] == "0.0000000000000000" || empty($database['investment']['investment_myInvestment'])) {   //Dont rewrite investment value with 0
+                        unset($database['investment']['investment_myInvestment']);
+                    }
+                    foreach ($database['payment'] as $key => $value) {   
+                        if (empty($value) || $value == '0.0000000000000000') {   //Dont write empty payments in db
+                            unset($database['payment'][$key]);   
+                        }
+                        if (empty($database['payment'])) {
+                            unset($database['payment']);
                         }
                     }
                     echo __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
@@ -886,13 +889,18 @@ class ParseDataClientShell extends GearmanClientShell {
                         $database['investment']['backupCopyId'] = $this->copyInvestment($investmentId);
                     }
 
+                    echo 'save payment';
+                    print_r($database['payment']);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
-                    $database['payment']['investment_id'] = $investmentId;
-                    $database['payment']['date'] = $dateKey;
-                    $this->Payment->create();
-                    if ($this->Payment->save($database['payment'], $validate = true)) {
-                        echo "Done\n";
+                    if(!empty($database['payment'])){
+                        $database['payment']['investment_id'] = $investmentId;
+                        $database['payment']['date'] = $dateKey;
+                        $this->Payment->create();
+                        if ($this->Payment->save($database['payment'], $validate = true)) {
+                            echo "Done\n";
+                        }
                     }
+                    
                     else {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
