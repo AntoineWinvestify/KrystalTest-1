@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -488,8 +488,12 @@ class ParseDataClientShell extends GearmanClientShell {
                 $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
 
                 if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                    
+                    
+
                     // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
+ 
                         if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
@@ -499,7 +503,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
                         var_dump($tempResult);
                         echo '|||||||||||||||||||||||';
-
+                        
                         if (!empty($tempResult)) {
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -539,26 +543,6 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
-
-                    /* $internalVariableToHandle = array(10001);
-                      foreach ($internalVariableToHandle as $keyItem => $item) {
-                      $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                      $functionToCall = $this->variablesConfig[$item]['function'];
-                      echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1] . "\n";
-                      $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                      if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                      if (!isset($database[$varName[0]][$varName[1]])) {
-                      $database[$varName[0]][$varName[1]] = 0;
-                      }
-                      $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
-                      }
-                      else {
-                      $database[$varName[0]][$varName[1]] = $result;
-                      }
-                      }
-                      echo 'qazwsx';
-                      print_r($database); */
-                    //continue;
                 }
                 else {
                     echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " . $dateTransaction[0]['investment_loanId'] . "\n";
@@ -829,6 +813,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
+  
 
                     /*if ($database['configParms']['changeStatusToActive']) {
                         $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
@@ -873,6 +858,20 @@ class ParseDataClientShell extends GearmanClientShell {
                             else {
                                 $database[$varName[0]][$varName[1]] = $result;
                             }
+                        }
+                    }
+                    
+                    echo "filtered database";
+                    print_r($database['payment']);
+                    if ($database['investment']['investment_myInvestment'] == "0.0000000000000000" || empty($database['investment']['investment_myInvestment'])) {   //Dont rewrite investment value with 0
+                        unset($database['investment']['investment_myInvestment']);
+                    }
+                    foreach ($database['payment'] as $key => $value) {   
+                        if (empty($value) || $value == '0.0000000000000000') {   //Dont write empty payments in db
+                            unset($database['payment'][$key]);   
+                        }
+                        if (empty($database['payment'])) {
+                            unset($database['payment']);
                         }
                     }
                     echo __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
@@ -927,13 +926,18 @@ class ParseDataClientShell extends GearmanClientShell {
                         $database['investment']['backupCopyId'] = $this->copyInvestment($investmentId);
                     }
 
+                    echo 'save payment';
+                    print_r($database['payment']);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
-                    $database['payment']['investment_id'] = $investmentId;
-                    $database['payment']['date'] = $dateKey;
-                    $this->Payment->create();
-                    if ($this->Payment->save($database['payment'], $validate = true)) {
-                        echo "Done\n";
+                    if(!empty($database['payment'])){
+                        $database['payment']['investment_id'] = $investmentId;
+                        $database['payment']['date'] = $dateKey;
+                        $this->Payment->create();
+                        if ($this->Payment->save($database['payment'], $validate = true)) {
+                            echo "Done\n";
+                        }
                     }
+                    
                     else {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
@@ -968,12 +972,12 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
                 }
                 $internalVariablesToHandle = array(10001,
-                    10006, 10007, 10008,
-                    10009, 10010, 10011,
-                    10012, 10013, 10016,
-                    10017, 10018, 10019,
-                    10020, 10021, 10022,
-                    10023);
+                                                    10006, 10007, 10008,
+                                                    10009, 10010, 10011,
+                                                    10012, 10013, 10016,
+                                                    10017, 10018, 10019,
+                                                    10020, 10021, 10022,
+                                                    10023);
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -1176,34 +1180,34 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
 // Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
-        /*
-          if ($dateKey > $finishDate) {           // clean up
-          // get all ids of investments records which have a backup
+        $dateToDeleteAfter = new DateTime(date($finishDate));
+        $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
+        if ($dateKey > $lastDateToCalculate) {           // clean up
+            // get all ids of investments records which have a backup
+            $filter = array("backupCopyId >" => 0,
+            "linkedaccount_id" => $linkedaccountId);
+            $field = array("id", "backupCopyId");
+            $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
 
-          $filter = array("backupCopyId >" => 0,
-          "linkedaccount_id" => $linkedaccountId);
-          $field = array("id", "backupCopyId");
-          $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
+            foreach ($results as $result) {
+                $this->restoreInvestment($result['backupCopyId'], $result['id']);
+                $filterConditions = array ("date" => $dateKey,
+                "investment_id" => $result['id']);
+                $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            }
 
-          foreach ($results as $result) {
-          $this->restoreInvestment($result['backupCopyId'], $result['id']);
-          $filterConditions = array ("date" => $dateKey,
-          "investment_id" => $result['id']);
-          $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          }
-
-          $filterConditions = array ("date" => $dateKey,
-          "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
-          $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          // also deal with the   $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
-          }
-
-         */
+            $filterConditions = array ("date" => $dateKey,
+            "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
+            $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $filterConditions = array ("date" => $dateKey,
+            "id" => $backupCopyUserinvestmentdataId);
+            $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            // also deal with the   $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
+        }
 
 
 
@@ -1222,7 +1226,7 @@ class ParseDataClientShell extends GearmanClientShell {
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             $date = new DateTime(date($finishDate));
             $lastDateToCalculate = $date->format('Y-m-d');
-            if ($dateKey <> $lastDateToCalculate) {
+            if ($dateKey < $lastDateToCalculate) {
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
 
