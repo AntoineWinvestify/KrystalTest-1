@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -461,7 +461,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
                 if ($keyDateTransactionNames[0] == "global") {
 
-                    if ($dateTransaction[0]['conceptChars'] === "AM_TABLE") {        // new investment
+                    if ($dateTransaction[0]['conceptChars'] === "PREACTIVE") {        // new investment
                         // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
                         // a reference exists to the loan and, if succesfull, assign the loanId.
                         $ghostInvestment = $this->searchInvestmentArrays($dateTransaction[0], $platformData['parsingResultInvestments'], $platformData['parsingResultExpiredInvestments']);
@@ -547,17 +547,17 @@ class ParseDataClientShell extends GearmanClientShell {
                 else {
                     echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " . $dateTransaction[0]['investment_loanId'] . "\n";
                     //// POSSIBLE WE REMOVE
-                    /*if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
+                    if (isset($platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']])) {
                         echo "THIS IS AN ACTIVE LOAN\n";
                         $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                        $loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
+                        //$loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
                     }
 
                     if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
                         echo "THIS IS AN ALREADY EXPIRED LOAN\n";
                         $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                        $loanStatus = WIN_LOANSTATUS_FINISHED;
-                    }*/
+                        //$loanStatus = WIN_LOANSTATUS_FINISHED;
+                    }
                     if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])) {          // check if loanId is new
                         $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                         echo "FOUND in Newloans\n";
@@ -630,6 +630,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             // Copy the information to the shadow database, for processing later on
                             echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
                             $database['investment']['investment_statusOfLoan'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
+                            //THIS IS THE NEW STATE FOR PREACTIVE AND ACTIVE
                             $database['investment']['investment_tempState'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
                             $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
                             $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
@@ -683,9 +684,9 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                             
                             //TO CHANGE STATUS TO ACTIVE
-                            if (in_array("AM_TABLE", $conceptChars)) {
-                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
-                                echo "AM TABLE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOAN_STATUS_ACTIVE . " \n";
+                            if (in_array("PREACTIVE", $conceptChars)) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                                echo "AM TABLE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_WAITINGTOBEFORMALIZED . " \n";
                             }
 
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
@@ -818,15 +819,39 @@ class ParseDataClientShell extends GearmanClientShell {
                     /*if ($database['configParms']['changeStatusToActive']) {
                         $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
                     }*/
+                    echo "tempState ola ola ola =====> >> \n";
+                    print_r($database['investment']['investment_tempState']);
                     
                     if ($database['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
                         if (!empty($database['configParms']['changeStatusToActive'])) {
+                            echo "change Status or possible to change \n";
                             $functionToCall = $database['configParms']['changeStatusToActive']['function'];
+                            echo "function to call is $functionToCall \n";
                             $database['investment']['investment_tempState'] = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
+                            echo "investment tempState is " . $database['investment']['investment_tempState'];
                             if ($database['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
                                 //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
-                                echo "echo eco echo Finanzarel ola ola ola";
-                                echo "    ACTIVE \n";
+                                ///NEW CODE TO TRY
+                                $calculationClassHandle->calculateActiveStateChange($dateTransaction[0], $database);
+                                if ($database['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
+//                                unset ($sliceIdentifier);
+                                    echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
+                                    $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
+                                    // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                                    // if not then create a new array with the data available so far, sliceIdentifier and loanId
+                                    $isNewTable = YES;
+                                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                                        if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                                            $isNewTable = NO;
+                                            break;
+                                        }
+                                    }
+                                    if ($isNewTable == YES) {
+                                        $collectTablesIndex++;
+                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                    }
+                                }
                                 ///MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL
                             }
                             else {
