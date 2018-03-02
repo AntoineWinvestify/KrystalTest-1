@@ -186,14 +186,17 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
-                "chars" => "AM_TABLE"
+                "chars" => [
+                        0 => "TO_ACTIVE_STATUS",
+                        1 => "PREACTIVE"
+                    ]
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "payment_secondaryMarketInvestment",
-                "chars" => "AM_TABLE,"
+                "chars" => "AM_TABLE"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -1742,13 +1745,23 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return string  space delimited set of characteristics, 0,1 or more
      *
      */
-    private function getConceptChars($input, $search) {
+    private function getConceptChars($input, $search, $typeOfConcept) {
         foreach ($this->transactionDetails as $detail) { 
             if ($detail['detail'] == $search) {
-                return $detail['chars'];
+                if (is_array($detail['chars'])) {
+                    return $detail['chars'][$typeOfConcept];
+                }
+                else {
+                    return $detail['chars'];
+                }
             }
             if ($detail['type'] == $search) {  
-                return $detail['chars'];
+                if (is_array($detail['chars'])) {
+                    return $detail['chars'][$typeOfConcept];
+                }
+                else {
+                    return $detail['chars'];
+                }
             }
         }
         return "";  // empty string, no characteristics found
