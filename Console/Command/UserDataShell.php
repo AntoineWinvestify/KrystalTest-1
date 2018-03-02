@@ -1150,10 +1150,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         // move the corresponding part of the money from reserved funds to outstanding principal
             
         if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
-                                                $resultData['investment']['investment_myInvestment']);
-            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
-                                                $resultData['investment']['investment_myInvestment']);     
+            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub(
+                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
+                        $resultData['investment']['investment_myInvestment']
+                    );
+            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
+                        $resultData['investment']['investment_outstandingPrincipal'],
+                        $resultData['investment']['investment_myInvestment']
+                    );     
             return WIN_LOANSTATUS_ACTIVE;
         }
     }  
