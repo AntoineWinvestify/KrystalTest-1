@@ -240,20 +240,15 @@ $timeStart = time();
                 $loanDataId[] = $tempIdData[0];
             }
 
-
             foreach ($loanDataId as $loanId) { 
                 $this->Investmentslice->Behaviors->load('Containable');
-                $this->Investmentslice->contain('Amortizationtable');              
-
-                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId[0]),
+                $this->Investmentslice->contain('Amortizationtable');
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.investmentslice_identifier' => $loanId),
                                                                            'recursive' => 1)
                                                                         );
-
-                $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
-
+                
                 foreach ($reversedData as $table) {
-                    if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE || 
-                                                  $table['amortizationtable_paymentDate'] == "") {                       
+                    if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE || empty($table['amortizationtable_paymentDate'])) {     
                         $tempScheduledDate = $table['amortizationtable_scheduledDate'];
                     }
                     else {
