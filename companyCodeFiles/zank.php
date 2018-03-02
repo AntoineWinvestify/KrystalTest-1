@@ -96,8 +96,11 @@ class zank extends p2pCompany {
  
        
     protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.01'                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
+        'changeStatusToActive' => [
+            "function" => "getStatusFromInvestment"
+        ]
     ];
     
     protected $transactionConfigParms = [
@@ -193,7 +196,8 @@ class zank extends p2pCompany {
                 [
                     "type" => "conceptChars",                                   // Winvestify standardized name
                     "inputData" => [
-				"input2" => "#current.internalName",            // get Winvestify concept
+                                    "input2" => "#current.internalName",            // get Winvestify concept
+                                    "input3" => 1
                                 ],
                     "functionName" => "getConceptChars",
                 ]
