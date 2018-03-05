@@ -186,10 +186,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
-                "chars" => [
-                        0 => "TO_ACTIVE_STATUS",
-                        1 => "PREACTIVE"
-                    ]
+                "chars" => "TO_ACTIVE_STATUS"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
@@ -426,7 +423,13 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "disinvestmentWithoutLoanReference",
                 ], 
-        
+            43 => [
+                "detail" => "Primary_market_investment_preactive", //We want a primary_market_investment
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestment",  
+                "chars" => "PREACTIVE"
+                ],
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept
@@ -1745,23 +1748,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @return string  space delimited set of characteristics, 0,1 or more
      *
      */
-    private function getConceptChars($input, $search, $typeOfConcept) {
+    private function getConceptChars($input, $search) {
         foreach ($this->transactionDetails as $detail) { 
             if ($detail['detail'] == $search) {
-                if (is_array($detail['chars'])) {
-                    return $detail['chars'][$typeOfConcept];
-                }
-                else {
-                    return $detail['chars'];
-                }
+                return $detail['chars'];
             }
             if ($detail['type'] == $search) {  
-                if (is_array($detail['chars'])) {
-                    return $detail['chars'][$typeOfConcept];
-                }
-                else {
-                    return $detail['chars'];
-                }
+                return $detail['chars'];
             }
         }
         return "";  // empty string, no characteristics found
