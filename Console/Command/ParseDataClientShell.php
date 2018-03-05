@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -491,8 +491,12 @@ class ParseDataClientShell extends GearmanClientShell {
                 $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
 
                 if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                    
+                    
+
                     // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
+ 
                         if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
@@ -502,7 +506,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
                         var_dump($tempResult);
                         echo '|||||||||||||||||||||||';
-
+                        
                         if (!empty($tempResult)) {
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -542,26 +546,6 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
-
-                    /* $internalVariableToHandle = array(10001);
-                      foreach ($internalVariableToHandle as $keyItem => $item) {
-                      $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
-                      $functionToCall = $this->variablesConfig[$item]['function'];
-                      echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1] . "\n";
-                      $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                      if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                      if (!isset($database[$varName[0]][$varName[1]])) {
-                      $database[$varName[0]][$varName[1]] = 0;
-                      }
-                      $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
-                      }
-                      else {
-                      $database[$varName[0]][$varName[1]] = $result;
-                      }
-                      }
-                      echo 'qazwsx';
-                      print_r($database); */
-                    //continue;
                 }
                 else {
                     echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " . $dateTransaction[0]['investment_loanId'] . "\n";
@@ -692,6 +676,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                         $collectTablesIndex++;
                                         $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                         $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $dateKey;
                                     }
                                 }
                             }
@@ -821,10 +806,12 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
+  
 
-
-
-// Now start consolidation of the results on investment level and per day                
+                    
+                    
+                    
+                    // Now start consolidation of the results on investment level and per day  
                     $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065, 200037);
                     foreach ($internalVariableToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
@@ -841,6 +828,20 @@ class ParseDataClientShell extends GearmanClientShell {
                             else {
                                 $database[$varName[0]][$varName[1]] = $result;
                             }
+                        }
+                    }
+                    
+                    echo "filtered database";
+                    print_r($database['payment']);
+                    if ($database['investment']['investment_myInvestment'] == "0.0000000000000000" || empty($database['investment']['investment_myInvestment'])) {   //Dont rewrite investment value with 0
+                        unset($database['investment']['investment_myInvestment']);
+                    }
+                    foreach ($database['payment'] as $key => $value) {   
+                        if (empty($value) || $value == '0.0000000000000000') {   //Dont write empty payments in db
+                            unset($database['payment'][$key]);   
+                        }
+                        if (empty($database['payment'])) {
+                            unset($database['payment']);
                         }
                     }
                     echo __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
@@ -895,13 +896,18 @@ class ParseDataClientShell extends GearmanClientShell {
                         $database['investment']['backupCopyId'] = $this->copyInvestment($investmentId);
                     }
 
+                    echo 'save payment';
+                    print_r($database['payment']);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
-                    $database['payment']['investment_id'] = $investmentId;
-                    $database['payment']['date'] = $dateKey;
-                    $this->Payment->create();
-                    if ($this->Payment->save($database['payment'], $validate = true)) {
-                        echo "Done\n";
+                    if(!empty($database['payment'])){
+                        $database['payment']['investment_id'] = $investmentId;
+                        $database['payment']['date'] = $dateKey;
+                        $this->Payment->create();
+                        if ($this->Payment->save($database['payment'], $validate = true)) {
+                            echo "Done\n";
+                        }
                     }
+                    
                     else {
                         if (Configure::read('debug')) {
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Error while writing to Database, " . $database['payment']['payment_loanId'] . "\n";
@@ -933,12 +939,12 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
                 }
                 $internalVariablesToHandle = array(10001,
-                    10006, 10007, 10008,
-                    10009, 10010, 10011,
-                    10012, 10013, 10016,
-                    10017, 10018, 10019,
-                    10020, 10021, 10022,
-                    10023);
+                                                    10006, 10007, 10008,
+                                                    10009, 10010, 10011,
+                                                    10012, 10013, 10016,
+                                                    10017, 10018, 10019,
+                                                    10020, 10021, 10022,
+                                                    10023);
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
@@ -1094,31 +1100,10 @@ class ParseDataClientShell extends GearmanClientShell {
             $database['globaltotalsdata']['globaltotalsdata_capitalRepaymentPerDay'] = "";
             $database['globaltotalsdata']['globaltotalsdata_costSecondaryMarketPerDay'] = "";
 
-
-
-
             $tempUserInvestmentDataItem = array('id' => $userInvestmentDataId,
                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
         }
-
-
-
-// All transactions have been analyzed. So consolidate the data of the total platform.
-// Define which amortization tables shall be collected but remove the unnecessary ones 
-        foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-            $item = array_search($tableToCollect['loanId'], $amortizationTablesNotNeeded);
-            if ($item !== false) {
-                unset($slicesAmortizationTablesToCollect[$tableCollectKey]);
-            }
-        }
-
-        foreach ($slicesAmortizationTablesToCollect as $tableToCollect) {
-            $loanSliceId = $this->linkNewSlice($tableToCollect['investmentId'], $tableToCollect['sliceIdentifier']);
-            $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
-        }
-
-
 
 
 // Deal with the control variables     
@@ -1139,37 +1124,57 @@ class ParseDataClientShell extends GearmanClientShell {
         }
 
 
-// Remove the part of the data that concerns the "present" day, We just needed that info for calculation of the
-// control variables. Now we can delete it
-        
-        /*
-        if ($dateKey > $finishDate) {                                           // clean up
-        // get all ids of investments records which have a backup
+// Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
+// Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
+        $dateToDeleteAfter = new DateTime(date($finishDate));
+        $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
+        if ($dateKey > $lastDateToCalculate) {           // clean up
+            // get all ids of investments records which have a backup
+            $filter = array("backupCopyId >" => 0,
+            "linkedaccount_id" => $linkedaccountId);
+            $field = array("id", "backupCopyId");
+            $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
 
-        $filter = array("backupCopyId >" => 0,
-                    "linkedaccount_id" => $linkedaccountId);
+            foreach ($results as $result) {
+                $this->restoreInvestment($result['backupCopyId'], $result['id']);
+                $filterConditions = array ("date" => $dateKey,
+                                  "investment_id" => $result['id']);
+                $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            }
 
-
-        $results = $this->Investment->getData($filter, $field = array("id", "backupCopyId"), $order = null, $limit = null, $type = "all");
-
-        foreach ($results as $result) {
-            $this->restoreInvestment($result['backupCopyId'], $result['id']);
             $filterConditions = array ("date" => $dateKey,
-            "investment_id" => $result['id']);
-            $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-            $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-            $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-            $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                      "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
+            $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $filterConditions = array ("date" => $dateKey,
+                                        "id" => $backupCopyUserinvestmentdataId);
+            $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            
+            // Also remove any "assigned" loanIds/sliceIds for download
+            foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                if ($tableToCollect['date'] == $dateKey) {
+                    unset($slicesAmortizationTablesToCollect[$tableCollectKey]);
+                }
+            }            
+        }
+ 
+// All transactions have been analyzed. So consolidate the data of the total platform.
+// Define which amortization tables shall be collected but remove the unnecessary ones 
+        foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+            $item = array_search($tableToCollect['loanId'], $amortizationTablesNotNeeded);
+            if ($item !== false) {
+                unset($slicesAmortizationTablesToCollect[$tableCollectKey]);
+            }
         }
 
-        $filterConditions = array ("date" => $dateKey, "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
-        $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-        $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-        $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-        // also deal with the   $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
+        foreach ($slicesAmortizationTablesToCollect as $tableToCollect) {
+            $loanSliceId = $this->linkNewSlice($tableToCollect['investmentId'], $tableToCollect['sliceIdentifier']);
+            $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
         }
 
-         */
 
         $calculationClassHandle->consolidatePlatformData($database);
 
@@ -1178,7 +1183,7 @@ class ParseDataClientShell extends GearmanClientShell {
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             $date = new DateTime(date($finishDate));
             $lastDateToCalculate = $date->format('Y-m-d');
-            if ($dateKey <> $lastDateToCalculate) {
+            if ($dateKey < $lastDateToCalculate) {
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
 
@@ -1268,33 +1273,28 @@ class ParseDataClientShell extends GearmanClientShell {
             $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
         }
         $table['amortizationtable_paymentDate'] = $transactionData['date'];
-
+        $table['amortizationtable_paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
 
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         $slices = $this->Investment->getInvestmentSlices($resultData['investment']['id']);
 
-        foreach ($slices as $slice) {
+        foreach ($slices as $slice) {                                           // Initially we will find only 1 sliced
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
                 $sliceDbreference = $slice['id'];
                 break;
             }
         }
 
-        $filterConditions = array('amortizationtable_paymentDate =' => null);
+        $filterConditions = array('amortizationtable_paymentStatus' => WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED);
 
-        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);  // for instance all entries of table which are
+        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);    // all entries of table which are not 
         echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
         print_r($amortizationTable);
-        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                                       // not yet paid Normally ask for first one with capitalRepayment = "" or 0;
-        /*
-         * check if date if reception of money == date previsto
-         * 
-         * 
-         * 
-         */
+        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                       // yet paid 
+
         $table['id'] = $tableDbReference;
         echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";
-        if ($this->Investmentslice->updateAmortizationTable($table)) {
+        if ($this->AmortizationTable->updateAmortizationTable($table)) {
             echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
         }
         else {
