@@ -681,7 +681,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             //TO CHANGE STATUS TO ACTIVE
                             if (in_array("PREACTIVE", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-                                echo "AM TABLE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_WAITINGTOBEFORMALIZED . " \n";
+                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_WAITINGTOBEFORMALIZED . " \n";
                             }
 
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
@@ -816,53 +816,9 @@ class ParseDataClientShell extends GearmanClientShell {
                     }*/
                     echo "tempState ola ola ola =====> >> \n";
                     print_r($database['investment']['investment_tempState']);
-                    
-                    if ($database['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                        if (!empty($database['configParms']['changeStatusToActive'])) {
-                            echo "change Status or possible to change \n";
-                            $functionToCall = $database['configParms']['changeStatusToActive']['function'];
-                            echo "function to call is $functionToCall \n";
-                            $database['investment']['investment_tempState'] = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                            echo "investment tempState is " . $database['investment']['investment_tempState'];
-                            if ($database['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                                //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
-                                ///NEW CODE TO TRY
-                                $calculationClassHandle->calculateActiveStateChange($dateTransaction[0], $database);
-                                if ($database['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
-//                                unset ($sliceIdentifier);
-                                    echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
-                                    $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
-                                    // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                                    // if not then create a new array with the data available so far, sliceIdentifier and loanId
-                                    $isNewTable = YES;
-                                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                                        if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
-                                            $isNewTable = NO;
-                                            break;
-                                        }
-                                    }
-                                    if ($isNewTable == YES) {
-                                        $collectTablesIndex++;
-                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
-                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
-                                    }
-                                }
-                                ///MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL
-                            }
-                            else {
-                                echo "echo eco echo Finanzarel ola ola ola";
-                                echo "    PREACTIVE \n";
-                            }
-                        }
-                        else {
-                            $database['investment']['investment_reservedFunds'] = $database['investment']['investment_myInvestment'];
-                            echo " reservedFUNDSSSSSS =>>>>>>>>>>>>>><* \n";
-                            print_r($database);
-                        }
-                    }
 
 // Now start consolidation of the results on investment level and per day                
-                    $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065, 200037);
+                    $internalVariableToHandle = array(10014, 10015, 83, 37, 10004, 20083, 20065, 200037);
                     foreach ($internalVariableToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
