@@ -76,7 +76,7 @@ class UserDataShell extends AppShell {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;  
                     }                  
                     break;
-                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL
+                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
                     $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
                     if ($tempResult == 1) {
                         $difference = bcsub($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
@@ -607,7 +607,7 @@ statusOfLoan can have the following values:
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
         }
 // Determine properly if the outstandingPrincipal is within the precision limit. NOTE THAT the
-// outstanding principal can be negative. In that case I don't count them properly
+// outstanding principal can be negative. In that case I don't count them 
         
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;

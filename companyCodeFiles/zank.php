@@ -1977,7 +1977,7 @@ class zank extends p2pCompany {
                     echo "Read table: ";
                     if ($table->getAttribute('id') == 'parte' || $table->getAttribute('id') == 'todo') {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE); //Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);

@@ -911,9 +911,6 @@ class ParseDataClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
 
 
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Execute functions for consolidating the data of Flow for loanId = " . $database['investment']['investment_loanId'] . "\n";
-
-
                     foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {           // Add: investmentId
                         if (empty($tableToCollect['investmentId'])) {
                             $slicesAmortizationTablesToCollect[$tableCollectKey]['investmentId'] = $investmentId;
@@ -1142,48 +1139,39 @@ class ParseDataClientShell extends GearmanClientShell {
         }
 
 
-// Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
-// Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
+// Remove the part of the data that concerns the "present" day, We just needed that info for calculation of the
+// control variables. Now we can delete it
+        
         /*
-          if ($dateKey > $finishDate) {           // clean up
-          // get all ids of investments records which have a backup
+        if ($dateKey > $finishDate) {                                           // clean up
+        // get all ids of investments records which have a backup
 
-          $filter = array("backupCopyId >" => 0,
-          "linkedaccount_id" => $linkedaccountId);
-          $field = array("id", "backupCopyId");
-          $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
+        $filter = array("backupCopyId >" => 0,
+                    "linkedaccount_id" => $linkedaccountId);
 
-          foreach ($results as $result) {
-          $this->restoreInvestment($result['backupCopyId'], $result['id']);
-          $filterConditions = array ("date" => $dateKey,
-          "investment_id" => $result['id']);
-          $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          }
 
-          $filterConditions = array ("date" => $dateKey,
-          "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
-          $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-          // also deal with the   $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
-          }
+        $results = $this->Investment->getData($filter, $field = array("id", "backupCopyId"), $order = null, $limit = null, $type = "all");
+
+        foreach ($results as $result) {
+            $this->restoreInvestment($result['backupCopyId'], $result['id']);
+            $filterConditions = array ("date" => $dateKey,
+            "investment_id" => $result['id']);
+            $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+            $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+        }
+
+        $filterConditions = array ("date" => $dateKey, "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
+        $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+        $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+        $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+        // also deal with the   $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
+        }
 
          */
 
-
-
-
-
-
-
-
-
         $calculationClassHandle->consolidatePlatformData($database);
-
-
 
         unset($tempDatabase);
         // Make sure that we have an entry in Userinvestmentdata for 'yesterday'                                                                                                                             as required for yield calculation     

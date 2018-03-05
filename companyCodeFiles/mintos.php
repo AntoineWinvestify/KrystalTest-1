@@ -1449,5 +1449,30 @@ class mintos extends p2pCompany {
         return $structureRevision;
     }
     
+
+    /**
+     * Function to translate the company specific AmortizationPaymentStatus to the Winvestify standardized
+     * concept
+     * 
+     * @param string $inputData     company specific AmortizationPaymentStatus
+     * @return int                  Winvestify standardized AmortizationPaymentStatus
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+        $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+        $inputData = mb_strtoupper($inputData);
+        switch ($inputData) {
+            case "Paid after the due date":
+                $data = WIN_BUYBACKGUARANTEE_PROVIDED;
+                break;
+            case "Paid":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+                break;
+            case "Scheduled":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;
+        }
+        return $data;        
+    }
+    
     
 }

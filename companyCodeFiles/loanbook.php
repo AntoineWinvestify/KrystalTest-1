@@ -1663,7 +1663,6 @@ class loanbook extends p2pCompany {
             foreach ($inputs as $input) {
                 if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
                     if ($input->getAttribute('name') == "csrf") {
-                        echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
                         $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                         break 2;
                     }
