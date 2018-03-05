@@ -1178,7 +1178,7 @@ class ParseDataClientShell extends GearmanClientShell {
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             $date = new DateTime(date($finishDate));
             $lastDateToCalculate = $date->format('Y-m-d');
-            if ($dateKey <= $lastDateToCalculate) {
+            if ($dateKey < $lastDateToCalculate) {
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
 
