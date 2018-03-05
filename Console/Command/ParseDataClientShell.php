@@ -1147,7 +1147,6 @@ class ParseDataClientShell extends GearmanClientShell {
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
         if ($dateKey > $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
-            echo "Entreeeeeeeeeeeeeeeeeeeeeee \n\n";
             $filter = array("backupCopyId >" => 0,
             "linkedaccount_id" => $linkedaccountId);
             $field = array("id", "backupCopyId");
@@ -1190,7 +1189,7 @@ class ParseDataClientShell extends GearmanClientShell {
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             $date = new DateTime(date($finishDate));
             $lastDateToCalculate = $date->format('Y-m-d');
-            if ($dateKey <= $lastDateToCalculate) {
+            if ($dateKey < $lastDateToCalculate) {
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
 
