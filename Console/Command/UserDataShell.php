@@ -1147,19 +1147,28 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      */
     public function calculateActiveStateChange(&$transactionData, &$resultData) {
         $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+        echo " BEFOREEEEEEEE STATEN CANGE \n";
+        print_r($resultData);
+        
         // move the corresponding part of the money from reserved funds to outstanding principal
-            
-        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub(
-                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
-                        $resultData['investment']['investment_myInvestment']
-                    );
-            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
-                        $resultData['investment']['investment_outstandingPrincipal'],
-                        $resultData['investment']['investment_myInvestment']
-                    );     
-            return WIN_LOANSTATUS_ACTIVE;
-        }
+        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                    $resultData['investment']['investment_myInvestment'],
+                    16
+                );
+        $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
+                    $resultData['investment']['investment_outstandingPrincipal'],
+                    $resultData['investment']['investment_myInvestment'],
+                    16
+                );     
+        /*$resultData['investment']['investment_outstandingPrincipal'] = bcsub( 
+                    $resultData['investment']['investment_outstandingPrincipal'],
+                    $resultData['investment']['investment_myInvestment'],
+                    16
+                );*/
+        echo "AFTERERERERERER \n";
+        print_r($resultData);
+        return WIN_LOANSTATUS_ACTIVE;
     }  
     
     /**
@@ -1352,7 +1361,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a large integer
      */
     public function calculateReservedFunds(&$transactionData, &$resultData) {
-
+        echo "we are here to calculate reservedFunds";
         $result = $resultData['investment']['investment_reservedFunds'];     // in case more slices were bought of same loan
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
             if (isset($resultData['payment']['payment_myInvestment'])) {
@@ -1362,6 +1371,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
             }
         }
+        echo "AFETER RESERVED FNSFSDF \n";
+        print_r($resultData);
         return $result;
     }
     
@@ -1374,32 +1385,54 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
                 echo "investment tempState is " . $resultData['investment']['investment_tempState'];
             }
-        }
-        if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-            //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
-            ///NEW CODE TO TRY
-            ///MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL
-            $resultData['investment']['investment_statusOfLoan'] = $this->calculateActiveStateChange($transactionData, $resultData);
-            if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
-//                                unset ($sliceIdentifier);
-                echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
-                $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
-                // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                // if not then create a new array with the data available so far, sliceIdentifier and loanId
-                $isNewTable = YES;
-                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                    if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
-                        $isNewTable = NO;
-                        break;
+            if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
+                ///NEW CODE TO TRY
+                echo "MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL \n";
+                $resultData['investment']['investment_statusOfLoan'] = $this->calculateActiveStateChange($transactionData, $resultData);
+                if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
+    //                                unset ($sliceIdentifier);
+                    echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
+                    $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
+                    // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                    // if not then create a new array with the data available so far, sliceIdentifier and loanId
+                    $isNewTable = YES;
+                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                        if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                            $isNewTable = NO;
+                            break;
+                        }
                     }
-                }
-                if ($isNewTable == YES) {
-                    $collectTablesIndex++;
-                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
-                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                    if ($isNewTable == YES) {
+                        $collectTablesIndex++;
+                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                    }
                 }
             }
         }
+    }
+    
+    /**
+     *  Determines the sliceIdentifier (.i.e. the amortization table) to be used
+     * 
+     *  @param  array   array with the current transaction data
+     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @return string  sliceIndentifier
+     *                  
+     */
+    public function getSliceIdentifier(&$transactionData, &$resultData) {
+
+        if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that have individual slices per investment, like FinBee
+            $sliceIdentifier = $transactionData['sliceIdentifier'];
+        }
+        if (isset($resultData['investment']['investment_sliceIdentifier'])) {
+            $sliceIdentifier = $resultData['investment']['investment_sliceIdentifier'];
+        }
+        if (empty($sliceIdentifier)) {                                          // Take the default one
+            $sliceIdentifier = $transactionData['investment_loanId'];
+        }
+        return $sliceIdentifier;
     }
     
 }
