@@ -656,11 +656,6 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $conceptChars[$itemKey] = trim($item);
                             }
 
-                            //CODE POSSIBLE TO DELETE BECAUSE IT IS NOT NEEDED
-                            if (in_array("PRE-ACTIVE", $conceptChars)) {
-                                $database['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-                            }
-
                             if (in_array("AM_TABLE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
                                 if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
 //                                unset ($sliceIdentifier);
