@@ -62,14 +62,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     protected $callbacks = [];
     protected $companyHandle;
     protected $myParser;
-    protected $cleanValueControlStop = false;
-    protected $cleanDepthControl = 0;
-
-    protected $filteredArray;
-    protected $tempKey = array();
-    protected $tempDepth = 0;      // Required to see if the $depth is decreasing    
-    protected $startDate;
-    protected $finishDate;
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
