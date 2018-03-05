@@ -70,6 +70,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
         $tempArray = array();
         foreach ($platformData as $linkedAccountKey => $data) {
             $companyHandle = $this->companyClass($data['pfp']);
+            $callbacks = $companyHandle->getCallbackAmortizationTable();
              if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Current platform = " . $data['pfp'] . "\n";
             }
@@ -93,6 +94,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                 echo "tempResult " . $loanId . "\n";
                 $i++;
             }
+            $this->callbackInit($tempArray[$linkedAccountKey], $companyHandle, $callbacks);
             if (empty($tempArray[$linkedAccountKey])) {
                 $data['statusCollect'][$linkedAccountKey] = "0";
                 $errors[$linkedAccountKey] = $this->tempArray[$i]['global']['error'];
