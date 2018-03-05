@@ -141,7 +141,7 @@ class zank extends p2pCompany {
                                 "input2" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
-                                    2 => ["inversion" => "Primary_market_investment"],
+                                    2 => ["inversion" => "Primary_market_investment_preactive"],
                         //            3 => ["inversion" => "Disinvestment"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
@@ -197,7 +197,6 @@ class zank extends p2pCompany {
                     "type" => "conceptChars",                                   // Winvestify standardized name
                     "inputData" => [
                                     "input2" => "#current.internalName",            // get Winvestify concept
-                                    "input3" => 1
                                 ],
                     "functionName" => "getConceptChars",
                 ]
@@ -283,7 +282,15 @@ class zank extends p2pCompany {
                 ],
             ],
             "F" => [
-                "name" => "investment_capitalRepaymentFromP2P"
+                [
+                    "type" => "investment_capitalRepaymentFromP2P",                                         // Winvestify standardized name   OK
+                    "inputData" => [                                 
+                                "input2" => ".",                  
+                                "input3" => ",",                      
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ],
             ],
             /*"G" => DON'T TAKE, ASK ANTOINE*/
             /* "H" => DON'T TAKE, ASK ANTOINE*/
