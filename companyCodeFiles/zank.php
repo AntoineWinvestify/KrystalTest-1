@@ -583,7 +583,13 @@ class zank extends p2pCompany {
         
     ];
     
-        protected $investmentHeader = array(   
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "" //PUT NAME OF FUNCTION
+        ]
+    ];
+    
+    protected $investmentHeader = array(   
         'A' => 'Fecha',
         'B' => 'Préstamo',
         'C' => 'Rentabilidad',
@@ -593,14 +599,16 @@ class zank extends p2pCompany {
         'G' => 'Intereses ordinarios',
         'H' => 'Intereses demora',
         'I' => 'Comision',
-        'J' => 'Estado');
+        'J' => 'Estado'
+    );
     
     protected $transactionHeader = array(
         'A' => 'Fecha',
         'B' => 'Tipo',
         'C' => 'Cantidad',
         'D' => 'Destino',
-        'E' => 'Saldo');
+        'E' => 'Saldo'
+    );
 
   
     function __construct() {
