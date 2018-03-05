@@ -33,6 +33,14 @@ class GearmanWorkerShell extends AppShell {
     protected $companyId = array();
     protected $queueCurlFunction;
     protected $myParser;  
+    protected $cleanValueControlStop = false;
+    protected $cleanDepthControl = 0;
+    
+    protected $filteredArray;
+    protected $tempKey = array();
+    protected $tempDepth = 0;      // Required to see if the $depth is decreasing    
+    protected $startDate;
+    protected $finishDate;
     
     /**
      * Constructor of the class
