@@ -169,6 +169,7 @@ class p2pCompany {
     protected $callbacks;
     protected $originExecution;
     protected $tableStructure;
+    protected $callbackAmortizationTable;
    
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
                                         "chunkSize" => 1,     
@@ -2954,6 +2955,16 @@ FRAGMENT
     public function getDashboard2ConfigurationParameters()  {
         return $this->dashboard2ConfigurationParameters;
     } 
+    
+    /**
+     * Callback function for Amortizationtable.
+     * Function to get all the callbacks for a company in Dashboard2 in the flow 2
+     * 
+     * @return array
+     */
+    function getCallbackAmortizationTable() {
+        return $this->callbackAmortizationTable;
+    }
     
 }
 
