@@ -115,7 +115,7 @@ class Amortizationtable extends AppModel
         }
         $this->saveMany($amortizationtable, array('validate' => true));
 
-// update mark in investment model stating that amoritzationtable is available        
+// update mark in investment model stating that amortizationtable is available        
         $index = 0;
         $controlIndex = 0;
         $limit = WIN_DATABASE_READOUT_LIMIT;       

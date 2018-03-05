@@ -52,6 +52,9 @@ class UserDataShell extends AppShell {
      * 
      */
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
+             
+        $globalPrecision = $resultData['configParms']['globalRoundingParm'];
+        
         $error = 0;
         echo "external values = \n";
         print_r($externalControlVariables);
@@ -60,14 +63,28 @@ class UserDataShell extends AppShell {
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
-                    if ($internalControlVariables['myWallet'] <> $externalControlVariables['myWallet'] ) {
-                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;
+                    $tempResult = bccomp($internalControlVariables['myWallet'], $externalControlVariables['myWallet']);
+                    if ($tempResult) {
+                        $difference = bcsub($internalControlVariables['myWallet'], $externalControlVariables['myWallet']);
                     }
+                    else {
+                        $difference = bcsub($externalControlVariables['myWallet'], $internalControlVariables['myWallet']);
+                    }
+                    if (bcmod($difference, $globalPrecision))  { 
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;  
+                    }                   
                     break;
                 case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-                    if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables['outstandingPrincipal'] ) {
-                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;
+                    $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal']);
+                    if ($tempResult) {
+                        $difference = bcsub($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal']);
                     }
+                    else {
+                        $difference = bcsub($externalControlVariables['outstandingPrincipal'], $internalControlVariables['outstandingPrincipal']);
+                    }
+                    if (bcmod($difference, $globalPrecision))  { 
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;  
+                    }                    
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
                     if ($internalControlVariables['activeInvestments'] <> $externalControlVariables['activeInvestments'] ) {
@@ -883,7 +900,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      */
     public function calculateBadDebt(&$transactionData, &$resultData) {
         
-//        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
+//        if ($resultData['investment']['investment_consolidatePlatformControlVariables'] == WIN_LOANSTATUS_WRITTEN_OFF) {
 //            return $resultData['payment']['payment_writtenOff'];
 //        }
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;

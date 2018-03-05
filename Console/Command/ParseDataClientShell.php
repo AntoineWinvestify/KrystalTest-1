@@ -307,7 +307,12 @@ class ParseDataClientShell extends GearmanClientShell {
             if (empty($precision)) {
                 $precision = '0.00001';                                         // Default precision
             }
-
+            $globalPrecision = $platformData['dashboard2ConfigurationParameters']['globalRoundingParm'];
+            if (empty($precision)) {
+                $precision = '0.01';                                            // Default global precision, max 1 €cent difference when calculating 
+                                                                                // 'total outstanding principal' and 'cashInPlatform'
+            }
+            
             $countArray1 = count($platformData['workingNewLoans']);
 
             foreach ($expiredLoanValues as $key => $value) {
@@ -443,7 +448,8 @@ class ParseDataClientShell extends GearmanClientShell {
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey;
-            $database['configParms']['outstandingPrincipalRoundingParm'] = $precision;          // configuration parameter 
+            $database['configParms']['outstandingPrincipalRoundingParm'] = $precision;              // configuration parameter 
+            $database['configParms']['globalRoundingParm'] = $globalPrecision;                      // configuration parameter 
             if (!empty($platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'])) {
                 $database['configParms']['recalculateRoundingErrors'] = $platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'];
             }
