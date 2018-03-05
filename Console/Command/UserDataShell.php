@@ -138,9 +138,9 @@ class UserDataShell extends AppShell {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
 
-        if (isset($resultData['payment']['payment_myInvestment'])) {
+        /*if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
-        }
+        }*/
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_secondaryMarketInvestment'], 16);
         }
@@ -162,9 +162,9 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
-        if (isset($resultData['payment']['payment_disinvestment'])) {
+        /*if (isset($resultData['payment']['payment_disinvestment'])) {
             $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
-        }
+        }*/
         return $result;
     }
 
@@ -1344,6 +1344,63 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return $status;
     }
     
+    /** STILL NOT FINISHED
+     *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculateReservedFunds(&$transactionData, &$resultData) {
+
+        $result = $resultData['investment']['investment_reservedFunds'];     // in case more slices were bought of same loan
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+            if (isset($resultData['payment']['payment_myInvestment'])) {
+                $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
+            }
+            if (isset($resultData['payment']['payment_disinvestment'])) {
+                $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
+            }
+        }
+        return $result;
+    }
+    
+    public function verifyStatusWaitingToBeFormalized(&$transactionData, &$resultData) {
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+            if (!empty($resultData['configParms']['changeStatusToActive'])) {
+                echo "change Status or possible to change \n";
+                $functionToCall = $resultData['configParms']['changeStatusToActive']['function'];
+                echo "function to call is $functionToCall \n";
+                $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
+                echo "investment tempState is " . $resultData['investment']['investment_tempState'];
+            }
+        }
+        if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+            //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
+            ///NEW CODE TO TRY
+            ///MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL
+            $resultData['investment']['investment_statusOfLoan'] = $this->calculateActiveStateChange($transactionData, $resultData);
+            if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
+//                                unset ($sliceIdentifier);
+                echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
+                $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
+                // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                // if not then create a new array with the data available so far, sliceIdentifier and loanId
+                $isNewTable = YES;
+                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                    if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                        $isNewTable = NO;
+                        break;
+                    }
+                }
+                if ($isNewTable == YES) {
+                    $collectTablesIndex++;
+                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                }
+            }
+        }
+    }
     
 }
 
