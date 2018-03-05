@@ -494,12 +494,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                             $transactionDataKey = $transaction;
                         }
-
-                        echo '|||||||||||||||||||||||';
-                        var_dump($transaction);
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-                        var_dump($tempResult);
-                        echo '|||||||||||||||||||||||';
                         
                         if (!empty($tempResult)) {
                             unset($result);
@@ -516,9 +511,6 @@ class ParseDataClientShell extends GearmanClientShell {
                             if (!empty($functionToCall)) {
                                 echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                                print_r($result);
-                                echo "\n " . $functionToCall . "llllllllllllllllllllllllllll \n";      
-                                print_r($dateTransaction);
                                 //update the field userinvestmentdata_cashInPlatform   
                                 $cashflowOperation = $tempResult['cashflowOperation'];
                                 if (!empty($cashflowOperation)) {
@@ -824,8 +816,6 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
                     
-                    echo "filtered database";
-                    print_r($database['payment']);
                     if ($database['investment']['investment_myInvestment'] == "0.0000000000000000" || empty($database['investment']['investment_myInvestment'])) {   //Dont rewrite investment value with 0
                         unset($database['investment']['investment_myInvestment']);
                     }
@@ -890,7 +880,6 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
 
                     echo 'save payment';
-                    print_r($database['payment']);
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
                     if(!empty($database['payment'])){
                         $database['payment']['investment_id'] = $investmentId;
@@ -1147,7 +1136,6 @@ class ParseDataClientShell extends GearmanClientShell {
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
         if ($dateKey > $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
-            echo "Entreeeeeeeeeeeeeeeeeeeeeee \n\n";
             $filter = array("backupCopyId >" => 0,
             "linkedaccount_id" => $linkedaccountId);
             $field = array("id", "backupCopyId");

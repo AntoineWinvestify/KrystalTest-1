@@ -916,7 +916,7 @@ class mintos extends p2pCompany {
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
                     //Url preparation for download multiple tramsaction files
                     $this->numberOfFiles = 0;
-                    $this->tempUrl['downloadTransacitonUrl'] = array_shift($this->urlSequence);
+                    $this->tempUrl['downloadTransactionUrl'] = array_shift($this->urlSequence);
                     $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);         
                     $this->tempUrl['transactionsCredentials'] = array_shift($this->urlSequence);
                     $this->tempUrl['headersJson'] = array_shift($this->urlSequence);
@@ -960,7 +960,7 @@ class mintos extends p2pCompany {
                 else {
                      $this->idForSwitch = 5;
                 }
-                $this->getPFPFileMulticurl($this->tempUrl['downloadTransacitonUrl'], $referer, $credentials, $headers, $this->fileName);
+                $this->getPFPFileMulticurl($this->tempUrl['downloadTransactionUrl'], $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
