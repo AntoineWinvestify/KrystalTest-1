@@ -2958,7 +2958,7 @@ FRAGMENT
     
     /**
      * Callback function for Amortizationtable.
-     * Function to get all the callbacks for a company in Dashboard2 in the flow 2
+     * Function to get all the callback for a company in Dashboard2 in the flow 3B
      * 
      * @return array
      */
