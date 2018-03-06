@@ -120,9 +120,9 @@ class finanzarel extends p2pCompany {
                                     "input3" => [
                                         0 => ["Provisión de fondos" => "Cash_deposit"],
                                         1 => ["Retirada de fondos" => "Cash_withdrawal"],
-                                        2 => ["Cargo por inversión en efecto" => "Primary_market_investment"],
+                                        2 => ["Cargo por inversión en efecto" => "Primary_market_investment_active_verification"],
                                         3 => ["Provisi?n de fondos" => "Cash_deposit"],
-                                        4 => ["Cargo por inversi?n en efecto" => "Primary_market_investment"],
+                                        4 => ["Cargo por inversi?n en efecto" => "Primary_market_investment_active_verification"],
                                         5 => ["Abono por cobro parcial de efecto" => "Partial_principal_and_interest_payment"],
                                         7 => ["Abono por cobro efecto" => "Principal_and_interest_payment"],
                                         9 => ["Intereses de demora" => "Delayed_interest_income"],
@@ -249,10 +249,17 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "internalName",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "Primary_market_investment",                                // 'input3' is NOT mandatory. 
+                                "input2" => "investment_myInvestment",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
-                ]
+                ],
+                [
+                    "type" => "conceptChars",                        
+                    "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
+                                "input2" => "PREACTIVE_VERIFICATION",                                // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ],
             ],
             "K" => [
                 [
