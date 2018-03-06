@@ -182,7 +182,8 @@ class Fileparser {
                 "type" => "globalcashflowdata_platformWithdrawals"          
                 ],
             3 => [
-                "detail" => "Primary_market_investment",
+                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default
+                                                                                //For example Mintos
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
@@ -424,11 +425,30 @@ class Fileparser {
                 "type" => "disinvestmentWithoutLoanReference",
                 ], 
             43 => [
-                "detail" => "Primary_market_investment_preactive", //We want a primary_market_investment
+                "detail" => "Primary_market_investment_preactive",              //We want a primary_market_investment but in preactive state as default
+                                                                                //For example Zank
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
                 "chars" => "PREACTIVE"
+                ],
+            44 => [
+                "detail" => "Primary_market_investment_preactive_verification", //We want a primary_market_investment in preactive state as default but
+                                                                                //it is needed a verification daily to pass to active or cancel status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestment",  
+                "chars" => "PREACTIVE_VERIFICATION"
+                ],
+            45 => [
+                "detail" => "Primary_market_investment_active_verification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestment",  
+                "chars" => "ACTIVE_VERIFICATION"
                 ],
         
             105 => [
