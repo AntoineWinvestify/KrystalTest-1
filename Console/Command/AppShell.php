@@ -349,5 +349,17 @@ class AppShell extends Shell {
 
     }    
     
+
+    /**
+     * 
+     * @param string $file FQDN of the file to analyze
+     * @return array
+     */
+    public function getFileTempArray($file) {
+        $fileString = file_get_contents($file);
+        $data = json_decode($fileString, true);
+        return $data;
+    }
+    
     
 }
