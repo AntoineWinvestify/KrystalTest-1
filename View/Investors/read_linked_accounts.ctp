@@ -187,7 +187,7 @@ $(document).on("click", ".changePassLinkedAccount",function(event) {
     var index =  $(this).val();
     $(this).removeClass('changePassLinkedAccount');
     $(this).addClass('confirmChangePassLinkedAccount');
-    $(this).html('<i class="ion ion-compose"></i> <small><?php echo __('Confirm Password') ?></small>');
+    $(this).html('<small><?php echo __('Confirm Password') ?></small>');
     $("#password" + index).prop('disabled', false);
     
     
