@@ -1433,6 +1433,7 @@ class p2pCompany {
      * Function to save a file of a PFP
      * @param string $fileName It is the file name with the extension
      * @param data $data Data to save on the file, it could be json or html
+     * return string The path of the file created
      */
     public function saveFilePFP($fileName, $data = null) {
         if (empty($data)) {
@@ -1442,6 +1443,7 @@ class p2pCompany {
         $fp = fopen($pathCreated . DS . $fileName, 'w');
         fwrite($fp, $data);
         fclose($fp);
+        return $pathCreated . DS . $fileName;
     }
 
     /**
