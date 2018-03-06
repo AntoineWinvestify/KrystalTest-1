@@ -135,10 +135,16 @@ class GearmanClientShell extends AppShell {
             }
         }
         if (!empty($dataWorker['tempArray'])) {
-             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
             $this->tempArray[$data[0]] = $dataWorker['tempArray'];
         }
-
+        if (!empty($dataWorker['tempUrlArray'])) {
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
+            foreach ($dataWorker['tempUrlArray'] as $linkaccountId => $tempUrl) {
+                $dataTempArray = $this->getFileTempArray($tempUrl);
+                $this->tempArray[$data[0]][$linkaccountId] = $dataTempArray;
+            }
+        }
 //        print_r($this->userResult);
 //        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
