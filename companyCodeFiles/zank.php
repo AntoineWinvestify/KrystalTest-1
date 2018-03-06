@@ -487,7 +487,24 @@ class zank extends p2pCompany {
             ]
         ],*/
         8 => [
-            "name" => "amortizationtable_paymentStatus"
+            [
+                "type" => "amortizationtable_paymentStatus",                        
+                "inputData" => [                                           
+                            "input2" => "",                        
+                            "input3" => "",
+                            "input4" => 0                                 
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "amortizationtable_paymentStatusOriginal",                              
+                "inputData" => [                                           
+                            "input2" => "",                        
+                            "input3" => "",
+                            "input4" => 0                                   
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
         ]
     ];
     
