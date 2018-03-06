@@ -585,7 +585,7 @@ class zank extends p2pCompany {
     
     protected $callbackAmortizationTable = [
         "parserDataCallback" => [
-            "amortizationtable_paymentStatus" => "" //PUT NAME OF FUNCTION
+            "amortizationtable_paymentStatus" => "translateOriginalPaymentStatus"
         ]
     ];
     
@@ -2224,6 +2224,43 @@ class zank extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         
+    }
+    
+     /**
+     * Function to translate the company specific 'originalLoanState' to the Winvestify standardized
+     * 'StatusOfLoan'
+     * @param string $inputData     company specific originalLoanState
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateOriginalPaymentStatus($inputData) {
+        $inputData = mb_strtoupper(trim($inputData), "UTF-8");
+        switch ($inputData) {
+            case "Cuota cobrada.":
+            case "Cuota Cobrada.":
+            case "CUOTA COBRADA.":
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+                break;
+            case "CUOTA EN COBRO.":
+            case "Cuota En cobro.": 
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break; 
+            case "CUOTA DEVENGANDOSE.":
+            case "Cuota Devengandose.": 
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;           
+            case "CUOTA PENDIENTE.":
+            case "Cuota pendiente.": 
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break; 
+            case "CUOTA RETRASADA.":
+            case "Cuota retrasada.": 
+                $result = WIN_LOANSTATUS_FINISHED;
+                break;   
+            default:
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+                break;
+        }   
+        return $result; 
     }
 
     function structureRevisionAmortizationTable($node1, $node2) {
