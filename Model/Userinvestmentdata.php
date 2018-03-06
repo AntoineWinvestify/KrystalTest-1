@@ -47,7 +47,7 @@ class Userinvestmentdata extends AppModel {
 
         //Get linked accounts id
         $linkedAccountsId = $this->Linkedaccount->find("all", array("recursive" => -1,
-            "conditions" => array("investor_id" => $investorId),
+            "conditions" => array("investor_id" => $investorId, "linkedaccount_linkingProcess" => WIN_LINKING_NOTHING_IN_PROCESS),
             "fields" => array("id"),
         ));
         
