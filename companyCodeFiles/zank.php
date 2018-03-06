@@ -602,7 +602,7 @@ class zank extends p2pCompany {
     
     protected $callbackAmortizationTable = [
         "parserDataCallback" => [
-            "amortizationtable_paymentStatus" => "translateOriginalPaymentStatus"
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus"
         ]
     ];
     
@@ -2249,7 +2249,7 @@ class zank extends p2pCompany {
      * @param string $inputData     company specific originalLoanState
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
-    public function translateOriginalPaymentStatus($inputData) {
+    public function translateAmortizationPaymentStatus($inputData) {
         $inputData = mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
             case "Cuota cobrada.":
