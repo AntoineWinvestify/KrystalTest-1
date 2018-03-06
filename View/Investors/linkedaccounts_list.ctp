@@ -91,7 +91,7 @@ Pending:
                                 </div>
                             </div>
                             
-                            <button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                <button type="button" data-toggle="modal" data-target="#Modal<?php echo $account['Linkedaccount']['id'] ?>" 
                             id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                             onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                             "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
@@ -100,8 +100,8 @@ Pending:
                             
                         <button type="button" href="/investors/changePasswordLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
                             id="PassCompany_<?php echo $account['Linkedaccount']['company_id'] ?>"                            
-                class="btn btn-default btnRounded form submitButton changePassLinkedAccount"><i class="ion ion-compose"></i> <small><?php echo __('Edit Password')?></small>
-                            </button>
+                            class="btn btn-default btnRounded form submitButton changePassLinkedAccount "><i class="ion ion-compose"></i> <small><?php echo __('Edit Password') ?></small>
+                        </button>
                             
                             
                         </div> <!-- /crowdlending company -->
@@ -111,7 +111,7 @@ Pending:
                                     <div class="form-group">
                                         <label><small><?php echo __('Your User')?></small></label>
                                         <?php
-                                                                        echo $this->Form->input('name', array(
+                                                                        echo $this->Form->input('name' . $account['Linkedaccount']['id'], array(
                                                                                 'label' 		=> false,
                                                                                 'class' 		=> 'form-control blue_noborder22',
                                                                                 'disabled'		=> 'disabled',
@@ -126,7 +126,7 @@ Pending:
                                     <div class="form-group">
                                         <label><small><?php echo __('Your Password')?></small></label>
                                         <?php
-                                            echo $this->Form->input('password', array(
+                                            echo $this->Form->input('password' . $account['Linkedaccount']['id'], array(
                                                     'label' 		=> false,
                                                     'type'			=> 'password',
                                                     'class' 		=> 'form-control blue_noborder2',
@@ -141,6 +141,29 @@ Pending:
                     </div>
                 </div>
                                                     <!-- /.row  -->
+                                                    
+                    <!-- Modal -->
+<div id="Modal<?php echo $account['Linkedaccount']['id'] ?>" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><?php echo __("Are you sure?") ?></h4>
+      </div>
+      <div class="modal-body">
+          <p><?php echo __("Do you want delete this linked account"); ?> </p>
+          <button type="button" class="btn btn-default deleteLinkedAccount" data-dismiss="modal" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"><?php echo __("Delete"); ?></button>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __("Close"); ?></button>
+      </div>
+    </div>
+
+  </div>
+</div>                                  
+                                                    
 <?php
             }
 	

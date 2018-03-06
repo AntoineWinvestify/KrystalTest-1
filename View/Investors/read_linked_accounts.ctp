@@ -277,11 +277,11 @@ $(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                                    <button type="button" data-toggle="modal" data-target="#Modal<?php echo $account['Linkedaccount']['id'] ?>" 
                                     id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                                     onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                                     "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                        class="btn btn-default btnRounded form submitButton deleteLinkedAccount "><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
+                        class="btn btn-default btnRounded form submitButton"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
                                     </button>
                                     
                                     <button type="button" href="/investors/changePasswordLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
@@ -326,6 +326,30 @@ $(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
                                 </div>
                             </div>
                         </div>
+                        
+                            <!-- Modal -->
+<div id="Modal<?php echo $account['Linkedaccount']['id'] ?>" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><?php echo __("Are you sure?") ?></h4>
+      </div>
+      <div class="modal-body">
+          <p><?php echo __("Do you want delete this linked account?"); ?> </p>
+          <button type="button" class="btn btn-default deleteLinkedAccount" data-dismiss="modal" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"><?php echo __("Delete"); ?></button>
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __("Close"); ?></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+                        
+                        
                         <?php
                             }
                         }
