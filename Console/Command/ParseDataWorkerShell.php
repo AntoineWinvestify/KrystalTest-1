@@ -120,6 +120,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');    
         
         $platformData = json_decode($job->workload(), true);
+        $urlReturnData = [];
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
@@ -334,10 +335,17 @@ echo __FUNCTION__ . " " . __LINE__ . " Loan $loanid detected with state WAITINGT
                         unset($myArray[$levels[0]][$levels[1]]);                       
                     } 
                 }     
-            }     
+            }
+            ///// NEW CODE TO PASS RETURNDATA AS A FILE
+            $companyHandle->setLinkAccountId($linkedAccountKey);
+            $companyHandle->setUserReference($data['userReference']);
+            $companyHandle->setDateFinish($this->finishDate);
+            $companyHandle->setCompanyName($data['pfp']);
+            $urlReturnData[$linkedAccountKey] = $companyHandle->saveFilePFP('tempArray.json', json_encode($returnData[$linkedAccountKey]));
+            ////
         }
-        
-        $data['tempArray'] = $returnData;
+        //$data['tempArray'] = $returnData;
+        $data['tempUrlArray'] = $urlReturnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
