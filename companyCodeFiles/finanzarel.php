@@ -1181,7 +1181,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 
                 $this->url =  array_shift($this->urlSequence);
@@ -1223,7 +1223,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
@@ -1252,7 +1252,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 if (!empty($this->tempRequest)) {
                     $path = $this->getFolderPFPFile();
@@ -1335,7 +1335,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                
                 $url = array_shift($this->urlSequence);
@@ -1372,7 +1372,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 
                
@@ -1415,7 +1415,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 return $this->tempArray;
         }

@@ -1260,7 +1260,7 @@ class loanbook extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);               
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();

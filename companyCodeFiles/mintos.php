@@ -904,8 +904,7 @@ class mintos extends p2pCompany {
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 } else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
@@ -980,8 +979,7 @@ class mintos extends p2pCompany {
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 } else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
@@ -1023,8 +1021,7 @@ class mintos extends p2pCompany {
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 } else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
