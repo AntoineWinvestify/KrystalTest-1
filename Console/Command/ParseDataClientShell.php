@@ -656,7 +656,8 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $conceptChars[$itemKey] = trim($item);
                             }
 
-                            if (in_array("AM_TABLE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
+                            if (in_array("ACTIVE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
                                 if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
 //                                unset ($sliceIdentifier);
 
@@ -678,12 +679,22 @@ class ParseDataClientShell extends GearmanClientShell {
                                 }
                             }
                             
-                            //TO CHANGE STATUS TO ACTIVE
-                            if (in_array("PREACTIVE", $conceptChars)) {
+                            //FIRST IT IS PREACTIVE
+                            /*if (in_array("PREACTIVE", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
                                 echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_WAITINGTOBEFORMALIZED . " \n";
+                            }*/
+                            
+                            if (in_array("PREACTIVE_VERIFICATION", $conceptChars)) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED;
+                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED . " \n";
                             }
-
+                            
+                            if (in_array("ACTIVE_VERIFICATION", $conceptChars)) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYACTIVE;
+                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYACTIVE . " \n";
+                            }
+                            
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
