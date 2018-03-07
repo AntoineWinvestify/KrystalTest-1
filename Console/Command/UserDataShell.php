@@ -1371,6 +1371,45 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
             }
         }
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED) {
+            if (isset($resultData['payment']['payment_myInvestment'])) {
+                if ((bccomp($resultData['investment']['investment_myInvestment'], $resultData['payment']['payment_myInvestment'], 16) === 0)) {
+                    $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                    unset($resultData['payment']['payment_myInvestment']);
+                }
+                else {
+                    $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                    $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
+                }
+            }
+            if (isset($resultData['payment']['payment_disinvestment'])) {
+                $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
+            }
+        }
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYACTIVE) {
+            if (isset($resultData['payment']['payment_myInvestment'])) {
+                if ((bccomp($resultData['investment']['investment_myInvestment'], $resultData['payment']['payment_myInvestment'], 16) === 0)) {
+                    $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd($resultData['investment']['investment_outstandingPrincipal'], $resultData['payment']['payment_myInvestment'], 16);
+                    $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                                $resultData['investment']['investment_myInvestment'],
+                                16
+                            );
+                    $resultData['investment']['investment_reservedAssets'] = bcsub(
+                                $resultData['investment']['investment_reservedAssets'],
+                                $resultData['investment']['investment_myInvestment'],
+                                16
+                            );
+                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
+                                $resultData['investment']['investment_outstandingPrincipal'],
+                                $resultData['investment']['investment_myInvestment'],
+                                16
+                            );
+                    unset($resultData['payment']['payment_myInvestment']);
+                }
+            }
+        }
         echo "AFETER RESERVED FNSFSDF \n";
         print_r($resultData);
         return $result;
@@ -1392,6 +1431,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 $resultData['investment']['investment_statusOfLoan'] = $this->calculateActiveStateChange($transactionData, $resultData);
                 if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
     //                                unset ($sliceIdentifier);
+                    ///////////////////////******* take INTO ACCOUNT THAT THIS CODE IS NOT WORKING, IT MUST BE IN PARSEDATACLIENT
+                    
                     echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
                     $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
                     // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
@@ -1408,6 +1449,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                         $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                         $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
                     }
+                    
+                    ///////////////////////*******
                 }
             }
         }
