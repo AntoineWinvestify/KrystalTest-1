@@ -64,6 +64,10 @@
  * Introduction of call back functions for translation of company specific concepts to
  * Winvestify standardized concepts 
  * 
+ * 2017-03-06   version 0.8.2
+ * New definition for callback of amortizationtable
+ * 
+ * 
  */
 class mintos extends p2pCompany {
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
@@ -115,8 +119,8 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], 
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],         
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
                                   //          15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
                                   //          16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
@@ -161,8 +165,8 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],                   
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
  //                                           15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
  //                                           16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
@@ -462,7 +466,24 @@ class mintos extends p2pCompany {
             ]
         ],
         6 => [
-            "name" => "amortizationtable_paymentStatus"
+                [
+                    "type" => "amortizationtable_paymentStatus",                          
+                    "inputData" => [                                            
+                                "input2" => "",                                  
+                                "input3" => "",
+                                "input4" => 0                                   
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],        
+                [
+                    "type" => "amortizationtable_paymentStatusOriginal",    
+                    "inputData" => [                                       
+                                "input2" => "",                        
+                                "input3" => "",
+                                "input4" => 0                             
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
         ]
     ];
     
@@ -619,6 +640,17 @@ class mintos extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
+        "reservedFunds" => [
+            [
+                "type" => "reservedFunds",                                      // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],
         ]
     ];      
     
@@ -648,7 +680,11 @@ class mintos extends p2pCompany {
         ]
     ];
     
-    
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus",
+        ]
+    ];    
     
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
@@ -1462,7 +1498,7 @@ class mintos extends p2pCompany {
         $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "Paid after the due date":
-                $data = WIN_BUYBACKGUARANTEE_PROVIDED;
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE;
                 break;
             case "Paid":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;

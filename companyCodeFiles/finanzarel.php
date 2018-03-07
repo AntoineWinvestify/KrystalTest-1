@@ -739,6 +739,19 @@ class finanzarel extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
+            
+        "reservedFunds" => [
+            [
+                "type" => "reservedFunds",                                      // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16,
+                ],
+                "functionName" => "getAmount",
+            ]
+        ], 
+            
         "activeInvestments" => [
             [
                 "type" => "activeInvestments",                                  // Winvestify standardized name  OK
@@ -791,9 +804,16 @@ class finanzarel extends p2pCompany {
             ]
         ]
     ];
-
+    
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus",
+        ]
+    ]; 
+    
+    
             /************************************/
-            /**HEADERS FOR SRUCTURE COMPARATION**/
+            /**HEADERS FOR STRUCTURE COMPARATION**/
             /************************************/
     protected  $investmentHeader = array (
                                     "A" => "Subasta",
@@ -1013,7 +1033,6 @@ class finanzarel extends p2pCompany {
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                //echo $str;
 
                 $inputs = $dom->getElementsByTagName('input');
                 $this->verifyNodeHasElements($inputs);
@@ -1059,13 +1078,11 @@ class finanzarel extends p2pCompany {
                 $this->credentialsGlobal['p_request'] = 'Login';
                 $this->credentialsGlobal['p_reload_on_submit'] = $pReloadOnSubmit;
 
-                //print_r($credentials);
                 $this->idForSwitch++;
                 $this->doCompanyLoginMultiCurl($this->credentialsGlobal); //do login
                 break;
             case 2:
                 $url = array_shift($this->urlSequence);
-                //echo $url . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
@@ -1073,7 +1090,6 @@ class finanzarel extends p2pCompany {
                 $dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-                //echo $str;
                 $h2s = $dom->getElementsByTagName('h2');
                 $this->verifyNodeHasElements($h2s);
                 if (!$this->hasElements) {
@@ -1083,7 +1099,6 @@ class finanzarel extends p2pCompany {
                 foreach ($h2s as $h2) {
                     echo $h2->nodeValue . HTML_ENDOFLINE;
                     if (trim($h2->nodeValue) == 'Dashboard') {
-                        //echo 'ok' . HTML_ENDOFLINE;
                         $resultLogin = true;
                     }
                 }
@@ -1098,22 +1113,17 @@ class finanzarel extends p2pCompany {
                     $this->logToFile("Warning", $msg);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_LOGIN);
                 }
-                echo 'Login ok';
-                
-                //Get cv
-                
+ 
+                //Get control variables
                 $controlVariables = $this->getElements($dom, 'span', 'class', 't-MediaList-badge');
                 $controlVariables = array_merge($controlVariables, $this->getElements($dom, 'p', 'class', 't-MediaList-desc'));
                 $controlVariablesArray = array();
                 foreach ($controlVariables as $controlVariable){
                     $controlVariablesArray[] = $controlVariable->nodeValue;
                 }
-                print_r($controlVariablesArray);
-                
-                
+                         
                 $this->tempArray['global']['outstandingPrincipal'] = $controlVariablesArray[1];
-                //$this->tempArray['global']['totalEarnedInterest'] = $this->getMonetaryValue($controlVariablesArray[11]);
-                //Finanzarel doenst have number of investments
+                //Finanzarel does not have 'number of investments'
                 $this->tempArray['global']['reservedFunds'] = (float) filter_var(str_replace(",",".",str_replace(".","",$controlVariablesArray[6])), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ); //They call it "Inversion neta comprometida"
                 $this->tempArray['global']['myWallet'] = (float) filter_var(str_replace(",",".",str_replace(".","",$controlVariablesArray[5])), FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION ) - $this->tempArray['global']['reservedFunds'];
                 
@@ -1137,7 +1147,6 @@ class finanzarel extends p2pCompany {
                     }
                 }
                 $url =  array_shift($this->urlSequence);
-                //echo "The url is " . $url . "\n";
                 $referer = array_shift($this->urlSequence);
                 $referer = strtr($referer, array(
                     '{$p_flow_step_id}' => 1,
@@ -1263,7 +1272,6 @@ class finanzarel extends p2pCompany {
                 $this->idForSwitch++;
             case 7:
                 $url = array_shift($this->urlSequence);
-                //echo $url . HTML_ENDOFLINE;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url . $this->credentialsGlobal['p_instance']);
                 break;
@@ -1295,10 +1303,8 @@ class finanzarel extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
                 foreach ($as as $key => $a) {
-                    //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Descargar') {
-                        $this->requestInvestment2 = explode("'", $a->getAttribute('href'))[1];
-                        
+                        $this->requestInvestment2 = explode("'", $a->getAttribute('href'))[1];   
                     }
                 }
                                    
@@ -1377,7 +1383,6 @@ class finanzarel extends p2pCompany {
                 
                
                 $url =  array_shift($this->urlSequence);
-                //echo "The url is " . $url . "\n";
                 $referer = array_shift($this->urlSequence);
                 $referer = strtr($referer, array(
                     '{$p_flow_step_id}' => 1,
@@ -1682,4 +1687,34 @@ class finanzarel extends p2pCompany {
         return str_replace(",",".",$inputData);
     }
 
+    
+    /**
+     * Function to translate the company specific AmortizationPaymentStatus to the Winvestify standardized
+     * concept
+     * 
+     * @param string $inputData     company specific AmortizationPaymentStatus
+     * @return int                  Winvestify standardized AmortizationPaymentStatus
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+echo __FILE__ . " " . __LINE__ . "translating the payment status for status = $inputData\n";       
+        $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+        $inputData = mb_strtoupper($inputData);
+        switch ($inputData) {
+            case "Retrasada-30d":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                break;
+            case "Impagada +30d, en recobro":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                break;
+            case "Fallida":                                                     // Written off
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_FAILURE;
+                break;
+            case "Pendiente":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;
+        }
+        return $data;        
+    }
+
+         
 }

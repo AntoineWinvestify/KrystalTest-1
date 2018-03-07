@@ -72,7 +72,7 @@ class Investmentslice extends AppModel
     );   
     
     
-    /** NOT YET TESTED
+    /**
      * Creates a new slice for a loan.
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table

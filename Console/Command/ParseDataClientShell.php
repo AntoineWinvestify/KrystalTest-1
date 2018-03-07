@@ -16,8 +16,8 @@
  *
  *
  * @author
- * @version 0.4
- * @date 2018-02-15
+ * @version 0.5
+ * @date 2018-03-05
  * @package
  *
  * This client deals with parsing of the files that have been downloaded
@@ -42,12 +42,14 @@
  * new method, repaymentReceived added. This method updates the amortization tables of a loan while analyzing the transaction data
  * 
  * 
+ * 2018-03-05           version 0.5
+ * function repaymentReceived updated. 
  * 
  * 
  * 
  *
  * PENDING:
- * -
+ * function repaymentReceived: Deal with partial payments
  * 
  */
 App::import('Shell', 'GearmanClient');
@@ -60,7 +62,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+ //       return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -312,6 +314,8 @@ class ParseDataClientShell extends GearmanClientShell {
                 $precision = '0.01';                                            // Default global precision, max 1 €cent difference when calculating 
                                                                                 // 'total outstanding principal' and 'cashInPlatform'
             }
+       
+          
             
             $countArray1 = count($platformData['workingNewLoans']);
 
@@ -893,7 +897,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
                     
                     if ($dateKey > $finishDate) {
-                        $database['investment']['backupCopyId'] = $this->copyInvestment($investmentId);
+                        $database['investment']['investment_backupCopyId'] = $this->copyInvestment($investmentId);
                     }
 
                     echo 'save payment';
@@ -1109,7 +1113,7 @@ class ParseDataClientShell extends GearmanClientShell {
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";
 
-        $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($controlVariables, $platformData['parsingResultControlVariables']);
+        $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
         if ($controlVariablesCheck > 0) { // mismatch detected
             echo "DOES NOT PASS CONTROL VARIABLES CHECK \n";
             // STILL TO FINISH
@@ -1130,13 +1134,13 @@ class ParseDataClientShell extends GearmanClientShell {
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
         if ($dateKey > $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
-            $filter = array("backupCopyId >" => 0,
-            "linkedaccount_id" => $linkedaccountId);
-            $field = array("id", "backupCopyId");
+            $filter = array("investment_backupCopyId >" => 0,
+                                    "linkedaccount_id" => $linkedaccountId);
+            $field = array("id", "investment_backupCopyId");
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
 
             foreach ($results as $result) {
-                $this->restoreInvestment($result['backupCopyId'], $result['id']);
+                $this->restoreInvestment($result['investment_backupCopyId'], $result['id']);
                 $filterConditions = array ("date" => $dateKey,
                                   "investment_id" => $result['id']);
                 $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
@@ -1171,7 +1175,7 @@ class ParseDataClientShell extends GearmanClientShell {
         }
 
         foreach ($slicesAmortizationTablesToCollect as $tableToCollect) {
-            $loanSliceId = $this->linkNewSlice($tableToCollect['investmentId'], $tableToCollect['sliceIdentifier']);
+            $loanSliceId = $this->linkNewSlice($tableToCollect['investmentId'], $tableToCollect['sliceIdentifier'], $tableToCollect['date']);
             $platformData['amortizationTablesOfNewLoans'][$loanSliceId] = $tableToCollect['sliceIdentifier'];
         }
 
@@ -1245,7 +1249,8 @@ class ParseDataClientShell extends GearmanClientShell {
         return $id;
     }
 
-    /** PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION
+    /** 
+     *  PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION
      *  Updates the amortization table of an loan when a repayment is detected.
      *  This method is executed AFTER all the transactions for the loan have been processed by the main flow.
      *  This method is NOT used during the account linking procedure
@@ -1267,7 +1272,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 $table['amortizationtable_capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
                 $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
             }
-        }
+        } 
         else {
             $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
             $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
@@ -1287,18 +1292,20 @@ class ParseDataClientShell extends GearmanClientShell {
 
         $filterConditions = array('amortizationtable_paymentStatus' => WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED);
 
-        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);    // all entries of table which are not 
-        echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
-        print_r($amortizationTable);
-        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                       // yet paid 
+        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);    // all entries of table which are not yet paid 
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
+            print_r($amortizationTable);
+        }
+        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                   
 
         $table['id'] = $tableDbReference;
-        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";
+echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";
         if ($this->AmortizationTable->updateAmortizationTable($table)) {
-            echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
+echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
         }
         else {
-            echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
+echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
         }
         return;
     }
@@ -1373,14 +1380,14 @@ class ParseDataClientShell extends GearmanClientShell {
 
         $result = $this->Investment->find("first", array("condition" => array("id" => $restoreFromInvestmentId)));
 
-        $result['backupCopyId'] = 0;
+        $result['investment_backupCopyId'] = 0;
         $result['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
         $this->Investment->delete($restoreFromInvestmentId, $cascade = false);
     }
 
     /**
-     *  Creates a copy of a investment database
+     *  Creates a copy of a investment database table
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
@@ -1391,7 +1398,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
         $result = $this->Investment->find("first", array("condition" => array("id" => $investmentId)));
 
-        $result['backupCopyId'] = 0;
+        $result['investment_backupCopyId'] = 0;
         $this->Investment->save($result, $validate = true);
         return $this->Investment->id;
     }

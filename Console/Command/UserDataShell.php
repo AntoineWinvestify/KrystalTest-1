@@ -76,6 +76,20 @@ class UserDataShell extends AppShell {
                         $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;  
                     }                  
                     break;
+                case WIN_CONTROLVARIABLE_RESERVED_FUNDS:
+                    $tempResult = bccomp($internalControlVariables['reservedFunds'], $externalControlVariables['reservedFunds'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['reservedFunds'], $externalControlVariables['reservedFunds'], 16);
+                    }
+                    else {
+                        $difference = bcsub($externalControlVariables['reservedFunds'], $internalControlVariables['reservedFunds'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_RESERVED_FUNDS;  
+                    }                                       
+                    break;                    
                 case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
                     $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
                     if ($tempResult == 1) {
