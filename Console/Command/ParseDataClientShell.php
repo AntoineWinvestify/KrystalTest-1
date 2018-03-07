@@ -601,6 +601,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                                 $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                                $database['investment']['investment_isNew'] = true;
                                 break;
                         }
                     }
@@ -625,6 +626,8 @@ class ParseDataClientShell extends GearmanClientShell {
                             $database['investment']['investment_technicalData'] = WIN_TECH_DATA_ZOMBIE_LOAN;
                             $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                             $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
+                            $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+                            $database['investment']['investment_isNew'] = true;
                         }
                         else {  // A normal regular loan, which is already defined in our database
                             // Copy the information to the shadow database, for processing later on
@@ -693,6 +696,22 @@ class ParseDataClientShell extends GearmanClientShell {
                             if (in_array("ACTIVE_VERIFICATION", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYACTIVE;
                                 echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYACTIVE . " \n";
+                                $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
+                                // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                $isNewTable = YES;
+                                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                                    if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                                        $isNewTable = NO;
+                                        break;
+                                    }
+                                }
+                                if ($isNewTable == YES) {
+                                    echo __FILE__ . " " . __LINE__ .  "get new Amortization Table for loanId " . $transactionData['investment_loanId'] . "\n";
+                                    $collectTablesIndex++;
+                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                }
                             }
                             
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
@@ -964,7 +983,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                                     10012, 10013, 10016,
                                                     10017, 10018, 10019,
                                                     10020, 10021, 10022,
-                                                    10023);
+                                                    10023, 10024);
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
