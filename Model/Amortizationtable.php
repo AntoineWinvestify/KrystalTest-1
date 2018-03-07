@@ -56,42 +56,10 @@ class Amortizationtable extends AppModel
 
 
 
-    /**
-     * creates a new 'investment' table and also links the 'paymenttotal' database table
-     * The $amortizationdata is an array of the following structure (not all elements are mandatory)
-     * array   ['cuoteNo']['amortizationtable_scheduledDate' => xx         (format yyyy-mm-dd)
-     *         ['cuoteNo']['amortizationtable_interest'      => yy
-     *         ['cuoteNo']['amortizationtable_capitalRepayment' => zz
-     *        
-     * 	@param 		array 	$investmentId    	Link to the corresponding Investment table
-     * 	@param 		array 	$amortizationdata 	All the data to be saved
-     * 	@return 	boolean   
-     * 			
-     */
-    public function createNewAmortizationTable($investmentId ,$amortizationdata) {
-
-        $instalmentNumber = 1;
-        foreach ($amortizationdata as $item) {
-            $this->create();
-            $item['amortizationtable_quoteNumber'] = $instalmentNumber;
-            $item['investment_id'] = $investmentId;
-            if ($this->save($item, $validate = true)) {
-                $ids[] = $this->id;
-            }
-            else {  // error occured, so delete already created tables and return false
-                foreach ($ids as $id) {
-                    $this->delete($id);
-                }
-                return false;
-            }  
-            $instalmentNumber = $instalmentNumber + 1;
-        } 
-        return true;         
-    }
     
     /**
-     * Function to save amortization tables per pfp 
-     * It also writes a flag in the investment model indicating that the/an amortization table is available
+     * Function to save the amortization table of a pfp 
+     * It also writes a flag in the corresponding investment model indicating that the/an amortization table is available
      * 
      * @param array $amortizationData   It contains the amortization data of an investment(slice)
      * @return boolean
@@ -102,7 +70,7 @@ class Amortizationtable extends AppModel
         $amortizationtable = [];
         $investmentsliceIds = [];
 
-// connect amortization table to the correct Investmentslide model        
+// connect amortization table to the correct Investmentslice model        
         foreach ($amortizationData as $loanId => $loanData) {
             foreach ($loanData as $value) {
                 $loanIdInformation = explode("_", $loanId);
@@ -113,13 +81,15 @@ class Amortizationtable extends AppModel
                 $amortizationtable[] = $value;
             }
         }
-        $this->saveMany($amortizationtable, array('validate' => true));
+        $this->saveMany($amortizationtable, array('validate' => true,
+                                                'callbacks' => "before",
+                                                ));
 
-// update mark in investment model stating that amoritzationtable is available        
-        $index = 0;
-        $controlIndex = 0;
-        $limit = WIN_DATABASE_READOUT_LIMIT;       
-        do {    
+// update mark in investment model stating that amortizationtable is available        
+ //       $index = 0;
+ //       $controlIndex = 0;
+ //       $limit = WIN_DATABASE_READOUT_LIMIT;       
+    //    do {    
             foreach ($investmentsliceIds as $investmentsliceId) {
                 $conditions = array("id" => $investmentsliceId);       
                 $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
@@ -127,22 +97,41 @@ class Amortizationtable extends AppModel
                                                                                'conditions' => $conditions
                                             ));
 
-                if (count($result) < $limit) {          // No more results available
-                    $controlIndex = 1;
-                }
+ //               if (count($result) < $limit) {          // No more results available
+ //                   $controlIndex = 1;
+ //               }
                 
                 $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
                                    'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
                 $investmentIds[] = $tempArray;
             }
-            $index++;
-        }
-        while($controlIndex < 1); 
+    //        $index++;
+    //    }
+    //    while($controlIndex < 1); 
             
         $this->Investment->saveMany($investmentIds, array('validate' => true));      
     return true;
     }
 
 
+    
+    
+    /**
+     *
+     * 	Rules are defined for what should happen when a database record is created or updated.
+     * 	
+     */
+    function beforeSave($created, $options = array()) {
 
+        if ($created) {
+            if ($this->data['Amortizationtable']['amortizationtable_paymentStatus'] !=  WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {
+                if ($this->data['Amortizationtable']['amortizationtable_paymentDate'] ==  "" ||
+                        $this->data['Amortizationtable']['amortizationtable_paymentDate'] ==  "0000-00-00") {
+                    $this->data['Amortizationtable']['amortizationtable_paymentDate'] = date("Y-m-d");
+                }
+            }
+
+        }
+    }    
+    
 }

@@ -72,7 +72,7 @@ class Investmentslice extends AppModel
     );   
     
     
-    /** NOT YET TESTED
+    /**
      * Creates a new slice for a loan.
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
@@ -153,11 +153,12 @@ class Investmentslice extends AppModel
 
 
     /** NOT YET TESTED
-     *  Reads the amortization table of an investment slice
+     *  Reads the amortization table of an investment slice. The entries are sorted according 
+     *  to its scheduled repayment date
      * 
      *  @param  array   $slice      Database reference of investmentslice model  
      *  @param  $filterConditions   filter conditions which apply to the amortization data
-     *  @return array   
+     *  @return array  Amortizationtable 
      */
     public function getAmortizationTable($slice, $filterConditions) {
         
@@ -165,9 +166,9 @@ class Investmentslice extends AppModel
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 print_r($conditions);        
         $result = $this->Amortizationtable->find('all', array(
-                'conditions' => $filterConditions,  // QUICK TEST
-                'recursive' => 1, 
-            ));
+                                        'conditions' => $filterConditions,  
+                                        'recursive' => -1, 
+                                        ));
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 print_r($result);           
         return $result;

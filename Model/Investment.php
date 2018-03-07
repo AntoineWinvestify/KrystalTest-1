@@ -200,8 +200,7 @@ var $validate = array(
 	$this->contain('Investmentslice');  	
 
         $slices = $this->find("all", array("conditions" => array("id" => $investmentId),
-          //                                  "fields" => array("id", "investmentslice_identifier"
-                                            
+                                            "fields" => array("id", "investmentslice_identifier"),                                   
                                             "recursive" => 0,
                                           ));       
         return $slices[0]['Investmentslice'];        

@@ -114,7 +114,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
         
         print_r(array_keys($tempArray[0]));
 $timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
+echo "Number of seconds executed = " . ($timeStop - $timeStart) . "\n"; 
         return json_encode($data);
     }
     
