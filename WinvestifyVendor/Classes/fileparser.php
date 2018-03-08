@@ -153,6 +153,12 @@ class Fileparser {
  // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state
  // READ_INVESTMENT_DATA => Re-read the data of the investment from the actual "investment.xls" file (assuming it exists). 
  //                         This is only aplicable to the content of the investment model   
+ // TO_ACTIVE_STATUS ==> We put the investment as active
+ // PREACTIVE ==> We put the investment as preactive by default
+ // PREACTIVE_VERIFICATION ==> We verify first that the investment in preactive state is not already in DB in order to save it with preactive state
+ // ACTIVE_VERIFICATION ==> We verify that the investment is not in preactive state, then we add it in DB with active state.
+ //                                 If the investment is already on DB with preactive state, we change the state 
+ //                                 and move the reservedFunds to outstandingPrincipal
     
  /*
   * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
