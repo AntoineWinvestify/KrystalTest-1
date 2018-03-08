@@ -429,7 +429,7 @@ class Fileparser {
                                                                                 //For example Zank
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_myInvestment",  
+                "type" => "investment_myInvestmentPreactive",  
                 "chars" => "PREACTIVE"
                 ],
             44 => [
@@ -438,7 +438,7 @@ class Fileparser {
                                                                                 //for example Finanzarel
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_myInvestment",  
+                "type" => "investment_myInvestmentPreactiveVerification",  
                 "chars" => "PREACTIVE_VERIFICATION"
                 ],
             45 => [
@@ -447,7 +447,7 @@ class Fileparser {
                                                                                 //for example Finanzarel
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
-                "type" => "investment_myInvestment",  
+                "type" => "investment_myInvestmentActiveVerification",  
                 "chars" => "ACTIVE_VERIFICATION"
                 ],
         
