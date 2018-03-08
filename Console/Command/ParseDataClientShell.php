@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -612,7 +612,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             "investment_priceInSecondaryMarket", "investment_outstandingPrincipal", "investment_totalGrossIncome",
                             "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
                             "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan",
-                            "investment_sliceIdentifier", "investment_amortizationTableAvailable"));
+                            "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState"));
 
                         $investmentId = $tempInvestmentData[0]['Investment']['id'];
                         if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
@@ -634,7 +634,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             echo __FUNCTION__ . " " . __LINE__ . " : Reading the set of initial data of an existing loan with investmentId = $investmentId\n";
                             $database['investment']['investment_statusOfLoan'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
                             //THIS IS THE NEW STATE FOR PREACTIVE AND ACTIVE
-                            $database['investment']['investment_tempState'] = $tempInvestmentData[0]['Investment']['investment_statusOfLoan'];
+                            $database['investment']['investment_tempState'] = $tempInvestmentData[0]['Investment']['investment_tempState'];
                             $database['investment']['investment_myInvestment'] = $tempInvestmentData[0]['Investment']['investment_myInvestment'];
                             $database['investment']['investment_secondaryMarketInvestment'] = $tempInvestmentData[0]['Investment']['investment_secondaryMarketInvestment'];
                             $database['investment']['investment_outstandingPrincipal'] = $tempInvestmentData[0]['Investment']['investment_outstandingPrincipal'];
@@ -642,6 +642,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             $database['investment']['investment_totalGrossIncome'] = $tempInvestmentData[0]['Investment']['investment_totalGrossIncome'];
                             $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];
                             $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
+                            $database['investment']['investment_reservedFunds'] = $tempInvestmentData[0]['Investment']['investment_reservedFunds'];
                             $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
                             $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
                             $database['investment']['id'] = $investmentId;
@@ -682,12 +683,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 }
                             }
                             
-                            //FIRST IT IS PREACTIVE
-                            /*if (in_array("PREACTIVE", $conceptChars)) {
-                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_WAITINGTOBEFORMALIZED . " \n";
-                            }*/
-                            
+                            //THIS STATE DOESN'T HAVE AN AMORTIZATION TABLE
                             if (in_array("PREACTIVE_VERIFICATION", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED;
                                 echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED . " \n";
@@ -883,7 +879,8 @@ class ParseDataClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
-
+                    echo "probando reserved funds \n";
+                    print_r($database);
                     if (isset($database['investment']['investment_amortizationTableAvailable'])) {     // Write payment data in amortization table
                         if ($database['investment']['investment_amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
                             if (in_array("REPAYMENT", $conceptChars)) {
@@ -917,6 +914,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     else {
                         $database['investment']['id'] = $investmentId;
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
+                        print_r($database);
                         $result = $this->Investment->save($database['investment']);
                         if ($result) {
                             echo "Saving existing loan with investmentId = $investmentId, Done\n";
