@@ -127,8 +127,8 @@ class WinFormulas {
         "D" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-365",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
             "intervals" => "latest",
             "operation" => "subtract"
         ],
@@ -221,7 +221,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
         "F" => [
             "type" => [
@@ -235,7 +235,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
     ];
     
