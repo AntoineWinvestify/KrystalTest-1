@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -325,46 +325,9 @@ class ParseDataClientShell extends GearmanClientShell {
         // Lets allocate a userinvestmentdata for this calculation period (normally daily)
         // reset the relevant variables before going to next date
         $database = array();                                                    // Start with a clean shadow database       
-        $database['investment']['investment_loanId'] = "";
-        $database['investment']['investment_totalLoanCost'] = "";
-        $database['investment']['investment_paidInstalments'] = "";
-        $database['payment']['payment_latePaymentFeeIncome'] = "";
-        $database['payment']['payment_capitalRepayment'] = "";
-        $database['payment']['payment_principalAndInterestPayment'] = "";
-        $database['payment']['payment_partialPrincipalRepayment'] = "";
-        $database['payment']['payment_principalBuyback'] = "";
-        $database['payment']['payment_outstandingPrincipal'] = "";
-        $database['payment']['payment_receivedRepayment'] = "";
-        $database['payment']['payment_totalGrossIncome'] = "";
-        $database['payment']['payment_interestGrossIncome'] = "";
-        $database['payment']['payment_interestIncomeBuyback'] = "";
-        $database['payment']['payment_loanRecoveries'] = "";
-        $database['payment']['payment_loanIncentivesAndBonus'] = "";
-        $database['payment']['payment_loanCompensation'] = "";
-        $database['payment']['payment_regularGrossInterestIncome'] = "";
-        $database['payment']['payment_delayedInterestIncome'] = "";
-        $database['payment']['payment_delayedInterestIncomeBuyback'] = "";
-        $database['payment']['payment_currencyFluctuationPositive'] = "";
-        $database['payment']['payment_currencyFluctuationNegative'] = "";
-        $database['payment']['payment_myInvestment'] = "";
-        $database['payment']['payment_secondaryMarketInvestment'] = "";
-        $database['payment']['payment_incomeSecondaryMarket'] = "";
-        $database['payment']['payment_costSecondaryMarket'] = "";
-        $database['payment']['payment_commissionPaid'] = "";
-        $database['payment']['payment_currencyExchangeFee'] = "";
-        $database['payment']['payment_currencyExchangeTransaction'] = "";
-        $database['payment']['payment_incomeWithholdingTax'] = "";
-        $database['globaltotalsdata']['globaltotalsdata_secondaryMarketInvestmentPerDay'] = "";
-        $database['globaltotalsdata']['globaltotalsdata_myInvestmentPerDay'] = "";
-        $database['globaltotalsdata']['globaltotalsdata_regularGrossInterestIncomePerDay'] = "";
-        $database['globaltotalsdata']['globaltotalsdata_interestIncomeBuybackPerDay '] = "";
-        $database['globaltotalsdata']['globaltotalsdata_principalBuybackPerDay'] = "";
-        $database['globaltotalsdata']['globaltotalsdata_capitalRepaymentPerDay'] = "";
-        $database['globaltotalsdata']['globaltotalsdata_costSecondaryMarketPerDay'] = "";
-        $database['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = "";
-
-
-
+        unset($database['investment']);
+        unset($database['payment']);
+        unset($database['globaltotalsdata']);
 
         // Copy the last userinvestmentdata for the "missing" dates before we start analyzing transaction records 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
@@ -487,7 +450,6 @@ class ParseDataClientShell extends GearmanClientShell {
                 if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     
                     
-
                     // cycle through all individual fields of the transaction record
                     foreach ($dateTransaction[0] as $transactionDataKey => $transaction) {  // cycle through all individual fields of the transaction record
  
@@ -632,7 +594,6 @@ class ParseDataClientShell extends GearmanClientShell {
                     // load all the transaction data
                     foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
                         echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
-                        print_r($database);
                         if (isset($transactionData['conceptChars'])) {
                             $conceptChars = explode(",", $transactionData['conceptChars']);
 
@@ -693,6 +654,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
 
+
                         foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
                             if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                                 $transactionDataKey = $transaction;
@@ -713,22 +675,25 @@ class ParseDataClientShell extends GearmanClientShell {
                                 echo "Execute calculationfunction: $functionToCall\n";
                                 if (!empty($functionToCall)) {
                                     $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                                    if(!empty($result)){
+                                        echo "Result = $result and index = " . $tempResult['internalIndex'] . "\n";
+                                        if (isset($tempResult['linkedIndex'])) {
+                                            echo ">>>>>>>>>>>>>>>> LINKED INDEX\n";
+                                            $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
+                                            $dbTableInternalIndex = $dataInformationInternalIndex[0];
 
-                                    echo "Result = $result and index = " . $tempResult['internalIndex'] . "\n";
-                                    if (isset($tempResult['linkedIndex'])) {
-                                        echo ">>>>>>>>>>>>>>>> LINKED INDEX\n";
-                                        $dataInformationInternalIndex = explode(".", $this->variablesConfig[$tempResult['linkedIndex']]['databaseName']);
-                                        $dbTableInternalIndex = $dataInformationInternalIndex[0];
+                                            if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
+                                                echo "ADDING $result to existing result " . $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] . "\n";
 
-                                        if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                            echo "ADDING $result to existing result " . $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] . "\n";
-                                            $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+                                                    $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+
+                                            }
+                                            else {
+                                                echo "POSSIBLY overwriting existing result\n";
+                                                $database[$dbTable][$dbVariableName] = $result;
+                                            }
                                         }
-                                        else {
-                                            echo "POSSIBLY overwriting existing result\n";
-                                            $database[$dbTable][$dbVariableName] = $result;
-                                        }
-                                    }
+                                    } 
 
                                     // update the field userinvestmentdata_cashInPlatform   
                                     $cashflowOperation = $tempResult['cashflowOperation'];
@@ -740,8 +705,10 @@ class ParseDataClientShell extends GearmanClientShell {
                                     }
 
                                     if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                                        echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
-                                        $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+                                        if(!empty($result)){
+                                            echo "Adding $result to existing result " . $database[$dbTable][$dbVariableName] . "\n";
+                                            $database[$dbTable][$dbVariableName] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+                                        }
                                     }
                                     else {
                                         echo "possibly overwriting existing result\n";
@@ -791,11 +758,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
-  
 
-                    
-                    
-                    
                     // Now start consolidation of the results on investment level and per day  
                     $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065, 200037);
                     foreach ($internalVariableToHandle as $keyItem => $item) {
@@ -803,6 +766,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $functionToCall = $this->variablesConfig[$item]['function'];
                         echo "Calling the function: $functionToCall and dbtable = " . $varName[0] . " and varname =  " . $varName[1] . "\n";
                         $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+
                         if (!empty($result)) {
                             if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                 if (!isset($database[$varName[0]][$varName[1]])) {
@@ -810,23 +774,19 @@ class ParseDataClientShell extends GearmanClientShell {
                                 }
                                 $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                             }
-                            else {
+                            else {                           
                                 $database[$varName[0]][$varName[1]] = $result;
                             }
                         }
+                        if (empty($database[$varName[0]][$varName[1]])) {   //Dont rewrite investment value with 0
+                            unset($database[$varName[0]][$varName[1]]);
+                        }
+                        if (empty($database[$varName[0]])) {   //Dont rewrite investment value with 0
+                            unset($database[$varName[0]]);
+                        }  
+
                     }
                     
-                    if ($database['investment']['investment_myInvestment'] == "0.0000000000000000" || empty($database['investment']['investment_myInvestment'])) {   //Dont rewrite investment value with 0
-                        unset($database['investment']['investment_myInvestment']);
-                    }
-                    foreach ($database['payment'] as $key => $value) {   
-                        if (empty($value) || $value == '0.0000000000000000') {   //Dont write empty payments in db
-                            unset($database['payment'][$key]);   
-                        }
-                        if (empty($database['payment'])) {
-                            unset($database['payment']);
-                        }
-                    }
                     echo __FUNCTION__ . " " . __LINE__ . "printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
@@ -933,7 +893,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
-                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);
+                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);                 
                     echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $functionToCall and Executing Calc. specific variables=>: orig. amount = " . $database[$varName[0]][$varName[1]] . " and new result = $result" . "\n";
 
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
@@ -952,36 +912,6 @@ class ParseDataClientShell extends GearmanClientShell {
                 unset($database['investment']);
                 unset($database['payment']);
 //               unset($slicesAmortizationTablesToCollect);
-
-                $database['investment']['investment_totalLoanCost'] = "";
-                $database['investment']['investment_paidInstalments'] = "";
-
-                $database['payment']['payment_latePaymentFeeIncome'] = "";
-                $database['payment']['payment_capitalRepayment'] = "";
-                $database['payment']['payment_principalAndInterestPayment'] = "";
-                $database['payment']['payment_partialPrincipalRepayment'] = "";
-                $database['payment']['payment_principalBuyback'] = "";
-                $database['payment']['payment_outstandingPrincipal'] = "";
-                $database['payment']['payment_receivedRepayment'] = "";
-                $database['payment']['payment_totalGrossIncome'] = "";
-                $database['payment']['payment_interestGrossIncome'] = "";
-                $database['payment']['payment_interestIncomeBuyback'] = "";
-                $database['payment']['payment_loanRecoveries'] = "";
-                $database['payment']['payment_loanIncentivesAndBonus'] = "";
-                $database['payment']['payment_loanCompensation'] = "";
-                $database['payment']['payment_regularGrossInterestIncome'] = "";
-                $database['payment']['payment_delayedInterestIncome'] = "";
-                $database['payment']['payment_delayedInterestIncomeBuyback'] = "";
-                $database['payment']['payment_currencyFluctuationPositive'] = "";
-                $database['payment']['payment_currencyFluctuationNegative'] = "";
-                $database['payment']['payment_myInvestment'] = "";
-                $database['payment']['payment_secondaryMarketInvestment'] = "";
-                $database['payment']['payment_incomeSecondaryMarket'] = "";
-                $database['payment']['payment_costSecondaryMarket'] = "";
-                $database['payment']['payment_commissionPaid'] = "";
-                $database['payment']['payment_currencyExchangeFee'] = "";
-                $database['payment']['payment_currencyExchangeTransaction'] = "";
-                $database['payment']['payment_incomeWithholdingTax'] = "";
                 unset($database['roundingerrorcompensation']);
             }
 
@@ -1005,7 +935,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                 $functionToCall = $this->variablesConfig[$item]['function'];
                 echo "Calling the function: $functionToCall and index = $keyItem\n";
-                $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);
+                $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
                 echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
                 echo $database[$varName[0]][$varName[1]];
             }
