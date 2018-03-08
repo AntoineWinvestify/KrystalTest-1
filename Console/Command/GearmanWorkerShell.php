@@ -447,9 +447,10 @@ class GearmanWorkerShell extends AppShell {
         if (empty($this->startDate)) {
             return;
         }
-        $rangeDates = $this->createDateRange($this->startDate, $this->finishDate);
+        $finishDate = date("Y-m-d", strtotime($this->finishDate . "+1 day"));
+        $rangeDates = $this->createDateRange($this->startDate, $finishDate);
         array_shift($rangeDates);
-        array_push($rangeDates, $this->finishDate);
+        array_push($rangeDates, $finishDate);
         foreach ($tempArray as $keyDate => $data) {
             $date = date("Ymd", strtotime($keyDate));
             if (!in_array($date, $rangeDates)) {
