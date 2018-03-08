@@ -1358,7 +1358,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     }
     
     /** STILL NOT FINISHED
-     *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
+     *  Calculate the real state of a loan and if the loan must be on reservedAssets or outstandingPrincipal
+     *  There are different states
+     *  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
+     *  The function write myInvestment in reservedFunds
+     *  WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED
+     *  We verify first that the investment in preactive state is not already in DB in order to save it
+     *  WIN_LOANSTATUS_VERIFYACTIVE
+     *  We verify that the investment is not in preactive state, then we add it in DB with active state.
+     *  If the investment is already on DB with preactive state, we change the state 
+     *  and move the reservedFunds to outstandingPrincipal
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -1399,6 +1408,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             if (isset($resultData['payment']['payment_myInvestment'])) {
                 echo "Paymen is investment \n";
                 $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
                 print_r($resultData);
                 if ($resultData['investment']['investment_isNew']) {
                     unset($resultData['investment']['investment_isNew']);
@@ -1419,8 +1429,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                                 $resultData['investment']['investment_myInvestment'],
                                 16
                             );
-                    $resultData['investment']['investment_reservedAssets'] = bcsub(
-                                $resultData['investment']['investment_reservedAssets'],
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd(
+                                $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                                $resultData['investment']['investment_myInvestment'],
+                                16
+                            );
+                    $result = bcsub(
+                                $result,
                                 $resultData['investment']['investment_myInvestment'],
                                 16
                             );
@@ -1455,7 +1470,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     //                                unset ($sliceIdentifier);
                     ///////////////////////******* take INTO ACCOUNT THAT THIS CODE IS NOT WORKING, IT MUST BE IN PARSEDATACLIENT
                     
-                    echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
+                    /*echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
                     $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
                     // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
                     // if not then create a new array with the data available so far, sliceIdentifier and loanId
@@ -1470,7 +1485,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                         $collectTablesIndex++;
                         $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                         $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
-                    }
+                    }*/
                     
                     ///////////////////////*******
                 }
@@ -1501,7 +1516,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     }
     
     /**
-     *  Get the amount which corresponds to the "totalOutstandingPrincipal" concept
+     *  Get the amount which corresponds to the "totalReservedAssets" concept
      *  for the controlVariables check
      * 
      *  @param  array       array with the current transaction data
@@ -1510,6 +1525,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      */
     public function calculateTotalReservedAssets(&$transactionData, &$resultData) {
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
+        $result = $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'];
         //$result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_reservedFunds'], 16);
         /*$result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
