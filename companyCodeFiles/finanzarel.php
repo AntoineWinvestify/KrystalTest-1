@@ -537,6 +537,121 @@ class finanzarel extends p2pCompany {
         ]
     ];
     
+    protected $valuesExpiredLoan = [                                            // All types/names will be defined as associative index in array
+        [
+            "A" =>  [
+                "name" => "investment_loanId"                                   // Winvestify standardized name
+            ]
+        ],
+        [
+            "A" =>  [
+                "name" => "investment_loanId"                                   // Winvestify standardized name
+            ]
+        ],
+        [
+            "A" =>  [
+                "name" => "investment_loanId"                                          // Winvestify standardized name
+            ],
+            /*"B" => [
+                [
+                    "type" => "investment_statusOfLoan",                          
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                                "input2" => "",                               
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
+                [
+                    "type" => "investment_originalLoanState",                    
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                                "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "getDefaultValue",
+                ]
+            ],
+            "C" => [
+                "name" => "investment_debtor",                           // Winvestify standardized name  OK
+            ],
+            "D" => [
+                "name" => "investment_riskRating",
+            ], 
+            "E" =>  [
+                "name" => "investment_typeOfInvestment"
+            ],
+            "F" => [  
+                [
+                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "G" => [
+                "name" => "investment_originalDuration"
+            ],
+            "H" => [
+                [
+                    "type" => "investment_issueDate",                           // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ],
+                [
+                    "type" => "investment_myInvestmentDate",                    // Winvestify standardized name OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ],
+            "K" =>  [
+                [
+                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
+                    "inputData" => [                                            // trick to get the complete cell data as purpose
+                                "input2" => "",                                // May contain trailing spaces
+                                "input3" => "&",
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
+            ],
+            "M" => [
+                [
+                    "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
+                    "inputData" => [
+				"input2" => "",
+                                "input3" => ",",
+                                "input4" => 2
+                                ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "O" => [
+                [
+                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ],
+                [
+                    "type" => "investment_dueDate",                           // Winvestify standardized name  OK
+                    "inputData" => [
+				"input2" => "D/M/y",
+
+                                ],
+                    "functionName" => "normalizeDate",
+                ]
+            ]*/
+        ]
+    ];
+    
     protected $parserValuesAmortizationTable = [
             "A" =>  [
                 "name" => "investment_loanId"                                          // Winvestify standardized name
@@ -718,6 +833,33 @@ class finanzarel extends p2pCompany {
         ]
     ];
     
+    protected $expiredLoanConfigParms = [
+        "fileConfigParam" => [
+            "type" => "joinTogether",
+            "function" => "joinOneDimensionArrayTogether",
+            "sortParameter" => array("investment_loanId")
+        ],
+        0 => [
+            'offsetStart' => 1,
+            'offsetEnd'     => 1,
+            'separatorChar' => ";",
+            'debugEnd' => true,
+            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
+        ],
+        1 => [
+            'offsetStart' => 1,
+            'offsetEnd'     => 1,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId"),                      // Used to "sort" the array and use $sortParameter as prime index.
+        ],
+        2 => [
+            'offsetStart' => 1,
+            'offsetEnd'     => 1,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+        ]
+    ];
+    
     protected $amortizationConfigParms = array(
         [
             'offsetStart' => 1,
@@ -787,6 +929,16 @@ class finanzarel extends p2pCompany {
                 "values" => [
                     "startDate",
                     "finishDate"
+                ]
+            ]
+        ],
+        "expiredLoan" => [
+            "cleanTempArray" => [
+                "findValueInArray" => [
+                    "key" => "investment_loanId",
+                    "function" => "verifyPreviousVariableIsEqual",
+                    "values" => ["valueToVerify"],
+                    "valueDepth" => 2
                 ]
             ]
         ]
