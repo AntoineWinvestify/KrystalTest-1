@@ -41,6 +41,7 @@ class GearmanWorkerShell extends AppShell {
     protected $tempDepth = 0;      // Required to see if the $depth is decreasing    
     protected $startDate;
     protected $finishDate;
+    protected $valueToVerify;
     
     /**
      * Constructor of the class
@@ -458,4 +459,22 @@ class GearmanWorkerShell extends AppShell {
             }
         }
     }
+    
+    /**
+     * Function to verify if two data are not equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
+    public function verifyPreviousVariableIsEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value !== $this->$valueToVerify) {
+            $this->$valueToVerify = $value;
+        }
+        else {
+            $result = true;
+        }
+        return $result;
+    }
+    
 }
