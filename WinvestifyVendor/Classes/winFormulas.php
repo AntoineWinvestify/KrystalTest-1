@@ -221,7 +221,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
         "F" => [
             "type" => [
@@ -235,7 +235,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
     ];
     
