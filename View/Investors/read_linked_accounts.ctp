@@ -339,7 +339,7 @@ $(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
       </div>
       <div class="modal-body">
           <p><?php echo __("Do you want delete this linked account?"); ?> </p>
-          <button type="button" class="btn btn-default deleteLinkedAccount" data-dismiss="modal" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"><?php echo __("Delete"); ?></button>
+          <button type="button" class="btn btn-default deleteLinkedAccount btnRounded" data-dismiss="modal" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"><?php echo __("Delete"); ?></button>
       </div>
       <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __("Close"); ?></button>
