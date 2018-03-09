@@ -39,16 +39,16 @@ class ConsolidationClientShell extends GearmanClientShell {
     ];
     
     protected $netAnnualReturnXirr = [
-        'service' => 'calculateNetAnnualReturnXirr',
-        'gearmanFunction' => 'getFormulaCalculate',
-        'database' => [
-            'platform' => [
-                'table' => 'userinvestmentdata',
-                'variable' => 'userinvestmentdata_netAnnualReturnPast12Months',
-                'model' => 'Userinvestmentdata'
+        'service' => 'calculateNetAnnualReturnXirr',                            //Service is the function that is needed to call in the worker to calculate this variable
+        'gearmanFunction' => 'getFormulaCalculate',                             //This is the gearman function that will be call in order to initiate the service
+        'database' => [                                                         //This is the information to save the variable in DB
+            'platform' => [                                                     //platform is the variable to save the data by company
+                'table' => 'userinvestmentdata',                                                //Table is the table where is going to save the data
+                'variable' => 'userinvestmentdata_netAnnualReturnPast12Months',                 //Variable is the name of the service where is going to save the data
+                'model' => 'Userinvestmentdata'                                                 //Model is the model to initiate
             ],
-            'dashboardOverview' => [
-                'variable' => 'dashboardoverviewdata_netAnnualReturnPast12Months',
+            'dashboardOverview' => [                                            //dashboardOverview is the variable to save the data by investor
+                'variable' => 'dashboardoverviewdata_netAnnualReturnPast12Months',              //Variable is the name of the service where is going to save the data
             ]
         ]
     ];
@@ -162,6 +162,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                 foreach ($pendingJobs as $keyjobs => $job) {
                     $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
                     $this->queueInfo[$job['Queue2']['id']] = $queueInfo;
+                    //We need the companies that are not in progress in order to calculate the Dashboardoverview data
                     $data['companiesNothingInProgress'] = $this->Linkedaccount->getLinkAccountsWithNothingInProcess($job['Queue2']['queue2_userReference']);
                     $data["companies"] = $queueInfo['companiesInFlow'];
                     $this->userLinkaccountIds[$job['Queue2']['id']] = $queueInfo['companiesInFlow'];;
@@ -169,6 +170,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $data["queue_id"] = $job['Queue2']['id'];
                     $data["date"] = $queueInfo['date'];
                     $data["originExecution"] = $queueInfo['originExecution'];
+                    //Now, we get all the variables Services, in the future it must be from database
                     if (empty($queueInfo['services'])) {
                         $this->getAllServices();
                     }
@@ -228,10 +230,13 @@ class ConsolidationClientShell extends GearmanClientShell {
         $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
         foreach ($this->tempArray as $queueKey => $tempArray) {
             foreach ($tempArray as $linkedaccountId => $tempArrayByCompany) {
+                //If linkedaccountId is investor, this data is for the dashboardOverview
                 if ($linkedaccountId == 'investor') {
                     $dashboardOverviewData = [];
                     $keyInvestorIdentity = key($tempArrayByCompany);
+                    //We search for the array by investorIdentity as per serviceValue (for example, NAR, NARPastYear...)
                     foreach ($tempArrayByCompany[$keyInvestorIdentity] as $key => $serviceValues) {
+                        //If the serviceValues is an array, it is the NARPastyear, for now, we only need the last year so we get with an array_shift
                          if (is_array($serviceValues)) {
                             $serviceValues = array_shift($serviceValues);
                         }
@@ -246,7 +251,9 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $this->Dashboardoverviewdata->save($dashboardOverviewData);
                     continue;
                 }
+                //If it is not investor, we are going to save the values by linkedacccountId
                 foreach ($tempArrayByCompany as $key => $serviceValues) {
+                    //If the serviceValues is an array, it is the NARPastyear, for now, we only need the last year so we get with an array_shift
                     if (is_array($serviceValues)) {
                         $serviceValues = array_shift($serviceValues);
                     }
@@ -254,7 +261,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $model = ClassRegistry::init($this->services[$key]['database']['platform']['model']);
                     $dateTime = date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']));
                     $conditions = array(
-                        'date <=' => $dateTime,
+                        'date <=' => $dateTime,                                 //We get the last entry taking into account the date we initiate the flow1
                         'linkedaccount_id' => $linkedaccountId);
                     $id = $model->getData($conditions,['id'],'id DESC',null,'first');
                     $model->id = $id;
@@ -262,6 +269,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                 }
             }
         }
+        //After save all the service, we change the lastAccess of the account as the date of the flow1 started
         foreach ($this->userResult as $queueId => $userResult) {
             $date = $this->queueInfo[$queueId]['date'];
             $lastAccess = date("Y-m-d", strtotime($date-1));
@@ -274,7 +282,13 @@ class ConsolidationClientShell extends GearmanClientShell {
     }
     
     /**
-     * Function to get all the services in the flow4
+     * Function to get all the services that are needed to calculate in the flow4
+     * Services:
+     * netAnnualReturnXirr 
+     * netAnnualTotalFundsReturnXirr
+     * netAnnualReturnPastYearXirr
+     * netReturn
+     * netReturnPastYear
      */
     public function getAllServices() {
         $services = $this->services;
