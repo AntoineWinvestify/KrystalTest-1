@@ -552,7 +552,7 @@ class finanzarel extends p2pCompany {
             "A" =>  [
                 "name" => "investment_loanId"                                          // Winvestify standardized name
             ],
-            /*"B" => [
+            "B" => [
                 [
                     "type" => "investment_statusOfLoan",                          
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
@@ -648,7 +648,7 @@ class finanzarel extends p2pCompany {
                                 ],
                     "functionName" => "normalizeDate",
                 ]
-            ]*/
+            ]
         ]
     ];
     
