@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -508,14 +508,18 @@ class ParseDataClientShell extends GearmanClientShell {
                             unset($result);
                             $functionToCall = $tempResult['function'];
                             if (isset($tempResult['globalDatabaseName'])) {
+                                echo "Enter in globalDatabaseName \n";
                                 $dataInformation = explode(".", $tempResult['globalDatabaseName']);
                             }
                             else {
+                                echo "Not enter adafaf \n";
                                 $dataInformation = explode(".", $tempResult['databaseName']);
                             }
                             $dbTable = $dataInformation[0];
                             $dbTableField = $dataInformation[1];
-
+                            echo "datatable information \n";
+print_r($dbTable);
+print_r($dbTableField);
                             if (!empty($functionToCall)) {
                                 echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
@@ -536,10 +540,12 @@ class ParseDataClientShell extends GearmanClientShell {
                                 else {
                                     $database[$dbTable][$dbTableField] = $result;
                                 }
+                                print_r($database);
                             }
                             else {
                                 echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
                                 $database[$dbTable][$dbTableField] = $result;
+                                print_r($database);
                             }
                         }
                     }
