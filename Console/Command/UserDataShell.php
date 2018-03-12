@@ -667,10 +667,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
-        $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
+        /*$result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
         unset($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp']);
         $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
-        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);
+        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);*/
         return $result;
     }
 
@@ -858,12 +858,25 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
-    }   
-    public function calculateDisinvestmentPrimaryMarketWinouthLoanReference(&$transactionData, &$resultData) {
+        echo "disinfnansdfndfmsdfnsdmf \n";
+        print_r($resultData);
+        if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
+            echo "I am calculating a global disinvestment \n";
+            $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+            $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'],$transactionData['amount'], 16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
+            print_r($resultData);
+            return;
+        }
+        else {
+            return $transactionData['amount'];
+        }
+    }
+    
+    /*public function calculateDisinvestmentPrimaryMarketWinouthLoanReference(&$transactionData, &$resultData) {
         $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
         return $transactionData['amount'];
-    }  
+    }  */
     
     /**
      *  Calculates the new state of a cancelled investment.  It never matured to a real investment, i.e. it 
@@ -1462,33 +1475,39 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 echo "investment tempState is " . $resultData['investment']['investment_tempState'];
             }
             if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                //$calculationClassHandle->manageState(&$transactionData, &$resultData, $event);
-                ///NEW CODE TO TRY
-                echo "MOVE FROM RESERVED FUNDS IF EXIST TO OUTSTANDING PRINCIPAL \n";
-                $resultData['investment']['investment_statusOfLoan'] = $this->calculateActiveStateChange($transactionData, $resultData);
-                if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_ACTIVE) {
-    //                                unset ($sliceIdentifier);
-                    ///////////////////////******* take INTO ACCOUNT THAT THIS CODE IS NOT WORKING, IT MUST BE IN PARSEDATACLIENT
-                    
-                    /*echo "TAKING AMORTIZATION TABLE IS ON FIRE BABY \n";
-                    $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
-                    // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                    // if not then create a new array with the data available so far, sliceIdentifier and loanId
-                    $isNewTable = YES;
-                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                        if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
-                            $isNewTable = NO;
-                            break;
-                        }
-                    }
-                    if ($isNewTable == YES) {
-                        $collectTablesIndex++;
-                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
-                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
-                    }*/
-                    
-                    ///////////////////////*******
+                $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+                print_r($resultData);
+                if ($resultData['investment']['investment_isNew']) {
+                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
+                        $resultData['investment']['investment_outstandingPrincipal'],
+                        $resultData['investment']['investment_myInvestment'],
+                        16
+                    );   
+                    $resultData['investment']['investment_reservedFunds'] = bcsub(
+                        $resultData['investment']['investment_reservedFunds'],
+                        $resultData['investment']['investment_myInvestment'],
+                        16
+                    );
                 }
+                else {
+                    echo "This is a problem of Zank, so we are implementing 0 \n";
+                    $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                                $resultData['investment']['investment_myInvestment'],
+                                16
+                            );
+                    $resultData['investment']['investment_reservedFunds'] = bcsub(
+                                $resultData['investment']['investment_reservedFunds'],
+                                $resultData['investment']['investment_myInvestment'],
+                                16
+                            );
+                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
+                            $resultData['investment']['investment_outstandingPrincipal'], 
+                            $resultData['payment']['payment_myInvestment'], 
+                            16);
+                }
+                print_r($resultData);
             }
         }
     }
@@ -1528,10 +1547,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         $result = $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'];
         //$result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_reservedFunds'], 16);
-        /*$result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
+        $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
         unset($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp']);
         $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
-        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);*/
+        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);
         return $result;
     }
     
