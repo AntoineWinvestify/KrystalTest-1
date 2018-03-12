@@ -858,14 +858,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
-        echo "disinfnansdfndfmsdfnsdmf \n";
-        print_r($resultData);
         if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
-            echo "I am calculating a global disinvestment \n";
             $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
             $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'],$transactionData['amount'], 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
-            print_r($resultData);
             return $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'];
         }
         else {
