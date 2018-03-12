@@ -866,7 +866,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'],$transactionData['amount'], 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
             print_r($resultData);
-            return;
+            return $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'];
         }
         else {
             return $transactionData['amount'];
