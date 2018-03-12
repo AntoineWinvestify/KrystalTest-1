@@ -52,6 +52,8 @@ class estateguru extends p2pCompany {
     
     function __construct() {
         parent::__construct();
+                $this->tempArray['global']['activeInInvestments'] = 0;
+
 // Do whatever is needed for this subsclass
     }
 
@@ -102,8 +104,7 @@ class estateguru extends p2pCompany {
      * @param string $user
      * @param string $password
      */
-    function collectUserInvestmentDataParallel($str) {
-        $this->tempArray['global']['activeInInvestments'] = 0;
+    function collectUserGlobalFilesParallel($str) {
         switch ($this->idForSwitch) {
             case 0:
 
@@ -120,30 +121,65 @@ class estateguru extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();
                 break;
             case 2:
-                $dom = new DOMDocument;  //Check if works
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                //echo $str;
+                if(!$this->login){
+                    $dom = new DOMDocument;  //Check if works
+                    $dom->loadHTML($str);
+                    $dom->preserveWhiteSpace = false;
+                    //echo $str;
 
-                $confirm = false;
+                    $confirm = false;
 
-                $as = $dom->getElementsByTagName('a');
-                foreach ($as as $a) {
-                    //echo $a->nodeValue . HTML_ENDOFLINE;
-                    if (trim($a->nodeValue) == 'Logout') {
-                        $confirm = true;
-                        break;
+                    $as = $dom->getElementsByTagName('a');
+                    foreach ($as as $a) {
+                        //echo $a->nodeValue . HTML_ENDOFLINE;
+                        if (trim($a->nodeValue) == 'Logout') {
+                            $confirm = true;
+                            break;
+                        }
+                    }
+
+                    if ($confirm) {
+                        echo 'login ok';
+                        $this->login = true;
+                        $this->idForSwitch++;
                     }
                 }
+                
+                $continue = $this->downloadTimePeriod($this->dateInit, $this->period);
+                $dateInit = date("d/m/Y",  strtotime($this->dateInitPeriod));      //date("d.m.Y", strtotime($this->dateInit));
+                $dateFinish = date("d/m/Y",  strtotime($this->dateFinishPeriod));  //date('d.m.Y',strtotime($this->dateFinish));
+                
+                $credentials = array(
+                    'currentCashType' => "",
+                    'currentOrderStatus' => "",
+                    'datePaymentFilter' => "",
+                    'datePaymentFilterTo' => "",
+                    'dateApproveFilter' => $dateInit,
+                    'dateApproveFilterTo' => $dateFinish,
+                    'projectStatusFilter' => "ALL",
+                    'currentProjectId' => "",
+                    'showFutureTransactions' => "false",
+                    'userDetails' => "",
+                    'currentUserId' => "2374",
+                    'currentCurrency' => "EUR",
+                );
 
-                if ($confirm) {
-                    echo 'login ok';
-                    $this->idForSwitch++;
-                }
-                $this->getCompanyWebpageMultiCurl();
+                print_r($credentials);
+                $this->getCompanyWebpageMultiCurl(null, $credentials);
                 break;
             case 3:
+                echo $str;
+                exit;
                 $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+
+               
+
+
+
+
+            /*$dom = new DOMDocument;
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 //echo $str;
@@ -200,7 +236,7 @@ class estateguru extends p2pCompany {
                 foreach($tdsFoot as $keyFoot=>$tdFoot){
                      echo $keyFoot . " " . $tdFoot->nodeValue;
                 }
-                break;
+                break;*/
         }
     }
 
