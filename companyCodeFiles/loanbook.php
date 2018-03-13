@@ -1325,7 +1325,7 @@ class loanbook extends p2pCompany {
                 $nodeTop = new DOMDocument();
                 $nodeTop->appendChild($nodeTop->importNode($nodeClone, TRUE)); //Save the node in a dom element
                 $nodeTopString = $nodeTop->saveHTML(); //We need to convert the dom node to string
-                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0], $nodeTopString); //Compare structure with db
+                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0][0], $nodeTopString); //Compare structure with db
 
                 if (!$topRevision) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
@@ -1386,7 +1386,7 @@ class loanbook extends p2pCompany {
                         $nodeTable = new DOMDocument();
                         $nodeTable->appendChild($nodeTable->importNode($nodeClone, TRUE)); //Save the node in a dom element
                         $nodeTableString = $nodeTable->saveHTML(); //We need to convert the dom node to string
-                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString); //Compare structure   with db  
+                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[0][1], $nodeTableString); //Compare structure   with db  
 
                         if (!$tableRevision) {
                             return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);

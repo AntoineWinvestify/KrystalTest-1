@@ -1845,6 +1845,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             case "xlsx":
                 $inputType = "Excel2007";
                 break;
+            case "xls":
+                $inputType = "Excel5";
+                break;
             case "csv":
                 $inputType = "CSV";
                 break;

@@ -74,7 +74,8 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccount) {
             $this->initCompanyClass($data, $i, $linkedaccount, WIN_DOWNLOAD_PFP_FILE_SEQUENCE);
             
-            $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_SINGLE_INVESTMENT_PAGE);
+            $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_SINGLE_INVESTMENT_PAGE);
+            $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_INVESTMENTS_FILE_HTML);
             $this->newComp[$i]->setTableStructure($structure);
             
             $i++;
