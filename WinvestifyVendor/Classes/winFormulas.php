@@ -164,7 +164,7 @@ class WinFormulas {
             "dateInit" => "-0",
             "dateFinish" => "-0",
             "intervals" => "latest",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
         "B" => [
             "type" => [
@@ -179,7 +179,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-365",
             "intervals" => "latest",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
         "C" => [
             "type" => [
@@ -193,7 +193,7 @@ class WinFormulas {
             "dateInit" => "-0",
             "dateFinish" => "-0",
             "intervals" => "latest",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
         "D" => [
             "type" => [
@@ -207,7 +207,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-365",
             "intervals" => "latest",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
         "E" => [
             "type" => [
