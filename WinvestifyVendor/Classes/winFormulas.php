@@ -129,10 +129,9 @@ class WinFormulas {
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
-            "intervals" => "latest",                                            //If the interval is latest, we get only the first entry 
-                                                                                //that exist from dateFinish to the beginning
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
+            "intervals" => "latest",
             "operation" => "add"
         ],
         "D" => [

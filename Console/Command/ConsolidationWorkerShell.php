@@ -126,7 +126,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             $returnData = [];
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-                $returnData[$linkedaccountId][$nameFunction] = $this->financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+                $returnData[$linkedaccountId][$nameFunction] = round($this->financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']),16);
             }
         }
         else if ($typeOfFormula == WIN_FORMULAS_NET_RETURN) {
@@ -157,7 +157,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
-            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
+            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = round($this->financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']),16); 
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
             $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
@@ -267,7 +267,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData = null;
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
                 foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
-                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = round($this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']),16);
                 }
             }
         }
@@ -314,7 +314,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             foreach ($dataMergeByDate as $keyDate => $dataByDate) {
-                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = round($this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']),16);
             }
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {

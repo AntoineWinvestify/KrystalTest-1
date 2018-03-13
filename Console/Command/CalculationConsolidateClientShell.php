@@ -45,7 +45,7 @@
  */
 App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
-class CalculationConsolidationClientShell extends GearmanClientShell {
+class CalculationConsolidateClientShell extends GearmanClientShell {
 
     public $uses = array('Queue2', 'Investment', 'Investmentslice');
 
