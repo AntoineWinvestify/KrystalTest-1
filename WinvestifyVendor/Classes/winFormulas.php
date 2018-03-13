@@ -166,7 +166,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_outstandingPrincipal",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -180,8 +179,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_outstandingPrincipal",
-                    //"userinvestmentdata_cashInPlatform",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -195,7 +192,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_cashInPlatform",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -209,7 +205,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_cashInPlatform",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -223,7 +218,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [        
                     "globalcashflowdata_platformWithdrawals",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -231,7 +225,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
         "F" => [
             "type" => [
@@ -245,7 +239,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
     ];
     
