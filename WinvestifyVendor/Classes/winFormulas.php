@@ -164,7 +164,7 @@ class WinFormulas {
             "dateInit" => "-0",
             "dateFinish" => "-0",
             "intervals" => "latest",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
         "B" => [
             "type" => [
@@ -179,7 +179,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-365",
             "intervals" => "latest",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
         "C" => [
             "type" => [
@@ -193,7 +193,7 @@ class WinFormulas {
             "dateInit" => "-0",
             "dateFinish" => "-0",
             "intervals" => "latest",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
         "D" => [
             "type" => [
@@ -207,7 +207,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-365",
             "intervals" => "latest",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
         "E" => [
             "type" => [
@@ -221,7 +221,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "subtract"
+            "operation" => "add"
         ],
         "F" => [
             "type" => [
@@ -235,7 +235,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "add"
+            "operation" => "subtract"
         ],
     ];
     
