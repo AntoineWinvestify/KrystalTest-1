@@ -1412,7 +1412,10 @@ class mintos extends p2pCompany {
                 break; 
             case "Default": 
                 $result = WIN_LOANSTATUS_ACTIVE;
-                break;            
+                break;
+            case "Grace Period": 
+                $result = WIN_LOANSTATUS_ACTIVE;
+                break;
             case "Finished": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break; 
