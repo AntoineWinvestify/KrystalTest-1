@@ -100,7 +100,8 @@ class zank extends p2pCompany {
                                                                                 // consider 0 € in order to "close" an active investment
         'changeStatusToActive' => [
             "function" => "getStatusFromInvestment"
-        ]
+        ],
+        'verifyReservedFunds' => true
     ];
     
     protected $transactionConfigParms = [
@@ -243,10 +244,20 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0
-                                ],
+                                "input3" => 0,
+                                "input4" => ","
+                            ],
                     "functionName" => "handleNumber",
-                ]                                           
+                ],
+                [
+                    "type" => "investment_expectedAnnualYield",                 
+                    "inputData" => [                                            
+                                "input2" => "",                               
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]   
             ], 
             "D" =>  [
                 "name" => "investment_originalDuration"
@@ -317,7 +328,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",                    
+                    "type" => "investment_originalState",                    
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
