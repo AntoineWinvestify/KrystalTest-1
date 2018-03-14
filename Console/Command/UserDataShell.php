@@ -28,6 +28,7 @@
 class UserDataShell extends AppShell {
 
     public $uses = array('Userinvestmentdata', 'Investment');
+    protected $data = [];
 
     /**
      * Constructor of the class
@@ -1462,48 +1463,53 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     }
     
     public function verifyStatusWaitingToBeFormalized(&$transactionData, &$resultData) {
-        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-            if (!empty($resultData['configParms']['changeStatusToActive'])) {
-                echo "change Status or possible to change \n";
-                $functionToCall = $resultData['configParms']['changeStatusToActive']['function'];
-                echo "function to call is $functionToCall \n";
-                $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
-                echo "investment tempState is " . $resultData['investment']['investment_tempState'];
-            }
-            if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
-                $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-                print_r($resultData);
-                if ($resultData['investment']['investment_isNew']) {
-                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
-                        $resultData['investment']['investment_outstandingPrincipal'],
-                        $resultData['investment']['investment_myInvestment'],
-                        16
-                    );   
-                    $resultData['investment']['investment_reservedFunds'] = bcsub(
-                        $resultData['investment']['investment_reservedFunds'],
-                        $resultData['investment']['investment_myInvestment'],
-                        16
-                    );
+        if ($this->data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+            if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                if (!empty($resultData['configParms']['changeStatusToActive'])) {
+                    echo "change Status or possible to change \n";
+                    $functionToCall = $resultData['configParms']['changeStatusToActive']['function'];
+                    echo "function to call is $functionToCall \n";
+                    $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
+                    echo "investment tempState is " . $resultData['investment']['investment_tempState'];
+                    $verifyStateChanged = true;
                 }
-                else {
-                    echo "This is a problem of Zank, so we are implementing 0 \n";
-                    $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
-                                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                if ($verifyStateChanged) {
+                    if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+                        print_r($resultData);
+                        if ($resultData['investment']['investment_isNew']) {
+                            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
+                                $resultData['investment']['investment_outstandingPrincipal'],
                                 $resultData['investment']['investment_myInvestment'],
                                 16
-                            );
-                    $resultData['investment']['investment_reservedFunds'] = bcsub(
+                            );   
+                            $resultData['investment']['investment_reservedFunds'] = bcsub(
                                 $resultData['investment']['investment_reservedFunds'],
                                 $resultData['investment']['investment_myInvestment'],
                                 16
                             );
-                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
-                            $resultData['investment']['investment_outstandingPrincipal'], 
-                            $resultData['payment']['payment_myInvestment'], 
-                            16);
+                        }
+                        else {
+                            echo "This is a problem of Zank, so we are implementing 0 \n";
+                            $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                                        $resultData['investment']['investment_myInvestment'],
+                                        16
+                                    );
+                            $resultData['investment']['investment_reservedFunds'] = bcsub(
+                                        $resultData['investment']['investment_reservedFunds'],
+                                        $resultData['investment']['investment_myInvestment'],
+                                        16
+                                    );
+                            $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
+                                    $resultData['investment']['investment_outstandingPrincipal'], 
+                                    $resultData['payment']['payment_myInvestment'], 
+                                    16);
+                        }
+                        print_r($resultData);
+                    }
                 }
-                print_r($resultData);
             }
         }
     }
@@ -1548,6 +1554,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
         unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);
         return $result;
+    }
+    
+    public function setData($data) {
+        foreach ($data as $key => $individualData) {
+            $this->data[$key] = $individualData;
+        }
     }
     
 }
