@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -170,8 +170,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
                         $files[WIN_FLOW_CONTROL_FILE] = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE . ".*", true);
                         $listOfActiveInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_ACTIVE);
-                        $listOfReservedInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
-
+                        $listOfReservedInvestments = $this->getLoanIdListOfInvestmentsWithAmount($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
                         $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE . ".*", true);
 
                         $params[$linkedAccountId] = array(
@@ -295,8 +294,8 @@ class ParseDataClientShell extends GearmanClientShell {
         $amortizationTablesNotNeeded = array();
         $collectTablesIndex = 0;
         //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
-
-
+        $dataForCalculationClass['actionOrigin'] = $platformData['actionOrigin'];
+        $calculationClassHandle->setData($dataForCalculationClass);
         $controlVariableActiveInvestments = $platformData['activeInvestments']; // Our control variable
 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
@@ -462,25 +461,26 @@ class ParseDataClientShell extends GearmanClientShell {
                 if ($keyDateTransactionNames[0] == "global") {
 
                     if ($dateTransaction[0]['conceptChars'] === "PREACTIVE") {        // new investment
-                        // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
-                        // a reference exists to the loan and, if succesfull, assign the loanId.
-                        $ghostInvestment = $this->searchInvestmentArrays($dateTransaction[0], $platformData['parsingResultInvestments'], $platformData['parsingResultExpiredInvestments']);
-                        if (!empty($ghostInvestment)) {
-                            echo __FUNCTION__ . " " . __LINE__ . " Ghost loan found\n";
-                            switch ($ghostInvestment[0]['investment_statusOfLoan']) {
-                                case WIN_LOANSTATUS_FINISHED:
-                                case WIN_LOANSTATUS_CANCELLED:
-                                case WIN_LOANSTATUS_WRITTEN_OFF:
-                                    $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                                    break;
-                                case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
-                                case WIN_LOANSTATUS_ACTIVE:
-                                    $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                                    break;
+                            // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
+                            // a reference exists to the loan and, if succesfull, assign the loanId.
+                            $ghostInvestment = $this->searchInvestmentArrays($dateTransaction[0], $platformData['parsingResultInvestments'], $platformData['parsingResultExpiredInvestments']);
+                            if (!empty($ghostInvestment)) {
+                                echo __FUNCTION__ . " " . __LINE__ . " Ghost loan found\n";
+                                switch ($ghostInvestment[0]['investment_statusOfLoan']) {
+                                    case WIN_LOANSTATUS_FINISHED:
+                                    case WIN_LOANSTATUS_CANCELLED:
+                                    case WIN_LOANSTATUS_WRITTEN_OFF:
+                                        $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                        break;
+                                    case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                                    case WIN_LOANSTATUS_ACTIVE:
+                                        $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                        break;
+                                }
+                                $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
                             }
-                            $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
                         }
-                    }
+                    //}
                 }
 
 
@@ -508,22 +508,16 @@ class ParseDataClientShell extends GearmanClientShell {
                             unset($result);
                             $functionToCall = $tempResult['function'];
                             if (isset($tempResult['globalDatabaseName'])) {
-                                echo "Enter in globalDatabaseName \n";
                                 $dataInformation = explode(".", $tempResult['globalDatabaseName']);
                             }
                             else {
-                                echo "Not enter adafaf \n";
                                 $dataInformation = explode(".", $tempResult['databaseName']);
                             }
                             $dbTable = $dataInformation[0];
                             $dbTableField = $dataInformation[1];
-                            echo "datatable information \n";
-print_r($dbTable);
-print_r($dbTableField);
                             if (!empty($functionToCall)) {
                                 echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
                                 $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
-                                print_r($result);
                                 echo "\n " . $functionToCall . "llllllllllllllllllllllllllll \n";      
                                 print_r($dateTransaction);
                                 //update the field userinvestmentdata_cashInPlatform   
@@ -540,12 +534,10 @@ print_r($dbTableField);
                                 else {
                                     $database[$dbTable][$dbTableField] = $result;
                                 }
-                                print_r($database);
                             }
                             else {
                                 echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
                                 $database[$dbTable][$dbTableField] = $result;
-                                print_r($database);
                             }
                         }
                     }
@@ -612,6 +604,7 @@ print_r($dbTableField);
                         }
                     }
                     else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
+                        echo "Updating loan in the shadow DB table\n";
                         $filterConditions = array("investment_loanId" => $dateTransaction[0]['investment_loanId'],
                             "linkedaccount_id" => $linkedaccountId);
                         $tempInvestmentData = $this->Investment->getData($filterConditions, array("id",
@@ -846,8 +839,6 @@ print_r($dbTableField);
                     /*if ($database['configParms']['changeStatusToActive']) {
                         $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
                     }*/
-                    echo "tempState ola ola ola =====> >> \n";
-                    print_r($database['investment']['investment_tempState']);
 
 // Now start consolidation of the results on investment level and per day                
                     $internalVariableToHandle = array(10014, 10015, 83, 37, 10004, 20083, 20065, 200037);
