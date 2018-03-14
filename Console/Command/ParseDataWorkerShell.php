@@ -298,53 +298,56 @@ print_r($totalParsingresultControlVariables);*/
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {       
 // Detect if a loan has been deleted (i.e. NOT matured) or if it has changed state from "Reserved" to "Active
                 if (isset($data['listOfReservedInvestments']))  { 
-                    foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
-                        $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
-                        if ($existsInActive) {
-                            if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
-                        //      generate a statechange record, state is changed to "active"
-                                $dateKeys = array_keys($totalParsingresultTransactions);
-                                $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
-                                $totalParsingresultTransactions[$key][$loanId][100]['date'] = $key;
-                                $totalParsingresultTransactions[$key][$loanId][100]['investment_loanId'] = $loanId;
-                                $totalParsingresultTransactions[$key][$loanId][100]['internalName'] = "activeStateChange";
-echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanId\n";
-                                unset($data['listOfReservedInvestments'][$loanKey]);
-                                continue;
+                    if (isset($dashboard2ConfigurationParameters['verifyReservedFunds']) && $dashboard2ConfigurationParameters['verifyReservedFunds']) {
+                        foreach ($data['listOfReservedInvestments'] as $loanKey => $loanAmount) {
+                            $existsInActive = array_key_exists($loanKey, $totalParsingresultInvestments);
+                            if ($existsInActive) {
+                                if ($totalParsingresultInvestments[$loanKey][0]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+                            //      generate a statechange record, state is changed to "active"
+                                    $dateKeys = array_keys($totalParsingresultTransactions);
+                                    $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
+                                    $info['date'] = $key;
+                                    $info['investment_loanId'] = $loanKey;
+                                    $info['internalName'] = "activeStateChange";
+                                    $totalParsingresultTransactions[$key][$loanKey][] = $info;
+    echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
+                                    unset($data['listOfReservedInvestments'][$loanKey]);
+                                    continue;
+                                }
+                                if ($totalParsingresultInvestments[$loanKey]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+    echo __FUNCTION__ . " " . __LINE__ . " Loan $loanKey detected with state WAITINGTOBEFORMALIZED\n";                                
+                                    unset($data['listOfReservedInvestments'][$loanKey]);
+                                    continue;
+                                } 
                             }
-                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-echo __FUNCTION__ . " " . __LINE__ . " Loan $loanid detected with state WAITINGTOBEFORMALIZED\n";                                
-                                unset($data['listOfReservedInvestments'][$loanKey]);
-                                continue;
+                        }
+                        // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
+                        $temp = new BaseClass();
+                        $temp->array_keys_recursive($returnData[$linkedAccountKey]['parsingResultTransactions'], 4, "internalName", "disinvestmentPrimaryMarket");
+                        $foundArrays = $temp->getlevel();
+                        echo __FUNCTION__ . " " . __LINE__ . " \n";
+                        print_r($foundArrays);
+
+
+
+                        if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
+                            echo "some error occurred in PFP, but we will mark all Ghosts";
+                        }
+                        foreach ($data['listOfReservedInvestments'] as $loanIdKey => $loanAmount) {
+                            foreach ($foundArrays as $key => $levels) {
+                                if ($returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]][$levels[2]]['amount'] == $loanAmount) {
+                                    echo "Entered to change loanReference \n";
+                                    $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$loanIdKey][$levels[2]] = $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]][$levels[2]];
+                                    $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$loanIdKey][0]['investment_loanId'] = $loanIdKey;
+                                    unset($returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]]); 
+                                    continue 2;
+                                }    
                             } 
                         }
                     }
-                    // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
-
-                 
-                    $temp = new BaseClass();
-                    $temp->array_keys_recursive($data['listOfReservedInvestments'], 4, "internalName", "disinvestment");
-                    $foundArrays = $temp->getlevel();
-                    echo __FUNCTION__ . " " . __LINE__ . " \n";
-                    print_r($foundArrays);
-                    
-                    
-                    
-                    if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
-                        echo "some error occurred in PFP, but we will mark all Ghosts";
-                    }
-
-                    foreach ($foundArrays as $key => $levels) {
-                        $loan = array_pop($data['listOfReservedInvestments']);
-                        $myArray[$levels[0]][$loan][$levels[2]] = $myArray[$levels[0]][$levels[1]][$levels[2]];
-                        $myArray[$levels[0]][$loan][0]['investment_loanId'] = $loan;
-                        unset($myArray[$levels[0]][$loan][0]['amount']);
-                        unset($myArray[$levels[0]][$levels[1]]);                       
-                    } 
                 }     
             }     
         }
-        
         $data['tempArray'] = $returnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
