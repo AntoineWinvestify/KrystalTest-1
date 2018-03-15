@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        return;
+        //return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -688,9 +688,24 @@ class ParseDataClientShell extends GearmanClientShell {
                                 echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED . " \n";
                             }
                             
+                            if (in_array("PREACTIVE_SUM_VERIFICATION", $conceptChars)) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_SUMVERIFYWAITINGTOBEFORMALIZED;
+                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_SUMVERIFYWAITINGTOBEFORMALIZED . " \n";
+                            }
+                            
                             if (in_array("ACTIVE_VERIFICATION", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYACTIVE;
                                 echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYACTIVE . " \n";
+                                $getAmortizationTable = true;
+                            }
+                            
+                            if (in_array("ACTIVE_SUM_VERIFICATION", $conceptChars)) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_SUMVERIFYACTIVE;
+                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_SUMVERIFYACTIVE . " \n";
+                                $getAmortizationTable = true;
+                            }
+                            
+                            if (isset($getAmortizationTable) && $getAmortizationTable) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
                                 // if not then reate a new array with the data available so far, sliceIdentifier and loanId
@@ -841,7 +856,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     }*/
 
 // Now start consolidation of the results on investment level and per day                
-                    $internalVariableToHandle = array(10014, 10015, 83, 37, 10004, 20083, 20065, 200037);
+                    $internalVariableToHandle = array(10014, 10015, 37, 10004, 20065, 200037);
                     foreach ($internalVariableToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
