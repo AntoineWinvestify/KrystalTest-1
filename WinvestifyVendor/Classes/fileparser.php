@@ -400,7 +400,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestmentPrimaryMarket",
-                "chars" => "REMOVE_AM_TABLE" 
+                //"chars" => "REMOVE_AM_TABLE" 
                 ],
             39 => [
                 "detail" => "Disinvestment_secundary_market", 
@@ -455,6 +455,24 @@ class Fileparser {
                 "account" => "Capital",
                 "type" => "investment_myInvestmentActiveVerification",  
                 "chars" => "ACTIVE_VERIFICATION"
+                ],
+            46 => [
+                "detail" => "Primary_market_investment_active_sumVerification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentActiveSumVerification",  
+                "chars" => "ACTIVE_SUM_VERIFICATION"
+                ],
+            47 => [
+                "detail" => "Primary_market_investment_preactive_sumVerification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentPreactiveSumVerification",  
+                "chars" => "PREACTIVE_SUM_VERIFICATION"
                 ],
         
             105 => [
