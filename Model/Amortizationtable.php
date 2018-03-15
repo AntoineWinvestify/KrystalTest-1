@@ -124,10 +124,10 @@ class Amortizationtable extends AppModel
     function beforeSave($created, $options = array()) {
 
         if ($created) {
-            if ($this->data['Amortizationtable']['amortizationtable_paymentStatus'] !=  WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {
+            if ($this->data['Amortizationtable']['amortizationtable_paymentStatus'] !=  WIN_AMORTIZATIONTABLE_PAYMENT_LATE) {
                 if ($this->data['Amortizationtable']['amortizationtable_paymentDate'] ==  "" ||
                         $this->data['Amortizationtable']['amortizationtable_paymentDate'] ==  "0000-00-00") {
-                    $this->data['Amortizationtable']['amortizationtable_paymentDate'] = date("Y-m-d");
+       //             $this->data['Amortizationtable']['amortizationtable_paymentDate'] = date("Y-m-d");
                 }
             }
 

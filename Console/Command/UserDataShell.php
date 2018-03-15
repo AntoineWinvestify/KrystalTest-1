@@ -1020,20 +1020,28 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";  
         if (!isset($resultData['payment']['payment_principalAndInterestPayment']) || empty($resultData['payment']['payment_principalAndInterestPayment'])) {
             return;
         }
-        
+print_r($transactionData);
+print_r($resultData);        
         if (empty($resultData['payment']['payment_capitalRepayment'])) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";              
             $capitalRepayment = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_capitalRepayment'] = $capitalRepayment;
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
+echo __FUNCTION__ . " " . __LINE__  . "\n";            
         }
-        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {       
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";  
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
+ print_r($transactionData);
+ print_r($resultData);         
+echo __FUNCTION__ . " " . __LINE__  . "\n";         
         return;
     }
     
@@ -1044,10 +1052,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfPartialCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
         if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
             return;
         }
-        
+ print_r($transactionData);
+ print_r($resultData);
         if (empty($resultData['payment']['payment_partialCapitalRepayment'])) {
             $capitalRepayment = bcsub($resultData['payment']['payment_partialPrincipalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_partialPrincipalRepayment'] = $capitalRepayment;
@@ -1060,6 +1070,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
+ echo __FUNCTION__ . " " . __LINE__  . "\n";        
         return;
     }
     
@@ -1320,13 +1331,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     }   
  
     /**
-     * Call a function to fix rounding errors happened on the platform.
+     * Call a function to fix rounding errors as "committed" by the platform.
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function recalculateRoundingErrors(&$transactionData, &$resultData) {
-        $tempOustanding = null;
+        $tempOutstanding = null;
         if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
             $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
         }
@@ -1334,32 +1345,50 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 && bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0
                 && bccomp("0", $resultData['investment']['investment_outstandingPrincipal'], 16) != 0) {
             $function = $resultData['configParms']['recalculateRoundingErrors']['function'];
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
+print_r($transactionData);
+print_r($resultData);            
             $this->$function($transactionData, $resultData);
         }
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
+print_r($transactionData);
+print_r($resultData); 
     }
     
     /**
-     *  Recalculate variables with rounding errors adjusting the variables as need
+     *  Recalculate variables with rounding errors adjusting the variables as needed
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function recalculationOfRoundingErrors(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
+print_r($transactionData);
+print_r($resultData); 
         $variables = $resultData['configParms']['recalculateRoundingErrors']['values'];
         $i = 1;
         foreach ($variables as $variable) {
+echo "Loop variable = " ;
+print_r($variable);
             $modelFrom = explode("_", $variable["from"][0]);
             $modelTo = explode("_", $variable["to"][0]);
             $value = $resultData[$modelFrom[0]][$variable["from"][0]];
+            
             if ($variable["sign"] == "negative") {
                 $value = 0 - $value;
             }
+echo "Value = $value\n";            
+print_r($modelTo);
+
             $resultData[$modelTo[0]][$variable["to"][0]] = bcadd($resultData[$modelTo[0]][$variable["to"][0]], $value, 16);
+print_r($resultData); 
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "From"] = $variable["from"][0];
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "To"] = $variable["to"][0];
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_roundingError' . $i] = $value;
             $i++;
-        }   
+            
+        }
+echo __FUNCTION__ . " " . __LINE__  . "\n";        
     }
     
     /**

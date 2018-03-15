@@ -62,7 +62,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //       return;
+ //      return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -190,6 +190,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             'actionOrigin' => $this->queueInfo[$job['Queue2']['id']]['originExecution'],
                         );
                     }
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "\n";
                     debug($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" .
@@ -298,6 +299,8 @@ class ParseDataClientShell extends GearmanClientShell {
         $collectTablesIndex = 0;
         //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
 
+ echo "startDate = $startDate and finishDate = $finishDate\n";       
+      
 
         $controlVariableActiveInvestments = $platformData['activeInvestments']; // Our control variable
 
@@ -1115,18 +1118,20 @@ class ParseDataClientShell extends GearmanClientShell {
 
         $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
         if ($controlVariablesCheck > 0) { // mismatch detected
-            echo "DOES NOT PASS CONTROL VARIABLES CHECK \n";
-            // STILL TO FINISH
+            echo "FLOW 2 DID NOT PASS CONTROL VARIABLES CHECK \n";
             $errorData['line'] = __LINE__;
             $errorData['file'] = __FILE__;
             $errorData['urlsequenceUrl'] = "";
-            $errorData['subtypeErrorId'];                                       // It is the subtype of the error
-            $errorData['typeOfError'];                                          // It is the type of error or the summary of the detailed information of the error
-            $errorData['detailedErrorInformation'];                             // It is the detailed information of the error
+            $errorData['subtypeErrorId'] = $controlVariablesCheck;              // It is the subtype of the error
+            $errorData['typeOfError'] = "Error" ;  // It is the type of error, like ERROR, WARNING, INFORMATION
+        
+            $detailedErrorInfo['internalControlVariableValues'] = $platformData['parsingResultControlVariables'];
+            $detailedErrorInfo['externalControlVariableValues'] = $controlVariables;         
+            
+            $errorData['detailedErrorInformation'] = json_encode($detailedErrorInfo);      // It is the detailed information of the error
             $errorData['typeErrorId'];                                          // It is the principal id of the error           
             $this->saveGearmanError($errorData);
         }
-
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
 // Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
@@ -1261,19 +1266,23 @@ class ParseDataClientShell extends GearmanClientShell {
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-
+echo __FUNCTION__ . " " . __LINE__ . " \n";
         if ($resultData['payment']['payment_principalAndInterestPayment'] <> 0) {
+            echo __FUNCTION__ . " " . __LINE__ . " \n";
             $table['amortizationtable_capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
             if ($resultData['payment']['payment_capitalRepayment'] <> 0) {
+                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
                 $table['amortizationtable_interest'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             }
             else {
+                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $table['amortizationtable_capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
                 $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
             }
         } 
         else {
+            echo __FUNCTION__ . " " . __LINE__ . " \n";
             $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
             $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
         }
@@ -1282,9 +1291,11 @@ class ParseDataClientShell extends GearmanClientShell {
 
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         $slices = $this->Investment->getInvestmentSlices($resultData['investment']['id']);
-
+print_r($table);
         foreach ($slices as $slice) {                                           // Initially we will find only 1 sliced
+            echo __FUNCTION__ . " " . __LINE__ . " \n";
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
+                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $sliceDbreference = $slice['id'];
                 break;
             }

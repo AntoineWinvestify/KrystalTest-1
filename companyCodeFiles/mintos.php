@@ -1496,19 +1496,43 @@ class mintos extends p2pCompany {
     public function translateAmortizationPaymentStatus($inputData) {
         $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
         $inputData = mb_strtoupper($inputData);
+
         switch ($inputData) {
-            case "Paid after the due date":
+            case "PAID AFTER THE DUE DATE":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE;
                 break;
-            case "Paid":
+            case "PAID":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
                 break;
-            case "Scheduled":
+            case "SCHEDULED":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break;
+            case "LATE":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;                     
         }
         return $data;        
     }
-    
+/*
+
+20.12.2016	 € 282.03	 € 545.26	 € 827.29	  20.12.2016	 Paid
+20.01.2017	 € 267.01	 € 560.28	 € 827.29	  31.01.2017	 Paid after the due date
+Received late payment fee: € 36.36
+20.12.2017	 € 319.97	 € 507.32	 € 827.29                        Late
+20.01.2018	 € 306.64	 € 520.65	 € 827.29			 Scheduled 
+
+
+WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED    
+WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID
+WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE
+WIN_AMORTIZATIONTABLE_PAYMENT_PAID
+WIN_AMORTIZATIONTABLE_PAYMENT_PENDING                     
+WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN
+
+ 
+ 
+
+
+ */    
     
 }

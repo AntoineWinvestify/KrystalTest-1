@@ -2252,27 +2252,27 @@ class zank extends p2pCompany {
     public function translateAmortizationPaymentStatus($inputData) {
         $inputData = mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
-            case "Cuota cobrada.":
-            case "Cuota Cobrada.":
             case "CUOTA COBRADA.":
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
                 break;
             case "CUOTA EN COBRO.":
-            case "Cuota En cobro.": 
-                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break; 
             case "CUOTA DEVENGANDOSE.":
-            case "Cuota Devengandose.": 
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break;           
             case "CUOTA PENDIENTE.":
-            case "Cuota pendiente.": 
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break; 
             case "CUOTA RETRASADA.":
-            case "Cuota retrasada.": 
-                $result = WIN_LOANSTATUS_FINISHED;
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;   
+            case "CUOTA REFINANCIADA.":
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;
+            case "CUOTA CONGELADA.":
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break; 
             default:
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
                 break;
@@ -2305,5 +2305,9 @@ class zank extends p2pCompany {
         return $structureRevision;
     }
 
+    
+    
+    
+    
 }
 

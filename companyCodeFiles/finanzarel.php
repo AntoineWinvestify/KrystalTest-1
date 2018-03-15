@@ -249,7 +249,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "internalName",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "createReservedFunds",                                // 'input3' is NOT mandatory. 
+                                "input2" => "createReservedFunds",              
                             ],
                     "functionName" => "getDefaultValue",
                 ]
@@ -539,11 +539,11 @@ class finanzarel extends p2pCompany {
     
     protected $parserValuesAmortizationTable = [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "L" => [
                 [
-                    "type" => "capitalRepayment",                        // Winvestify standardized name   OK
+                    "type" => "capitalRepayment",                               // Winvestify standardized name   OK
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -554,7 +554,7 @@ class finanzarel extends p2pCompany {
             ],
             "M" => [
                 [
-                    "type" => "scheduledDate",                           // Winvestify standardized name  OK
+                    "type" => "scheduledDate",                                  // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -568,14 +568,14 @@ class finanzarel extends p2pCompany {
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "",                               
                                 "input3" => "",
-                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                                "input4" => 0                                  
                             ],
                     "functionName" => "extractDataFromString",
                 ]
             ],
             "O" => [
                 [
-                    "type" => "capitalAndInterestPayment",                // Winvestify standardized name
+                    "type" => "capitalAndInterestPayment",                      // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -590,10 +590,10 @@ class finanzarel extends p2pCompany {
         0 => [
             [
                 "type" => "investment_id",                          
-                "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                "inputData" => [                                            
                             "input2" => "",                               
                             "input3" => "",
-                            "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            "input4" => 0                                    
                         ],
                 "functionName" => "extractDataFromString",
             ]
@@ -621,10 +621,19 @@ class finanzarel extends p2pCompany {
         3 => [
             [
                 "type" => "amortizationtable_paymentStatus",                          
-                "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                "inputData" => [                                            
                             "input2" => "",                               
                             "input3" => "",
-                            "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            "input4" => 0                                  
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
+                        [
+                "type" => "amortizationtable_paymentStatusOriginal",                          
+                "inputData" => [                                         
+                            "input2" => "",                               
+                            "input3" => "",
+                            "input4" => 0                                  
                         ],
                 "functionName" => "extractDataFromString",
             ]
@@ -830,7 +839,7 @@ class finanzarel extends p2pCompany {
                                     "L" => "Mi oferta(precio)",
                                     "M" => "Fecha de vencimiento",
                                     "N" => "Estado",
-                                    "O" => "Amortizaci?nPendiente",
+                                    "O" => "AmortizacionPendiente",
                                     "P" => " ");
 
     protected $investment2Header = array(
@@ -862,15 +871,15 @@ class finanzarel extends p2pCompany {
                                     "N" => "Plusval?a",
                                     "O" => "Fecha de vencimiento");
     
-    protected $transactionHeader = array(
-                                 "A" => "Id",
-                                 "B" => "A?o",
-                                 "C" => "Trimestre",
-                                 "D" => "Fecha",
-                                 "E" => "Subasta",
-                                 "F" => "Descripci?n",
-                                 "G" => "Importe",
-                                 "H" => "Saldo");
+    protected $transactionHeader = array(    
+                                "A" => "Id",
+                                "B" => "A?o",
+                                "C" => "Trimestre",
+                                "D" => "Fecha",
+                                "E" => "Subasta",
+                                "F" => "Descripcion",
+                                "G" => "Importe",
+                                "H" => "Saldo");
     
     protected $transaction2Header = array(
                                  "A" => "Id",
@@ -878,9 +887,11 @@ class finanzarel extends p2pCompany {
                                  "C" => "Trimestre",
                                  "D" => "Fecha",
                                  "E" => "Subasta",
-                                 "F" => "Descripci?n",
+                                 "F" => "Descripcion",
                                  "G" => "Importe",
                                  "H" => "Saldo");
+    
+
     
     protected $transaction3Header = array(
                                 "A" => "Id",
@@ -1695,26 +1706,34 @@ class finanzarel extends p2pCompany {
      * @param string $inputData     company specific AmortizationPaymentStatus
      * @return int                  Winvestify standardized AmortizationPaymentStatus
      */
-    public function translateAmortizationPaymentStatus($inputData) {
-echo __FILE__ . " " . __LINE__ . "translating the payment status for status = $inputData\n";       
+    public function translateAmortizationPaymentStatus($inputData) {      
         $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
         $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
-            case "Retrasada-30d":
+            case "RETRASADA-30D":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
                 break;
-            case "Impagada +30d, en recobro":
+            case "RETRASADA":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
                 break;
-            case "Fallida":                                                     // Written off
+            case "IMPAGADA +30D, EN RECOBRO":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                break;
+            case "IMPAGADA":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                break;            
+            case "FALLIDA":                                                     // Written off
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_FAILURE;
                 break;
-            case "Pendiente":
+            case "PENDIENTE":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break;
         }
         return $data;        
     }
 
+    
+    
+    
          
 }
