@@ -368,6 +368,12 @@ class UserDataShell extends AppShell {
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
             return;
         }
+        else if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_SUMVERIFYACTIVE) {
+            if (isset($resultData['payment']['payment_myInvestment'])) {
+                $this->calculateSumActiveVerify($transactionData, $resultData);
+                return $transactionData['amount'];
+            }
+        }
         else {
             return $transactionData['amount'];
         }
@@ -865,6 +871,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
             return $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'];
         }
+        else if (isset($resultData['investment']['investment_reservedFunds'])) {
+            $resultData['investment']['investment_disinvestment'] = bcadd($resultData['investment']['investment_disinvestment'], $transactionData['amount'], 16);
+            $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+            return $transactionData['amount'];
+        }
         else {
             return $transactionData['amount'];
         }
@@ -1161,8 +1172,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      */
     public function calculateActiveStateChange(&$transactionData, &$resultData) {
         $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-        echo " BEFOREEEEEEEE STATEN CANGE \n";
-        print_r($resultData);
         
         // move the corresponding part of the money from reserved funds to outstanding principal
         $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
@@ -1175,13 +1184,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                     $resultData['investment']['investment_myInvestment'],
                     16
                 );     
-        /*$resultData['investment']['investment_outstandingPrincipal'] = bcsub( 
+        $resultData['investment']['investment_outstandingPrincipal'] = bcsub( 
                     $resultData['investment']['investment_outstandingPrincipal'],
                     $resultData['investment']['investment_myInvestment'],
                     16
-                );*/
-        echo "AFTERERERERERER \n";
-        print_r($resultData);
+                );
         return WIN_LOANSTATUS_ACTIVE;
     }  
     
@@ -1389,9 +1396,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
             if (isset($resultData['payment']['payment_myInvestment'])) {
                 $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
-            }
-            if (isset($resultData['payment']['payment_disinvestment'])) {
-                $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
+                $resultData['payment']['payment_reservedFunds'] = bcadd(
+                        $resultData['payment']['payment_reservedFunds'], 
+                        $resultData['payment']['payment_myInvestment'], 
+                        16);
+                unset($resultData['payment']['payment_myInvestment']);
             }
         }
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED) {
@@ -1404,13 +1413,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                     echo "result result result okokokok \n";
                     $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
                 }
-                else {
-                    echo "It is repeated, deleting value\n";
-                    unset($resultData['payment']['payment_myInvestment']);
-                }
-            }
-            if (isset($resultData['payment']['payment_disinvestment'])) {
-                $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
+                unset($resultData['payment']['payment_myInvestment']);
             }
         }
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYACTIVE) {
@@ -1436,17 +1439,17 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                     echo "Entering in bccomp igual 0 \n";
                     $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
                                 $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
-                                $resultData['investment']['investment_myInvestment'],
+                                $resultData['payment']['payment_myInvestment'],
                                 16
                             );
                     $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd(
                                 $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
-                                $resultData['investment']['investment_myInvestment'],
+                                $resultData['payment']['payment_myInvestment'],
                                 16
                             );
                     $result = bcsub(
                                 $result,
-                                $resultData['investment']['investment_myInvestment'],
+                                $resultData['payment']['payment_myInvestment'],
                                 16
                             );
                     $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
@@ -1457,6 +1460,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 }
             }
         }
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_SUMVERIFYWAITINGTOBEFORMALIZED) {
+            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+            $result = bcadd($result, $resultData['payment']['payment_reservedFunds'], 16);
+        }
+        
         echo "AFETER RESERVED FNSFSDF \n";
         print_r($resultData);
         return $result;
@@ -1548,7 +1556,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'];
         //$result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
-        $result = bcadd($result, $resultData['investment']['investment_reservedFunds'], 16);
+        $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
+        $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $resultData['payment']['payment_disinvestment'], 16);
+        $result = bcadd($result, $resultData['payment']['payment_reservedFunds'], 16);
         $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
         unset($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp']);
         $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
@@ -1560,6 +1570,50 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         foreach ($data as $key => $individualData) {
             $this->data[$key] = $individualData;
         }
+    }
+    
+    /**
+     * Function to calculate the payment reserved funds
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculatePaymentReservedFunds(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    function calculateSumActiveVerify(&$transactionData, &$resultData) {
+        if ($resultData['investment']['investment_isNew']) {
+            unset($resultData['investment']['investment_isNew']);
+            $resultData['investment']['investment_myInvestment'] = bcadd(
+                $resultData['investment']['investment_myInvestment'], 
+                $resultData['payment']['payment_myInvestment'], 
+                16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                    $resultData['payment']['payment_myInvestment'],
+                    16);
+        }
+        else {
+            //We move from reservedFunds to myInvestment
+            $resultData['investment']['investment_myInvestment'] = bcadd(
+                    $resultData['investment']['investment_myInvestment'],
+                    $resultData['payment']['payment_myInvestment'],
+                    16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                    $resultData['payment']['payment_myInvestment'],
+                    16);
+            $resultData['investment']['investment_reservedFunds'] = bcsub(
+                    $resultData['investment']['investment_reservedFunds'],
+                    $resultData['payment']['payment_myInvestment'],
+                    16);
+        }
+        $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
+                $resultData['investment']['investment_outstandingPrincipal'], 
+                $resultData['payment']['payment_myInvestment'], 
+                16);
     }
     
 }
