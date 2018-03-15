@@ -458,8 +458,8 @@ class ParseDataClientShell extends GearmanClientShell {
                 echo "Processing the following transaction\n";
                 print_r($dateTransaction);
 
-                if ($keyDateTransactionNames[0] == "global") {
-
+                /*if ($keyDateTransactionNames[0] == "global") {
+                    if ($platformData['origin'])
                     if ($dateTransaction[0]['conceptChars'] === "PREACTIVE") {        // new investment
                             // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
                             // a reference exists to the loan and, if succesfull, assign the loanId.
@@ -481,7 +481,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     //}
-                }
+                }*/
 
 
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
