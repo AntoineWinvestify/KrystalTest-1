@@ -1480,12 +1480,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 else {
                     echo "investment tempState is " . $resultData['investment']['investment_tempState'];
                     $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-                    $resultData['payment']['payment_reservedFunds'] = bcadd(
-                            $resultData['payment']['payment_reservedFunds'], 
-                            $transactionData['amount'], 
-                            16);
                     unset($resultData['payment']['payment_myInvestment']);
-                    return $resultData['payment']['payment_reservedFunds'];
+                    return $transactionData['amount'];
                 }
             }
         }
@@ -1522,7 +1518,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return $result;
     }
     
-    public function verifyStatusWaitingToBeFormalized(&$transactionData, &$resultData) {
+    /*public function verifyStatusWaitingToBeFormalized(&$transactionData, &$resultData) {
         if ($this->data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
                 if (!empty($resultData['configParms']['changeStatusToActive'])) {
@@ -1572,29 +1568,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 }
             }
         }
-    }
-    
-    /**
-     *  Determines the sliceIdentifier (.i.e. the amortization table) to be used
-     * 
-     *  @param  array   array with the current transaction data
-     *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return string  sliceIndentifier
-     *                  
-     */
-    public function getSliceIdentifier(&$transactionData, &$resultData) {
-
-        if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that have individual slices per investment, like FinBee
-            $sliceIdentifier = $transactionData['sliceIdentifier'];
-        }
-        if (isset($resultData['investment']['investment_sliceIdentifier'])) {
-            $sliceIdentifier = $resultData['investment']['investment_sliceIdentifier'];
-        }
-        if (empty($sliceIdentifier)) {                                          // Take the default one
-            $sliceIdentifier = $transactionData['investment_loanId'];
-        }
-        return $sliceIdentifier;
-    }
+    }*/
     
     /**
      *  Get the amount which corresponds to the "totalReservedAssets" concept
