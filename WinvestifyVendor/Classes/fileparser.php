@@ -422,7 +422,15 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestmentWithoutLoanReference",
-                ], 
+                ],
+            43 => [
+                "detail" => "Commission",                                       // Some commission in Zank are 0,0000 €. getComplexTransactionDetail read this commission as income, we need this to resolve the unknow concept error.
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_commissionPaid"
+            ],
+
+        
         
         
             105 => [
