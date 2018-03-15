@@ -1043,8 +1043,18 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
-
+                $eurDashboardFound = false;
                 foreach($boxes as $keyBox => $box){
+                    $boxValue = $box->nodeValue;
+                    echo $boxValue;
+                    if(strpos($boxValue, '€') !== false){
+                        echo 'Dashboard with € found';
+                        $eurDashboardFound = true;
+                    }
+                    else{
+                        continue;
+                    }
+
                     //echo $box->nodeValue;
                     //echo "BOX NUMBER: =>" . $keyBox;
                     $tds = $box->getElementsByTagName('td');
@@ -1072,6 +1082,11 @@ class mintos extends p2pCompany {
                     break;
 
                 }
+                
+                if(!$eurDashboardFound){
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_CURRENCY);
+                }
+                
                 $lis = $boxes[0]->getElementsByTagName('li');
                 $this->verifyNodeHasElements($lis);
                 if (!$this->hasElements) {
