@@ -77,6 +77,10 @@
     .navGreen>li>a:hover {
         border-bottom: 5px solid #87e14b !important;
     }
+    
+    .big {
+        width: 200px;
+    }
 </style>
 
       <!-- Navbar Right Menu -->
@@ -89,7 +93,7 @@
                             </a>
                         </li>
 			<!-- User Account: style can be found in dropdown.less -->
-			<li class="dropdown user user-menu">
+			<li class="dropdown user user-menu big">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<img src="<?php echo '/' . IMAGES_URL . '/' . $sessionData['Auth']['User']['Investor']['investor_photoChatGUID']?>" class="user-image" alt="Small User Image">
 					<span class="hidden-xs blackImportant"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " .
@@ -129,7 +133,7 @@
 					<!-- Menu Footer-->
 					<li class="user-footer">
 						<div class="pull-left">
-							<a href="/investors/userProfileDataPanel" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Profile')?></a>
+							<a href="/investors/editUserProfileData" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Profile')?></a>
 						</div>
 						<div class="pull-right">
 							<a href="/users/logout" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Sign out')?></a>
