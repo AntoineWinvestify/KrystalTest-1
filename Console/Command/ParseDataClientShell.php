@@ -60,7 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
-        //return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -98,7 +98,6 @@ class ParseDataClientShell extends GearmanClientShell {
         echo "Deleting Roundingerrorcompensation table\n";
         $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
         $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);
-
         return;
     }
 
@@ -170,7 +169,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $files[WIN_FLOW_EXPIRED_LOAN_FILE] = $dirs->findRecursive(WIN_FLOW_EXPIRED_LOAN_FILE . ".*", true);
                         $files[WIN_FLOW_CONTROL_FILE] = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE . ".*", true);
                         $listOfActiveInvestments = $this->getLoanIdListOfInvestments($linkedAccountId, WIN_LOANSTATUS_ACTIVE);
-                        $listOfReservedInvestments = $this->getLoanIdListOfInvestmentsWithAmount($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
+                        $listOfReservedInvestments = $this->getLoanIdListOfInvestmentsWithReservedFunds($linkedAccountId, WIN_LOANSTATUS_WAITINGTOBEFORMALIZED);
                         $controlVariableFile = $dirs->findRecursive(WIN_FLOW_CONTROL_FILE . ".*", true);
 
                         $params[$linkedAccountId] = array(
@@ -429,6 +428,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $actualDate = $date->format('Y-m-d');
                     }
                 }
+                unset($tempDatabase);
             }
 
             $oldDateKey = $dateKey;
@@ -819,6 +819,27 @@ class ParseDataClientShell extends GearmanClientShell {
                                     }
                                 }
                             }
+                            if ($database['investment']['investment_tempState'] === WIN_LOANSTATUS_ACTIVE_AM_TABLE) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                                $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
+                                // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
+                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                $isNewTable = YES;
+                                foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
+                                    if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
+                                        $isNewTable = NO;
+                                        break;
+                                    }
+                                }
+                                if ($isNewTable == YES) {
+                                    echo __FILE__ . " " . __LINE__ .  "get new Amortization Table for loanId " . $transactionData['investment_loanId'] . "\n";
+                                    $collectTablesIndex++;
+                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
+                                    $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                }
+                            }
+                            
+                            
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
