@@ -308,8 +308,8 @@ print_r($totalParsingresultControlVariables);*/
                                     $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
                                     $info['date'] = $key;
                                     $info['investment_loanId'] = $loanKey;
-                                    $info['internalName'] = "activeStateChange";
-                                    $totalParsingresultTransactions[$key][$loanKey][] = $info;
+                                    $info['internalName'] = "investment_activeStateChange";
+                                    $returnData[$linkedAccountKey]['parsingResultTransactions'][$key][$loanKey][] = $info;
     echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
                                     unset($data['listOfReservedInvestments'][$loanKey]);
                                     continue;
@@ -327,6 +327,8 @@ print_r($totalParsingresultControlVariables);*/
                         $foundArrays = $temp->getlevel();
                         echo __FUNCTION__ . " " . __LINE__ . " \n";
                         print_r($foundArrays);
+                        echo "cancel investments ===>";
+                        print_r($data['listOfReservedInvestments']);
 
 
 
@@ -352,7 +354,6 @@ print_r($totalParsingresultControlVariables);*/
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-       
         echo "\nNumber of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
