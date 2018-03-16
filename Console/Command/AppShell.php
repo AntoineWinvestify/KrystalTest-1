@@ -255,7 +255,7 @@ class AppShell extends Shell {
      * @return array
      *
      */
-    public function getLoanIdListOfInvestmentsWithAmount($linkedaccount_id, $status) {
+    public function getLoanIdListOfInvestmentsWithReservedFunds($linkedaccount_id, $status) {
         $this->Investment = ClassRegistry::init('Investment');
         $filterConditions = array(
             'linkedaccount_id' => $linkedaccount_id,
@@ -264,7 +264,7 @@ class AppShell extends Shell {
 
         $investmentListResult = $this->Investment->find("list", array("recursive" => -1,
             "conditions" => $filterConditions,
-            "fields" => array("investment_loanId", "investment_myInvestment"),
+            "fields" => array("investment_loanId", "investment_reservedFunds"),
         ));
         return $investmentListResult;
     }    
