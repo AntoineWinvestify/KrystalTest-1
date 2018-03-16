@@ -249,7 +249,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "internalName",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "investment_myInvestment",                                // 'input3' is NOT mandatory. 
+                                "input2" => "investment_myInvestmentPreactiveVerification",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -1056,7 +1056,7 @@ class finanzarel extends p2pCompany {
         parent::__construct();
         $this->typeFileTransaction = "csv";
         $this->typeFileInvestment = "csv";
-        //$this->typeFileExpiredLoan = "xlsx";
+        $this->typeFileExpiredLoan = "csv";
         $this->typeFileAmortizationtable = "html";
 // Do whatever is needed for this subsclass
     }   
@@ -1343,6 +1343,11 @@ class finanzarel extends p2pCompany {
                     $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
                 
+                $path = $this->getFolderPFPFile();
+                $file = $path . DS . $this->fileName;
+                $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->copyFile($file, $newFile);
+                $this->numFileExpiredLoan++;
                 $this->url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $this->referer = strtr($referer, array(
@@ -1356,7 +1361,7 @@ class finanzarel extends p2pCompany {
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
                         'p_request' => $this->request[1]);
-                $this->fileName = "LoansExpired" . "." . $this->typeFileInvestment;
+                $this->fileName =  $this->nameFileExpiredLoan . "3." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
                 $headers = array('Expect:');
                 
@@ -1576,6 +1581,10 @@ class finanzarel extends p2pCompany {
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
                     $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
                 }
+                $path = $this->getFolderPFPFile();
+                $file = $path . DS . $this->fileName;
+                $newFile = $path . DS . $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->copyFile($file, $newFile);
                 return $this->tempArray;
         }
     }
