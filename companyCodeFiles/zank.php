@@ -96,8 +96,12 @@ class zank extends p2pCompany {
  
        
     protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.01'                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
+        'changeStatusToActive' => [
+            "function" => "getStatusFromInvestment"
+        ],
+        'verifyReservedFunds' => true
     ];
     
     protected $transactionConfigParms = [
@@ -138,7 +142,7 @@ class zank extends p2pCompany {
                                 "input2" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
-                                    2 => ["inversion" => "Primary_market_investment"],
+                                    2 => ["inversion" => "Primary_market_investment_preactive"],
                         //            3 => ["inversion" => "Disinvestment"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
@@ -169,8 +173,8 @@ class zank extends p2pCompany {
                                   "input3" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
-                                    2 => ["inversion" => "Primary_market_investment"],
-                                    3 => ["inversion" => "Disinvestment_without_loanReference"],  
+                                    2 => ["inversion" => "Primary_market_investment_preactive"],
+                                    3 => ["inversion" => "Disinvestment_primary_market"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
                                     6 => ["recargo" => "Delayed_interest_income"],
@@ -193,7 +197,7 @@ class zank extends p2pCompany {
                 [
                     "type" => "conceptChars",                                   // Winvestify standardized name
                     "inputData" => [
-				"input2" => "#current.internalName",            // get Winvestify concept
+                                    "input2" => "#current.internalName",            // get Winvestify concept
                                 ],
                     "functionName" => "getConceptChars",
                 ]
@@ -240,10 +244,20 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0
-                                ],
+                                "input3" => 0,
+                                "input4" => ","
+                            ],
                     "functionName" => "handleNumber",
-                ]                                           
+                ],
+                [
+                    "type" => "investment_expectedAnnualYield",                 
+                    "inputData" => [                                            
+                                "input2" => "",                               
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]   
             ], 
             "D" =>  [
                 "name" => "investment_originalDuration"
@@ -279,7 +293,15 @@ class zank extends p2pCompany {
                 ],
             ],
             "F" => [
-                "name" => "investment_capitalRepaymentFromP2P"
+                [
+                    "type" => "investment_capitalRepaymentFromP2P",                                         // Winvestify standardized name   OK
+                    "inputData" => [                                 
+                                "input2" => ".",                  
+                                "input3" => ",",                      
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ],
             ],
             /*"G" => DON'T TAKE, ASK ANTOINE*/
             /* "H" => DON'T TAKE, ASK ANTOINE*/
@@ -306,7 +328,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",                    
+                    "type" => "investment_originalState",                    
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],

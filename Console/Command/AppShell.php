@@ -241,9 +241,32 @@ class AppShell extends Shell {
             "conditions" => $filterConditions,
             "fields" => array("id", "investment_loanId"),
         ));
-
+        
         $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
         return $list;
+    }    
+    
+    /**
+     * Get the list of all investments with status = $status for a P2P as identified by the
+     * linkedaccount identifier with the amount.
+     *
+     * @param int $linkedaccount_id    linkedaccount reference
+     * @param   int $status          The status of the investment
+     * @return array
+     *
+     */
+    public function getLoanIdListOfInvestmentsWithReservedFunds($linkedaccount_id, $status) {
+        $this->Investment = ClassRegistry::init('Investment');
+        $filterConditions = array(
+            'linkedaccount_id' => $linkedaccount_id,
+            "investment_statusOfloan" => $status,
+        );
+
+        $investmentListResult = $this->Investment->find("list", array("recursive" => -1,
+            "conditions" => $filterConditions,
+            "fields" => array("investment_loanId", "investment_reservedFunds"),
+        ));
+        return $investmentListResult;
     }    
     
     /**

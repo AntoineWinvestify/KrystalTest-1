@@ -153,6 +153,12 @@ class Fileparser {
  // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state
  // READ_INVESTMENT_DATA => Re-read the data of the investment from the actual "investment.xls" file (assuming it exists). 
  //                         This is only aplicable to the content of the investment model   
+ // TO_ACTIVE_STATUS ==> We put the investment as active
+ // PREACTIVE ==> We put the investment as preactive by default
+ // PREACTIVE_VERIFICATION ==> We verify first that the investment in preactive state is not already in DB in order to save it with preactive state
+ // ACTIVE_VERIFICATION ==> We verify that the investment is not in preactive state, then we add it in DB with active state.
+ //                                 If the investment is already on DB with preactive state, we change the state 
+ //                                 and move the reservedFunds to outstandingPrincipal
     
  /*
   * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
@@ -182,18 +188,19 @@ class Fileparser {
                 "type" => "globalcashflowdata_platformWithdrawals"          
                 ],
             3 => [
-                "detail" => "Primary_market_investment",
+                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default
+                                                                                //For example Mintos
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
-                "chars" => "AM_TABLE"
+                "chars" => "TO_ACTIVE_STATUS"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "payment_secondaryMarketInvestment",
-                "chars" => "AM_TABLE,"
+                "chars" => "AM_TABLE"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -393,7 +400,7 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestmentPrimaryMarket",
-                "chars" => "REMOVE_AM_TABLE" 
+                //"chars" => "REMOVE_AM_TABLE" 
                 ],
             39 => [
                 "detail" => "Disinvestment_secundary_market", 
@@ -423,7 +430,50 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "disinvestmentWithoutLoanReference",
                 ], 
-        
+            43 => [
+                "detail" => "Primary_market_investment_preactive",              //We want a primary_market_investment but in preactive state as default
+                                                                                //For example Zank
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentPreactive",  
+                "chars" => "PREACTIVE"
+                ],
+            44 => [
+                "detail" => "Primary_market_investment_preactive_verification", //We want a primary_market_investment in preactive state as default but
+                                                                                //it is needed a verification daily to pass to active or cancel status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentPreactiveVerification",  
+                "chars" => "PREACTIVE_VERIFICATION"
+                ],
+            45 => [
+                "detail" => "Primary_market_investment_active_verification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentActiveVerification",  
+                "chars" => "ACTIVE_VERIFICATION"
+                ],
+            46 => [
+                "detail" => "Primary_market_investment_active_sumVerification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentActiveSumVerification",  
+                "chars" => "ACTIVE_SUM_VERIFICATION"
+                ],
+            47 => [
+                "detail" => "Primary_market_investment_preactive_sumVerification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentPreactiveSumVerification",  
+                "chars" => "PREACTIVE_SUM_VERIFICATION"
+                ],
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept

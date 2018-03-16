@@ -119,17 +119,17 @@ class loanbook extends p2pCompany {
                         "input3" => [
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"],
+                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_sumVerification"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
                             4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
                             5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
                             6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
                             7 => ["Compensación-Compensación por incidencia administrativa" => "Compensation"],
                             8 => ["Comisión-Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment"],
-                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment"],
+                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_sumVerification"],
+                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive_sumVerification"],
                             11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
-                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment"]
+                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive_sumVerification"]    //When is negative
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
