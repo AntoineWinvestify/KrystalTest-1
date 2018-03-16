@@ -388,7 +388,7 @@ class UserDataShell extends AppShell {
                         16);
             $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
                     $resultData['investment']['investment_outstandingPrincipal'], 
-                    $resultData['payment']['payment_myInvestment'], 
+                    $transactionData['amount'], 
                     16);
             if ($resultData['investment']['investment_isNew']) {
                 unset($resultData['investment']['investment_isNew']);
@@ -1516,7 +1516,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                 echo "result result result okokokok \n";
                 unset($resultData['payment']['payment_myInvestment']);
                 $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-                return $resultData['payment']['payment_reservedFunds'];
+                return $transactionData['amount'];
             }
             return;
         }
