@@ -898,7 +898,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
-        if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
+        if (isset($resultData['investment']['investment_reservedFunds']) && !empty($resultData['investment']['investment_reservedFunds'])) {
+            echo "enter here disinviestment \n";
+            $resultData['payment']['payment_disinvestment'] = bcadd($resultData['payment']['payment_disinvestment'], $transactionData['amount'], 16);
+            $resultData['investment']['investment_disinvestment'] = bcadd($resultData['investment']['investment_disinvestment'], $transactionData['amount'], 16);
+            $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+            print_r($resultData);
+            return $transactionData['amount'];
+        }
+        else if (!isset($resultData['investment']['investment_reservedFunds']) && empty($resultData['investment']['investment_reservedFunds'])) {
             echo "Before subbbb \n";
             print_r($resultData);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
@@ -913,13 +921,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             echo "after ssbbbb \n";
             print_r($resultData);
             return $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'];
-        }
-        else if (isset($resultData['investment']['investment_reservedFunds']) && empty($resultData['investment']['investment_reservedFunds'])) {
-            echo "enter here disinviestment \n";
-            $resultData['investment']['investment_disinvestment'] = bcadd($resultData['investment']['investment_disinvestment'], $transactionData['amount'], 16);
-            $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-            print_r($resultData);
-            return $transactionData['amount'];
         }
         else {
             return $transactionData['amount'];
@@ -940,7 +941,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a large integer
      */
     public function calculateCancellationState(&$transactionData, &$resultData) {
+        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+        $result = bcadd($resultData['investment']['investment_myInvestment'], $resultData['investment']['investment_reservedFunds'], 16);
+        $resultVerification = bccomp($result, $resultData['investment']['investment_disinvestment'], 16);
+        if ($resultVerification === 1) {
+            echo "loan is still active after disinvestment \n";
+            return WIN_LOANSTATUS_ACTIVE;
+        }
         return WIN_LOANSTATUS_CANCELLED;
+        
     }    
  
     
@@ -1216,24 +1225,38 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return int         new status of the loan
      */
     public function calculateActiveStateChange(&$transactionData, &$resultData) {
+        echo "changing to active \n";
+        print_r($resultData);
         $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-        
+        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
         // move the corresponding part of the money from reserved funds to outstanding principal
         $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
                     $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
-                    $resultData['investment']['investment_myInvestment'],
+                    $resultData['investment']['investment_reservedFunds'],
                     16
                 );
         $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
                     $resultData['investment']['investment_outstandingPrincipal'],
-                    $resultData['investment']['investment_myInvestment'],
+                    $resultData['investment']['investment_reservedFunds'],
                     16
                 );     
-        $resultData['investment']['investment_outstandingPrincipal'] = bcsub( 
-                    $resultData['investment']['investment_outstandingPrincipal'],
+        $resultData['payment']['payment_myInvestment'] = bcadd( 
+                    $resultData['payment']['payment_myInvestment'],
+                    $resultData['investment']['investment_reservedFunds'],
+                    16
+                );     
+        $resultData['investment']['investment_myInvestment'] = bcadd( 
                     $resultData['investment']['investment_myInvestment'],
+                    $resultData['investment']['investment_reservedFunds'],
                     16
                 );
+        $resultData['investment']['investment_reservedFunds'] = bcsub( 
+                    $resultData['investment']['investment_reservedFunds'],
+                    $resultData['investment']['investment_reservedFunds'],
+                    16
+                );
+        echo "state changed \n";
+        print_r($resultData);
         return WIN_LOANSTATUS_ACTIVE;
     }  
     
@@ -1452,7 +1475,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
                     $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
                 }
                 if ($resultData['investment']['investment_tempState'] !== WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                    $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+                    $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
                     $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
                     echo "Activaing investment for zank \n";
                     print_r($resultData);
@@ -1515,60 +1538,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         
         echo "AFETER RESERVED FNSFSDF \n";
         print_r($resultData);
-        return $result;
+        return;
     }
-    
-    /*public function verifyStatusWaitingToBeFormalized(&$transactionData, &$resultData) {
-        if ($this->data['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
-            if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                if (!empty($resultData['configParms']['changeStatusToActive'])) {
-                    echo "change Status or possible to change \n";
-                    $functionToCall = $resultData['configParms']['changeStatusToActive']['function'];
-                    echo "function to call is $functionToCall \n";
-                    $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
-                    echo "investment tempState is " . $resultData['investment']['investment_tempState'];
-                    $verifyStateChanged = true;
-                }
-                if ($verifyStateChanged) {
-                    if (!empty($resultData['investment']['investment_tempState']) && $resultData['investment']['investment_tempState'] != WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
-                        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-                        print_r($resultData);
-                        if ($resultData['investment']['investment_isNew']) {
-                            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
-                                $resultData['investment']['investment_outstandingPrincipal'],
-                                $resultData['investment']['investment_myInvestment'],
-                                16
-                            );   
-                            $resultData['investment']['investment_reservedFunds'] = bcsub(
-                                $resultData['investment']['investment_reservedFunds'],
-                                $resultData['investment']['investment_myInvestment'],
-                                16
-                            );
-                        }
-                        else {
-                            echo "This is a problem of Zank, so we are implementing 0 \n";
-                            $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
-                                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
-                                        $resultData['investment']['investment_myInvestment'],
-                                        16
-                                    );
-                            $resultData['investment']['investment_reservedFunds'] = bcsub(
-                                        $resultData['investment']['investment_reservedFunds'],
-                                        $resultData['investment']['investment_myInvestment'],
-                                        16
-                                    );
-                            $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
-                                    $resultData['investment']['investment_outstandingPrincipal'], 
-                                    $resultData['payment']['payment_myInvestment'], 
-                                    16);
-                        }
-                        print_r($resultData);
-                    }
-                }
-            }
-        }
-    }*/
     
     /**
      *  Get the amount which corresponds to the "totalReservedAssets" concept
@@ -1581,7 +1552,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateTotalReservedAssets(&$transactionData, &$resultData) {
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
         $result = $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'];
-        //$result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
         $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $resultData['payment']['payment_disinvestment'], 16);
         $result = bcadd($result, $resultData['payment']['payment_reservedFunds'], 16);
