@@ -900,7 +900,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
         if (isset($resultData['investment']['investment_reservedFunds']) && !empty($resultData['investment']['investment_reservedFunds'])) {
             echo "enter here disinviestment \n";
-            $resultData['payment']['payment_disinvestment'] = bcadd($resultData['payment']['payment_disinvestment'], $transactionData['amount'], 16);
             $resultData['investment']['investment_disinvestment'] = bcadd($resultData['investment']['investment_disinvestment'], $transactionData['amount'], 16);
             $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
             print_r($resultData);
