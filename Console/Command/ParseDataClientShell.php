@@ -599,9 +599,9 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database['investment']['investment_amortizationTableAvailable'] = WIN_AMORTIZATIONTABLES_NOT_AVAILABLE;
                                 $database['investment']['investment_technicalStateTemp'] = "INITIAL";
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-                                $database['investment']['investment_isNew'] = true;
                                 break;
                         }
+                        $database['investment']['investment_isNew'] = true;
                     }
                     else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
                         echo "Updating loan in the shadow DB table\n";
