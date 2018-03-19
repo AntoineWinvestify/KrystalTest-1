@@ -869,7 +869,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                         $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
                     }
-
+                    $database['investment']['date'] = $dateKey;
                     if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                         $resultCreate = $this->Investment->createInvestment($database['investment']);
@@ -899,8 +899,18 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
                     
-                    if ($dateKey > $finishDate) {
-                        $database['investment']['investment_backupCopyId'] = $this->copyInvestment($investmentId);
+                    $dateToDeleteAfter1 = new DateTime(date($finishDate));
+                    $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
+
+                    if ($dateKey > $lastDateToCalculate) {
+                        $tempBackupCopyId = $this->copyInvestment($investmentId);
+echo __FUNCTION__ . " " . __LINE__ ." Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";                        
+echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKey, and backupCopyId = " .  $tempBackupCopyId ."\n";
+
+                        $this->Investment->save(array ("id" => $investmentId,
+                                                       "investment_backupCopyId" => $tempBackupCopyId,
+                                                        "date" => $dateKey
+                                ));
                     }
 
                     echo 'save payment';
@@ -1135,33 +1145,66 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
 // Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
+        echo __FUNCTION__ . " " . __LINE__ . " Determine if a records needs to be deleted";
         $dateToDeleteAfter = new DateTime(date($finishDate));
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
+echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
         if ($dateKey > $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
+            echo "\nget all ids of investments records which have a backup\n";
             $filter = array("investment_backupCopyId >" => 0,
                                     "linkedaccount_id" => $linkedaccountId);
             $field = array("id", "investment_backupCopyId");
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
+            
+echo __FILE__ . " " . __LINE__ . " The following investments has backupIds ";
+print_r($results);
 
             foreach ($results as $result) {
-                $this->restoreInvestment($result['investment_backupCopyId'], $result['id']);
+                $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
+                
+                // check if the investment has the same date as the date of account linking, if so delete the record
+                $filter = array ('id' => $result['Investment']['id'],
+                                'date' => $dateKey);
+                
+                $investmentData = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
+                print_r($investmentData);
+                if (!empty($investmentData)) {                  
+                    $this->Investment->delete($result['Investment']['id'], $cascade = false);
+                }
+                
                 $filterConditions = array ("date" => $dateKey,
-                                  "investment_id" => $result['id']);
-                $this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-                $this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-                $this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-                $this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+                                  "investment_id" => $result['Investment']['id']);
+
+                if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                    echo __FILE__ . " " . __LINE__ . " Payment deleted ";
+                }
+                if ($this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                    echo __FILE__ . " " . __LINE__ . " PaymentTotal deleted  \n";                    
+                }
+                if ($this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                    echo __FILE__ . " " . __LINE__ . " Investmentslice deleted \n";                    
+                }
+                if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                    echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";                     
+                }
             }
 
             $filterConditions = array ("date" => $dateKey,
                       "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
-            $this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-            $this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
+          
+            if ($this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                echo __FILE__ . " " . __LINE__ . " Globalcashflowdata deleted \n";                 
+            }
+            if ($this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                echo __FILE__ . " " . __LINE__ . " Globaltotalsdata deleted \n";                  
+            }
             $filterConditions = array ("date" => $dateKey,
                                         "id" => $backupCopyUserinvestmentdataId);
-            $this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false);
-            
+            if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";                 
+            }
+       
             // Also remove any "assigned" loanIds/sliceIds for download
             foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                 if ($tableToCollect['date'] == $dateKey) {
@@ -1292,7 +1335,7 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         $slices = $this->Investment->getInvestmentSlices($resultData['investment']['id']);
 print_r($table);
-        foreach ($slices as $slice) {                                           // Initially we will find only 1 sliced
+        foreach ($slices as $slice) {                                           // Initially we will find only 1 slice
             echo __FUNCTION__ . " " . __LINE__ . " \n";
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
                 echo __FUNCTION__ . " " . __LINE__ . " \n";
@@ -1388,13 +1431,26 @@ echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortiz
      *                  
      */
     public function restoreInvestment($restoreFromInvestmentId, $restoreToInvestmentId) {
-
-        $result = $this->Investment->find("first", array("condition" => array("id" => $restoreFromInvestmentId)));
-
-        $result['investment_backupCopyId'] = 0;
+        // copy the complete record
+echo __FUNCTION__ . " " . __LINE__ . " restore an investmentRecord\n";
+echo "restoreFromInvestmentId = $restoreFromInvestmentId and restoreToInvestmentId = $restoreToInvestmentId\n";
+        $result = $this->Investment->find("first", array("conditions" => array("id" => $restoreFromInvestmentId),
+                                                        "recursive" => -1));
+        
+print_r($result);        
+        if (!empty($result)) {
+ //           $this->Investment->delete($restoreFromInvestmentId, $cascade = false); 
+            echo " I have deleted the backup record\n";
+        }
+        else {
+            // Generate an internal error for Admin
+        }        
+        $this->Investment->create();
+        $result['investment_backupCopyId'] = 3333333;
         $result['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
-        $this->Investment->delete($restoreFromInvestmentId, $cascade = false);
+        $this->Investment->delete($restoreFromInvestmentId, $cascade = false);    // TO BE UNCOMMENTED
+        echo "I did delete  id = $restoreFromInvestmentId\n";
     }
 
     /**
@@ -1406,11 +1462,17 @@ echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortiz
      *                  
      */
     public function copyInvestment($investmentId) {
-
-        $result = $this->Investment->find("first", array("condition" => array("id" => $investmentId)));
-
-        $result['investment_backupCopyId'] = 0;
+echo __FUNCTION__ . " " . __LINE__ . " create a copy of investmentRecord of record $investmentId\n";
+        $result = $this->Investment->find("first", array("conditions" => array("id" => $investmentId),
+                                                         "recursive" => -1));
+echo __FUNCTION__ . " " . __LINE__ . " original result = \n";
+print_r($result); 
+        $result['Investment']['investment_backupCopyId'] = 0;
+        unset($result['Investment']['id']);                                     // save it as a "new" investment
+print_r($result); 
+        $this->Investment->create();
         $this->Investment->save($result, $validate = true);
+        echo $this->Investment->id;
         return $this->Investment->id;
     }
 

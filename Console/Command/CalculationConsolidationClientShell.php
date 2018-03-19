@@ -229,6 +229,7 @@ class CalculationConsolidationClientShell extends GearmanClientShell {
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
 print_r($linkedAccountData);
+
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
@@ -237,6 +238,7 @@ print_r($linkedAccountData);
             }
 
             foreach ($loanDataId as $loanId) { 
+                $tempNextScheduledDate = "";
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
@@ -252,7 +254,7 @@ print_r($linkedAccountData);
                         $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
                     }                 
                 }
-                
+echo "tempNextScheduledDate = $tempNextScheduledDate\n";                
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
                                                'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
                                                );             

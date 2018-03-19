@@ -565,13 +565,14 @@ class finanzarel extends p2pCompany {
             "N" => [
                 [
                     "type" => "statusOfLoan",                          
-                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                    "inputData" => [                                            // Get the "original" Finanzarel concept, which is used later on
                                 "input2" => "",                               
                                 "input3" => "",
                                 "input4" => 0                                  
                             ],
                     "functionName" => "extractDataFromString",
                 ]
+                
             ],
             "O" => [
                 [
@@ -628,7 +629,7 @@ class finanzarel extends p2pCompany {
                         ],
                 "functionName" => "extractDataFromString",
             ],
-                        [
+            [
                 "type" => "amortizationtable_paymentStatusOriginal",                          
                 "inputData" => [                                         
                             "input2" => "",                               
@@ -1529,13 +1530,13 @@ class finanzarel extends p2pCompany {
             }
 
             foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find
-                $this->tempArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the invesment table.                          //                                                                   
+                $this->tempArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the investment table.                          //                                                                   
                 //echo $slice . " " . $id . " slice and id from json" . "\n";
                 //echo $key . " investment file id" . "\n\n\n\n\n\n\n";
 
                 if ($key == $id) {
                     //echo 'compare ok';
-                    $this->tempArray['correctTables'][$slice] = $key; //If the investment exist in the file, we can get the table. Save the id in correcTabes.
+                    $this->tempArray['correctTables'][$slice] = $key; //If the investment exist in the file, we can get the table. Save the id in correcTables.
                     continue;
                 }
             }
@@ -1711,16 +1712,19 @@ class finanzarel extends p2pCompany {
         $inputData = mb_strtoupper($inputData);
         switch ($inputData) {
             case "RETRASADA-30D":
-                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;
             case "RETRASADA":
-                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;
             case "IMPAGADA +30D, EN RECOBRO":
-                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;
+            case "PENDIENTE DE COBRO":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;             
             case "IMPAGADA":
-                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PENDING;
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;            
             case "FALLIDA":                                                     // Written off
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_FAILURE;
