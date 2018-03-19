@@ -101,7 +101,9 @@ class zank extends p2pCompany {
         'changeStatusToActive' => [
             "function" => "getStatusFromInvestment"
         ],
-        'verifyReservedFunds' => true
+        'verifyReservedFunds' => [
+            "function" => "addIntoTransactionAtFinal"
+        ]
     ];
     
     protected $transactionConfigParms = [
