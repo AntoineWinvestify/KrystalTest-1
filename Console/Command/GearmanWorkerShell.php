@@ -42,6 +42,7 @@ class GearmanWorkerShell extends AppShell {
     protected $startDate;
     protected $finishDate;
     protected $valueToVerify;
+    protected $valuesToDeleteForExpiredLoans;
     
     /**
      * Constructor of the class
@@ -468,13 +469,31 @@ class GearmanWorkerShell extends AppShell {
      */
     public function verifyPreviousVariableIsEqual($value, $valueToVerify) {
         $result = false;
+        echo "value is $value \n and valueToVerify is" . $this->$valueToVerify . " \n";
+        print_r($value);
         if ($value !== $this->$valueToVerify) {
+            echo "It is not the same value, so we continue \n";
             $this->$valueToVerify = $value;
         }
         else {
+            if (!in_array($value, $this->valuesToDeleteForExpiredLoans)) {
+                $this->valuesToDeleteForExpiredLoans[] = $value;
+            }
+            echo "It is the same value, delete all \n";
             $result = true;
         }
         return $result;
+    }
+    
+    public function cleanArrayByKey(&$tempResult, $companyHandle, $config) {
+        $variableName = $config['value'];
+        if (empty($this->$variableName)) {
+            return;
+        }
+        $keysToDelete = $this->$variableName;
+        foreach($keysToDelete as $keyToDelete) {
+            unset($tempResult[$keyToDelete]);
+        }
     }
     
 }
