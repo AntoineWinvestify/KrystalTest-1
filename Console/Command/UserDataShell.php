@@ -404,6 +404,11 @@ class UserDataShell extends AppShell {
                             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
                             $transactionData['amount'],
                             16);
+                $resultData['investment']['investment_reservedFunds'] = bcsub(
+                            $resultData['investment']['investment_reservedFunds'],
+                            $transactionData['amount'],
+                            16);
+                
             }
             return $transactionData['amount'];
         }
@@ -567,8 +572,8 @@ class UserDataShell extends AppShell {
         $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
         $tempOutstandingPrincipal = 1;     // Any value other than 0 
 
-        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
-            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        if (isset($this->data['precision'])) {
+            $precision = $this->data['precision'];
         }
 
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
@@ -622,8 +627,8 @@ statusOfLoan can have the following values:
     WIN_LOANSTATUS_UNKNOWN
  */
         $tempOutstandingPrincipal = 1;
-        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
-            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        if (isset($this->data['precision'])) {
+            $precision = $this->data['precision'];
         }
 
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
@@ -1391,13 +1396,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      */
     public function recalculateRoundingErrors(&$transactionData, &$resultData) {
         $tempOustanding = null;
-        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
-            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        if (isset($this->data['precision'])) {
+            $precision = $this->data['precision'];
         }
-        if (!empty($resultData['configParms']['recalculateRoundingErrors']) 
+        if (!empty($this->data['recalculateRoundingErrors']) 
                 && bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0
                 && bccomp("0", $resultData['investment']['investment_outstandingPrincipal'], 16) != 0) {
-            $function = $resultData['configParms']['recalculateRoundingErrors']['function'];
+            $function = $this->data['recalculateRoundingErrors']['function'];
             $this->$function($transactionData, $resultData);
         }
     }
@@ -1409,7 +1414,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function recalculationOfRoundingErrors(&$transactionData, &$resultData) {
-        $variables = $resultData['configParms']['recalculateRoundingErrors']['values'];
+        $variables = $this->data['recalculateRoundingErrors']['values'];
         $i = 1;
         foreach ($variables as $variable) {
             $modelFrom = explode("_", $variable["from"][0]);
@@ -1468,8 +1473,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         //$result = $resultData['investment']['investment_reservedFunds'];     // in case more slices were bought of same loan
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
             if ($resultData['investment']['investment_isNew']) {
-                if (!empty($resultData['configParms']['changeStatusToActive'])) {
-                    $functionToCall = $resultData['configParms']['changeStatusToActive']['function'];
+                if (!empty($this->data['changeStatusToActive'])) {
+                    $functionToCall = $this->data['changeStatusToActive']['function'];
                     echo "function to call is $functionToCall \n";
                     $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
                 }
