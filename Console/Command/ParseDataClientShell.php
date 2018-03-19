@@ -294,18 +294,23 @@ class ParseDataClientShell extends GearmanClientShell {
         $collectTablesIndex = 0;
         //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
         $dataForCalculationClass['actionOrigin'] = $platformData['actionOrigin'];
+        $precision = $platformData['dashboard2ConfigurationParameters']['outstandingPrincipalRoundingParm'];
+        if (empty($precision)) {
+            $precision = '0.00001';                                         // Default precision
+        }
+        $dataForCalculationClass['precision'] = $precision;
+        if (!empty($platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'])) {
+            $dataForCalculationClass['recalculateRoundingErrors'] = $platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'];
+        }
+        if (!empty($platformData['dashboard2ConfigurationParameters']['changeStatusToActive'])) {
+            $dataForCalculationClass['changeStatusToActive'] = $platformData['dashboard2ConfigurationParameters']['changeStatusToActive'];
+        }
         $calculationClassHandle->setData($dataForCalculationClass);
         $controlVariableActiveInvestments = $platformData['activeInvestments']; // Our control variable
 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
             $platformData['workingNewLoans'] = array_values($platformData['newLoans']);
             $expiredLoanValues = array_values(array_keys($platformData['parsingResultExpiredInvestments']));
-
-            $precision = $platformData['dashboard2ConfigurationParameters']['outstandingPrincipalRoundingParm'];
-            if (empty($precision)) {
-                $precision = '0.00001';                                         // Default precision
-            }
-
             $countArray1 = count($platformData['workingNewLoans']);
 
             foreach ($expiredLoanValues as $key => $value) {
@@ -442,13 +447,6 @@ class ParseDataClientShell extends GearmanClientShell {
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey;
-            $database['configParms']['outstandingPrincipalRoundingParm'] = $precision;          // configuration parameter 
-            if (!empty($platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'])) {
-                $database['configParms']['recalculateRoundingErrors'] = $platformData['dashboard2ConfigurationParameters']['recalculateRoundingErrors'];
-            }
-            if (!empty($platformData['dashboard2ConfigurationParameters']['changeStatusToActive'])) {
-                $database['configParms']['changeStatusToActive'] = $platformData['dashboard2ConfigurationParameters']['changeStatusToActive'];
-            }
 
             foreach ($dates as $keyDateTransaction => $dateTransaction) {                       // read all *individual* transactions of a loanId per day           
 // Do some pre-processing in order to see if a *global* loanId really is a global loanId, i.e. 
@@ -657,6 +655,21 @@ class ParseDataClientShell extends GearmanClientShell {
 
                             foreach ($conceptChars as $itemKey => $item) {
                                 $conceptChars[$itemKey] = trim($item);
+                            }
+                            
+                            if (in_array("RETAKE_INVESTMENT_DATA", $conceptChars)) {
+                                $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                foreach ($investmentListToCheck as $investmentDataKey => $investmentData) {
+                                    $tempResult = $this->in_multiarray($investmentDataKey, $this->variablesConfig);
+
+                                    if (!empty($tempResult)) {
+                                        $dataInformation = explode(".", $tempResult['databaseName']);
+                                        $dbTable = $dataInformation[0];
+                                        if (empty($database[$dbTable][$investmentDataKey])) {
+                                            $database[$dbTable][$investmentDataKey] = $investmentData;
+                                        }
+                                    }
+                                }
                             }
 
                             if (in_array("ACTIVE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
