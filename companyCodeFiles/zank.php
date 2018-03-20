@@ -69,6 +69,12 @@
  * 
  * Parser AmortizationTables                                                    [OK, tested]
  * 
+ * 
+ * 2018-03-20       version 0.91
+ * Minor adjustments in configuration variables
+ * 
+ * 
+ * 
  * Pending:
  * Fecha en duda
  *
@@ -486,8 +492,8 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],*/
-        8 => [
-            [
+        7 => [                                                                  // Use the 2 letter code, except for Cuota Congelada
+            [                                                                   // Winvestify standardized name  OK
                 "type" => "amortizationtable_paymentStatus",                        
                 "inputData" => [                                           
                             "input2" => "",                        
@@ -2252,31 +2258,31 @@ class zank extends p2pCompany {
     public function translateAmortizationPaymentStatus($inputData) {
         $inputData = mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
-            case "CUOTA COBRADA.":
+            case "CO":                                                          // CUOTA COBRADA
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
                 break;
-            case "CUOTA EN COBRO.":
+            case "EC":                                                          // CUOTA EN COBRO
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break; 
-            case "CUOTA DEVENGANDOSE.":
+            case "DE":                                                          // CUOTA DEVENGANDOSE
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break;           
-            case "CUOTA PENDIENTE.":
+            case "PD":                                                          // CUOTA PENDIENTE
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break; 
-            case "CUOTA RETRASADA.":
+            case "RE":                                                          // CUOTA RETRASADA
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;   
-            case "CUOTA REFINANCIADA.":
+            case "RF":                                                          // CUOTA FINANCIADA
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;
-            case "CUOTA CONGELADA.":
+            case "CUOTA CONGELADA.":                                            // CUOTA CONGELADA  
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break; 
             default:
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
                 break;
-        }   
+        }  
         return $result; 
     }
 

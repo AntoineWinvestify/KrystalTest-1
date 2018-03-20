@@ -62,7 +62,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //      return;
+ //       return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
@@ -1157,8 +1157,8 @@ echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
             $field = array("id", "investment_backupCopyId");
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
             
-echo __FILE__ . " " . __LINE__ . " The following investments has backupIds ";
-print_r($results);
+//echo __FILE__ . " " . __LINE__ . " The following investments has backupIds ";
+//print_r($results);
 
             foreach ($results as $result) {
                 $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
@@ -1354,13 +1354,15 @@ print_r($table);
         $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                   
 
         $table['id'] = $tableDbReference;
-echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";
+        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";
         if ($this->AmortizationTable->updateAmortizationTable($table)) {
-echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
+            echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
         }
         else {
-echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
+            echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
         }
+echo "Exiting on " . __FUNCTION__ . " " . __LINE__ . "\n";
+exit;
         return;
     }
 
@@ -1404,13 +1406,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortiz
      *  Determines the sliceIdentifier (.i.e. the amortization table) to be used
      * 
      *  @param  array   array with the current transaction data
-     *  @param  array   array with all data so far calculated and to be written to DB
+     *  @param  array   array with all data so far calculated and to be written to the DB
      *  @return string  sliceIndentifier
      *                  
      */
     public function getSliceIdentifier(&$transactionData, &$resultData) {
 
-        if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that have individual slices per investment, like FinBee
+        if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that can have more then 1 slice per investment, like FinBee
             $sliceIdentifier = $transactionData['sliceIdentifier'];
         }
         if (isset($resultData['investment']['investment_sliceIdentifier'])) {
@@ -1432,25 +1434,16 @@ echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortiz
      */
     public function restoreInvestment($restoreFromInvestmentId, $restoreToInvestmentId) {
         // copy the complete record
-echo __FUNCTION__ . " " . __LINE__ . " restore an investmentRecord\n";
-echo "restoreFromInvestmentId = $restoreFromInvestmentId and restoreToInvestmentId = $restoreToInvestmentId\n";
+//echo __FUNCTION__ . " " . __LINE__ . " restore an investmentRecord\n";
+//echo "restoreFromInvestmentId = $restoreFromInvestmentId and restoreToInvestmentId = $restoreToInvestmentId\n";
         $result = $this->Investment->find("first", array("conditions" => array("id" => $restoreFromInvestmentId),
                                                         "recursive" => -1));
         
-print_r($result);        
-        if (!empty($result)) {
- //           $this->Investment->delete($restoreFromInvestmentId, $cascade = false); 
-            echo " I have deleted the backup record\n";
-        }
-        else {
-            // Generate an internal error for Admin
-        }        
         $this->Investment->create();
-        $result['investment_backupCopyId'] = 3333333;
+        $result['investment_backupCopyId'] = 0;
         $result['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
-        $this->Investment->delete($restoreFromInvestmentId, $cascade = false);    // TO BE UNCOMMENTED
-        echo "I did delete  id = $restoreFromInvestmentId\n";
+        $this->Investment->delete($restoreFromInvestmentId, $cascade = false);  
     }
 
     /**
@@ -1465,14 +1458,13 @@ print_r($result);
 echo __FUNCTION__ . " " . __LINE__ . " create a copy of investmentRecord of record $investmentId\n";
         $result = $this->Investment->find("first", array("conditions" => array("id" => $investmentId),
                                                          "recursive" => -1));
-echo __FUNCTION__ . " " . __LINE__ . " original result = \n";
+//echo __FUNCTION__ . " " . __LINE__ . " original result = \n";
 print_r($result); 
         $result['Investment']['investment_backupCopyId'] = 0;
         unset($result['Investment']['id']);                                     // save it as a "new" investment
 print_r($result); 
         $this->Investment->create();
         $this->Investment->save($result, $validate = true);
-        echo $this->Investment->id;
         return $this->Investment->id;
     }
 

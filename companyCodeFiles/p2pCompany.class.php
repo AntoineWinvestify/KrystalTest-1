@@ -1385,14 +1385,19 @@ class p2pCompany {
      * @param string $name It is the name for the folder
      * @return boolean True if the folder is created
      */
-    public function createFolder($name = null, $originPath = null) {
+    public function createFolder($name = null, $originPath = null, $nameWithDS = true) {
         if (empty($name)) {
             return false;
         }
         if (empty($originPath)) {
             $originPath = dirname(__FILE__);
         }
-        $dir = $originPath . DS . $name;
+        if ($nameWithDS) {
+            $dir = $originPath . $name;
+        }
+        else {
+            $dir = $originPath . DS . $name;
+        }
         $folderCreated = false;
         if (!file_exists($dir)) {
             $folderCreated = mkdir($dir, 0770, true);
