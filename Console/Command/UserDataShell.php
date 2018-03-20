@@ -368,49 +368,8 @@ class UserDataShell extends AppShell {
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
             return;
         }
-        else if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_SUMVERIFYACTIVE) {
-            echo "payment_myInvestment is on fire baby \n";
-            print_r($resultData);
-            $this->calculateSumActiveVerify($transactionData, $resultData);
-            echo "later ooonnnnnnnnn =========>> \n";
-            print_r($resultData);
-            return $transactionData['amount'];
-        }
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYACTIVE) {
-            echo "Entering in VerifyActive \n\n";
-            echo "Paymen is investment \n";
-            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
-            $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-            print_r($resultData);
-            $resultData['investment']['investment_myInvestment'] = bcadd(
-                        $resultData['investment']['investment_myInvestment'],
-                        $transactionData['amount'],
-                        16);
-            $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
-                    $resultData['investment']['investment_outstandingPrincipal'], 
-                    $transactionData['amount'], 
-                    16);
-            if ($resultData['investment']['investment_isNew']) {
-                unset($resultData['investment']['investment_isNew']);
-                echo "The investment doesnt' exist so new investment hehehe \n";
-            }
-            else {
-                echo "Entering in bccomp igual 0 \n";
-                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
-                            $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
-                            $transactionData['amount'],
-                            16);
-                $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd(
-                            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
-                            $transactionData['amount'],
-                            16);
-                $resultData['investment']['investment_reservedFunds'] = bcsub(
-                            $resultData['investment']['investment_reservedFunds'],
-                            $transactionData['amount'],
-                            16);
-                
-            }
-            return $transactionData['amount'];
+            return $this->data['companyHandle']->manageMyInvestment($transactionData, $resultData);
         }
         else {
             return $transactionData['amount'];
@@ -1441,11 +1400,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return $transactionData['amount'];
     }
     
-    function getStatusFromInvestment(&$transactionData, &$resultData) {
-        $status = $resultData['investment']['investment_statusOfLoan'];
-        return $status;
-    }
-    
     /** STILL NOT FINISHED
      *  Calculate the real state of a loan and if the loan must be on reservedAssets or outstandingPrincipal
      *  There are different states
@@ -1472,72 +1426,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         }
         //$result = $resultData['investment']['investment_reservedFunds'];     // in case more slices were bought of same loan
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-            if ($resultData['investment']['investment_isNew']) {
-                if (!empty($this->data['changeStatusToActive'])) {
-                    $functionToCall = $this->data['changeStatusToActive']['function'];
-                    echo "function to call is $functionToCall \n";
-                    $resultData['investment']['investment_tempState'] = $this->$functionToCall($transactionData, $resultData);
-                }
-                if ($resultData['investment']['investment_tempState'] !== WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-                    $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
-                    $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-                    echo "Activaing investment for zank \n";
-                    print_r($resultData);
-                    $resultData['payment']['payment_myInvestment'] = bcadd( 
-                        $resultData['payment']['payment_myInvestment'],
-                        $transactionData['amount'],
-                        16
-                    );
-                    $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
-                        $resultData['investment']['investment_outstandingPrincipal'],
-                        $transactionData['amount'],
-                        16
-                    );
-                    $resultData['investment']['investment_myInvestment'] = bcadd( 
-                        $resultData['investment']['investment_myInvestment'],
-                        $transactionData['amount'],
-                        16
-                    );
-                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
-                        $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
-                        $transactionData['amount'],
-                        16
-                    );
-                }
-                else {
-                    echo "investment tempState is " . $resultData['investment']['investment_tempState'];
-                    $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-                    unset($resultData['payment']['payment_myInvestment']);
-                    return $transactionData['amount'];
-                }
-            }
-        }
-        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED) {
-            echo "PREACTIVE VERIFY\n";
-            
-            if ($resultData['investment']['investment_isNew']) {
-                $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-                unset($resultData['investment']['investment_isNew']);
-                echo "result result result okokokok \n";
-                unset($resultData['payment']['payment_myInvestment']);
-                $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-                return $transactionData['amount'];
-            }
-            return;
-        }
-        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_SUMVERIFYWAITINGTOBEFORMALIZED) {
-            echo "HERERERERER investment \n";
-            if ($resultData['investment']['investment_isNew']) {
-                unset($resultData['investment']['investment_isNew']);
-                $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
-            }
-            else {
-                $resultData['investment']['investment_tempState'] = $resultData['investment']['investment_statusOfLoan'];
-            }
-            $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-            echo "AFETER RESERVED FNSFSDF \n";
-        print_r($resultData);
-            return $transactionData['amount'];
+            return $this->data['companyHandle']->manageReservedFunds($transactionData, $resultData, $this->data);
         }
         
         echo "AFETER RESERVED FNSFSDF \n";
@@ -1582,45 +1471,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     function calculatePaymentReservedFunds(&$transactionData, &$resultData) {
         echo "I entered jeeehrerehrherherher \n";
         return $transactionData['amount'];
-    }
-    
-    function calculateSumActiveVerify(&$transactionData, &$resultData) {
-        if ($resultData['investment']['investment_isNew']) {
-            unset($resultData['investment']['investment_isNew']);
-            $resultData['investment']['investment_myInvestment'] = bcadd(
-                $resultData['investment']['investment_myInvestment'], 
-                $transactionData['amount'], 
-                16);
-            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
-                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
-                    $transactionData['amount'],
-                    16);
-        }
-        else {
-            if (isset($resultData['investment']['investment_reservedFunds']) && empty($resultData['investment']['investment_reservedFunds'])) {
-                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
-                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
-                        $transactionData['amount'],
-                        16);
-                $resultData['investment']['investment_reservedFunds'] = bcsub(
-                        $resultData['investment']['investment_reservedFunds'],
-                        $transactionData['amount'],
-                        16);
-            }
-            //We move from reservedFunds to myInvestment
-            $resultData['investment']['investment_myInvestment'] = bcadd(
-                    $resultData['investment']['investment_myInvestment'],
-                    $transactionData['amount'],
-                    16);
-            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
-                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
-                    $transactionData['amount'],
-                    16);
-        }
-        $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
-                $resultData['investment']['investment_outstandingPrincipal'], 
-                $transactionData['amount'], 
-                16);
     }
     
 }
