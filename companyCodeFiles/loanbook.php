@@ -2048,10 +2048,6 @@ class loanbook extends p2pCompany {
                 $resultData['investment']['investment_myInvestment'], 
                 $transactionData['amount'], 
                 16);
-            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
-                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
-                    $transactionData['amount'],
-                    16);
         }
         else {
             if (isset($resultData['investment']['investment_reservedFunds']) && !empty($resultData['investment']['investment_reservedFunds'])) {
