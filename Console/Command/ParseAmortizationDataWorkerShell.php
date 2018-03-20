@@ -96,26 +96,28 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
             }
             $this->callbackInit($tempArray[$linkedAccountKey], $companyHandle, $callbacks);
             if (empty($tempArray[$linkedAccountKey])) {
-                $data['statusCollect'][$linkedAccountKey] = "0";
+                $dataQueue['statusCollect'][$linkedAccountKey] = "0";
                 $errors[$linkedAccountKey] = $this->tempArray[$i]['global']['error'];
             }
             else {
-                $data['statusCollect'][$linkedAccountKey] = "1";
+                $dataQueue['statusCollect'][$linkedAccountKey] = "1";
             }
+            
         }
- 
-        $data['tempArray'] = $tempArray;
-        $data['errors'] = $errors;
+        
+
+        $dataQueue['tempArray'] = $tempArray;
+        $dataQueue['errors'] = $errors;
 
         if (Configure::read('debug')) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of ParseAmortizationDataWorker");
-            print_r($data);
+            print_r($dataQueue);
         }
         
         print_r(array_keys($tempArray[0]));
 $timeStop = time();
 echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
-        return json_encode($data);
+        return json_encode($dataQueue);
     }
     
     

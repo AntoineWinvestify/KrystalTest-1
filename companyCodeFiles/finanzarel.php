@@ -779,6 +779,23 @@ class finanzarel extends p2pCompany {
             ]
     ];
 
+        protected $parserValuesAmortizationTable2 = [
+            "A" =>  [
+                "name" => "investment_loanId"                                          // Winvestify standardized name
+            ],
+            "H" => [
+                [
+                    "type" => "statusOfLoan",                          
+                    "inputData" => [                                            // Get the "original" Zank concept, which is used later on
+                                "input2" => "",                               
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]
+            ],
+    ];
+        
     protected $valuesAmortizationTable = [
         0 => [
             [
@@ -1047,7 +1064,7 @@ class finanzarel extends p2pCompany {
                                     "L" => "Mi oferta(precio)",
                                     "M" => "Fecha de vencimiento",
                                     "N" => "Estado",
-                                    "O" => "Amortizaci?nPendiente",
+                                    "O" => "AmortizacionPendiente",
                                     "P" => " ");
 
     protected $investment2Header = array(
@@ -1085,7 +1102,7 @@ class finanzarel extends p2pCompany {
                                  "C" => "Trimestre",
                                  "D" => "Fecha",
                                  "E" => "Subasta",
-                                 "F" => "Descripci?n",
+                                 "F" => "Descripcion",
                                  "G" => "Importe",
                                  "H" => "Saldo");
     
@@ -1095,7 +1112,7 @@ class finanzarel extends p2pCompany {
                                  "C" => "Trimestre",
                                  "D" => "Fecha",
                                  "E" => "Subasta",
-                                 "F" => "Descripci?n",
+                                 "F" => "Descripcion",
                                  "G" => "Importe",
                                  "H" => "Saldo");
     
@@ -1418,7 +1435,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 
                 $path = $this->getFolderPFPFile();
@@ -1465,7 +1482,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 //$credentials = array_shift($this->urlSequence);
                 $credentialsFile = array(
@@ -1494,7 +1511,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 if (!empty($this->tempRequest)) {
                     $path = $this->getFolderPFPFile();
@@ -1577,7 +1594,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                
                 $url = array_shift($this->urlSequence);
@@ -1614,7 +1631,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 
                
@@ -1657,7 +1674,7 @@ class finanzarel extends p2pCompany {
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
@@ -1748,10 +1765,17 @@ class finanzarel extends p2pCompany {
         $this->myParser = new Fileparser();                                                                             //Call the parser
         $folder = $this->getFolderPFPFile();
         $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
+        $this->numFileInvestment++;
+        $file2 = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
         $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
         $info = $this->myParser->analyzeFile($file, $this->parserValuesAmortizationTable, $this->typeFileInvestment);             //Parse the file
+        $info2 = $this->myParser->analyzeFile($file2, $this->parserValuesAmortizationTable2, $this->typeFileInvestment);
         foreach ($info as $key => $value) {
-            
+            foreach($info2 as $key2 => $value2){
+                if($key == $key2){
+                   $info[$key][0]['statusOfLoan'] =  $info2[$key][0]['statusOfLoan']; 
+                }
+            }
             if (!in_array($key, $this->loanIds)) {
                 //echo $key . " dont found, dont compare \n";
                 unset($info[$key]); //Delete old investments that we don't have in loanId.json from parsed array.

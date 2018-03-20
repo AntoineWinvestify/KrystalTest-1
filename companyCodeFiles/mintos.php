@@ -126,6 +126,7 @@ class mintos extends p2pCompany {
                                             20 => ["Reversed late payment fee income" => "Compensation_negative"], 
                                             21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
+                                            23 => ["Affiliate bonus" => "Incentives_and_bonus"],
                                         ],
                                 ],
                     "functionName" => "getTransactionDetail",
@@ -904,8 +905,7 @@ class mintos extends p2pCompany {
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 } else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
@@ -916,7 +916,7 @@ class mintos extends p2pCompany {
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
                     //Url preparation for download multiple tramsaction files
                     $this->numberOfFiles = 0;
-                    $this->tempUrl['downloadTransacitonUrl'] = array_shift($this->urlSequence);
+                    $this->tempUrl['downloadTransactionUrl'] = array_shift($this->urlSequence);
                     $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);         
                     $this->tempUrl['transactionsCredentials'] = array_shift($this->urlSequence);
                     $this->tempUrl['headersJson'] = array_shift($this->urlSequence);
@@ -960,7 +960,7 @@ class mintos extends p2pCompany {
                 else {
                      $this->idForSwitch = 5;
                 }
-                $this->getPFPFileMulticurl($this->tempUrl['downloadTransacitonUrl'], $referer, $credentials, $headers, $this->fileName);
+                $this->getPFPFileMulticurl($this->tempUrl['downloadTransactionUrl'], $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
@@ -980,8 +980,7 @@ class mintos extends p2pCompany {
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 } else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
@@ -1023,8 +1022,7 @@ class mintos extends p2pCompany {
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 } else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
@@ -1045,8 +1043,18 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
-
+                $eurDashboardFound = false;
                 foreach($boxes as $keyBox => $box){
+                    $boxValue = $box->nodeValue;
+                    echo $boxValue;
+                    if(strpos($boxValue, '€') !== false){
+                        echo 'Dashboard with € found';
+                        $eurDashboardFound = true;
+                    }
+                    else{
+                        continue;
+                    }
+
                     //echo $box->nodeValue;
                     //echo "BOX NUMBER: =>" . $keyBox;
                     $tds = $box->getElementsByTagName('td');
@@ -1074,6 +1082,11 @@ class mintos extends p2pCompany {
                     break;
 
                 }
+                
+                if(!$eurDashboardFound){
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_CURRENCY);
+                }
+                
                 $lis = $boxes[0]->getElementsByTagName('li');
                 $this->verifyNodeHasElements($lis);
                 if (!$this->hasElements) {
@@ -1414,7 +1427,10 @@ class mintos extends p2pCompany {
                 break; 
             case "Default": 
                 $result = WIN_LOANSTATUS_ACTIVE;
-                break;            
+                break;
+            case "Grace Period": 
+                $result = WIN_LOANSTATUS_ACTIVE;
+                break;
             case "Finished": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break; 

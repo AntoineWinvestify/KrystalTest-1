@@ -380,10 +380,13 @@ print_r($totalParsingresultControlVariables);*/
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
 
         echo "The size of data to be sent to the Client = " . strlen(json_encode($data)) . " Bytes\n";
-echo "Done\n";
-$timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
+        echo "Done\n";
+        $timeStop = time();
+        echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
 
+        foreach($data['tempArray'] as $linkAccountId => $dateArray){
+            ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);          
+        }
         return json_encode($data);
     }
     

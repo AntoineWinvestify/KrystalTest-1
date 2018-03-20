@@ -187,7 +187,7 @@ $(document).on("click", ".changePassLinkedAccount",function(event) {
     var index =  $(this).val();
     $(this).removeClass('changePassLinkedAccount');
     $(this).addClass('confirmChangePassLinkedAccount');
-    $(this).html('<i class="ion ion-compose"></i> <small><?php echo __('Confirm Password') ?></small>');
+    $(this).html('<i class="ion ion-compose"></i><small><?php echo __(' Confirm') ?></small>');
     $("#password" + index).prop('disabled', false);
     
     
@@ -202,7 +202,7 @@ $(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
 
         $(this).addClass('changePassLinkedAccount');
         $(this).removeClass('confirmChangePassLinkedAccount');
-        $(this).html('<i class="ion ion-compose"></i> <small><?php echo __('Edit Password') ?></small>');
+        $(this).html('<i class="ion ion-compose"></i> <small><?php echo __('Edit') ?></small>');
         $("#password" + index).prop('disabled', true);   
         
 	var params = { id:index,
@@ -277,18 +277,20 @@ $(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
+                                    
+                                    <div class="text-center">
+                                    <button type="button" data-toggle="modal" data-target="#Modal<?php echo $account['Linkedaccount']['id'] ?>" 
                                     id="company_<?php echo $account['Linkedaccount']['company_id'] ?>" 
                                     onclick='ga_deleteAccountClick("<?php echo $account['Linkedaccount']['company_id'] ?>",
                                     "<?php echo $companyResults[$account['Linkedaccount']['company_id']]['company_name']?>")'
-                        class="btn btn-default btnRounded form submitButton deleteLinkedAccount "><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
+                        class="btn btn-default btnRounded form submitButton"><i class="ion ion-trash-a"></i> <small><?php echo __('Delete')?></small>
                                     </button>
                                     
                                     <button type="button" href="/investors/changePasswordLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"
                                                     id="PassCompany_<?php echo $account['Linkedaccount']['company_id'] ?>"                            
-                                                    class="btn btn-default btnRounded form submitButton changePassLinkedAccount "><i class="ion ion-compose"></i> <small><?php echo __('Edit Password') ?></small>
+                                                    class="btn btn-default btnRounded form submitButton changePassLinkedAccount "><i class="ion ion-compose"></i> <small><?php echo __('Edit') ?></small>
                                     </button>
-                                    
+                                        </div>
                                 </div> <!-- /crowdlending company -->
                                 <div class="col-xs-12 col-md-12 col-md-7 col-lg-7">
                                     <div class="row">
@@ -326,6 +328,33 @@ $(document).on("click", ".confirmChangePassLinkedAccount",function(event) {
                                 </div>
                             </div>
                         </div>
+                        
+                            <!-- Modal -->
+<div id="Modal<?php echo $account['Linkedaccount']['id'] ?>" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class="text-center">
+                            <img src="/img/logo_winvestify/Logo.png" style="max-width:75px;"/>
+                            <img src="/img/logo_winvestify/Logo_texto.png" style="max-width:250px;"/>
+                        </div>
+      </div>
+      <div class="modal-body">
+          <p><?php echo __("Do you want delete this linked account?"); ?> </p>
+          <div class="text-center">
+          <button type="button" class="btn btn-default deleteLinkedAccount btnRounded" data-dismiss="modal" href="/investors/deleteLinkedAccount" value="<?php echo $account['Linkedaccount']['id'] ?>"><?php echo __("Delete"); ?></button>
+          <button type="button" class="btn btn-default btnRounded" data-dismiss="modal"><?php echo __("Close"); ?></button>
+          </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+                        
+                        
                         <?php
                             }
                         }

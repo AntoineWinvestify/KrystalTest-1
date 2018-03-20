@@ -156,11 +156,14 @@ public function loginAction()
 				$this->Session->setFlash(__('Account not activated. contact Winvestify'),
 											'default',array(),	'auth');
 				$this->set("error", true);
+                                
 				return $this->redirect(
 					array('controller' => 'users', 'action' => 'loginRedirect'));
 			}
 
 			$investorId = $this->Auth->user('Investor.id');
+                        $lang = $this->Session->read('Config.language');
+                        $this->Investor->save(array('id' => $investorId, 'investor_language' => $lang));
 			$this->checkUserInvestmentData();
 			$this->User->updateLastAccessed($investorId);
 			return $this->redirect($this->Auth->redirectUrl());

@@ -429,8 +429,14 @@ class Fileparser {
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestmentWithoutLoanReference",
-                ], 
+                ],
             43 => [
+                "detail" => "Commission",                                       // Some commission in Zank are 0,0000 €. getComplexTransactionDetail read this commission as income, we need this to resolve the unknow concept error.
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_commissionPaid"
+            ],
+            44 => [
                 "detail" => "Primary_market_investment_preactive",              //We want a primary_market_investment but in preactive state as default
                                                                                 //For example Zank
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
@@ -1867,6 +1873,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         switch($extension) {
             case "xlsx":
                 $inputType = "Excel2007";
+                break;
+            case "xls":
+                $inputType = "Excel5";
                 break;
             case "csv":
                 $inputType = "CSV";

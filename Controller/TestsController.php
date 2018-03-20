@@ -60,12 +60,59 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest"));
     }
 
     var $dateFinish = "20171129";
     var $numberOfFiles = 0;
     
+    public function pdfTest() {
+
+// Include Composer autoloader if not already done.
+        include 'Vendor/autoload.php';
+
+// Parse pdf file and build necessary objects.
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdf = $parser->parseFile('/home/eduardo/Documents/screenshots/Esateguru/prueba2.pdf');
+        $text = $pdf->getText();
+        $data['A'] = trim($this->extractDataFromString($text, 'PROJECT NAME:', 'CONTRACT NUMBER:'));
+        $data['B'] = trim($this->extractDataFromString($text, 'INTEREST RATE:', 'LOAN PURPOSE:'));
+        echo $text;
+        print_r($data);
+    }
+    
+    
+        private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
+
+        $position = stripos($input, $search);
+        if ($position !== false) {  // == TRUE
+            if ($mandatory == 2){    
+                return "global_" . mt_rand();
+            }
+            $start = $position;
+            $length = strlen($search);
+        }
+        else { // FALSE
+            $start = 0;
+            $length = 0;
+            
+            if ($mandatory == 1){    
+                return "global_" . mt_rand();
+            }
+        }       
+
+        $position1 = stripos($input, $separator);
+        if ($position1 !== false) {  // == TRUE
+            $length1 = $position1;
+        }
+        else { // FALSE
+            $length1 = 100;                 // ficticious value
+        }       
+        $start = $start + $length;
+        $finish = $length1 - $start;
+        return substr($input, $start, $finish) ;
+    }
+
     public function xlsxConvert() {
         echo 'Inicio';
 

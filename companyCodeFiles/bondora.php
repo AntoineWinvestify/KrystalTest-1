@@ -764,8 +764,10 @@ class bondora extends p2pCompany {
                     
                     $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
                     $headerError = $this->compareHeader();
-                    if($headerError){
-                        $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                    if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
                 }
                 $this->idForSwitch++;
@@ -887,8 +889,10 @@ class bondora extends p2pCompany {
                 }                  
                 $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
                 $headerError = $this->compareHeader();
-                if($headerError){
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 
                 
@@ -1000,8 +1004,10 @@ class bondora extends p2pCompany {
                 }
                 $this->unoconv->transcode($this->getFolderPFPFile() . DS . $this->fileName, 'xlsx', $this->getFolderPFPFile() . DS . $this->fileName);
                 $headerError = $this->compareHeader();
-                if($headerError){
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 $this->idForSwitch++;
                 array_shift($this->urlSequence);
