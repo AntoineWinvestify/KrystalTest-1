@@ -252,7 +252,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "internalName",                        
                     "inputData" => [                                            // Get the "original" Mintos concept, which is used later on
-                                "input2" => "investment_myInvestmentPreactiveVerification",                                // 'input3' is NOT mandatory. 
+                                "input2" => "investment_myInvestmentPreactive",                                // 'input3' is NOT mandatory. 
                             ],
                     "functionName" => "getDefaultValue",
                 ],
@@ -1926,6 +1926,70 @@ class finanzarel extends p2pCompany {
      */
     public function translateNominalInterestRate($inputData) {
         return str_replace(",",".",$inputData);
+    }
+    
+    /**
+     * Function to manage reserved Funds for Finanzarel depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageReservedFunds(&$transactionData, &$resultData, $data = null) {
+        echo "PREACTIVE VERIFY\n";
+        if ($resultData['investment']['investment_isNew']) {
+            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+            unset($resultData['investment']['investment_isNew']);
+            echo "result result result okokokok \n";
+            unset($resultData['payment']['payment_myInvestment']);
+            $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+            return $transactionData['amount'];
+        }
+        return;
+    }
+    
+    /**
+     * Function to manage reserved Funds for Finanzarel depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageMyInvestment(&$transactionData, &$resultData, $data = null) {
+        echo "Entering in VerifyActive \n\n";
+        echo "Paymen is investment \n";
+        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+        $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+        print_r($resultData);
+        $resultData['investment']['investment_myInvestment'] = bcadd(
+                    $resultData['investment']['investment_myInvestment'],
+                    $transactionData['amount'],
+                    16);
+        $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
+                $resultData['investment']['investment_outstandingPrincipal'], 
+                $transactionData['amount'], 
+                16);
+        if ($resultData['investment']['investment_isNew']) {
+            unset($resultData['investment']['investment_isNew']);
+            echo "The investment doesnt' exist so new investment hehehe \n";
+        }
+        else {
+            echo "Entering in bccomp igual 0 \n";
+            $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                        $transactionData['amount'],
+                        16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd(
+                        $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                        $transactionData['amount'],
+                        16);
+            $resultData['investment']['investment_reservedFunds'] = bcsub(
+                        $resultData['investment']['investment_reservedFunds'],
+                        $transactionData['amount'],
+                        16);
+
+        }
+        return $transactionData['amount'];
     }
 
 }
