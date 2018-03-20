@@ -1949,7 +1949,7 @@ class finanzarel extends p2pCompany {
     }
     
     /**
-     * Function to manage reserved Funds for Finanzarel depending on the state
+     * Function to manage myInvestment for Finanzarel depending on the state
      * @param  $transactionData    array      array with the current transaction data
      * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
      * @param  $data               array      array of the UserData config params
