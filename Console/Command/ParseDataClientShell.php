@@ -305,6 +305,7 @@ class ParseDataClientShell extends GearmanClientShell {
         if (!empty($platformData['dashboard2ConfigurationParameters']['changeStatusToActive'])) {
             $dataForCalculationClass['changeStatusToActive'] = $platformData['dashboard2ConfigurationParameters']['changeStatusToActive'];
         }
+        $dataForCalculationClass['companyHandle'] = $this->companyClass($platformData['pfp']);
         $calculationClassHandle->setData($dataForCalculationClass);
         $controlVariableActiveInvestments = $platformData['activeInvestments']; // Our control variable
 
@@ -674,47 +675,13 @@ class ParseDataClientShell extends GearmanClientShell {
 
                             if (in_array("ACTIVE", $conceptChars)) {                                  // New, or extra investment, so new amortizationtable shall be collected
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
-                                if ($loanStatus == WIN_LOANSTATUS_ACTIVE) {
-//                                unset ($sliceIdentifier);
-
-                                    $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
-                                    // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                                    // if not then reate a new array with the data available so far, sliceIdentifier and loanId
-                                    $isNewTable = YES;
-                                    foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                                        if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
-                                            $isNewTable = NO;
-                                            break;
-                                        }
-                                    }
-                                    if ($isNewTable == YES) {
-                                        $collectTablesIndex++;
-                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
-                                        $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
-                                    }
-                                }
-                            }
-                            
-                            //THIS STATE DOESN'T HAVE AN AMORTIZATION TABLE
-                            if (in_array("PREACTIVE_VERIFICATION", $conceptChars)) {
-                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED;
-                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED . " \n";
-                            }
-                            
-                            if (in_array("PREACTIVE_SUM_VERIFICATION", $conceptChars)) {
-                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_SUMVERIFYWAITINGTOBEFORMALIZED;
-                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_SUMVERIFYWAITINGTOBEFORMALIZED . " \n";
-                            }
-                            
-                            if (in_array("ACTIVE_VERIFICATION", $conceptChars)) {
-                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYACTIVE;
-                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYACTIVE . " \n";
                                 $getAmortizationTable = true;
                             }
                             
-                            if (in_array("ACTIVE_SUM_VERIFICATION", $conceptChars)) {
-                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_SUMVERIFYACTIVE;
-                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_SUMVERIFYACTIVE . " \n";
+                            //THIS STATE DOESN'T HAVE AN AMORTIZATION TABLE
+                            if (in_array("ACTIVE_VERIFICATION", $conceptChars)) {
+                                $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYACTIVE;
+                                echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYACTIVE . " \n";
                                 $getAmortizationTable = true;
                             }
                             
