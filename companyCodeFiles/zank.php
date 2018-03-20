@@ -98,9 +98,6 @@ class zank extends p2pCompany {
     protected $dashboard2ConfigurationParameters = [
         'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
-        'changeStatusToActive' => [
-            "function" => "getStatusFromInvestment"
-        ],
         'verifyReservedFunds' => [
             "function" => "addIntoTransactionAtFinal"
         ]
@@ -2327,6 +2324,51 @@ class zank extends p2pCompany {
         $structureRevision = $this->verifyDomStructure($dom1, $dom2);
         echo $structureRevision;
         return $structureRevision;
+    }
+    
+    /**
+     * Function to manage reserved Funds for Zank depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageReservedFunds(&$transactionData, &$resultData, $data = null) {
+        if ($resultData['investment']['investment_isNew']) {
+            $resultData['investment']['investment_tempState'] = $resultData['investment']['investment_statusOfLoan'];
+            if ($resultData['investment']['investment_tempState'] !== WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
+                $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+                echo "Activaing investment for zank \n";
+                print_r($resultData);
+                $resultData['payment']['payment_myInvestment'] = bcadd( 
+                    $resultData['payment']['payment_myInvestment'],
+                    $transactionData['amount'],
+                    16
+                );
+                $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
+                    $resultData['investment']['investment_outstandingPrincipal'],
+                    $transactionData['amount'],
+                    16
+                );
+                $resultData['investment']['investment_myInvestment'] = bcadd( 
+                    $resultData['investment']['investment_myInvestment'],
+                    $transactionData['amount'],
+                    16
+                );
+                $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                    $transactionData['amount'],
+                    16
+                );
+            }
+            else {
+                echo "investment tempState is " . $resultData['investment']['investment_tempState'];
+                $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+                unset($resultData['payment']['payment_myInvestment']);
+                return $transactionData['amount'];
+            }
+        }
     }
 
 }
