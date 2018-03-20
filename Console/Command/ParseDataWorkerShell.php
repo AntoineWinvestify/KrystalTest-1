@@ -765,49 +765,6 @@ function getlevel() {
     return $this->filteredArray;
   }
   
-    /**
-     * Recursively extracts arrays from a list of arrays according to filter conditions (name-value of the array fields)
-     * 
-     * @param  array    $inputArray     the array to walk
-     * @param  int      $maxDepth       Maximum depth level you like to search (recursive)
-     * @param  string   $searchKey      Key to search for
-     * @param  string   $searchValue    Corresponding value of the key
-     * @return array    array with the set of indices for each matched array
-     */
-    function array_keys_recursive(&$inputArray, $maxDepth, $searchKey, $searchValue, $depth = 0 ){
-
-        if ($depth < $maxDepth) {
-            $depth++;
-            $keys = array_keys($inputArray);
-
-            foreach($keys as $key){
-                if ($this->tempDepth > $depth) {
-                    $control = $this->tempDepth - $depth;
-                    for ($i = 0; $i < $control; $i++)  {               
-                        array_pop($this->tempKey);
-                    }    
-                }
-                $this->tempKey[] = $key;
-                $this->tempDepth = $depth;
-
-                if(is_array($inputArray[$key])){
-                    $arrayKeys[$key] = $this->array_keys_recursive($inputArray[$key], $maxDepth, $searchKey, $searchValue, $depth);
-                }
-                else {
-                    if ($depth == $maxDepth) {
-                        if ($searchValue == $inputArray[$key] && $searchKey == $key){
-                            $this->filteredArray[] = $this->tempKey;
-                            array_pop($this->tempKey);
-                        }
-                        else {
-                            array_pop($this->tempKey);
-                        }
-                    }
-                }
-            }
-        }
-    } 
-  
 }
 
 
