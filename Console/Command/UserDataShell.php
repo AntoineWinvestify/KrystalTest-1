@@ -53,6 +53,9 @@ class UserDataShell extends AppShell {
      * 
      */
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
+             
+        $globalPrecision = $resultData['configParms']['globalRoundingParm'];
+        
         $error = 0;
         echo "external values = \n";
         print_r($externalControlVariables);
@@ -61,14 +64,46 @@ class UserDataShell extends AppShell {
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
-                    if ($internalControlVariables['myWallet'] <> $externalControlVariables['myWallet'] ) {
-                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;
+                    $tempResult = bccomp($internalControlVariables['myWallet'], $externalControlVariables['myWallet'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['myWallet'], $externalControlVariables['myWallet'], 16);
                     }
+                    else {
+                        $difference = bcsub($externalControlVariables['myWallet'], $internalControlVariables['myWallet'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;  
+                    }                  
                     break;
-                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-                    if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables['outstandingPrincipal'] ) {
-                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;
+                case WIN_CONTROLVARIABLE_RESERVED_FUNDS:
+                    $tempResult = bccomp($internalControlVariables['reservedFunds'], $externalControlVariables['reservedFunds'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['reservedFunds'], $externalControlVariables['reservedFunds'], 16);
                     }
+                    else {
+                        $difference = bcsub($externalControlVariables['reservedFunds'], $internalControlVariables['reservedFunds'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_RESERVED_FUNDS;  
+                    }                                       
+                    break;                    
+                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
+                    $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
+                    }
+                    else {
+                        $difference = bcsub($externalControlVariables['outstandingPrincipal'], $internalControlVariables['outstandingPrincipal'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;  
+                    }                                       
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
                     if ($internalControlVariables['activeInvestments'] <> $externalControlVariables['activeInvestments'] ) {
@@ -589,7 +624,9 @@ statusOfLoan can have the following values:
         if (isset($this->data['precision'])) {
             $precision = $this->data['precision'];
         }
-
+// Determine properly if the outstandingPrincipal is within the precision limit. NOTE THAT the
+// outstanding principal can be negative. In that case I don't count them 
+        
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }
@@ -935,7 +972,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      */
     public function calculateBadDebt(&$transactionData, &$resultData) {
         
-//        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
+//        if ($resultData['investment']['investment_consolidatePlatformControlVariables'] == WIN_LOANSTATUS_WRITTEN_OFF) {
 //            return $resultData['payment']['payment_writtenOff'];
 //        }
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
@@ -1035,20 +1072,28 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";  
         if (!isset($resultData['payment']['payment_principalAndInterestPayment']) || empty($resultData['payment']['payment_principalAndInterestPayment'])) {
             return;
         }
-        
+print_r($transactionData);
+print_r($resultData);        
         if (empty($resultData['payment']['payment_capitalRepayment'])) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";              
             $capitalRepayment = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_capitalRepayment'] = $capitalRepayment;
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
+echo __FUNCTION__ . " " . __LINE__  . "\n";            
         }
-        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {       
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";  
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
+ print_r($transactionData);
+ print_r($resultData);         
+echo __FUNCTION__ . " " . __LINE__  . "\n";         
         return;
     }
     
@@ -1059,10 +1104,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfPartialCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
         if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
             return;
         }
-        
+ print_r($transactionData);
+ print_r($resultData);
         if (empty($resultData['payment']['payment_partialCapitalRepayment'])) {
             $capitalRepayment = bcsub($resultData['payment']['payment_partialPrincipalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_partialPrincipalRepayment'] = $capitalRepayment;
@@ -1075,6 +1122,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
+ echo __FUNCTION__ . " " . __LINE__  . "\n";        
         return;
     }
     
@@ -1358,7 +1406,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     }   
  
     /**
-     * Call a function to fix rounding errors happened on the platform.
+     * Call a function to fix rounding errors as "committed" by the platform.
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -1374,10 +1422,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             $function = $this->data['recalculateRoundingErrors']['function'];
             $this->$function($transactionData, $resultData);
         }
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
+print_r($transactionData);
+print_r($resultData); 
     }
     
     /**
-     *  Recalculate variables with rounding errors adjusting the variables as need
+     *  Recalculate variables with rounding errors adjusting the variables as needed
      * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
@@ -1386,18 +1437,27 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         $variables = $this->data['recalculateRoundingErrors']['values'];
         $i = 1;
         foreach ($variables as $variable) {
+echo "Loop variable = " ;
+print_r($variable);
             $modelFrom = explode("_", $variable["from"][0]);
             $modelTo = explode("_", $variable["to"][0]);
             $value = $resultData[$modelFrom[0]][$variable["from"][0]];
+            
             if ($variable["sign"] == "negative") {
                 $value = 0 - $value;
             }
+echo "Value = $value\n";            
+print_r($modelTo);
+
             $resultData[$modelTo[0]][$variable["to"][0]] = bcadd($resultData[$modelTo[0]][$variable["to"][0]], $value, 16);
+print_r($resultData); 
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "From"] = $variable["from"][0];
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "To"] = $variable["to"][0];
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_roundingError' . $i] = $value;
             $i++;
-        }   
+            
+        }
+echo __FUNCTION__ . " " . __LINE__  . "\n";        
     }
     
     /**

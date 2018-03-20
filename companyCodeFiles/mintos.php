@@ -64,6 +64,10 @@
  * Introduction of call back functions for translation of company specific concepts to
  * Winvestify standardized concepts 
  * 
+ * 2017-03-06   version 0.8.2
+ * New definition for callback of amortizationtable
+ * 
+ * 
  */
 class mintos extends p2pCompany {
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
@@ -115,8 +119,8 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], 
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],         
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
                                   //          15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
                                   //          16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
@@ -162,8 +166,8 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],                   
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
  //                                           15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
  //                                           16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
@@ -463,7 +467,24 @@ class mintos extends p2pCompany {
             ]
         ],
         6 => [
-            "name" => "amortizationtable_paymentStatus"
+                [
+                    "type" => "amortizationtable_paymentStatus",                          
+                    "inputData" => [                                            
+                                "input2" => "",                                  
+                                "input3" => "",
+                                "input4" => 0                                   
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],        
+                [
+                    "type" => "amortizationtable_paymentStatusOriginal",    
+                    "inputData" => [                                       
+                                "input2" => "",                        
+                                "input3" => "",
+                                "input4" => 0                             
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
         ]
     ];
     
@@ -620,6 +641,17 @@ class mintos extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],
+        "reservedFunds" => [
+            [
+                "type" => "reservedFunds",                                      // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],
         ]
     ];      
     
@@ -649,7 +681,11 @@ class mintos extends p2pCompany {
         ]
     ];
     
-    
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus",
+        ]
+    ];    
     
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
@@ -1465,5 +1501,54 @@ class mintos extends p2pCompany {
         return $structureRevision;
     }
     
+
+    /**
+     * Function to translate the company specific AmortizationPaymentStatus to the Winvestify standardized
+     * concept
+     * 
+     * @param string $inputData     company specific AmortizationPaymentStatus
+     * @return int                  Winvestify standardized AmortizationPaymentStatus
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+        $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+        $inputData = mb_strtoupper($inputData);
+
+        switch ($inputData) {
+            case "PAID AFTER THE DUE DATE":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE;
+                break;
+            case "PAID":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+                break;
+            case "SCHEDULED":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;
+            case "LATE":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;                     
+        }
+        return $data;        
+    }
+/*
+
+20.12.2016	 € 282.03	 € 545.26	 € 827.29	  20.12.2016	 Paid
+20.01.2017	 € 267.01	 € 560.28	 € 827.29	  31.01.2017	 Paid after the due date
+Received late payment fee: € 36.36
+20.12.2017	 € 319.97	 € 507.32	 € 827.29                        Late
+20.01.2018	 € 306.64	 € 520.65	 € 827.29			 Scheduled 
+
+
+WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED    
+WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID
+WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE
+WIN_AMORTIZATIONTABLE_PAYMENT_PAID
+WIN_AMORTIZATIONTABLE_PAYMENT_PENDING                     
+WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN
+
+ 
+ 
+
+
+ */    
     
 }

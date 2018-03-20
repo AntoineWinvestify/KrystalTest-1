@@ -69,6 +69,12 @@
  * 
  * Parser AmortizationTables                                                    [OK, tested]
  * 
+ * 
+ * 2018-03-20       version 0.91
+ * Minor adjustments in configuration variables
+ * 
+ * 
+ * 
  * Pending:
  * Fecha en duda
  *
@@ -507,8 +513,8 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],*/
-        8 => [
-            [
+        7 => [                                                                  // Use the 2 letter code, except for Cuota Congelada
+            [                                                                   // Winvestify standardized name  OK
                 "type" => "amortizationtable_paymentStatus",                        
                 "inputData" => [                                           
                             "input2" => "",                        
@@ -2023,7 +2029,7 @@ class zank extends p2pCompany {
                     echo "Read table: ";
                     if ($table->getAttribute('id') == 'parte' || $table->getAttribute('id') == 'todo') {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE); //Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
@@ -2273,31 +2279,31 @@ class zank extends p2pCompany {
     public function translateAmortizationPaymentStatus($inputData) {
         $inputData = mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
-            case "Cuota cobrada.":
-            case "Cuota Cobrada.":
-            case "CUOTA COBRADA.":
+            case "CO":                                                          // CUOTA COBRADA
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
                 break;
-            case "CUOTA EN COBRO.":
-            case "Cuota En cobro.": 
-                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+            case "EC":                                                          // CUOTA EN COBRO
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break; 
-            case "CUOTA DEVENGANDOSE.":
-            case "Cuota Devengandose.": 
+            case "DE":                                                          // CUOTA DEVENGANDOSE
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break;           
-            case "CUOTA PENDIENTE.":
-            case "Cuota pendiente.": 
+            case "PD":                                                          // CUOTA PENDIENTE
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break; 
-            case "CUOTA RETRASADA.":
-            case "Cuota retrasada.": 
-                $result = WIN_LOANSTATUS_FINISHED;
+            case "RE":                                                          // CUOTA RETRASADA
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
                 break;   
+            case "RF":                                                          // CUOTA FINANCIADA
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;
+            case "CUOTA CONGELADA.":                                            // CUOTA CONGELADA  
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break; 
             default:
                 $result = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
                 break;
-        }   
+        }  
         return $result; 
     }
 
@@ -2371,5 +2377,9 @@ class zank extends p2pCompany {
         }
     }
 
+    
+    
+    
+    
 }
 

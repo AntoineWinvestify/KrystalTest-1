@@ -156,7 +156,7 @@ $timeStart = time();
             }
         }
 $timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";        
+echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
     }
 
     
