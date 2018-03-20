@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c605a8d220807e00a4aae6f4edc0a2cf",
+    "hash": "812ea14c28a7c211d1ef9e340b6abd84",
     "content-hash": "122f4fdbb72b76e3ad94b6be080dd659",
     "packages": [
         {
@@ -13,12 +13,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/brianlmoon/net_gearman.git",
-                "reference": "b7b37914c9204b9060d7718efb8204bce93f2d10"
+                "reference": "59d944c3e87ed1663001f9b3db1492f467d5bf16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/brianlmoon/net_gearman/zipball/b7b37914c9204b9060d7718efb8204bce93f2d10",
-                "reference": "b7b37914c9204b9060d7718efb8204bce93f2d10",
+                "url": "https://api.github.com/repos/brianlmoon/net_gearman/zipball/59d944c3e87ed1663001f9b3db1492f467d5bf16",
+                "reference": "59d944c3e87ed1663001f9b3db1492f467d5bf16",
                 "shasum": ""
             },
             "require": {
@@ -35,7 +35,7 @@
                 "."
             ],
             "license": [
-                "BSD"
+                "BSD-2-Clause"
             ],
             "authors": [
                 {
@@ -50,7 +50,7 @@
                 "gearman-manager",
                 "net_gearman"
             ],
-            "time": "2017-10-25 01:12:32"
+            "time": "2018-02-22 00:55:12"
         },
         {
             "name": "facebook/webdriver",
@@ -276,12 +276,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "257c3eca5870dbfaf89eb344fb31c07dfbb74456"
+                "reference": "064052b7280169eedce60dbfee7637bee6d1283e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/257c3eca5870dbfaf89eb344fb31c07dfbb74456",
-                "reference": "257c3eca5870dbfaf89eb344fb31c07dfbb74456",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/064052b7280169eedce60dbfee7637bee6d1283e",
+                "reference": "064052b7280169eedce60dbfee7637bee6d1283e",
                 "shasum": ""
             },
             "require": {
@@ -302,7 +302,7 @@
             },
             "require-dev": {
                 "dompdf/dompdf": "^0.8.0",
-                "friendsofphp/php-cs-fixer": "^2.7",
+                "friendsofphp/php-cs-fixer": "@stable",
                 "jpgraph/jpgraph": "^4.0",
                 "mpdf/mpdf": "^7.0.0",
                 "phpunit/phpunit": "^5.7",
@@ -311,8 +311,6 @@
             },
             "suggest": {
                 "dompdf/dompdf": "Option for rendering PDF with PDF Writer",
-                "ext-dom": "Option to read and write HTML files",
-                "ext-gd": "Required for exact column width autocalculation",
                 "jpgraph/jpgraph": "Option for rendering charts, or including charts with PDF or HTML Writers",
                 "mpdf/mpdf": "Option for rendering PDF with PDF Writer",
                 "tecnick.com/tcpdf": "Option for rendering PDF with PDF Writer"
@@ -325,7 +323,7 @@
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "LGPL-2.1"
+                "LGPL-2.1-or-later"
             ],
             "authors": [
                 {
@@ -356,7 +354,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2018-01-17 03:42:54"
+            "time": "2018-03-09 08:41:43"
         },
         {
             "name": "psr/simple-cache",
@@ -440,7 +438,7 @@
             ],
             "authors": [
                 {
-                    "name": "Sébastien MALOT",
+                    "name": "Sebastien Malot",
                     "email": "sebastien@malot.fr"
                 }
             ],
@@ -1150,9 +1148,6 @@
             "require-dev": {
                 "phpunit/phpunit": "~4.4"
             },
-            "bin": [
-                "scripts/phpcs"
-            ],
             "type": "library",
             "extra": {
                 "branch-alias": {

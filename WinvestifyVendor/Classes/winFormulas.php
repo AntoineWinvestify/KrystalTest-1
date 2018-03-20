@@ -119,16 +119,16 @@ class WinFormulas {
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-1",
-            "dateFinish" => "-1",
+            "dateInit" => "-0",
+            "dateFinish" => "-0",
             "intervals" => "latest",
             "operation" => "add"
         ],
         "D" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
             "table" => "Userinvestmentdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-365",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
             "intervals" => "latest",
             "operation" => "subtract"
         ],
