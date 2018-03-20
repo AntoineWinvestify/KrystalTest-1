@@ -598,6 +598,10 @@ statusOfLoan can have the following values:
             return "PREACTIVE";
         }
         
+        if ($resultData['investment']['investment_tempState'] === WIN_LOANSTATUS_CANCELLED) {
+            return "CANCEL";
+        }
+        
 // the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
             $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
@@ -867,6 +871,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
             $resultData['investment']['investment_disinvestment'] = bcadd($resultData['investment']['investment_disinvestment'], $transactionData['amount'], 16);
             $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
             print_r($resultData);
+            $this->calculateCancellationState($transactionData, $resultData);
             return $transactionData['amount'];
         }
         else if (!isset($resultData['investment']['investment_reservedFunds']) && empty($resultData['investment']['investment_reservedFunds'])) {
@@ -904,15 +909,19 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a large integer
      */
     public function calculateCancellationState(&$transactionData, &$resultData) {
-        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+        echo "I am here to cancelate everything \n";
+        print_r($resultData);
+        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_CANCELLED;
+        $resultData['investment']['investment.investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;
+        $resultData['investment']['investment_technicalStateTemp'] = "CANCEL";
         $result = bcadd($resultData['investment']['investment_myInvestment'], $resultData['investment']['investment_reservedFunds'], 16);
         $resultVerification = bccomp($result, $resultData['investment']['investment_disinvestment'], 16);
         if ($resultVerification === 1) {
             echo "loan is still active after disinvestment \n";
-            return WIN_LOANSTATUS_ACTIVE;
+            $resultData['investment']['investment.investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+            $resultData['investment']['investment_technicalStateTemp'] = "INITIAL";
         }
-        return WIN_LOANSTATUS_CANCELLED;
-        
     }    
  
     
