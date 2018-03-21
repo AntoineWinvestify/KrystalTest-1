@@ -2345,15 +2345,8 @@ class zank extends p2pCompany {
             if ($resultData['investment']['investment_tempState'] !== WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
                 $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
                 $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
-                echo "Activaing investment for zank \n";
-                print_r($resultData);
                 $resultData['payment']['payment_myInvestment'] = bcadd( 
                     $resultData['payment']['payment_myInvestment'],
-                    $transactionData['amount'],
-                    16
-                );
-                $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
-                    $resultData['investment']['investment_outstandingPrincipal'],
                     $transactionData['amount'],
                     16
                 );
@@ -2369,7 +2362,6 @@ class zank extends p2pCompany {
                 );
             }
             else {
-                echo "investment tempState is " . $resultData['investment']['investment_tempState'];
                 $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
                 unset($resultData['payment']['payment_myInvestment']);
                 return $transactionData['amount'];
