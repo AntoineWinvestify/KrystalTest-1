@@ -73,7 +73,7 @@ class TestsController extends AppController {
 
 // Parse pdf file and build necessary objects.
         $parser = new \Smalot\PdfParser\Parser();
-        $pdf = $parser->parseFile('/home/eduardo/Documents/screenshots/Esateguru/prueba2.pdf');
+        $pdf = $parser->parseFile('/home/eduardo/Downloads/inversion 3.pdf');
         $text = $pdf->getText();
         $data['A'] = trim($this->extractDataFromString($text, 'PROJECT NAME:', 'CONTRACT NUMBER:'));
         $data['B'] = trim($this->extractDataFromString($text, 'INTEREST RATE:', 'LOAN PURPOSE:'));

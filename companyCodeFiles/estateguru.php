@@ -311,9 +311,9 @@ class estateguru extends p2pCompany {
                         continue;
                     }
                     else{
-                        $tr = $tables[$key]->getElementsByTagName('tr')[1];
-                        $a = $tr->getElementsByTagName('a')[1];
+                        $a = $tables[$key]->getElementsByTagName('a')[1];
                         echo $a->getAttribute('href');
+                        exit;
                     }
                     
                     
@@ -334,7 +334,7 @@ class estateguru extends p2pCompany {
         
         $dom1 = $this->cleanDomTag($dom1, array(
             array('typeSearch' => 'tagElement', 'tag' => 'tbody'),
-        ));
+        )); 
          
         $dom2 = $this->cleanDomTag($dom2, array(
             array('typeSearch' => 'tagElement', 'tag' => 'tbody'),
