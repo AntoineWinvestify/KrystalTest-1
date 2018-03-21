@@ -174,9 +174,9 @@ class UserDataShell extends AppShell {
 
         $result = $resultData['investment']['investment_outstandingPrincipal'];     // in case more slices were bought of same loan
 
-        /*if (isset($resultData['payment']['payment_myInvestment'])) {
+        if (isset($resultData['payment']['payment_myInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_myInvestment'], 16);
-        }*/
+        }
         if (isset($resultData['payment']['payment_secondaryMarketInvestment'])) {
             $result = bcadd($result, $resultData['payment']['payment_secondaryMarketInvestment'], 16);
         }
@@ -198,9 +198,6 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
-        /*if (isset($resultData['payment']['payment_disinvestment'])) {
-            $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
-        }*/
         return $result;
     }
 
@@ -947,8 +944,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @return string      the string representation of a large integer
      */
     public function calculateCancellationState(&$transactionData, &$resultData) {
-        echo "I am here to cancelate everything \n";
-        print_r($resultData);
         $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_CANCELLED;
         $resultData['investment']['investment.investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;
         $resultData['investment']['investment_technicalStateTemp'] = "CANCEL";
@@ -1246,7 +1241,8 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @return int         new status of the loan
      */
     public function calculateActiveStateChange(&$transactionData, &$resultData) {
-        echo "changing to active \n";
+echo __FUNCTION__ . " " . __LINE__  . "\n";    
+        echo "changing from preactive to active \n";
         print_r($resultData);
         $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
         $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
@@ -1255,12 +1251,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
                     $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
                     $resultData['investment']['investment_reservedFunds'],
                     16
-                );
-        $resultData['investment']['investment_outstandingPrincipal'] = bcadd( 
-                    $resultData['investment']['investment_outstandingPrincipal'],
-                    $resultData['investment']['investment_reservedFunds'],
-                    16
-                );     
+                ); 
         $resultData['payment']['payment_myInvestment'] = bcadd( 
                     $resultData['payment']['payment_myInvestment'],
                     $resultData['investment']['investment_reservedFunds'],
@@ -1276,6 +1267,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
                     $resultData['investment']['investment_reservedFunds'],
                     16
                 );
+echo __FUNCTION__ . " " . __LINE__  . "\n";    
         echo "state changed \n";
         print_r($resultData);
         return WIN_LOANSTATUS_ACTIVE;
@@ -1487,7 +1479,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @return string      the string representation of a large integer
      */
     public function calculateReservedFunds(&$transactionData, &$resultData) {
-        echo "we are here to calculate reservedFunds";
         if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
@@ -1498,8 +1489,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
             return $this->data['companyHandle']->manageReservedFunds($transactionData, $resultData, $this->data);
         }
-        
-        echo "AFETER RESERVED FNSFSDF \n";
         print_r($resultData);
         return;
     }
@@ -1539,7 +1528,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      * @return string bonus amount
      */
     function calculatePaymentReservedFunds(&$transactionData, &$resultData) {
-        echo "I entered jeeehrerehrherherher \n";
         return $transactionData['amount'];
     }
     
