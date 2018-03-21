@@ -243,7 +243,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
             
 //print_r($totalParsingresultInvestments);   
 //print_r($totalParsingresultExpiredInvestments); 
-print_r($totalParsingresultTransactions);
+//print_r($totalParsingresultTransactions);
 //print_r($totalParsingresultControlVariables);
 
             
