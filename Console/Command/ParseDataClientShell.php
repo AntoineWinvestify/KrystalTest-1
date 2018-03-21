@@ -414,6 +414,21 @@ class ParseDataClientShell extends GearmanClientShell {
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey;
+            
+            $investmentLoanIdsPerDay = [];
+            
+            foreach ($dates as $keyDateTransaction => $dateTransaction) { 
+                $keyDateTransactionNames = explode("_", $keyDateTransaction);
+                if ($keyDateTransactionNames[0] !== "global") {
+                    foreach ($dateTransaction as $keyTransactionDate => $transaction) {
+                        if (stripos("investment_myInvestment", $transaction['interName']) !== false) {
+                            if (!in_array($transaction['investment_loanId'], $investmentLoanIdsPerDay)) {
+                                $investmentLoanIdsPerDay[] = $transaction['investment_loanId'];
+                            }
+                        }
+                    }
+                }
+            }
 
             foreach ($dates as $keyDateTransaction => $dateTransaction) {                       // read all *individual* transactions of a loanId per day           
 // Do some pre-processing in order to see if a *global* loanId really is a global loanId, i.e. 
@@ -423,30 +438,30 @@ class ParseDataClientShell extends GearmanClientShell {
                 echo "Processing the following transaction\n";
                 print_r($dateTransaction);
 
-                /*if ($keyDateTransactionNames[0] == "global") {
-                    if ($platformData['origin'])
+                if ($keyDateTransactionNames[0] == "global") {
                     if ($dateTransaction[0]['conceptChars'] === "PREACTIVE") {        // new investment
-                            // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
-                            // a reference exists to the loan and, if succesfull, assign the loanId.
-                            $ghostInvestment = $this->searchInvestmentArrays($dateTransaction[0], $platformData['parsingResultInvestments'], $platformData['parsingResultExpiredInvestments']);
-                            if (!empty($ghostInvestment)) {
-                                echo __FUNCTION__ . " " . __LINE__ . " Ghost loan found\n";
-                                switch ($ghostInvestment[0]['investment_statusOfLoan']) {
-                                    case WIN_LOANSTATUS_FINISHED:
-                                    case WIN_LOANSTATUS_CANCELLED:
-                                    case WIN_LOANSTATUS_WRITTEN_OFF:
-                                        $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                                        break;
-                                    case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
-                                    case WIN_LOANSTATUS_ACTIVE:
-                                        $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
-                                        break;
-                                }
-                                $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
+                        // This could be a Ghost loan (from Zank). Let's check the investments and expired_investments to see if 
+                        // a reference exists to the loan and, if succesfull, assign the loanId.
+
+                        //We need to save all the loanIds in an array in order to assign a loanId
+                        $ghostInvestment = $this->searchInvestmentArrays($dateTransaction[0], $platformData['parsingResultInvestments'], $platformData['parsingResultExpiredInvestments'], $investmentLoanIdsPerDay);
+                        if (!empty($ghostInvestment)) {
+                            echo __FUNCTION__ . " " . __LINE__ . " Ghost loan found\n";
+                            switch ($ghostInvestment[0]['investment_statusOfLoan']) {
+                                case WIN_LOANSTATUS_FINISHED:
+                                case WIN_LOANSTATUS_CANCELLED:
+                                case WIN_LOANSTATUS_WRITTEN_OFF:
+                                    $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                    break;
+                                case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                                case WIN_LOANSTATUS_ACTIVE:
+                                    $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
+                                    break;
                             }
+                            $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
                         }
-                    //}
-                }*/
+                    }
+                }
 
 
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
@@ -1339,14 +1354,19 @@ exit;
      *  @return array
      *                  
      */
-    function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments) {
-
+    function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments, &$investmentLoanIdsPerDay) {
+        echo "looking for a lost investment in Zank";
+        print_r($investmentLoanIdsPerDay);
         foreach ($investments as $investmentKey => $investment) {
             if ($transaction['date'] == $investment[0]['investment_myInvestmentDate']) {
                 if (($transaction['amount']) == $investment[0]['investment_myInvestment']) {
-                    if ($investments[$investmentKey][0]['InvestmentAlreadyDetected'] <> YES) {
-                        $investments[$investmentKey][0]['InvestmentAlreadyDetected'] = YES;
+                    if (!in_array($investments[$investmentKey][0]['investment_loanId'], $investmentLoanIdsPerDay)) {
+                        echo "Found it \n";
+                        $investmentLoanIdsPerDay[] = $investments[$investmentKey][0]['investment_loanId'];
                         return $investment;
+                    }
+                    else {
+                        echo "Not found it \n";
                     }
                 }
             }
@@ -1354,9 +1374,13 @@ exit;
         foreach ($expiredInvestments as $investmentKey => $expiredInvestment) {
             if (($transaction['date']) == $expiredInvestment[0]['investment_myInvestmentDate']) {
                 if (($transaction['amount']) == $expiredInvestment[0]['investment_myInvestment']) {
-                    if ($expiredInvestments[$investmentKey][0]['InvestmentAlreadyDetected'] <> YES) {
-                        $expiredInvestments[$investmentKey][0]['InvestmentAlreadyDetected'] = YES;
+                    if (!in_array($expiredInvestments[$investmentKey][0]['investment_loanId'], $investmentLoanIdsPerDay)) {
+                        echo "Found in expried \n";
+                        $investmentLoanIdsPerDay[] = $expiredInvestments[$investmentKey][0]['investment_loanId'];
                         return $expiredInvestment;
+                    }
+                    else {
+                        echo "Not found it in expired \n";
                     }
                 }
             }
