@@ -547,7 +547,7 @@ class mintos extends p2pCompany {
                  ],
             "R" =>  [
                 [
-                    "type" => "investment_outstandingPrincipal",                // Winvestify standardized name OK 
+                    "type" => "investment_outstandingPrincipalFromP2P",                // Winvestify standardized name OK 
                     "inputData" => [
                                 "input2" => "",
                                 "input3" => ".",
