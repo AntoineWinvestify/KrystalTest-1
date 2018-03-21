@@ -65,6 +65,7 @@ class estateguru extends p2pCompany {
         $this->typeFileInvestment = "html";
         $this->typeFileExpiredLoan = "html";
         $this->transactionErrorRevision = false;
+        $this->offsetPagination = 0;
 // Do whatever is needed for this subsclass
     }
 
@@ -278,11 +279,47 @@ class estateguru extends p2pCompany {
                 $h3s = $dom->getElementsByTagName('h3');
                 /*foreach($h3s as $key => $h3){
                     echo $key . " => " . $h3->nodeValue;
-                }*/
-                
+                }*/                        
                 $this->tempArray["global"]["myWallet"] = $h3s[4]->nodeValue;
                 $this->tempArray['global']['outstandingPrincipal'] = $h3s[2]->nodeValue;
+                $this->idForSwitch++;
+                if(empty($this->tempUrl['downloadPage'])){
+                    $this->tempUrl['downloadPage'] = array_shift($this->urlSequence);
+                }
+                $url = str_replace("{#pagination}",$this->offsetPagination,$this->tempUrl['downloadPage']);
+                $this->offsetPagination = $this->offsetPagination + 10;
+                $this->getCompanyWebpageMultiCurl($url);
+                break;
+            case 8:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $titles = $this->getElements($dom, 'div', 'class', 'headline');
+                
+                $tables = $dom->getElementsByTagName('blockquote');
+                foreach($titles as $key => $value){
+                    $continue = false;
+                    foreach($this->investmentList as $investmentList){
+                        if(strpos($titles[$key], $investmentList['Investment']['investment_loanId']) != false){
+                            unset($titles[$key]);                               //we have this loan in db
+                            $continue = true;
+                            break;
+                        }
+                    }
+                    if($continue == true){
+                        continue;
+                    }
+                    else{
+                        $tr = $tables[$key]->getElementsByTagName('tr')[1];
+                        $a = $tr->getElementsByTagName('a')[1];
+                        echo $a->getAttribute('href');
+                    }
+                    
+                    
+                }
                 return $this->tempArray;
+            
         }
     }
 

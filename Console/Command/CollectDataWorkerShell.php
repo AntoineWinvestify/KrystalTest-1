@@ -58,6 +58,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $this->queueCurlFunction = "collectUserGlobalFilesParallel";
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         $this->Structure = ClassRegistry::init('Structure');
+        $this->Investment = ClassRegistry::init('Investment');
         if (Configure::read('debug')) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($data);
@@ -76,7 +77,9 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             
             $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_SINGLE_INVESTMENT_PAGE);
             $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_INVESTMENTS_FILE_HTML);
+            $investmentList = $this->Investment->getData(array('linkedaccount_id' => $linkedaccount['Linkedaccount']['id']), array('investment_loanId'));
             $this->newComp[$i]->setTableStructure($structure);
+            $this->newComp[$i]->setInvestmentList($investmentList);
             
             $i++;
         }
