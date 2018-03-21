@@ -2017,7 +2017,6 @@ class loanbook extends p2pCompany {
      * @return string      the string representation of a float
      */
     public function manageReservedFunds(&$transactionData, &$resultData, $data = null) {
-        echo "HERERERERER investment \n";
         if ($resultData['investment']['investment_isNew']) {
             unset($resultData['investment']['investment_isNew']);
             $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
@@ -2026,8 +2025,6 @@ class loanbook extends p2pCompany {
             $resultData['investment']['investment_tempState'] = $resultData['investment']['investment_statusOfLoan'];
         }
         $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
-        echo "AFETER RESERVED FNSFSDF \n";
-    print_r($resultData);
         return $transactionData['amount'];
     }
     
@@ -2039,8 +2036,6 @@ class loanbook extends p2pCompany {
      * @return string      the string representation of a float
      */
     public function manageMyInvestment(&$transactionData, &$resultData, $data = null) {
-        echo "payment_myInvestment is on fire baby \n";
-        print_r($resultData);
         if ($resultData['investment']['investment_isNew']) {
             unset($resultData['investment']['investment_isNew']);
             $resultData['investment']['investment_myInvestment'] = bcadd(
@@ -2069,12 +2064,6 @@ class loanbook extends p2pCompany {
                     $transactionData['amount'],
                     16);
         }
-        $resultData['investment']['investment_outstandingPrincipal'] = bcadd(
-                $resultData['investment']['investment_outstandingPrincipal'], 
-                $transactionData['amount'], 
-                16);
-        echo "later ooonnnnnnnnn =========>> \n";
-        print_r($resultData);
         return $transactionData['amount'];
     }
 
