@@ -1062,6 +1062,14 @@ class finanzarel extends p2pCompany {
             'cleanArrayByKey' => [
                 "value" => "valuesToDeleteForExpiredLoans"                      //Second, we use the array to delete all the duplicate keys
             ],
+            "cleanTempArrayByLevels" => [                                               //We must clean the array of previous dates of 2016-01-01
+                "findValueInArray" => [                                         //We need to clean the array
+                    "key" => "investment_issueDate",
+                    "function" => "verifyPreviousDateIsLess",              
+                    "values" => ["2016-02-01"],
+                    "valueDepth" => 3
+                ]
+            ],
             "parserDataCallback" => [
                 "investment_typeOfInvestment" => "translateLoanType",
                 "investment_nominalInterestRate" => "translateNominalInterestRate",
