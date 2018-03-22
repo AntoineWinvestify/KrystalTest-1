@@ -298,6 +298,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                             if ($existsInActive) {
                                 if ($totalParsingresultInvestments[$loanKey][0]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
                             //      generate a statechange record, state is changed to "active"
+                                    //zank
                                     if ($dashboard2ConfigurationParameters['verifyReservedFunds']['function'] == 'addIntoTransactionAtFinal') {
                                         $dateKeys = array_keys($totalParsingresultTransactions);
                                         $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
@@ -309,6 +310,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                                         unset($data['listOfReservedInvestments'][$loanKey]);
                                         continue;
                                     }
+                                    //finanzarel
                                     if ($dashboard2ConfigurationParameters['verifyReservedFunds']['function'] == 'replaceInTransaction') {
                                         foreach ($totalParsingresultTransactions as $keyDate => $transactionPerDay) {
                                             foreach ($transactionPerDay as $keyLoanId => $transactionPerLoanAndDay) {
