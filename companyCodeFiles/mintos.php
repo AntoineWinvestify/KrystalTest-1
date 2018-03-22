@@ -279,9 +279,17 @@ class mintos extends p2pCompany {
             "K" =>  [
                 "name" => "investment_LTV"                                      // Winvestify standardized name   OK
              ],
-            "L" =>  [
-                    "name" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-             ],
+            "L" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
             "M" =>  [
                 "name" => "investment_numberOfInstalments"                      // Winvestify standardized name. This is, 
                                                                                 // at time of investing, the number of
@@ -515,9 +523,17 @@ class mintos extends p2pCompany {
                 ]           
              ],
     */
-            "J" =>  [
-                    "name" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-                 ],  
+            "J" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
             "M" =>  [
                     "name" => "investment_originalState"                        // Winvestify standardized name  OK
                  ], 

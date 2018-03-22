@@ -195,10 +195,15 @@ class loanbook extends p2pCompany {
             "J" => [
                 [
                     "type" => "investment_nominalInterestRate",
-                    "functionName" => "getPercentage",
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
                 ]
-            ],
-            "K" => [
+        ],
+        "K" => [
                 [
                     "type" => "investment_myInvestmentDate",                    // Winvestify standardized date  OK
                     "inputData" => [

@@ -335,13 +335,14 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]*/
                 [
-                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
-                    "inputData" => [                                            // trick to get the complete cell data as purpose
-                                "input2" => "",                                // May contain trailing spaces
-                                "input3" => "&",
-                            ],
-                    "functionName" => "extractDataFromString",
-                ]
+                    "type" => "investment_nominalInterestRate",
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 0,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
+                ] 
             ],
             "L" => [
                 [
@@ -352,7 +353,7 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
-                ]
+                ],                        
             ],
             "M" => [
                 [
@@ -504,13 +505,13 @@ class finanzarel extends p2pCompany {
             ],
             "I" =>  [
                 [
-                    "type" => "investment_nominalInterestRate",                           // Winvestify standardized name
+                    "type" => "investment_nominalInterestRate",
                     "inputData" => [
-				"input2" => ".",
-                                "input3" => ",",
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
                 ]
             ],
             //FAKE CELL, IT IS A DEFAULT VALUE
