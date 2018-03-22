@@ -282,12 +282,12 @@ class estateguru extends p2pCompany {
                 }*/                        
                 $this->tempArray["global"]["myWallet"] = $h3s[4]->nodeValue;
                 $this->tempArray['global']['outstandingPrincipal'] = $h3s[2]->nodeValue;
-                $this->idForSwitch++;
                 if(empty($this->tempUrl['downloadPage'])){
                     $this->tempUrl['downloadPage'] = array_shift($this->urlSequence);
                 }
                 $url = str_replace("{#pagination}",$this->offsetPagination,$this->tempUrl['downloadPage']);
                 $this->offsetPagination = $this->offsetPagination + 10;
+                $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);
                 break;
             case 8:
@@ -299,9 +299,13 @@ class estateguru extends p2pCompany {
                 
                 $tables = $dom->getElementsByTagName('blockquote');
                 foreach($titles as $key => $value){
+                    
                     $continue = false;
+                    if(strpos($value->nodeValue, "SITE LINKS") !== false){
+                        break;
+                    }
                     foreach($this->investmentList as $investmentList){
-                        if(strpos($titles[$key], $investmentList['Investment']['investment_loanId']) != false){
+                        if(strpos($titles[$key]->nodeValue, $investmentList['Investment']['investment_loanId']) !== false){
                             unset($titles[$key]);                               //we have this loan in db
                             $continue = true;
                             break;
@@ -312,14 +316,39 @@ class estateguru extends p2pCompany {
                     }
                     else{
                         $a = $tables[$key]->getElementsByTagName('a')[1];
-                        echo $a->getAttribute('href');
-                        exit;
-                    }
-                    
-                    
+                        $this->tempUrl['singleFileList'][] = $a->getAttribute('href');
+                        continue;
+                    }       
                 }
-                return $this->tempArray;
-            
+                if(empty($this->tempUrl['mainUrl'])){
+                    $this->tempUrl['mainUrl'] = array_shift($this->urlSequence);
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl( $this->tempUrl['mainUrl']);
+                break;
+            case 9:
+                if(empty($this->tempUrl['downloadSingle'])){
+                    $this->tempUrl['downloadSingle'] = array_shift($this->urlSequence);
+                }
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "_" . $this->numPartFileInvestment . "." . "pdf";
+                $this->numPartFileInvestment++;
+                $fileUrl =  array_shift($this->tempUrl['singleFileList']);           
+                if(empty($fileUrl)){
+                    return $this->tempArray;
+                }  
+                $this->getPFPFileMulticurl($this->tempUrl['downloadSingle'] . $fileUrl, false, false, false, $this->fileName);
+                $this->idForSwitch++;
+                break;
+            case 10: 
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "_" . $this->numPartFileInvestment . "." . "pdf";
+                $this->numPartFileInvestment++;
+                $fileUrl =  array_shift($this->tempUrl['singleFileList']);             
+                if(empty($fileUrl)){
+                    return $this->tempArray;
+                }  
+                $this->idForSwitch--;
+                $this->getPFPFileMulticurl($this->tempUrl['downloadSingle'] . $fileUrl, false, false, false, $this->fileName);
+                break;
         }
     }
 
