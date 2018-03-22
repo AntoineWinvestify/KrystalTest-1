@@ -309,6 +309,22 @@ class GearmanWorkerShell extends AppShell {
     }
     
     /**
+     * Clean the array of unnecessary values using array_walk_recursive_delete
+     * @param array $tempArray the array to walk recursively
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with functions from which we will clean the array
+     * @return null if config not exist
+     */
+    public function cleanTempArrayByLevels(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        foreach ($config as $functionNameKey => $values) {
+            $this->array_walk_recursive_delete_by_levels($tempArray, array($this, $functionNameKey), $values);
+        }
+    }
+    
+    /**
      * Remove any elements where the callback returns true
      * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
      * 
@@ -329,6 +345,39 @@ class GearmanWorkerShell extends AppShell {
                     $this->cleanDepthControl = 0;
                     $this->cleanValueControlStop = false;
                 }
+            }
+            else if ($callback($value, $key, $valuesToDelete, $userdata)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+    
+    /**
+     * Remove any elements where the callback returns true by levels
+     * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
+     * 
+     * @param  array    $array    the array to walk
+     * @param  callable $callback callback takes ($value, $key, $userdata)
+     * @param  mixed    $userdata additional data passed to the callback.
+     * @return array
+     */
+    function array_walk_recursive_delete_by_levels(&$array, callable $callback, $valuesToDelete, $userdata = null) {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->array_walk_recursive_delete_by_levels($value, $callback, $valuesToDelete, $userdata);
+            }
+            if ($this->cleanValueControlStop && $this->cleanDepthControl < $valuesToDelete['valueDepth']) {
+                print_r($array[$key]);
+                echo "deleting.... \n";
+                unset($array[$key]);
+                $this->cleanDepthControl++;
+                if ($this->cleanDepthControl == $valuesToDelete['valueDepth']) {
+                    $this->cleanDepthControl = 0;
+                    $this->cleanValueControlStop = false;
+                    echo "stopping \n";
+                }
+                break;
             }
             else if ($callback($value, $key, $valuesToDelete, $userdata)) {
                 unset($array[$key]);
@@ -442,6 +491,13 @@ class GearmanWorkerShell extends AppShell {
         return $result;
     }
     
+    /**
+     * Function to clean an array with previous keys saved in an array
+     * @param array $tempArray the array to clean
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with values to use to delete
+     * @return type
+     */
     public function cleanArrayByKey(&$tempResult, $companyHandle, $config) {
         $variableName = $config['value'];
         if (empty($this->$variableName)) {
@@ -451,6 +507,20 @@ class GearmanWorkerShell extends AppShell {
         foreach($keysToDelete as $keyToDelete) {
             unset($tempResult[$keyToDelete]);
         }
+    }
+    
+    /**
+     * Function to find a smaller date than other to compare 
+     * @param type $value
+     * @param type $valueToVerify
+     * @return boolean
+     */
+    public function verifyPreviousDateIsLess($value, $valueToVerify) {
+        $result = false;
+        if (strtotime($value) < strtotime($valueToVerify)) {
+            $result  = true;
+        }
+        return $result;
     }
     
 }
