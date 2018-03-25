@@ -585,7 +585,7 @@ FRAGMENT;
           https://api.colectual.com/token
           client_id=ngAuthApp
           grant_type=password
-          password=Azarus2016!
+          password= xxxx
           username=manu.azarus@gmail.com
 
           look for the class "step-instructions"

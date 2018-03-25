@@ -786,8 +786,7 @@ class growly extends p2pCompany {
      * 	
      */
     function companyUserLogin($user, $password) {
-// user = crismillanmiras@hotmail.com
-// pw = Cristi2016
+
         $str = $this->getCompanyWebpage();  // Go to main site
 
         $credentials = array();

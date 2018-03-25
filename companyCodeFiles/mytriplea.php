@@ -1006,8 +1006,6 @@ class mytriplea extends p2pCompany {
      * 	
      */
     function companyUserLogin($user, $password) {
-//user = vnamm78@hotmail.com
-//pw = Vania2016
 
         $tempCredentials = array();
         $credentials = array();

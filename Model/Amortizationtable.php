@@ -133,5 +133,24 @@ class Amortizationtable extends AppModel
 
         }
     }    
+   
+    
+     /** NOT YET TESTED
+     *  Updates the amortization table of an investment slice
+     * 
+     *  @param  array   array with the current transaction data, including database reference of table
+     *  @return array   boolean  
+     */
+    public function updateAmortizationTable($data)  {
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($data);           
+        if ($this->save($data, $validate = true)) {
+echo __FUNCTION__ . " " . __LINE__ . "\n";            
+           return true;
+        }
+echo __FUNCTION__ . " " . __LINE__ . "\n";        
+        return false;
+    }   
+    
     
 }

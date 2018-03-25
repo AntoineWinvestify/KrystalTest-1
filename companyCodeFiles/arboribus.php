@@ -973,13 +973,13 @@ class arboribus extends p2pCompany {
      */
     function companyUserLogin($user = "", $password = "") {
         /* 	
-          FIELDS USED BY ARBORI DURING LOGIN PROCESS
+          FIELDS USED BY ARBORIBUS DURING LOGIN PROCESS
 
           5f48fa2e824927e1d3e1f04cd...	1
           Submit.x						12
           Submit.y						7
           option							com_users
-          password						Pepa2016
+          password						xxxxxxxxx
           remember						yes
           return							aW5kZXgucGhwP0l0ZW1pZD0xMjU=
           task							user.login

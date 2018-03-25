@@ -227,8 +227,6 @@ $this->print_r2($summaryData);
 *	
 */	
 function companyUserLogin($user, $password) {
-// user = inigo.iturburua@gmail.com
-// pw = Ap_94!56
 
 	$str = $this->getCompanyWebpage();
 

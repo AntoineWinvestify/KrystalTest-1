@@ -174,24 +174,7 @@ print_r($result);
         return $result;
     }
     
- 
-    /** NOT YET TESTED
-     *  Updates the amortization table of an investment slice
-     * 
-     *  @param  array   array with the current transaction data, including database reference of table
-     *  @return array   boolean  
-     */
-    public function UpdateAmortizationTable($data)  {
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($data);           
-        if ($this->Amortizationtable->save($data, $validate = true)) {
-echo __FUNCTION__ . " " . __LINE__ . "\n";            
-           return true;
-        }
-echo __FUNCTION__ . " " . __LINE__ . "\n";        
-        return false;
-    }  
-    
+
     
     /** NOT YET TESTED
      *  Deletes the *amortization table* of an investment slice. The sliceIdentifier model 
