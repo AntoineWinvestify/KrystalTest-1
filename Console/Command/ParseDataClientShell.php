@@ -46,7 +46,7 @@
  * function repaymentReceived updated. 
  * 
  * 
- * pQa_59!Xs4Ak
+ * 
  *
  * PENDING:
  * function repaymentReceived: Deal with partial payments
@@ -1282,9 +1282,16 @@ echo __FILE__ . " " . __LINE__ . " \n";
     }
 
     /** 
-     *  PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION
+     * PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION 
+     * It is possible that during the same day various amortization payments are processed by the platform. 
+     * This would mean that one or more payments are with delay.
+     * Currently I can only deal with 1 amortization payment per loan per day.
+     * Cannot deal with MINTOS as I have seen that various amortization payments can be received
+     * This method must be executed after the analysis of each transaction
+     * 
      *  Updates the amortization table of an loan when a repayment is detected.
-     *  This method is executed AFTER all the transactions for the loan have been processed by the main flow.
+     *  This method is executed AFTER (?) all the transactions for the loan have been processed by the main flow.
+     *  In this way the system can also take into account concepts like commission, late payment fee etc. etc. BUT IS THIS NEEDED
      *  This method is NOT used during the account linking procedure
      * 
      *  @param  array   array with the current transaction data
@@ -1296,54 +1303,32 @@ echo __FILE__ . " " . __LINE__ . " \n";
 echo __FUNCTION__ . " " . __LINE__ . " \n";
         if ($resultData['payment']['payment_principalAndInterestPayment'] <> 0) {
             echo __FUNCTION__ . " " . __LINE__ . " \n";
-            $table['amortizationtable_capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
+            $data['capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
             if ($resultData['payment']['payment_capitalRepayment'] <> 0) {
                 echo __FUNCTION__ . " " . __LINE__ . " \n";
-                $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
-                $table['amortizationtable_interest'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
+                $data['capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
+                $data['interest'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             }
             else {
                 echo __FUNCTION__ . " " . __LINE__ . " \n";
-                $table['amortizationtable_capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
-                $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
+                $data['capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
+                $data['interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
             }
         } 
         else {
             echo __FUNCTION__ . " " . __LINE__ . " \n";
-            $table['amortizationtable_capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
-            $table['amortizationtable_interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
+            $data['capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
+            $data['interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
         }
-        $table['amortizationtable_paymentDate'] = $transactionData['date'];
-        $table['amortizationtable_paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+        $data['paymentDate'] = $transactionData['date'];
+              
+        // support for partial payment is not fully implemented
+        $data['paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
 echo __FUNCTION__ . " " . __LINE__ . " \n";
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
-echo "sliceIdentifier = $sliceIdentifier\n";
-        $slices = $this->Investment->getInvestmentSlices($resultData['investment']['id']);
-print_r($table);
-print_r($slices);
-        foreach ($slices as $slice) {                                           // Initially we will find only 1 slice
-            echo __FUNCTION__ . " " . __LINE__ . " sliceIdentifier = $sliceIdentifier to be compared with " . $slice['investmentslice_identifier'] . "\n";
-            if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
-                $sliceDbreference = $slice['id'];
-                echo "REFERENCE = $sliceDbreference\n";
-                break;
-            }
-        }
-
-        $filterConditions = array('amortizationtable_paymentStatus' => WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED);
-
-        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);    // all entries of table which are not yet paid 
-      //  if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
-            print_r($amortizationTable);
-        //}
-        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                   
-
-        $table['id'] = $tableDbReference;
-        echo __FUNCTION__ . " " . __LINE__ . " Updating the amortization table with reference = $tableDbReference\n";
-        print_r($table);
-        if ($this->Amortizationtable->updateAmortizationTable($table)) {
+        
+        print_r($data);
+        if ($this->Amortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
             echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
         }
         else {

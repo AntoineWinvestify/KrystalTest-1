@@ -54,6 +54,5 @@ class Amortizationpayment extends AppModel {
         )
     );
     
-
-    
+  
 }
