@@ -1339,7 +1339,7 @@ exit;
         return;
     }
 
-    /**
+    /**teti
      *  Searches in the investments and expired_investment arrays for an *investment* initiated on 
      *  the date as defined in the dateTransaction array. Also the amount is checked
      *  and investments without the mark: "InvestmentAlreadyDetected"
