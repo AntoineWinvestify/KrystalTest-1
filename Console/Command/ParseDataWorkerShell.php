@@ -241,10 +241,10 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                 }
             } 
             
-//print_r($totalParsingresultInvestments);   
-//print_r($totalParsingresultExpiredInvestments); 
-//print_r($totalParsingresultTransactions);
-//print_r($totalParsingresultControlVariables);
+print_r($totalParsingresultInvestments);   
+print_r($totalParsingresultExpiredInvestments); 
+print_r($totalParsingresultTransactions);
+print_r($totalParsingresultControlVariables);
 
             
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -390,6 +390,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
         foreach($data['tempArray'] as $linkAccountId => $dateArray){
             ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);          
         }
+        
         return json_encode($data);
     }
     

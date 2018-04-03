@@ -250,7 +250,9 @@ print_r($linkedAccountData);
 
                 foreach ($reversedData as $table) {
                     if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE) {                      
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID)
+                        {                      
                         $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
                     }                 
                 }

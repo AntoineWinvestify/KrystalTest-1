@@ -196,14 +196,15 @@ var $validate = array(
      *  @return array   slices (database references) and sliceIdentifier of each slice
      */
     public function getInvestmentSlices ($investmentId) {
-	$this->Behaviors->load('Containable');
-	$this->contain('Investmentslice');  	
+//	$this->Behaviors->load('Containable');
+//	$this->contain('Investmentslice');  	
 
-        $slices = $this->find("all", array("conditions" => array("id" => $investmentId),
+        $slices = $this->Investmentslice->find("all", array("conditions" => array("investment_id" => $investmentId),
                                             "fields" => array("id", "investmentslice_identifier"),                                   
                                             "recursive" => 0,
-                                          ));       
-        return $slices[0]['Investmentslice'];        
+                                          )); 
+
+        return $slices['Investmentslice'];        
     }  
     
 }

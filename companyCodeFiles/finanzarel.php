@@ -1210,12 +1210,6 @@ class finanzarel extends p2pCompany {
      * 	
      */
     function companyUserLogin($user = "", $password = "") {
-        /*
-          FIELDS USED BY finanzarel DURING LOGIN PROCESS
-          $credentials['*'] = "XXXXX";
-         */
-
-
 
         //Get credentials from form in pfp login page
         $str = $this->getCompanyWebpage();

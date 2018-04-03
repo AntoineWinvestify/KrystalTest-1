@@ -1003,9 +1003,6 @@ class circulantis extends p2pCompany {
      * 	
      */
     function companyUserLogin($user, $password) {
-//$user = "inigo.iturburua@gmail.com";
-//$password = "Ap_94!56";
-// manoloherrero@msn.com  Mecano1980
 
         $str = $this->getCompanyWebpage();  // load main page as default starting page
 
