@@ -57,7 +57,7 @@ function beforeFilter() {
 	$this->Security->validatePost = false;	
 // Allow only the following actions.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login','session', 'loginAction', 'testmodal');    // allow the actions without logon
+	$this->Auth->allow('login','session', 'loginAction', 'testmodal', 'logout');    // allow the actions without logon
     
 
 }

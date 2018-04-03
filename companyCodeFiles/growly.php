@@ -114,8 +114,10 @@ class growly extends p2pCompany {
      * add check for "dìas" and marketplace_daysLeft (not tested yet)
      * redo marketplace_duration and use methods in base class  (not tested yet)
      */
-    function collectCompanyMarketplaceData($companyBackup, $structure) {
-
+    function collectCompanyMarketplaceData($companyBackup, $structure, $loanIdList) {
+        
+        //Marketplace
+        $this->investmentDeletedList = $loanIdList;
         $page = 1;
         $url = array_shift($this->urlSequence);
         $reading = true;
@@ -256,7 +258,7 @@ class growly extends p2pCompany {
                             }
                         }
                     }
-
+                    
                     $investmentNumber++; //Add investment
 
                     if ($investmentController) { //Don't save a already existing investment
@@ -264,19 +266,106 @@ class growly extends p2pCompany {
                         $investmentController = false;
                     } else {
                         $totalArray[] = $tempArray;
+                        $this->investmentDeletedList = $this->marketplaceLoanIdWinvestifyPfpComparation($this->investmentDeletedList, $tempArray);
                         unset($tempArray);
                     }
                 }
+                
+                
             }
             $page++; //Adance page
             if ($readController > 15 || $investmentNumber < 10) {
                 $reading = false;
             } //Stop reading
         }
+        
+        
+        if($totalArray){
+            $this->print_r2($this->investmentDeletedList);
+            $hiddenInvestments = $this->readHiddenInvestment($this->investmentDeletedList);
+            echo 'Hidden: ' . SHELL_ENDOFLINE;
+            $this->print_r2($hiddenInvestments);
+            $totalArray = array_merge($totalArray, $hiddenInvestments);
+        }
+        
+        print_r($totalArray);
         return [$totalArray, $structureRevision[0], $structureRevision[2]];
         //$totalarray Contain the pfp investment or is false if we have an error
         //$structureRevision[0] retrurn a new structure if we find an error, return 1 is all is alright
         //$structureRevision[2] return the type of error
+    }
+
+    
+    function readHiddenInvestment($investmentDeletedList) {
+
+        $url = array_shift($this->urlSequence);
+
+        $tempArray = array();
+        $newTotalArray = array();
+        //Read investment info
+        foreach ($investmentDeletedList as $loanId) {
+            echo "Next Investment Url: " . $url . $loanId . HTML_ENDOFLINE;
+            $str = $this->getCompanyWebpage($url . $loanId);
+            $dom = new DOMDocument;
+            $dom->preserveWhiteSpace = false;
+            $dom->loadHTML($str);
+            $tempArray['marketplace_country'] = 'ES'; //Loanbook is in spain
+            $tempArray['marketplace_loanReference'] = $loanId;
+
+            $title = $this->getElements($dom, 'h1', 'property', 'v:title');
+
+            $tempArray['marketplace_purpose'] = trim($title[0]->nodeValue);
+
+            $info = $this->getElements($dom, 'ul', 'class', 'info');
+            $spans = $info[0]->getElementsByTagName('span');
+            foreach ($spans as $key => $value) {
+                //echo $key . ' value is ' . $value->nodeValue;
+                switch ($key) {
+                    case 0:
+                        $tempArray['marketplace_requestorLocation'] = trim($value->nodeValue);
+                        break;
+                    case 1:
+                        $tempArray['marketplace_sector'] = trim($value->nodeValue);
+                        break;
+                    /* case 2:
+                      $tempArray['marketplace_location'] =  trim($value->nodeValue);
+                      break; */
+                }
+            }
+            $tbodys = $dom->getElementsByTagName('tbody');
+            $tds = $tbodys[0]->getElementsByTagName('td');
+
+            foreach ($tds as $key2 => $value2) {
+                //echo $key2 . ' value is ' . $value2->nodeValue . "\n";
+                switch ($key2) {
+                    case 0:
+                        $tempArray['marketplace_amount'] = $this->getMonetaryValue(trim($value2->nodeValue));
+                        break;
+                    case 1:
+                        $tempArray['marketplace_vencimiento'] = trim($value2->nodeValue);
+                        break;
+                    case 2:
+                        $tempArray['marketplace_interestRate'] = list($tempArray['marketplace_duration'], $tempArray['marketplace_durationUnit'] ) = $this->getDurationValue($value2->nodeValue);
+                        ;
+                        break;
+                    case 3:
+                        $tempArray['marketplace_interestRate'] = $this->getPercentage(trim($value2->nodeValue));
+                        break;
+                    case 7:
+                        $tempArray['marketplace_rating'] = trim($value2->nodeValue);
+                        break;
+                }
+            }
+
+            $progress = $this->getElements($dom, 'div', 'class', 'progress-bar');
+            $tempArray['marketplace_subscriptionProgress'] = $this->getPercentage($progress[0]->getAttribute('style'));
+            $tempArray['marketplace_statusLiteral'] = 'Eliminada';
+            $tempArray['marketplace_status'] = REJECTED;
+
+            print_r($tempArray);
+            $newTotalArray[] = $tempArray;         
+        }
+        return $newTotalArray;
     }
 
     /**
