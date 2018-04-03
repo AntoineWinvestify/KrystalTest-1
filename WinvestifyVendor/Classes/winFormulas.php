@@ -147,7 +147,7 @@ class WinFormulas {
                 "variables" => [
                     "globalcashflowdata_platformCompensationPositive",            
                     "globalcashflowdata_platformRecoveries",            
-                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    //"globalcashflowdata_platformIncentivesAndBonus",                  
                     "globalcashflowdata_regularGrossInterestIncome",
                     //need more data to take values from database
                 ],
@@ -231,6 +231,7 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_platformDeposits",            
+                    "globalcashflowdata_platformIncentivesAndBonus",            
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -339,7 +340,7 @@ class WinFormulas {
                 "variables" => [
                     "globalcashflowdata_platformCompensationPositive",            
                     "globalcashflowdata_platformRecoveries",            
-                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    //"globalcashflowdata_platformIncentivesAndBonus",                  
                     "globalcashflowdata_regularGrossInterestIncome",
                     //need more data to take values from database
                 ],
@@ -382,7 +383,7 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_platformRecoveries",             
-                    "globalcashflowdata_platformIncentivesAndBonus",             
+                    //"globalcashflowdata_platformIncentivesAndBonus",             
                     "globalcashflowdata_platformCompensationPositive",             
                     //
                     //need more data to take values from database
@@ -476,7 +477,7 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_platformRecoveries",             
-                    "globalcashflowdata_platformIncentivesAndBonus",             
+                    //"globalcashflowdata_platformIncentivesAndBonus",             
                     "globalcashflowdata_platformCompensationPositive",             
                     //need more data to take values from database
                 ],

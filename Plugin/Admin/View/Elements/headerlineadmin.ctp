@@ -125,7 +125,7 @@
 							<a href="/investors/userProfileDataPanel" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Profile')?></a>
 						</div>
 						<div class="pull-right">
-							<a href="/users/logout" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Sign out')?></a>
+							<a href="/users/admin/logout" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Sign out')?></a>
 					    </div>
 				    </li>
 			    </ul>
