@@ -1644,7 +1644,7 @@ class loanbook extends p2pCompany {
           FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
 
           csrf		539d6241ffbb10437f4fe6e27552bfe9
-          password	cede_4044
+          password	xxxxx
           signin		Login
           username	antoine.de.poorter@gmail.com
          */

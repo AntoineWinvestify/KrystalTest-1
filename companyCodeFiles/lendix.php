@@ -453,8 +453,7 @@ class lendix extends p2pCompany {
      * 	
      */
     function collectUserInvestmentData($user, $password) {
-// user: inigo.iturburua@gmail.com
-// password: Ap_94!56
+
 //	$this->config['appDebug'] = true;
         $resultLendix = $this->companyUserLogin($user, $password);
         if (!$resultLendix) {   // Error while logging in

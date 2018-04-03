@@ -323,15 +323,10 @@ class twino extends p2pCompany {
      * 	
      */
     function companyUserLogin($user = "", $password = "", $options = array()) {
-        /*
-          FIELDS USED BY twino DURING LOGIN PROCESS
-          $credentials['*'] = "XXXXX";
-         */
-
 
         $credentials['name'] = $user;
         $credentials['password'] = $password;
-        //$credentials['googleAnalyticClientId'] = '1778227581.1503479723';
+        
         $payload = json_encode($credentials);
 
         //echo $payload;
