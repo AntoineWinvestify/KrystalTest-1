@@ -112,16 +112,8 @@ public function readCheckData($investorId) {
  */
 public function editUserProfileData() {
 
-        if (!$this->request->is('ajax')) {
-            $this->layout = 'azarus_private_layout';
-            /*throw new
-            FatalErrorException(__('You cannot access this page directly'));*/
-        }
-        else {
-        $error = false;
-        $this->layout = 'ajax';
-        $this->disableCache();
-        }
+        $this->layout = 'azarus_private_layout';
+
 
         Configure::load('countryCodes.php', 'default');
         $countryData = Configure::read('countrycodes');
@@ -130,67 +122,77 @@ public function editUserProfileData() {
         $investorId = $this->Auth->user('Investor.id');
         $userId = $this->Auth->user('id');
 
+         //We do again the query to get correctly the data on plugins.
+        $resultInvestor = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
+            'recursive' => -1,
+        ));
+        $this->set('userValidationErrors', 1);
+        $this->set('resultUserData', $resultInvestor);
+        //}
+    }
+
+    /**
+     *
+     * 	The investor can modify his personal data. 
+     *
+     */
+    public function saveNewUserProfileData() {
+
+        if (!$this->request->is('ajax')) {
+            throw new
+            FatalErrorException(__('You cannot access this page directly'));
+        }
+
+
+        $this->layout = 'ajax';
+        $this->disableCache();
+
+        $investorId = $this->Auth->user('Investor.id');
+        $userId = $this->Auth->user('id');
+      
         foreach ($_REQUEST as $key => $value) {
             $receivedData[$key] = $_REQUEST[$key];
         }
+        
 
-        if (empty($this->request->data)) {  // screen is loaded for first time, i.e. in "read mode"
-            $resultInvestor = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
-                'recursive' => -1,
-            ));
-
-            $this->set('initialLoad', true);
-            $this->set('resultUserData', $resultInvestor);
-            return;
-        }
-
-// The user has changed one or more data-items
+        // The user has changed one or more data-items
         if (!empty($receivedData['password'])) {
             $this->User = ClassRegistry::init('User');
             $tempreceivedData['User'] = $receivedData;
             $this->User->set($tempreceivedData);
-            if ($this->User->validates()) {
+            if (!$this->User->validates()) {  
                 
-            } else {
-                $this->set('userValidationErrors', $this->User->validationErrors);
-                $userValidationErrors = $this->User->validationErrors;
+                $validationErrors[0] = $this->User->validationErrors;
             }
         }
         $tempreceivedData1['Investor'] = $receivedData;
         $this->Investor->set($tempreceivedData1);
+        if (!$this->Investor->validates() || !$this->User->validates()) {
+            $validationErrors[1] = $this->Investor->validationErrors;
+            $this->set('validationErrors', json_encode($validationErrors));
+        }
+        else {
+            // Validation passed, so time to save the data
 
-        if ($this->Investor->validates()) {
+                if (!empty($receivedData['password'])) {
+                    $this->User->id = $userId;
+                    $this->User->save(array('password' => $receivedData['password']), $validate = false);
+                }
+
+                $this->Investor->id = $investorId;
+                $this->Investor->save($receivedData, $validate = false);
+                // UPDATE THE SESSION DATA
             
-        } else {
-            $this->set('investorValidationErrors', $this->Investor->validationErrors);
-            $investorValidationErrors = $this->Investor->validationErrors;
+
+            //We do again the query to get correctly the data on plugins.
+            $resultInvestorTemp = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
+                'recursive' => -1,
+            ));
+            $this->set('resultUserData', json_encode($resultInvestorTemp));
         }
-
-        // Validation passed, so time to save the data
-        if (($investorValidationErrors == NULL) AND ( $userValidationErrors == NULL)) {
-            if (!empty($receivedData['password'])) {
-                $this->User->id = $userId;
-                $this->User->save(array('password' => $receivedData['password']), $validate = false);
-            }
-
-            $this->Investor->id = $investorId;
-            $this->Investor->save($receivedData, $validate = false);
-            // UPDATE THE SESSION DATA
-        }
-
-        //We do again the query to get correctly the data on plugins.
-        $resultInvestorTemp = $this->Investor->find('all', array('conditions' => array('id' => $investorId),
-            'recursive' => -1,
-        ));
-        $this->set('resultUserData', $resultInvestorTemp);
-        //}
     }
 
-    
-    
-    
-    
-/**
+    /**
  *
  * 	Manage linked accounts, i.e. store new pair of userid/password for newly linked account 
  * 	Return list of currently linked accounts and an alert message about result of successfull linking of account

@@ -428,7 +428,7 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                 } else if ($status == 'Publicado') {
                     $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;
-                } else if ($status == 'Cancelado') {
+                } else if ($status == 'Cancelado' || $status == 'Tiempo excedido') {
                     $tempArray['marketplace_subscriptionProgress'] = 0;
                     $tempArray['marketplace_status'] = REJECTED;
                 }
