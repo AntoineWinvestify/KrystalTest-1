@@ -34,18 +34,13 @@
 	echo $this->element('navbarinvestor');
 ?>
 <div class="loginContainer">
-    <div class="adminLogos" style="display:none;">
-        <img src="/img/logo_winvestify/logo.png" class="logo1"/>
-        <img src="/img/logo_winvestify/logo_texto.png" class="logo2"/>
-        <p class="paragraph"><?php echo __('párrafo')?></p>
-    </div>
     <div class="loginBox">
         <div class="row">    
             <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
                 <form method="post" action="/users/loginAction" id="ctl00">
                    <p id="profile-name" class="profile-name-card">
                        <img src ="/img/logo_winvestify/Logo.png" width="50"/><img src ="/img/logo_winvestify/Logo_texto.png" class="logoRedirect" height="50"/>
-                       <?php //echo __("ACCESS to Winvestify")?>
+                       <?php echo __("ACCESS to Winvestify")?>
                    </p>
                     <?php
                     $authMsg = $this->Session->consume('Message.auth.message');
@@ -119,7 +114,7 @@
                         <?php
                     }
                     ?>
-                   <input type="submit" name="btLogin" value="Acceder" id="btLogin" class="btn btn-default center-block" style="margin-top: 20px;" />
+                   <input type="submit" name="btnLogin" value="Acceder" id="btnLogin" class="btn btn-default center-block" style="margin-top: 20px;" />
                    <span id="lbAviso" class="displayBlock" style="color:Red;"></span>
                 </form>
             </div>   

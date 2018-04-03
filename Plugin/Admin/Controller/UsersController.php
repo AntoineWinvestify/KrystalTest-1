@@ -36,7 +36,7 @@ class UsersController extends AdminAppController
 
 	var $name = 'Users';
 	var $helpers = array('Html', 'Form', 'Js');
-	var $uses = array('User');	
+	var $uses = array('User', 'Winadmin');	
 	var $components = array('Security');
 
   	var $error;
@@ -231,6 +231,9 @@ echo "<br/>";
 
 public function loginAction() {
         if ($this->Auth->login()) {
+            $id = $this->Session->read('Auth.User.winadmin_id');
+            $lang = $this->Session->read('Config.language');
+            $this->Winadmin->save(array('id' => $id, 'winadmin_language' => $lang));
             $this->redirect($this->Auth->redirectUrl());
         }
         else {

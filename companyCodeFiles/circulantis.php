@@ -65,6 +65,122 @@
  */
 class circulantis extends p2pCompany {
 
+          
+        
+// CIRCULANTIS
+// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
+// Traspaso                                                                     H03337	   1,000.00	5/9/2016   1,000.00	          0             0       	1,000.00
+// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
+// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
+// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
+    protected $valuesTransaction = [
+            "A" => [
+                [
+                    "type" => "transactionType",                                // Complex format, calling external method
+                    "inputData" => [                                            // List of all concepts that the platform can generate
+                                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Traspaso", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Operación cobrada", "Principal_repayment"],
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionType",  
+                ],
+                [
+                    "type" => "transactionDetail",              // Complex format, calling external method
+                    "inputData" => [                            // List of all concepts that the platform can generate
+                                                                // format ["concept string platform", "concept string Winvestify"]
+                                   "input2" => [["Incoming client payment", "Cash_deposit"],
+                                                ["Investment principal increase", "Primary_market_investment"],
+                                                ["Investment principal repayment", "Principal_repayment"],                
+                                    ]   
+                            ],
+                    "functionName" => "getTransactionDetail",  
+                ],
+                [
+                    "type" => "ID_Puja",                                        // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => " ID Puja: ",                       // May contain trailing spaces
+                                "input3" => ",",
+                            ],
+                    "functionName" => "extractDataFromString",  
+                ],
+                [
+                    "type" => "ID_Subasta",                                     // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "ID Subasta: ",                     // May contain trailing spaces
+                                "input3" => ",",
+                            ],
+                    "functionName" => "extractDataFromString",  
+                ],
+                
+                [
+                    "type" => "loanId",                                         // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "Loan ID: ",                        // May contain trailing spaces
+                                "input3" => ",",
+                            ],
+                    "functionName" => "extractDataFromString",  
+                ],
+               
+                 [
+                    "type" => "date",                                           // Complex format, calling external method
+                    "inputData" => [
+                                "input2" => "#previous.date",                   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
+                                                                                // Note that "date" must be a field defined in this config file
+                                                                                // keywords are "#previous" and "#current" 
+                                                                                // Be aware that #previous does NOT contain any data in case of parsing the
+                                                                                // first line of the file.
+                                "input3" => false                               // This parameter indicates if the defined field will be overwritten 
+                                                                                // if it already contains a value.
+                                ],
+                    "functionName" => "getRowData",  
+                ],               
+     
+            ],
+            "B" => [                                                            // Simply changing name of column to the Winvestify standardized name
+                    "name" => "loanId",                      
+                ],
+            "C" => "importe",
+            "D" => [
+                [
+                    "type" => "date",                                           // Winvestify standardized name 
+                    "inputData" => [
+				"input2" => "d/m/Y",                            // Input parameters. The first parameter
+                                                                                // is ALWAYS the contents of the cell
+                                  // etc etc  ...
+                                ],
+                    "functionName" => "normalizeDate",         
+                ]
+            ],
+            "E" => "disponible",
+            "F" => "ofertado",
+            "G" => "invertido",
+            "H" => "total"
+        ];
+       
+    protected $transactionConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+ 
+    protected $investmentConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+                                 );
+
+/*    NOT YET READY
+    protected $investmentConfigParms = array ('offsetStart' => 1,
+                                'offsetEnd'     => 0,
+                                'separatorChar' => ";",
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+                                 );      
+ 
+ */   
+    
+    
     function __construct() {
         parent::__construct();
 // Do whatever is needed for this subsclass
@@ -95,6 +211,9 @@ class circulantis extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
+    
+    
+    
     /**
      * Collects the marketplace data.
      * @param Array $companyBackup

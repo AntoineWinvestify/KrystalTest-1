@@ -41,6 +41,9 @@ App::uses('Model', 'Model');
 Version 0.1		2016-10-29																
 function createReference															[OK, tested]
 
+
+Version 0.2		2017-10-25
+function getData        [Tested local, OK]
  
  
 */
@@ -240,5 +243,36 @@ public function matchFields($check = array(), $compareField = null) {
 		return true;
 }
 
+
+    /**
+     *  Generic function to get the data of a table
+     * @param  array $filter filter of the table  ---> array("key" => value, ...),
+     * @param  array $field  Fields you want get  ---> array("field", ...),
+     * @param  array $order  table order          ---> array("field" DES or ASC),
+     * @param  int   $limit  Limit table result   ---> 1,
+     * @return array         data from the table
+     */
+    public function getData($filter = null, $field = null, $order = null, $limit = null, $type = "all"){
+
+       
+        $resultData = $this->find($type, array("recursive" => -1,
+            "conditions" => $filter,
+            "fields" => $field,
+            "order" => $order,
+            "limit" => $limit,
+        ));
+        return $resultData;
+    }
+    
+    /**
+     * Function to get the last query made by cakephp
+     * @return string
+     */
+    public function getLastQuery() {
+        $dbo = $this->getDatasource();
+        $logs = $dbo->getLog();
+        $lastLog = end($logs['log']);
+        return $lastLog['query'];
+    }
 
 }

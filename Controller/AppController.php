@@ -108,8 +108,8 @@ class AppController extends Controller {
             'loginRedirect' => array('controller' => 'marketplaces',
                 'action' => 'showMarketPlace'
             ),
-            'logoutRedirect' => array('controller' => 'marketplaces',
-                'action' => 'getGlobalMarketPlaceData'
+            'logoutRedirect' => array('controller' => 'users',
+                'action' => 'loginRedirect'
             ),
         ),
         'Cookie',
@@ -160,14 +160,7 @@ class AppController extends Controller {
                                     RUB => "₽",              
                                     );
         
-                                     
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
-                                            
+                                 
         //Investor Status to PFP Admin
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 
@@ -216,8 +209,29 @@ class AppController extends Controller {
             CROWD_REAL_ESTATE => __('R.E.'),
             SOCIAL => __('SOCIAL')
         );
+        
         $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
 
+        $this->tooltipSinglePfpData = array(
+           "Zank" => __('zank tooltip'),
+           "Comunitae" => __('comunitae tooltip'),
+           "Growly" => __('growly tooltip'),
+           "MyTripleA" => __('mytriplea tooltip'),
+           "Arboribus" => __('arboribus tooltip'),
+           "Loanbook" => __('loanbook tooltip'),
+           "eCrowdInvest" => __('ecrowd tooltip'),
+           "Circulantis" => __('circulantis tooltip'),
+           "Colectual" => __('colectual tooltip'),
+           "Lendix" => __('lendix tooltip'),
+           "Bondora" => __('bondora tooltip'),
+           "Mintos" => __('mintos tooltip'),
+           "Twino" => __('twino tooltip'),
+           "Finanzarel" => __('finanzarel tooltip'),
+           "Finbee" => __('finbee tooltip'),
+        );
+        
+        $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
+        
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -249,7 +263,6 @@ class AppController extends Controller {
 
             $action = $this->action;
             $controller = $this->params['controller'];
-            $action2 = $this->params['action'];
             //Here we verify if this user has authorization to acces the controller and the action
             $resultAcl = $this->isAuthorized($controller, $action);
             if (!$resultAcl) {
@@ -319,7 +332,6 @@ class AppController extends Controller {
         if (empty($globalInvestorReference)) {
             return;
         }
-
         if ($this->Queue->checkQueue($globalInvestorReference)) {  // a request already exists in the queue
             return;
         }
@@ -577,12 +589,7 @@ Configure::write('debug', 2);
      * @return boolean It is the access, it can be true or false
      */
     function isAuthorized($controller, $access = '*') {
-        //$userId = $this->Auth->user('id');
         $aro = $this->Auth->user('Role.id');
-        // Get internal database reference of the investor
-        //$this->Role = ClassRegistry::init('Role');
-        //$aro = $this->Role->getRoleNameById($roleId);
-
         return $this->Acl->check($aro, $controller, $access);
     }
 

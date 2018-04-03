@@ -63,7 +63,7 @@ class GlobalEmailListener implements CakeEventListener {
         /*
           DEFINED EVENTS:
           newUserCreated                      A new user has successfully registered
-          SendContacMessage                   Somebody contacted use via ContactForm
+          SendContactMessage                  Somebody contacted use via ContactForm
          */
 
         
@@ -267,14 +267,21 @@ class GlobalEmailListener implements CakeEventListener {
     public function appErrorEmail(CakeEvent $event) {
         Configure::load('p2pGestor.php', 'default');
         $adminData = Configure::read('admin');
-        $type = explode(':',$event->data['Applicationerror']['applicationerror_typeOfError'])[0];
-        $position = stripos($event->data['Applicationerror']['applicationerror_detailedErrorInformation'], 'id:') + strlen('id:');
-        $substrings = explode(',', substr($event->data['Applicationerror']['applicationerror_detailedErrorInformation'], $position))[0];
+        $subject = "";
+        if (empty($event->data['Applicationerror']['applicationerror_typeErrorId'])) {
+            $type = explode(':',$event->data['Applicationerror']['applicationerror_typeOfError'])[0];
+            $position = stripos($event->data['Applicationerror']['applicationerror_detailedErrorInformation'], 'id:') + strlen('id:');
+            $substrings = explode(',', substr($event->data['Applicationerror']['applicationerror_detailedErrorInformation'], $position))[0];
+            $subject = __("An " . $type . " has been logged. Company id: " . $substrings);
+        }
+        else {
+            $subject = $event->data['Applicationerror']['applicationerror_typeOfError'];
+        }
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($adminData['systemAdmin'] => __("Admin")));
-            $Email->subject(__("An " . $type . " has been logged. Company id: " . $substrings));
+            $Email->subject($subject);
             $Email->template('applicationError', 'standard_email_layout');
             $Email->viewVars(array('applicationerrorFile' => $event->data['Applicationerror']['applicationerror_file'],
                                            'id' => $event->data['Applicationerror']['id']));

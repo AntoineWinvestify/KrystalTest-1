@@ -909,10 +909,10 @@ textarea[name="error"] {
     border: 2px solid #47badf !important;
     color: white !important;
 }
-.btn1CR-inverted:hover, .btn1CR-inverted:active {
+.btn1CR:hover, .btn1CR:active {
 	border: 2px solid #47badf !important;
-        background-color: white !important;
-	color: #47badf !important;
+        background-color: #47badf !important;
+	color: white !important;
 }
 
 .btnPFPAdmin {
@@ -925,6 +925,7 @@ textarea[name="error"] {
         background-color: #ff9933 !important;
 	color: white !important;
 }
+
 .btnDeleteFile {
     background-color:#990000 !important; 
     border: 1px solid gray;
@@ -935,6 +936,20 @@ textarea[name="error"] {
     border: 1px solid gray;
     color:white;
     display: inline-block;
+}
+.btnDefault {
+    background-color: white  !important;
+    border: 2px solid #66615B !important;
+    color: #66615B !important;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 7px 18px;
+}
+.btnDefault:hover, .btnDefault:active {
+    border: 2px solid #66615B !important;
+    background-color: #66615B !important;
+    color: white !important;
 }
 .btnGeneral {
     background-color: white  !important;
@@ -2159,6 +2174,43 @@ hr.nomargin {
 .table > tbody > tr {
   position: relative;
 }
+.nav-tabs {
+  background: #9c27b0;
+  border: 0;
+  border-radius: 3px;
+  padding: 0 15px;
+}
+.nav-tabs > li > a {
+  color: #FFFFFF;
+  border: 0;
+  margin: 0;
+  border-radius: 3px;
+  line-height: 24px;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+.nav-tabs > li > a:hover {
+  background-color: transparent;
+  border: 0;
+}
+.nav-tabs > li > a, .nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+  background-color: transparent;
+  border: 0 !important;
+  color: #FFFFFF !important;
+  font-weight: 500;
+}
+.nav-tabs > li.disabled > a, .nav-tabs > li.disabled > a:hover {
+  color: rgba(255, 255, 255, 0.5);
+}
+.nav-tabs > li .material-icons {
+  margin: -1px 5px 0 0;
+}
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  transition: background-color .1s .2s;
+}
+
+
 
 .btnRounded {
     border-radius: 20px;
@@ -2408,6 +2460,29 @@ hr.specialHr:after {
     transform: rotate3d(0, 0, 1, -135deg);
 }
 
+/* Table styling */
+td {
+    text-align: center;
+}
+td.right { 
+    text-align: right; 
+}
+td.left {
+    text-align: left;
+}
+td.logo:hover {
+    background-color: rgba(0,0,0,0.3);
+    cursor: pointer;
+}
+#box1Table td, #box2Table td, #box3Table td {
+    font-size: 12px;
+    padding: 5px 0px !important;
+}
+
+/*Clickable element with pointer*/
+.clickable:hover {
+    cursor: pointer;
+}
 #loginBtn {
     border-radius: 20px;
     box-sizing: border-box;

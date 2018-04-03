@@ -56,7 +56,7 @@
                         <div class="tab-content">
                             <div class="row">
                                 <div class="cols-xs-12 col-sm-12 col-md-12 col-lg-12">
-                                    <p align="justify"><?php echo __("Congratulations for having successfully completed your registration process on the selected platforms. As soon as posible, they will contact you to proceed with the activation of your accounts, providing you the username and password. Estimated time it's between 24H and 48H.")?></p>
+                                    <p align="justify"><?php echo __("Congratulations for having successfully completed your registration process on the selected platforms. As soon as posible, they will contact you to proceed with the activation of your accounts, providing you the username and password. The estimated time is between 24H and 48H.")?></p>
                                 </div>
                             </div>
                         </div> <!-- /tab-content -->

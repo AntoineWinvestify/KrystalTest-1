@@ -492,6 +492,7 @@ app.visual = {
     checkFormRegistrationE: function () {
         return correctForm;
     },
+            
     checkFormUserDataModification: function () {
         var correctForm = true;
         console.log("entering checkFormRegistration function");

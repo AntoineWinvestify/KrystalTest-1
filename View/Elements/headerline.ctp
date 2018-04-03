@@ -71,11 +71,21 @@
     .blackImportant {
        color: black !important;
     }
+    .navGreen>li>a {
+        border-bottom: 5px solid #ECF0F5 !important;
+    }
+    .navGreen>li>a:hover {
+        border-bottom: 5px solid #87e14b !important;
+    }
+    
+    .big {
+        width: 200px;
+    }
 </style>
 
       <!-- Navbar Right Menu -->
 	<div class="navbar-custom-menu">
-		<ul class="nav navbar-nav">
+		<ul class="nav navbar-nav navGreen">
 			<!-- Notifications -->
                         <li class="dropdown notifications-menu" id="notifications-list" href="/notifications/getNotifications">
                             <a id="bell" class="dropdown-toggle" data-toggle="dropdown">
@@ -83,7 +93,7 @@
                             </a>
                         </li>
 			<!-- User Account: style can be found in dropdown.less -->
-			<li class="dropdown user user-menu">
+			<li class="dropdown user user-menu big">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
 					<img src="<?php echo '/' . IMAGES_URL . '/' . $sessionData['Auth']['User']['Investor']['investor_photoChatGUID']?>" class="user-image" alt="Small User Image">
 					<span class="hidden-xs blackImportant"><?php echo $sessionData['Auth']['User']['Investor']['investor_name'] . " " .
@@ -123,7 +133,7 @@
 					<!-- Menu Footer-->
 					<li class="user-footer">
 						<div class="pull-left">
-							<a href="/investors/userProfileDataPanel" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Profile')?></a>
+							<a href="/investors/editUserProfileData" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Profile')?></a>
 						</div>
 						<div class="pull-right">
 							<a href="/users/logout" class="btn btn-default btn-flat btn-win1-inverted"><?php echo __('Sign out')?></a>

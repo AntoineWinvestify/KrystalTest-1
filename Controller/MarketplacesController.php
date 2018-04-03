@@ -1,18 +1,18 @@
 <?php
 
 /**
- * +--------------------------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
- * +--------------------------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or 	|
- * | (at your option) any later version.                                      		|
- * | This file is distributed in the hope that it will be useful   		    	|
+ * | it under the terms of the GNU General Public License as published by       |
+ * | the Free Software Foundation; either version 2 of the License, or          |
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
- * | GNU General Public License for more details.        			              	|
- * +---------------------------------------------------------------------------------------------------------------+
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
+ * | GNU General Public License for more details.        			|
+ * +----------------------------------------------------------------------------+
  *
  *
  * @author
@@ -154,7 +154,7 @@ class MarketPlacesController extends AppController {
      * Stores the location data of the user in the session
      *
      */
-    function location11() {
+    function location() {
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
@@ -350,15 +350,15 @@ class MarketPlacesController extends AppController {
         $companyConditions = array('Company.id' => $companyId);
         $result = $this->Company->getCompanyDataList($companyConditions);
 
-        pr($result);
+        //pr($result);
         echo "<br>____ Checking Company " . $result[$companyId]['company_name'] . " ____<br>";
 
         $companyMarketplace = $this->Marketplace->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1));
         $companyBackup = $this->Marketplacebackup->find('all', array('conditions' => array('company_id' => $companyId), 'recursive' => -1, 'limit' => 1000));
         
         $loanIdList = array(); //This array contains the loan_reference of each investment, we need it to search in the pfp marketplace if the investment have been deleted. (COMUNITAE delete some finished investmenet)
-        foreach($companyMarketplace as $ivestment){
-            $loanId = $ivestment['Marketplace']['marketplace_loanReference'];
+        foreach($companyMarketplace as $investment){
+            $loanId = $investment['Marketplace']['marketplace_loanReference'];
             array_push($loanIdList, $loanId);
         }
         
@@ -526,10 +526,12 @@ class MarketPlacesController extends AppController {
                 $this->Structure->saveStructure(array('company_id' => $companyId, 'structure_html' => $marketplaceArray[3], 'structure_type' => 1));
                 if ($marketplaceArray[4] == APP_ERROR) {
                     $this->Applicationerror->saveAppError('ERROR: Html/Json ','Html/Json structural error detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
-                }else if($marketplaceArray[4] == WARNING) {
-                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
-                } else if($marketplaceArray[4] == INFORMATION) {
-                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Marketplace read');
+                }
+                else if ($marketplaceArray[4] == WARNING) {
+                    $this->Applicationerror->saveAppError('WARNING: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
+                } 
+                else if ($marketplaceArray[4] == INFORMATION) {
+                    $this->Applicationerror->saveAppError('INFORMATION: Html/Json Structure','Html/Json structural change detected in Pfp id: ' .  $companyId . ', html structure has changed.', null, __FILE__, 'Historical read');
                 }
             }
 
