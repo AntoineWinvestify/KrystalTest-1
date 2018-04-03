@@ -30,16 +30,6 @@ button in tab linked account should be aligned at same level as "input fields"
 
 ?>
 
-<?php
-if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result of a change of data
-	if ($error) {
-//		echo "0";
-	}
-	else {
-		echo "1";
-	}
-}
-?>
 <script src="/plugins/intlTelInput/js/intlTelInput.js"></script>
 <script src="/plugins/intlTelInput/js/utils.js"></script>
 <link rel="stylesheet" type="text/css" href="/plugins/intlTelInput/css/intlTelInput.css">
@@ -65,37 +55,7 @@ function errorAdd(data){
 	console.log("errorAdd function is called");	
 	
 }
-	
 
-function successModified(data) {
-//	ga_removeInformationBannerClick("Personal Data Saved");
-	console.log("edit_user_profile_data: LINE 70");
-	$('#editDatosPersonales').replaceWith(data);
-        //telephone
-        $('#ContentPlaceHolder_telephone').intlTelInput();
-
-        //Date picker
-        $('#ContentPlaceHolder_dateOfBirth').datepicker({
-            autoclose: true,
-            format: 'dd/mm/yyyy'
-        });
-}
-	
-function errorModified(data) {
-	console.log("edit_user_profile_data: LINE 80");
-	$('#editDatosPersonales').replaceWith(data);
-        //telephone
-        $('#ContentPlaceHolder_telephone').intlTelInput();
-
-        //Date picker
-        $('#ContentPlaceHolder_dateOfBirth').datepicker({
-            autoclose: true,
-            format: 'dd/mm/yyyy'
-        });
-}
-	
-	
-	
 
 $(document).ready(function() {
     $(".close").on("click", function(event) {
@@ -132,30 +92,196 @@ $(document).ready(function() {
         event.stopPropagation();
         event.preventDefault();
 
-        if ((result = app.visual.checkFormUserDataModification()) === false) {
-            event.stopPropagation();
-            event.preventDefault();
-            return false;
-        }
-        else {	
-            console.log("second edit of personal data has been checked locally using Javascript");
-            var params = {	
-                password: $("#ContentPlaceHolder_password_confirm").val(),
-                investor_name: $("#ContentPlaceHolder_name").val(),
-                investor_surname: $("#ContentPlaceHolder_surname").val(),
-                investor_address1: $("#ContentPlaceHolder_address1").val(),
-                investor_postCode: $("#ContentPlaceHolder_postCode").val(),
-                investor_city: $("#ContentPlaceHolder_city").val(),
-                investor_country: $("#ContentPlaceHolder_country").val(),
-                investor_DNI: $("#ContentPlaceHolder_dni").val(),
-                //investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
-                investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val()
-            };
-            ga_savePersonalData();
-            var data = jQuery.param( params );
-            getServerData(link, data, successModified, errorModified);
+        if($("#ContentPlaceHolder_password_confirm").val() != $("#ContentPlaceHolder_password1").val()){
+            $('#ContentPlaceHolder_password1').addClass('redBorder');
+            $('#ContentPlaceHolder_password_confirm').addClass('redBorder');
+            $('#FeedbackPlaceHolder_password1Div').addClass('actived');
+            $('#FeedbackPlaceHolder_password1').html('<?php echo __('The two passwords are not the same') ?>');
+            return;
+        } 
+        else {
+            if ((result = app.visual.checkFormUserDataModification()) === false) {
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
+            }
+            else {
+                $('#ContentPlaceHolder_password1').removeClass('redBorder');
+                $('#ContentPlaceHolder_password_confirm').removeClass('redBorder');
+                $('#FeedbackPlaceHolder_password1Div').removeClass('actived');
+                $('#FeedbackPlaceHolder_password1').html('');
+                console.log("second edit of personal data has been checked locally using Javascript");
+                var params = {	
+                    password: $("#ContentPlaceHolder_password_confirm").val(),
+                    investor_name: $("#ContentPlaceHolder_name").val(),
+                    investor_surname: $("#ContentPlaceHolder_surname").val(),
+                    investor_address1: $("#ContentPlaceHolder_address1").val(),
+                    investor_postCode: $("#ContentPlaceHolder_postCode").val(),
+                    investor_city: $("#ContentPlaceHolder_city").val(),
+                    investor_country: $("#ContentPlaceHolder_country").val(),
+                    investor_DNI: $("#ContentPlaceHolder_dni").val(),
+                    //investor_telephone: $("#ContentPlaceHolder_telephone").intlTelInput("getNumber"),
+                    investor_dateOfBirth: $("#ContentPlaceHolder_dateOfBirth").val()
+                };
+                ga_savePersonalData();
+                var data = jQuery.param( params );
+                getServerData(link, data, successModified, errorModified);
+            }
         }
     });	
+    
+    function printValidationErrors(errors){
+        
+        if(typeof errors[0] != 'undefined'){
+            if(typeof errors[0]['password'] != 'undefined'){
+                $('#ContentPlaceHolder_password1').addClass('redBorder');
+                $('#ContentPlaceHolder_password_confirm').addClass('redBorder');
+                $('#FeedbackPlaceHolder_password1Div').addClass('actived');
+                $('#FeedbackPlaceHolder_password1').html('<?php echo __('Incorrect format. Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number and a symbol.') ?>');
+            }
+        } 
+        else {
+                $('#ContentPlaceHolder_password1').removeClass('redBorder');
+                $('#ContentPlaceHolder_password_confirm').removeClass('redBorder');
+                $('#FeedbackPlaceHolder_password1Div').removeClass('actived');
+                $('#FeedbackPlaceHolder_password1').html('');
+            }
+        
+        if(typeof errors[1]['investor_name'] != 'undefined'){
+            $('#ContentPlaceHolder_name').addClass('redBorder');
+            $('#FeedbackPlaceHolder_nameDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_name').html('<?php echo __('Name validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_name').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_nameDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_name').html('');
+        }
+        
+        if(typeof errors[1]['investor_surname'] != 'undefined'){
+            $('#ContentPlaceHolder_surname').addClass('redBorder');
+            $('#FeedbackPlaceHolder_surnameDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_surname').html('<?php echo __('Surname validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_surname').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_surnameDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_surname').html('');
+        }
+        
+        if(typeof errors[1]['investor_address1'] != 'undefined'){
+            $('#ContentPlaceHolder_address1').addClass('redBorder');
+            $('#FeedbackPlaceHolder_address1Div').addClass('actived');
+            $('#FeedbackPlaceHolder_address1').html('<?php echo __('Addres validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_address1').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_address1Div').removeClass('actived');
+            $('#FeedbackPlaceHolder_address1').html('');
+        }
+        
+        if(typeof errors[1]['investor_postCode'] != 'undefined'){
+            $('#ContentPlaceHolder_postCode').addClass('redBorder');
+            $('#FeedbackPlaceHolder_postCodeDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_postCode').html('<?php echo __('Postcode validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_postCode').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_postCodeDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_postCode').html('');
+        }
+        
+        if(typeof errors[1]['investor_city'] != 'undefined'){
+            $('#ContentPlaceHolder_city').addClass('redBorder');
+            $('#FeedbackPlaceHolder_cityDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_city').html('<?php echo __('City validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_city').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_cityDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_city').html('');
+        }
+        
+        if(typeof errors[1]['investor_country'] != 'undefined'){
+            $('#ContentPlaceHolder_country').addClass('redBorder');
+            $('#FeedbackPlaceHolder_countryDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_country').html('<?php echo __('Country validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_country').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_countryDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_country').html('');
+        }
+        
+        if(typeof errors[1]['investor_DNI'] != 'undefined'){
+            $('#ContentPlaceHolder_dni').addClass('redBorder');
+            $('#FeedbackPlaceHolder_dniDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_dni').html('<?php echo __('DNI validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_dni').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_dniDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_dni').html('');
+        }
+               
+        if(typeof errors[1]['investor_telephone'] != 'undefined'){
+            $('#ContentPlaceHolder_telephone').addClass('redBorder');
+            $('#FeedbackPlaceHolder_telephoneDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_telephone').html('<?php echo __('Telephone validation error') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_telephone').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_telephoneDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_telephone').html('');
+        }
+        
+        if(typeof errors[1]['investor_dateOfBirth'] != 'undefined'){
+            $('#ContentPlaceHolder_dateOfBirth').addClass('redBorder');
+            $('#FeedbackPlaceHolder_dateOfBirthDiv').addClass('actived');
+            $('#FeedbackPlaceHolder_dateOfBirth').html('<?php echo __('You must be over 18 years old') ?>');
+        } 
+        else {
+            $('#ContentPlaceHolder_dateOfBirth').removeClass('redBorder');
+            $('#FeedbackPlaceHolder_dateOfBirthDiv').removeClass('actived');
+            $('#FeedbackPlaceHolder_dateOfBirth').html('');
+        }
+        
+    }
+    
+    function successModified(data) {
+        
+//	ga_removeInformationBannerClick("Personal Data Saved");
+	console.log("edit_user_profile_data: LINE 70");
+	//$('#editDatosPersonales').replaceWith(data); 
+        //telephone
+        $('#ContentPlaceHolder_telephone').intlTelInput();
+
+        //Date picker
+        $('#ContentPlaceHolder_dateOfBirth').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+                });
+                
+        $("div").removeClass('actived');  
+        $("input").removeClass('redBorder'); 
+    }
+
+    function errorModified(data) {
+        
+        $feedback = JSON.parse(data);
+        printValidationErrors($feedback);
+                console.log("edit_user_profile_data: LINE 80");
+        //$('#editDatosPersonales').replaceWith(data);
+        //telephone
+        $('#ContentPlaceHolder_telephone').intlTelInput();
+
+        //Date picker
+        $('#ContentPlaceHolder_dateOfBirth').datepicker({
+            autoclose: true,
+            format: 'dd/mm/yyyy'
+        });
+    }
+    
 });
 </script>
 <style>
@@ -190,7 +316,7 @@ $(document).ready(function() {
                     </div>
                     <div class="row">
                         <?php
-                            if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
+                            /*if (empty($userValidationErrors) AND empty($investorValidationErrors)) {
                                 if (!$initialLoad) {		// page is NOT loaded for the first time, but as a result of a change of data
                         ?>
                                 <div class="col-xs-12 col-sm-6 col-md-12 col-lg-12">
@@ -201,59 +327,41 @@ $(document).ready(function() {
                                 </div>
                         <?php
                                 }
-                            }
+                            }*/
                         ?>
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6"> <!-- Password -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_password1" data-placement="auto"><?php echo __('Password')?></label>
                                 <i data-container="body" data-toggle="tooltip" data-placement="top" style="color:gray" title="<?php echo __('Your password should be at least 8 characters long and contain uppercase and lowercase characters and a number.')?>" class="fa fa-exclamation-circle" ></i>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('password',$userValidationErrors)) {
-                            $errorClass = "redBorder";
-                    } 
-                    $class = "form-control blue_noborder2 password1". ' ' . $errorClass;
-                    echo $this->Form->input('User.password1', array('name'	=> 'password',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_password1',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('New Password'),
-                                                                                                    'type'			=> 'password',
-                                                                                                    'class' 		=> $class,					
-                                                                    ));
-            ?>
+                                <?php
+                                echo $this->Form->input('User.password1', array('name' => 'password',
+                                    'id' => 'ContentPlaceHolder_password1',
+                                    'label' => false,
+                                    'placeholder' => __('New Password'),
+                                    'type' => 'password',
+                                    'class' => "form-control blue_noborder2 password1",
+                                ));
+                                ?>
                             </div>					
                         </div>
                         <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6"> <!-- Repeat Password -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_password_confirm"><?php echo __('Repeat Password')?></label>
-            <?php
-
-                    $errorClass = "";
-                    if (array_key_exists('password',$userValidationErrors)) {
-                            $errorClass = "redBorder";
-                    }
-                    $class = "form-control blue_noborder2 passwordConfirm". ' ' . $errorClass;
-                    echo $this->Form->input('User.passwordConfirm', array('name'	=> 'surnames',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_password_confirm',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  false,
-                                                                                                    'type'			=> 'password',
-                                                                                                    'class' 		=> $class,						
-                                                                    ));
-                    ?>										
+                                <?php
+                                echo $this->Form->input('User.passwordConfirm', array('name' => 'surnames',
+                                    'id' => 'ContentPlaceHolder_password_confirm',
+                                    'label' => false,
+                                    'placeholder' => false,
+                                    'type' => 'password',
+                                    'class' => "form-control blue_noborder2 passwordConfirm",
+                                ));
+                                ?>										
                             </div>					
                         </div>
                     </div>
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorPassword";
-                    if (array_key_exists('password',$userValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+                    <div id="FeedbackPlaceHolder_password1Div" class="errorInputMessage ErrorPassword">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $userValidationErrors['password'][0] ?>
+                        <span id="FeedbackPlaceHolder_password1" class="errorMessage">
                         </span>
                     </div>	
 
@@ -261,172 +369,114 @@ $(document).ready(function() {
                         <div class="col-xs-12 col-sm-6 col-md-5 col-lg-5"> <!-- Name -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_name"><?php echo __('Name')?></label>
-            <?php
-
-                    $errorClass = "";
-                    if (array_key_exists('investor_name',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-                    }
-                    $class = "form-control blue_noborder2 investorName". ' ' . $errorClass;
-                                                                                            echo $this->Form->input('Investor.investor_name', array(
-                                                                                                    'name'			=> 'name',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_name',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('Name'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_name'],						
-                                                                    ));
-            ?>									
+                                <?php
+                                echo $this->Form->input('Investor.investor_name', array(
+                                    'name' => 'name',
+                                    'id' => 'ContentPlaceHolder_name',
+                                    'label' => false,
+                                    'placeholder' => __('Name'),
+                                    'class' => "form-control blue_noborder2 investorName",
+                                    'value' => $resultUserData[0]['Investor']['investor_name'],
+                                ));
+                                ?>									
                             </div>					
                         </div>
                         <!-- /name -->
                         <div class="col-xs-12 col-sm-6 col-md-7 col-lg-7"> <!-- surname -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_surname"><?php echo __('Surname(s)')?></label>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('investor_surname',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-                    }
-                    $class = "form-control blue_noborder2 investorSurname". ' ' . $errorClass;
-                                                                                            echo $this->Form->input('Investor.investor_surname', array(
-                                                                                                    'name'			=> 'surname',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_surname',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('Surname'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_surname'],						
-                                                                    ));
-            ?>
+                                <?php
+                                echo $this->Form->input('Investor.investor_surname', array(
+                                    'name' => 'surname',
+                                    'id' => 'ContentPlaceHolder_surname',
+                                    'label' => false,
+                                    'placeholder' => __('Surname'),
+                                    'class' => "form-control blue_noborder2 investorSurname",
+                                    'value' => $resultUserData[0]['Investor']['investor_surname'],
+                                ));
+                                ?>
                             </div>					
                         </div>
                     </div>
 
 
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorName";
-                    if (array_key_exists('investor_name',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+
+                    <div id="FeedbackPlaceHolder_nameDiv"class="errorInputMessage ErrorName">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_name'][0] ?>
+                        <span id="FeedbackPlaceHolder_name" class="errorMessage">
                         </span>
                     </div>
 
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorSurname";
-                    if (array_key_exists('investor_surname',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+                    <div id="FeedbackPlaceHolder_surnameDiv"class="errorInputMessage ErrorSurname">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_surname'][0] ?>
+                        <span id="FeedbackPlaceHolder_surname" class="errorMessage">              
                         </span>
                     </div>						
 
+                    
                     <div class="row"><!-- row 3 -->
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- address -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_address1"><?php echo __('Address')?></label>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('investor_address1',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-                    }
-                    $class = "form-control blue_noborder2 investorSurname". ' ' . $errorClass;
-                                                                                            echo $this->Form->input('Investor.investor_address1', array(
-                                                                                                    'name'			=> 'address1',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_address1',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('Address'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_address1'],						
-                                                                    ));
-            ?>
-
+                                <?php
+                                echo $this->Form->input('Investor.investor_address1', array(
+                                    'name' => 'address1',
+                                    'id' => 'ContentPlaceHolder_address1',
+                                    'label' => false,
+                                    'placeholder' => __('Address'),
+                                    'class' => "form-control blue_noborder2 investorSurname",
+                                    'value' => $resultUserData[0]['Investor']['investor_address1'],
+                                ));
+                                ?>
                             </div>
                         </div>	<!-- /address -->				 
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- post code -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_postCode"><?php echo __('PostCode')?></label>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('investor_postCode',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-                    }
-                    $class = "form-control blue_noborder2 investorPostCode". ' ' . $errorClass;
-                                                                                            echo $this->Form->input('Investor.investor_postCode', array(
-                                                                                                    'name'			=> 'investor_postCode',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_postCode',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('PostCode'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_postCode'],						
-                                                                    ));
-            ?>
+                                <?php
+                                echo $this->Form->input('Investor.investor_postCode', array(
+                                    'name' => 'investor_postCode',
+                                    'id' => 'ContentPlaceHolder_postCode',
+                                    'label' => false,
+                                    'placeholder' => __('PostCode'),
+                                    'class' => "form-control blue_noborder2 investorPostCode",
+                                    'value' => $resultUserData[0]['Investor']['investor_postCode'],
+                                ));
+                                ?>
                             </div>					
                         </div><!-- /post code -->
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- city -->
                             <div class="form-group">
-                                <label for="exampleInputPassword1"><?php echo __('City')?></label>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('investor_city',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-                    }
-                    $class = "form-control blue_noborder2 investorCity". ' ' . $errorClass;
-                                                                                            echo $this->Form->input('ContentPlaceHolder_city', array(
-                                                                                                    'name'			=> 'city',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_city',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('City'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_city'],						
-                                                                    ));
-                    ?>
+                                <label for="ContentPlaceHolder_city"><?php echo __('City')?></label>
+                                <?php
+                                echo $this->Form->input('ContentPlaceHolder_city', array(
+                                    'name' => 'city',
+                                    'id' => 'ContentPlaceHolder_city',
+                                    'label' => false,
+                                    'placeholder' => __('City'),
+                                    'class' => "form-control blue_noborder2 investorCity",
+                                    'value' => $resultUserData[0]['Investor']['investor_city'],
+                                ));
+                                ?>
                             </div>					
                         </div>
                     </div>	
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorAddress";
-                    if (array_key_exists('investor_address1',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+
+                    <div id="FeedbackPlaceHolder_address1Div" class="errorInputMessage ErrorAddress">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_address1'][0] ?>
+                        <span id="FeedbackPlaceHolder_address1" class="errorMessage">         
                         </span>
                     </div>
 
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorPostCode";
-                    if (array_key_exists('investor_postCode',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+                    <div id="FeedbackPlaceHolder_postCodeDiv" class="errorInputMessage ErrorPostCode">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_postCode'][0] ?>
+                        <span id="FeedbackPlaceHolder_postCode" class="errorMessage">
                         </span>
                     </div>		
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorCity";
-                    if (array_key_exists('investor_city',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+
+                    <div id="FeedbackPlaceHolder_cityDiv" class="errorInputMessage ErrorCity">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_city'][0] ?>
+                        <span id="FeedbackPlaceHolder_city" class="errorMessage">                        
                         </span>
                     </div>						
 
@@ -434,35 +484,24 @@ $(document).ready(function() {
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- country -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_country"><?php echo __('Country')?></label>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('investor_country',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-            }
-                    $class = "form-control blue_noborder2 investorCountry". ' ' . $errorClass;	
-                                                                                            echo $this->Form->input('Investor.investor_country', array(
-                                                                                                    'name'			=> 'country',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_country',
-                                                                                                    'label' 		=> false,
-                                                        'options'       => $countryData,
-                                                                                                    'placeholder' 	=>  __('Country'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_country'],						
-                                                                    ));
-                    ?>
+                                <?php
+                                echo $this->Form->input('Investor.investor_country', array(
+                                    'name' => 'country',
+                                    'id' => 'ContentPlaceHolder_country',
+                                    'label' => false,
+                                    'options' => $countryData,
+                                    'placeholder' => __('Country'),
+                                    'class' => "form-control blue_noborder2 investorCountry",
+                                    'value' => $resultUserData[0]['Investor']['investor_country'],
+                                ));
+                                ?>
                             </div>					
                         </div>
                     </div>							
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorCountry";
-                    if (array_key_exists('investor_country',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+
+                    <div id="FeedbackPlaceHolder_countryDiv" class="errorInputMessage ErrorCountry">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_country'][0] ?>
+                        <span id="FeedbackPlaceHolder_country" class="errorMessage">
                         </span>
                     </div>
 
@@ -471,49 +510,34 @@ $(document).ready(function() {
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_dni"><?php echo __('Id')?></label>
                                 <i data-toggle="tooltip" style="color:gray" data-container="body" data-placement="top" title="<?php echo __('(Ex: Identification Card)')?>" class="fa fa-exclamation-circle" ></i>
-            <?php
-                    $errorClass = "";
-                    if (array_key_exists('investor_DNI',$investorValidationErrors)) {
-                            $errorClass = "redBorder";
-            }
-                    $class = "form-control blue_noborder2 investorDni". ' ' . $errorClass;
-                                                                                            echo $this->Form->input('Investor.investor_DNI', array(
-                                                                                                    'name'			=> 'dni',
-                                                                                                    'id' 			=> 'ContentPlaceHolder_dni',
-                                                                                                    'label' 		=> false,
-                                                                                                    'placeholder' 	=>  __('Id'),
-                                                                                                    'class' 		=> $class,
-                                                                                                    'value'			=> $resultUserData[0]['Investor']['investor_DNI'],						
-                                                                    ));
-            ?>
+                                <?php
+                                echo $this->Form->input('Investor.investor_DNI', array(
+                                    'name' => 'dni',
+                                    'id' => 'ContentPlaceHolder_dni',
+                                    'label' => false,
+                                    'placeholder' => __('Id'),
+                                    'class' => "form-control blue_noborder2 investorDni",
+                                    'value' => $resultUserData[0]['Investor']['investor_DNI'],
+                                ));
+                                ?>
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4"> <!-- telephone -->
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_telephone"><?php echo __('Telephone')?></label>
                                 <div class="form-control blue_noborder2 disabledPointer">
-                                                                                                    <?php
-                                                                                                            $errorClass = "";
-                                                                                                            if (array_key_exists('investor_telephone', $investorValidationErrors)) {
-                                                                                                                    $errorClass = "redBorder";
-                                                                                                            }
-                                                                                                            $class = "telephoneNumber center-block disabledPointer". ' ' . $errorClass;
-
-                                                                                                            echo $this->Form->input('Investor.investor_telephone', array(
-                                                                                                                                                            'name'			=> 'telephone',
-                                                                                                                                                            'id' 			=> 'ContentPlaceHolder_telephone',
-                                                                                                                                                            'label' 		=> false,
-                                                                                                                                                            'placeholder' 	=>  __('Telephone'),
-                                                                                                                                                            'class' 		=> $class,
-                                                                                                                                                            'type'			=> 'tel',
-                                                                                                                                                            'value'			=> $resultUserData[0]['Investor']['investor_telephone'],
-                                                                                                                                                            'disabled'          => 'disabled'
-                                                                                                                                                            ));
-                                                                                                            $errorClassesForTexts = "errorInputMessage ErrorPhoneNumber col-xs-offset-1";
-                                                                                                            if (array_key_exists('investor_telephone',$validationResult)) {
-                                                                                                                    $errorClassesForTexts .= " ". "actived";
-                                                                                                            }
-                                                                                                    ?>
+                                    <?php
+                                    echo $this->Form->input('Investor.investor_telephone', array(
+                                    'name' => 'telephone',
+                                    'id' => 'ContentPlaceHolder_telephone',
+                                    'label' => false,
+                                    'placeholder' => __('Telephone'),
+                                    'class' => "telephoneNumber center-block disabledPointer",
+                                    'type' => 'tel',
+                                    'value' => $resultUserData[0]['Investor']['investor_telephone'],
+                                    'disabled' => 'disabled'
+                                    ));
+                                    ?>
                                 </div>
                             </div>					
                         </div>
@@ -521,63 +545,38 @@ $(document).ready(function() {
                             <div class="form-group">
                                 <label for="ContentPlaceHolder_dateOfBirth"><?php echo __('Date of Birth')?></label>
                                     <div class="input-group input-group-sm date blue_noborder2">
-                                                                                                    <?php
-                                                                                                            $errorClass = "";
-                                                                                                            if (array_key_exists('investor_dateOfBirth',$investorValidationErrors)) {
-                                                                                                                    $errorClass = "redBorder";
-                                                                                                            }
-                                                                                                            $class = "form-control pull-right investorDateOfBirth". ' ' . $errorClass;
-                                                                                                    ?>
                                         <div class="input-group-addon" style="border-radius:8px; border: none;">
                                             <i class="fa fa-calendar"></i>
                                         </div>
-                                        <input type="text" style="border-radius:8px; border:none;" class="<?php echo $class ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth')?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
+                                        <input type="text" style="border-radius:8px; border:none;" class="<?php echo "form-control pull-right investorDateOfBirth" ?>" name="dateOfBirth" placeholder="<?php echo __('Date of Birth')?>" id="ContentPlaceHolder_dateOfBirth" value="<?php echo $resultUserData[0]['Investor']['investor_dateOfBirth'] ?>">
                                     </div>
                             </div>
                         </div>
                     </div>
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorId";
-                    if (array_key_exists('investor_DNI',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+
+                    <div id="FeedbackPlaceHolder_dniDiv" class="errorInputMessage ErrorId">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                                <?php echo $investorValidationErrors['investor_DNI'][0] ?>
+                        <span id="FeedbackPlaceHolder_dni" class="errorMessage">
                         </span>
                     </div>
 
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorTelephone";
-                    if (array_key_exists('investor_telephone',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
+                    <div id="FeedbackPlaceHolder_telephoneDiv" class="errorInputMessage ErrorTelephone">
                         <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_telephone'][0] ?>
-                        </span>
-                    </div>		
-            <?php
-                    $errorClassesText = "errorInputMessage ErrorDateOfBirth";
-                    if (array_key_exists('investor_dateOfBirth',$investorValidationErrors)) {
-                            $errorClassesText .= " ". "actived";
-                    }
-            ?>
-                    <div class="<?php echo $errorClassesText?>">
-                        <i class="fa fa-exclamation-circle"></i>
-                        <span class="errorMessage">
-                            <?php echo $investorValidationErrors['investor_dateOfBirth'][0] ?>
+                        <span id="FeedbackPlaceHolder_telephone" class="errorMessage">
                         </span>
                     </div>		
 
+                    <div id="FeedbackPlaceHolder_dateOfBirthDiv" class="errorInputMessage ErrorDateOfBirth">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <span id="FeedbackPlaceHolder_dateOfBirth" class="errorMessage">
+                        </span>
+                    </div>		
+
+                    
                     <div class="row">
                         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                             <div class="form-group">
-                                <button type="submit" href="/investors/editUserProfileData" id="editUserData" class="btn btn1CR btnRounded pull-right"><?php echo __('Save')?></button>
+                                <button type="submit" href="/investors/saveNewUserProfileData" id="editUserData" class="btn btn1CR btnRounded pull-right"><?php echo __('Save')?></button>
                             </div>
                         </div>	
                     </div>

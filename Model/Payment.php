@@ -124,7 +124,7 @@ var $validate = array(
         if (!empty($latestValuesPaymenttotals['Paymenttotal'])) {  // probably NOT necessary to save status
             $this->Paymenttotal->create();
             $this->Paymenttotal->id = $latestValuesPaymenttotals['Paymenttotal']['id'];
-            $this->Paymenttotal->saveField(array("status" => WIN_PAYMENTTOTALS_OLD)); 
+            $this->Paymenttotal->saveField("status", WIN_PAYMENTTOTALS_OLD); 
         }
     }
 }

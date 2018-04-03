@@ -448,16 +448,23 @@ app.visual = {
         $(".editRegistrationData input").removeClass("redBorder"); // remove ALL redborders
 
         var investor,
+                investmentPlatforms,
                 p2p = 0,
                 p2b = 0,
                 invoiceTrading = 0,
                 crowdRealEstate = 0;
         investor = $('input[name="accreditedInvestor"]:checked').val();
-        
+        investmentPlatforms = $('#investor_investmentPlatforms').val(); 
+    
         if (typeof investor == 'undefined') {
-            console.log("Define type of user");
             $(".ErrorInvestor").find(".errorMessage").html(TEXTOS.T15); // "select 1 option" warning
             $(".ErrorInvestor").fadeIn();
+            correctForm = false;
+        }
+
+        if (investmentPlatforms < 1) {
+            $(".ErrorPlatformNumber").find(".errorMessage").html(TEXTOS.T104); // "Select at least one warning
+            $(".ErrorPlatformNumber").fadeIn();
             correctForm = false;
         }
 
@@ -1151,5 +1158,6 @@ var TEXTOS = {
     T100: "Select PFP",
     T101: "Select modality",
     T102: "Select service status",
-    T103: "Provide at least 1 field"
+    T103: "Provide at least 1 field",
+    T104: "This is a mandatory field"
 };

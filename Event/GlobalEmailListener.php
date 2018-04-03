@@ -63,7 +63,7 @@ class GlobalEmailListener implements CakeEventListener {
         /*
           DEFINED EVENTS:
           newUserCreated                      A new user has successfully registered
-          SendContacMessage                   Somebody contacted use via ContactForm
+          SendContactMessage                  Somebody contacted use via ContactForm
          */
 
         

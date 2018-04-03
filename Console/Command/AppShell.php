@@ -50,6 +50,12 @@ class AppShell extends Shell {
         $newComp = new $newClass;
         return $newComp;
     }
+    
+    function print_r2($val) {
+        echo '<pre>';
+        print_r($val);
+        echo '</pre>';
+    }
 
 
     /**
@@ -241,9 +247,32 @@ class AppShell extends Shell {
             "conditions" => $filterConditions,
             "fields" => array("id", "investment_loanId"),
         ));
-
+        
         $list = Hash::extract($investmentListResult, '{n}.Investment.investment_loanId');
         return $list;
+    }    
+    
+    /**
+     * Get the list of all investments with status = $status for a P2P as identified by the
+     * linkedaccount identifier with the amount.
+     *
+     * @param int $linkedaccount_id    linkedaccount reference
+     * @param   int $status          The status of the investment
+     * @return array
+     *
+     */
+    public function getLoanIdListOfInvestmentsWithReservedFunds($linkedaccount_id, $status) {
+        $this->Investment = ClassRegistry::init('Investment');
+        $filterConditions = array(
+            'linkedaccount_id' => $linkedaccount_id,
+            "investment_statusOfloan" => $status,
+        );
+
+        $investmentListResult = $this->Investment->find("list", array("recursive" => -1,
+            "conditions" => $filterConditions,
+            "fields" => array("investment_loanId", "investment_reservedFunds"),
+        ));
+        return $investmentListResult;
     }    
     
     /**
@@ -348,6 +377,18 @@ class AppShell extends Shell {
         echo "FILE $excelName has been written\n";
 
     }    
+    
+
+    /**
+     * 
+     * @param string $file FQDN of the file to analyze
+     * @return array
+     */
+    public function getFileTempArray($file) {
+        $fileString = file_get_contents($file);
+        $data = json_decode($fileString, true);
+        return $data;
+    }
     
     
 }

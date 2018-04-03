@@ -106,15 +106,17 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                         $tempName = explode("/", $subDirectory);
                         $linkedAccountId = $tempName[count($tempName) - 1];
                         $dirs = new Folder($subDirectory);
-                        //$allFiles = $dirs->findRecursive();
+                        $allFiles = $dirs->findRecursive();
                         if (!in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
                             continue;
                         }
                         $tempPfpName = explode("/", $allFiles[0]);
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        
                         $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
                         $i++;
                         echo "pfp = " . $pfp . "\n";
+                       
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
@@ -126,7 +128,6 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
                             'queueInfo' => json_decode($job['Queue2']['queue2_info'], true));
                     }
-                    print_r($params);
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue2']['queue2_userReference']);
@@ -213,16 +214,13 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
 
     /** FLOW 3C
-     * This method writes the 'nextPaymentDate' in the investment object. 
+     * This method writes the 'investment_dateForPaymentDelayCalculation' in the investment object. 
      * This is done for the loanIds/loanslices whose amortization tables
      * are stored in the directory currently under processing. 
      * These files are of format:  amortizationtable_[investmentslice_id][loanId].html 
      * example: amortizationtable_120665_13730-01.html
      * 
-     * Check each of them and writes the next payment date in the investment table.
-     * 
      *  @param  $array          Array which holds global data of the P2P
-     *
      *  @return boolean 
      *
      */
@@ -230,45 +228,41 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
  
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 $timeStart = time();
+print_r($linkedAccountData);
 
-        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
+        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
                 $tempIdData = explode(".", $name[2]);
-      //          $nameIdData[0] = $tempIdData[0];
-     //           $nameIdData[1] = $name[1];
                 $loanDataId[] = $tempIdData[0];
             }
 
-
             foreach ($loanDataId as $loanId) { 
+                $tempNextScheduledDate = "";
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
-                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId[0]),
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId),
                                                                            'recursive' => 1)
                                                                         );
 
                 $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
 
                 foreach ($reversedData as $table) {
-                    if ($table['amortizationtable_paymentDate'] == WIN_UNDEFINED_DATE || 
-                                                  $table['amortizationtable_paymentDate'] == "") {                       
-                        $tempScheduledDate = $table['amortizationtable_scheduledDate'];
-                    }
-                    else {
-                        break;
-                    }
+                    if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE) {                      
+                        $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
+                    }                 
                 }
-                
+echo "tempNextScheduledDate = $tempNextScheduledDate\n";                
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
-                                               'investment_nextPaymentDate' =>  $tempScheduledDate )
-                                               );   
+                                               'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
+                                               );             
             } 
         }
-                                   
+                             
 $timeStop = time();
-echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
+echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
         return true;
     }
     
@@ -302,42 +296,56 @@ $timeStart = time();
             do {
                 $result = $this->Investment->find("all", array('conditions' => $conditions,
                                                                 'fields'    => array('id', 
-                                                                                     'investment_nextPaymentDate'),
+                                                                                     'investment_dateForPaymentDelayCalculation'),
                                                                 'recursive'  => -1,
                                                                 'limit' => $limit,
                                                                 'offset' => $index * $limit)
                                                  );
                   
-                
+           
                 if (count($result) < $limit) {          // No more results available
                     $controlIndex = 1;
                 }
-                
-                $today = strtotime($linkedAccount['finishDate']);
-echo __FILE__ . " " . __LINE__ ."today = $today\n";                
-                foreach ($result as $item) {   
-                    $nextPaymentDate = strtotime($item['Investment']['investment_nextPaymentDate']);
-                    $today = strtotime($linkedAccount['finishDate']);
+//echo "finishDate = "  . $linkedAccount['finishDate'] . "\n";              
+                $todayYear = substr($linkedAccount['finishDate'], 0, 4); 
+                $todayMonth = substr($linkedAccount['finishDate'], 4, 2);
+                $todayDay = substr($linkedAccount['finishDate'], 6 ,2);
+                $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
+                $todayTimeStamp = strtotime($today);
 
-                    if ($nextPaymentDate < $today) {
+//echo "todayTimeStamp = $todayTimeStamp\n";
+
+                foreach ($result as $item) {                      
+                    echo "ITEM  = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
+                    print_r($item);
+                    echo "todayTimeStamp = $todayTimeStamp\n";
+                    
+                    $dateForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
+//echo "dateForPaymentDelayCalculation = $dateForPaymentDelayCalculation \n";
+                    if ($dateForPaymentDelayCalculation < $todayTimeStamp) {
                         $tempArray['id'] = $item['Investment']['id'];
-                        $tempArray['investment_paymentStatus'] = ceil(abs($today - $nextPaymentDate) / 86400);
-                        print_r($tempArray);
+                        
+                        echo "TTTT " . abs($todayTimeStamp - $dateForPaymentDelayCalculation) . "\n";
+                        $tempArray['investment_paymentStatus'] = ceil(abs($todayTimeStamp - $dateForPaymentDelayCalculation) / 86400);
                     }
                     else {
                         $tempArray['investment_paymentStatus'] = 0;
                     }
                     $tempArray['id'] = $item['Investment']['id'];
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($tempArray);
                     $investment[] = $tempArray;
                 }
                 $index++;
             } 
             while($controlIndex < 1); 
 
+//print_r($investment);
             $this->Investment->saveMany($investment, array('validate' => true));
         }
 $timeStop = time();
-echo "\nNUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) ."\n";
+echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+exit;
         return true;
     }    
 }

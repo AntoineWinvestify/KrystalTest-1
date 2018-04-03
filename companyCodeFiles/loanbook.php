@@ -119,17 +119,17 @@ class loanbook extends p2pCompany {
                         "input3" => [
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"],
+                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_verification"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
                             4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
                             5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
                             6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
                             7 => ["Compensación-Compensación por incidencia administrativa" => "Compensation"],
                             8 => ["Comisión-Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment"],
-                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment"],
+                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
+                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
                             11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
-                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment"]
+                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"]    //When is negative
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
@@ -1668,7 +1668,6 @@ class loanbook extends p2pCompany {
             foreach ($inputs as $input) {
                 if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
                     if ($input->getAttribute('name') == "csrf") {
-                        echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
                         $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                         break 2;
                     }
@@ -2013,6 +2012,64 @@ class loanbook extends p2pCompany {
         echo $structureRevision;
 
         return $structureRevision;
+    }
+    
+    /**
+     * Function to manage reserved Funds for Loanbook depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageReservedFunds(&$transactionData, &$resultData, $data = null) {
+        if ($resultData['investment']['investment_isNew']) {
+            unset($resultData['investment']['investment_isNew']);
+            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+        }
+        else {
+            $resultData['investment']['investment_tempState'] = $resultData['investment']['investment_statusOfLoan'];
+        }
+        $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * Function to manage myInvestment for Loanbook depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageMyInvestment(&$transactionData, &$resultData, $data = null) {
+        if ($resultData['investment']['investment_isNew']) {
+            unset($resultData['investment']['investment_isNew']);
+            $resultData['investment']['investment_myInvestment'] = bcadd(
+                $resultData['investment']['investment_myInvestment'], 
+                $transactionData['amount'], 
+                16);
+        }
+        else {
+            if (isset($resultData['investment']['investment_reservedFunds']) && !empty($resultData['investment']['investment_reservedFunds'])) {
+                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                        $transactionData['amount'],
+                        16);
+                $resultData['investment']['investment_reservedFunds'] = bcsub(
+                        $resultData['investment']['investment_reservedFunds'],
+                        $transactionData['amount'],
+                        16);
+                $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                    $transactionData['amount'],
+                    16);
+            }
+            //We move from reservedFunds to myInvestment
+            $resultData['investment']['investment_myInvestment'] = bcadd(
+                    $resultData['investment']['investment_myInvestment'],
+                    $transactionData['amount'],
+                    16);
+        }
+        return $transactionData['amount'];
     }
 
 }

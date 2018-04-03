@@ -27,6 +27,9 @@
  */
 class WinFormulas {
     
+    /**
+     * This variable is not used
+     */
     protected $variablesFormula_A = [
         "A" => [
             "type" => "userinvestmentdata_totalGrossIncome",
@@ -51,6 +54,9 @@ class WinFormulas {
         ]
     ];
     
+    /**
+     * Variable not used
+     */
     protected $configFormula_A = [
         "functionName" => "stepByStep",
         "steps" => [
@@ -67,15 +73,19 @@ class WinFormulas {
         ]
     ];
     
+    /**
+     * Variable with all the information needed to calculate the netAnnualReturn
+     * @var type 
+     */
     protected $variablesFormula_netAnnualReturn_xirr = [
         "A" => [
             "type" => [
-                "variables" => [
-                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
-                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
-                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
-                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                "variables" => [                                                //Variables we get from DB and group
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             
+                    "globaltotalsdata_delayedInterestIncomePerDay",             
+                    "globaltotalsdata_capitalRepaymentPerDay",                  
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         
                     "globaltotalsdata_interestGrossIncomePerDay",
                     "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
                     "globaltotalsdata_latePaymentFeeIncomePerDay",
@@ -88,11 +98,11 @@ class WinFormulas {
                 ],
                 "operation" => "add"
             ],
-            "table" => "Globaltotalsdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
-            "intervals" => "inclusive",
-            "operation" => "add"
+            "table" => "Globaltotalsdata",                                      //Table from which we get
+            "dateInit" => "-365",                                               //The initDate from which we take the data, this day include
+            "dateFinish" => "-0",                                               //The finishDate from which we take the data, this day include
+            "intervals" => "inclusive",                                         //If the interval is inclusive, we get the data from dateInit to dateFinish
+            "operation" => "add"                                                //This variable is added
         ],
         "B" => [
             "type" => [
@@ -114,7 +124,7 @@ class WinFormulas {
             "dateInit" => "-365",
             "dateFinish" => "-0",
             "intervals" => "inclusive",
-            "operation" => "subtract"
+            "operation" => "subtract"                                           //This variable is subtracted from the data
         ],
         "C" => [
             "type" => "userinvestmentdata_outstandingPrincipal",
@@ -137,7 +147,7 @@ class WinFormulas {
                 "variables" => [
                     "globalcashflowdata_platformCompensationPositive",            
                     "globalcashflowdata_platformRecoveries",            
-                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    //"globalcashflowdata_platformIncentivesAndBonus",                  
                     "globalcashflowdata_regularGrossInterestIncome",
                     //need more data to take values from database
                 ],
@@ -156,7 +166,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_outstandingPrincipal",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -170,8 +179,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_outstandingPrincipal",
-                    //"userinvestmentdata_cashInPlatform",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -185,7 +192,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_cashInPlatform",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -199,7 +205,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "userinvestmentdata_cashInPlatform",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -213,7 +218,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [        
                     "globalcashflowdata_platformWithdrawals",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -227,6 +231,7 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_platformDeposits",            
+                    "globalcashflowdata_platformIncentivesAndBonus",            
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -243,11 +248,11 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
-                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
-                    "globaltotalsdata_capitalRepaymentPerDay",                  //Finanzarel
-                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         //Finanzarel
-                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             
+                    "globaltotalsdata_delayedInterestIncomePerDay",             
+                    "globaltotalsdata_capitalRepaymentPerDay",                  
+                    "globaltotalsdata_partialPrincipalRepaymentPerDay",         
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         
                     "globaltotalsdata_interestGrossIncomePerDay",
                     "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
                     "globaltotalsdata_latePaymentFeeIncomePerDay",
@@ -335,7 +340,7 @@ class WinFormulas {
                 "variables" => [
                     "globalcashflowdata_platformCompensationPositive",            
                     "globalcashflowdata_platformRecoveries",            
-                    "globalcashflowdata_platformIncentivesAndBonus",                  
+                    //"globalcashflowdata_platformIncentivesAndBonus",                  
                     "globalcashflowdata_regularGrossInterestIncome",
                     //need more data to take values from database
                 ],
@@ -354,9 +359,9 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
-                    "globaltotalsdata_delayedInterestIncomePerDay",               //Finanzarel
-                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             
+                    "globaltotalsdata_delayedInterestIncomePerDay",               
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         
                     "globaltotalsdata_interestGrossIncomePerDay",
                     "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
                     "globaltotalsdata_latePaymentFeeIncomePerDay",
@@ -377,9 +382,9 @@ class WinFormulas {
         "B" => [
             "type" => [
                 "variables" => [
-                    "globalcashflowdata_platformRecoveries",             //Finanzarel
-                    "globalcashflowdata_platformIncentivesAndBonus",             //Finanzarel
-                    "globalcashflowdata_platformCompensationPositive",             //Finanzarel
+                    "globalcashflowdata_platformRecoveries",             
+                    //"globalcashflowdata_platformIncentivesAndBonus",             
+                    "globalcashflowdata_platformCompensationPositive",             
                     //
                     //need more data to take values from database
                 ],
@@ -413,9 +418,9 @@ class WinFormulas {
         "D" => [
             "type" => [
                 "variables" => [
-                    "globalcashflowdata_bankCharges",             //Finanzarel
-                    "globalcashflowdata_currencyExchangeFee",             //Finanzarel
-                    "globalcashflowdata_TaxVat",             //Finanzarel
+                    "globalcashflowdata_bankCharges",             
+                    "globalcashflowdata_currencyExchangeFee",             
+                    "globalcashflowdata_TaxVat",             
                     //"globalcashflowdata_TaxIncomeWithholdingTax"
                     //need more data to take values from database
                 ],
@@ -442,9 +447,9 @@ class WinFormulas {
         "A" => [
             "type" => [
                 "variables" => [
-                    "globaltotalsdata_interestIncomeBuybackPerDay",             //Finanzarel
-                    "globaltotalsdata_delayedInterestIncomePerDay",             //Finanzarel
-                    "globaltotalsdata_regularGrossInterestIncomePerDay",         //Finanzarel
+                    "globaltotalsdata_interestIncomeBuybackPerDay",             
+                    "globaltotalsdata_delayedInterestIncomePerDay",             
+                    "globaltotalsdata_regularGrossInterestIncomePerDay",         
                     "globaltotalsdata_interestGrossIncomePerDay",
                     "globaltotalsdata_delayedInterestIncomeBuybackPerDay",
                     "globaltotalsdata_latePaymentFeeIncomePerDay",
@@ -472,7 +477,7 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_platformRecoveries",             
-                    "globalcashflowdata_platformIncentivesAndBonus",             
+                    //"globalcashflowdata_platformIncentivesAndBonus",             
                     "globalcashflowdata_platformCompensationPositive",             
                     //need more data to take values from database
                 ],
@@ -518,9 +523,9 @@ class WinFormulas {
         "D" => [
             "type" => [
                 "variables" => [
-                    "globalcashflowdata_bankCharges",             //Finanzarel
-                    "globalcashflowdata_currencyExchangeFee",             //Finanzarel
-                    "globalcashflowdata_TaxVat",             //Finanzarel
+                    "globalcashflowdata_bankCharges",             
+                    "globalcashflowdata_currencyExchangeFee",             
+                    "globalcashflowdata_TaxVat",             
                     //"globalcashflowdata_TaxIncomeWithholdingTax"
                     //need more data to take values from database
                 ],

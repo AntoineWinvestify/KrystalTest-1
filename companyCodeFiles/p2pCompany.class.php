@@ -169,6 +169,7 @@ class p2pCompany {
     protected $callbacks;
     protected $originExecution;
     protected $tableStructure;
+    protected $callbackAmortizationTable;
    
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
                                         "chunkSize" => 1,     
@@ -1382,16 +1383,22 @@ class p2pCompany {
     /**
      * Create the cookies folder if not exists 
      * @param string $name It is the name for the folder
+     * @param string $originPath It is the name of the file, it could include more folder associate
      * @return boolean True if the folder is created
      */
-    public function createFolder($name = null, $originPath = null) {
+    public function createFolder($name = null, $originPath = null, $nameWithDS = true) {
         if (empty($name)) {
             return false;
         }
         if (empty($originPath)) {
             $originPath = dirname(__FILE__);
         }
-        $dir = $originPath . DS . $name;
+        if ($nameWithDS) {
+            $dir = $originPath . $name;
+        }
+        else {
+            $dir = $originPath . DS . $name;
+        }
         $folderCreated = false;
         if (!file_exists($dir)) {
             $folderCreated = mkdir($dir, 0770, true);
@@ -1432,6 +1439,7 @@ class p2pCompany {
      * Function to save a file of a PFP
      * @param string $fileName It is the file name with the extension
      * @param data $data Data to save on the file, it could be json or html
+     * return string The path of the file created
      */
     public function saveFilePFP($fileName, $data = null) {
         if (empty($data)) {
@@ -1441,6 +1449,7 @@ class p2pCompany {
         $fp = fopen($pathCreated . DS . $fileName, 'w');
         fwrite($fp, $data);
         fclose($fp);
+        return $pathCreated . DS . $fileName;
     }
 
     /**
@@ -1577,6 +1586,11 @@ class p2pCompany {
         return $this->tempArray;
     }
 
+    /**
+     * Function to get different type of Error Curl depending on its number
+     * @param integer $code It is the error code that is received from curl
+     * @return Constant Return a error curl depending on its number
+     */
     public function getErrorCurlType($code) {
         $subtypeError = WIN_ERROR_FLOW_CURL;
         switch ($code) {
@@ -1589,6 +1603,14 @@ class p2pCompany {
         return $subtypeError;
     }
 
+    /**
+     * Function that is used by Dashboard1to get an error within the companyCodeFile
+     * @param integer $line It is the line where the error is produced
+     * @param string $file It is the file where the error is produced
+     * @param string $typeSequence It is the type of urlSquence, LOGIN, WEB, LOGOUT
+     * @param integer $error It is the code that produced the error
+     * @return array
+     */
     public function setErrorOldUserinvestmentdata($line, $file, $typeSequence = null, $error = null) {
         $newLine = "\n";
         if (!empty($typeSequence)) {
@@ -2971,6 +2993,16 @@ FRAGMENT
     public function getDashboard2ConfigurationParameters()  {
         return $this->dashboard2ConfigurationParameters;
     } 
+    
+    /**
+     * Callback function for Amortizationtable.
+     * Function to get all the callback for a company in Dashboard2 in the flow 3B
+     * 
+     * @return array
+     */
+    function getCallbackAmortizationTable() {
+        return $this->callbackAmortizationTable;
+    }
     
 }
 

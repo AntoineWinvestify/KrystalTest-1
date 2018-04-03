@@ -47,10 +47,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
-        //$this->GearmanWorker->addFunction('consolidation', array($this, 'consolidateUserData'));
         $this->GearmanWorker->addFunction('netAnnualReturn', array($this, 'calculateNetAnnualReturn'));
         $this->GearmanWorker->addFunction('netAnnualTotalFunds', array($this, 'calculateNetAnnualTotalFunds'));
-        //$this->GearmanWorker->addFunction('netAnnualPastReturn', array($this, 'calculateNetAnnualPastReturn'));
         $this->GearmanWorker->addFunction('getFormulaCalculate', array($this, 'getFormulaCalculate'));
         echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
         while( $this->GearmanWorker->work());
@@ -66,6 +64,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      *      $data["queue_id"]                   integer It is the queue id
      *      $data["date"]                       integer It is the today's date
      *      $data["service"]                    string  It is the function to call in order to calculate the variable
+     *      $data['companiesNothingInProgress'] array   All the companies that are not in progress
+     *      $data["originExecution"]            integer Account linking or regular update
      * @return json Json containing all the status collect and errors by link account id
      */
     public function getFormulaCalculate($job) {
@@ -98,6 +98,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      *              $data["queue_id"]                   integer It is the queue id
      *              $data["date"]                       integer It is the today's date
      *              $data["service"]                    string  It is the function to call in order to calculate the variable
+     *              $data['companiesNothingInProgress'] array   All the companies that are not in progress
+     *              $data["originExecution"]            integer Account linking or regular update
      * @param string $nameVariables It is the name of parameters to calculate the formula
      * @param string $nameFunction  It is the name of the formula we calculate
      * @param integer $typeOfFormula It is the type of formula, NAR or Net Return
@@ -110,7 +112,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccountId) {
             $keyDataForTable['type'] = 'linkedaccount_id';
             $keyDataForTable['value'] = $linkedaccountId;
+            //We need to save the companies in the flow in order to delete from companiesNothingInProgress
             $dashboardOverviewLinkaccountIds[] = $linkedaccountId;
+            //We need to get the data from DB by value of winFormulas
             foreach ($variables as $variableKey => $variable) {
                 $date['init'] = $this->getDateForSum($data['date'], $variable['dateInit']);
                 $date['finish'] = $this->getDateForSum($data['date'], $variable['dateFinish']);
@@ -122,7 +126,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             $returnData = [];
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
-                $returnData[$linkedaccountId][$nameFunction] = $this->financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']);
+                $returnData[$linkedaccountId][$nameFunction] = round($this->financialClass->XIRR($dataByLinkedaccountId['values'], $dataByLinkedaccountId['dates']),16);
             }
         }
         else if ($typeOfFormula == WIN_FORMULAS_NET_RETURN) {
@@ -153,7 +157,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $dataMergeByDateForInvestor = $this->mergeArraysByKey($values, $variables);
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
-            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']); 
+            $returnData['investor'][$data["queue_userReference"]][$nameFunction] = round($this->financialClass->XIRR($dataMergeByDateForInvestor['values'], $dataMergeByDateForInvestor['dates']),16); 
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
             $returnData['investor'][$data["queue_userReference"]][$nameFunction] = $this->consolidateResults($dataMergeByDateForInvestor['values']);
@@ -231,6 +235,8 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      *              $data["queue_id"]                   integer It is the queue id
      *              $data["date"]                       integer It is the today's date
      *              $data["service"]                    string  It is the function to call in order to calculate the variable
+     *              $data['companiesNothingInProgress'] array   All the companies that are not in progress
+     *              $data["originExecution"]            integer Account linking or regular update
      * @param string $nameVariables It is the name of parameters to calculate the formula
      * @param string $nameFunction  It is the name of the formula we calculate
      * @param integer $typeOfFormula It is the type of formula, NAR or Net Return
@@ -261,7 +267,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $returnData = null;
             foreach ($dataMergeByDate as $linkedaccountId => $dataByLinkedaccountId) {
                 foreach ($dataByLinkedaccountId as $keyDate => $dataByDate) {
-                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                    $returnData[$linkedaccountId][$nameFunction][$keyDate] = round($this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']),16);
                 }
             }
         }
@@ -308,7 +314,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             foreach ($dataMergeByDate as $keyDate => $dataByDate) {
-                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = $this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']);
+                $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = round($this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']),16);
             }
         }
         else if ($typeOfFormula === WIN_FORMULAS_NET_RETURN) {
@@ -432,6 +438,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to get a period of years between two dates
+     * 
      * @param string $dateFinish It is the final date
      * @param integer $linkedaccountId It is the linkedaccount id that we calculate the period of time
      * @return array
@@ -454,6 +461,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to calculate the years between two dates
+     * 
      * @param string $dateInit The initial date
      * @param string $dateFinish The final date
      * @return array
@@ -483,9 +491,10 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     /**
-     * Function to get the first date that there is movement in a linked account
+     * Function to get the first date there is movement in a linked account
+     * 
      * @param integer $linkedaccountId
-     * @return string
+     * @return string The date of the first movement
      */
     public function getFirstInvestmentDateByLinkedaccount($linkedaccountId) {
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
@@ -513,6 +522,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to get a date converted for the format Y-m-d
+     * 
      * @param string $date It is the date to convert
      * @param string $datePeriod  It is the format to calculate the date
      * @return string
@@ -530,96 +540,15 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     }
     
     /**
-     * Function not used to get the sum of values
-     * @param string $modelName
-     * @param type $value
-     * @param type $linkedaccountId
-     * @param type $dateInit
-     * @param type $dateFinish
-     * @return type
-     */
-    public function getSumOfValue($modelName, $value, $linkedaccountId, $dateInit, $dateFinish) {
-        /*$total = $this->RequestedItem->find('all', 
-                    array(
-                        array(
-                            'fields' => array(
-                                'sum(Model.cost * Model.quantity)   AS ctotal'
-                                ), 'conditions'=>array(
-                                        'RequestedItem.purchase_request_id'=>$this->params['named']['po_id']
-                                    )
-                            )
-                        )
-                );
-        
-        $virtualFields = array('total' => 'SUM(Model.cost * Model.quantity)');
-        $total = $this->RequestedItem->find('all', array(array('fields' => array('total'), 'conditions'=>array('RequestedItem.purchase_request_id'=>$this->params['named']['po_id']))));
-        
-        $this->Member->Point->virtualFields['total'] = 'SUM(Point.points)';
-        $totalPoints = $this->Member->Point->find('all', array('fields' => array('total')));*/
-        
-        //get sum of value depending on another field with cakephp
-        //http://discourse.cakephp.org/t/how-to-sum-value-according-to-other-column-value-in-cakephp/1314/3
-        //https://book.cakephp.org/2.0/en/models/virtual-fields.html
-        
-        
-        $model = ClassRegistry::init($modelName);
-        
-        echo "value is $value \n";
-        echo "dateInit is $dateInit";
-        echo "dateFinish is $dateFinish";
-        
-        
-        $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
-        $sumValue  =  $model->find('list',array(
-                'fields' => array('linkedaccount_id', $value . '_sum'),
-                'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "linkedaccount_id" => $linkedaccountId
-                )
-            )
-        );
-        return $sumValue;
-        
-    }
-    
-    /**
-     * Function not used to calculate the sum of values depending on the investor identity
-     * @param type $modelName
-     * @param type $value
-     * @param type $userReference
-     * @param type $dateInit
-     * @param type $dateFinish
-     * @return type
-     */
-    public function getSumOfValueByUserReference($modelName, $value, $userReference, $dateInit, $dateFinish) {
-        $model = ClassRegistry::init($modelName);
-        
-        echo "value is $value \n";
-        echo "dateInit is $dateInit";
-        echo "dateFinish is $dateFinish";
-        
-        
-        $model->virtualFields = array($value . '_sum' => 'sum('. $value. ')');
-        $sumValue  =  $model->find('list',array(
-                'fields' => array('userinvestmentdata_investorIdentity', $value . '_sum'),
-                'conditions' => array(
-                    "date >=" => $dateInit,
-                    "date <=" => $dateFinish,
-                    "userinvestmentdata_investorIdentity" => $userReference
-                )
-            )
-        );
-        return $sumValue;
-        
-    }
-    
-    /**
      * Function to get the sum of different values ordered by date
+     * Documentation:
+     * http://discourse.cakephp.org/t/how-to-sum-value-according-to-other-column-value-in-cakephp/1314/3
+     * https://book.cakephp.org/2.0/en/models/virtual-fields.html
+     * 
      * @param string $modelName It is the model name
-     * @param array $values All the values we need from database sum
+     * @param array $values All the values we need from database to sum
      * @param array $keyValue It is the database key and the database value we need to get the values
-     * @param array $date It containt the initial date and the final date
+     * @param array $date It contains the initial date and the final date
      * @param string $interval It is the type of interval for the values
      * @return array The sum values ordered by date
      */
@@ -778,6 +707,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to sum all the data of an array
+     * 
      * @param array $values All the data
      * @return integer with the result
      */
@@ -792,7 +722,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     /**
      * Join together two or more arrays with the same keys with two levels
      * 
-     * @param array $array It is an array of arrays
+     * @param array $arrays It is an array of arrays
      * @param array $orderParam With orderParams if needed
      */
     public function joinTwoDimensionArrayTogether($arrays, $orderParam) {
@@ -831,6 +761,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to merge different arrays of dates to use in the global dashboard overview calculation
+     * 
      * @param array $datesByLinkaccount Dates ordered by linkaccount id
      * @return array
      */
@@ -849,6 +780,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
     
     /**
      * Function to verify if it is a new year to calculate the past year NAR or Net Return
+     * 
      * @param string $date It is the date we calculate the data
      */
     public function verifyPastReturnThisYearExist($date) {
@@ -861,6 +793,9 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         return $dates;
     }
     
+    /**
+     * Function to include the financial class needed to calculate XIRR
+     */
     public function includeVendorFolder() {
         Configure::load('p2pGestor.php', 'default');
         $vendorBaseDirectoryClasses = Configure::read('vendor') . "financial_class";          // Load Winvestify class(es)
