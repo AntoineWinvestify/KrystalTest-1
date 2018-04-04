@@ -27,7 +27,7 @@
                 "smalot/pdfparser": "*",
                 "lib-curl": "*",
                 "brianlmoon/net_gearman": "@dev",
-		"giggsey/libphonenumber-for-php": "^8.8",
+		"giggsey/libphonenumber-for-php": "^8.8"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*",

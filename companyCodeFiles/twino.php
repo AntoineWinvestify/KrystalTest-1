@@ -125,7 +125,7 @@ class twino extends p2pCompany {
                 "name" => "investment_country"                              // Winvestify standardized name  OK
             ],
             "B" => [
-                "name" => "loanId",
+                "name" => "investment_loanId",
             ],
             "C" => [
                 [
@@ -144,7 +144,15 @@ class twino extends p2pCompany {
                 "name" => "investment_originalState",
             ],
             "F" => [
-                "name" => "investment_nominalInterestRate"
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
             ],
             "G" => [
                 "name" => "investment_expectedAnnualYield"
