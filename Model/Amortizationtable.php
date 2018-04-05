@@ -1,7 +1,7 @@
 <?php
 /**
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2017, https://www.winvestify.com                        |
+// | Copyright (C) 2018, https://www.winvestify.com                        |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -18,12 +18,12 @@
 *
 * @author Antoine de Poorter
 * @version 0.1
-* @date 2017-10-18
+* @date 2018-04-04
 * @package
 *
 
 
-2017-10-18		version 0.1
+2018-04-04		version 0.1
 initial version
 
 

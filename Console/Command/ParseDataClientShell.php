@@ -1292,6 +1292,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
      *  Updates the amortization table of an loan when a repayment is detected.
      *  This method is executed AFTER (?) all the transactions for the loan have been processed by the main flow.
      *  In this way the system can also take into account concepts like commission, late payment fee etc. etc. BUT IS THIS NEEDED
+     *  THIS DOES NOT WORK PROPERLY IF AN INVESTOR CAN RECEIVE MORE THAN ONE AMORTIZATION PAYMENT (=REPAYMENT) FOR A LOAN PER DAY
      *  This method is NOT used during the account linking procedure
      * 
      *  @param  array   array with the current transaction data
@@ -1335,11 +1336,11 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
             echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
         }
 echo "Exiting on " . __FUNCTION__ . " " . __LINE__ . "\n";
-exit;
+
         return;
     }
 
-    /**teti
+    /**
      *  Searches in the investments and expired_investment arrays for an *investment* initiated on 
      *  the date as defined in the dateTransaction array. Also the amount is checked
      *  and investments without the mark: "InvestmentAlreadyDetected"
