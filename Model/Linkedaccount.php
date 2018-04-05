@@ -214,6 +214,7 @@ class Linkedaccount extends AppModel {
     /**
      * Callback function
      * Add a new request on queue for the company that was linked from a user
+     * 
      * @param boolean $created
      * @param array $option
      * @return boolean
@@ -227,7 +228,7 @@ class Linkedaccount extends AppModel {
             $investorId = $this->data['Linkedaccount']['investor_id'];
             $data["companiesInFlow"][0] = $linkaccountId;
             $data["originExecution"] = WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT;
-            $userReference =  $this->Investor->getInvestorIdentityByInvestorId($investorId);
+            $userReference = $this->Investor->getInvestorIdentityByInvestorId($investorId);
             $result = $this->Queue2->addToQueueDashboard2($userReference, json_encode($data));
             return $result;
         }
