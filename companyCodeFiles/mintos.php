@@ -176,6 +176,7 @@ class mintos extends p2pCompany {
                                             20 => ["Reversed late payment fee income" => "Compensation_negative"], 
                                             21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
+                                            23 => ["Affiliate bonus" => "Incentives_and_bonus"],
                                         ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
