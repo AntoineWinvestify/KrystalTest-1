@@ -285,7 +285,7 @@ class Fileparser {
                 "detail" => "Recoveries",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept19"
+                "type" => "payment_loanRecoveries"
                 ],
             20 => [
                 "detail" => "Commission",

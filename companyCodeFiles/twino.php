@@ -84,7 +84,7 @@ class twino extends p2pCompany {
                             6 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
                             7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
                             8 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"], // OK                                       
-                            9 => ["INTEREST EXTENSION" => "Incentive_and_bonus"],
+                            9 => ["INTEREST EXTENSION" => "Incentives_and_bonus"],
                             10 => ["PRINCIPAL REPURCHASE" => "Principal_buyback"],
                             11 => ["INTEREST REPURCHASE" => "Interest_income_buyback"],
                             12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
@@ -92,9 +92,10 @@ class twino extends p2pCompany {
                             //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
                             //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
                             14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
-                            15 => ["PRINCIPAL RECOVERY" => "Recoveries"],
-                            16 => ["PRINCIPAL WRITEOFF" => "Write-off"],
-                            17 => ["WITHDRAWAL" => "Cash_withdrawal"]
+                            15 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_negative"],
+                            16 => ["PRINCIPAL RECOVERY" => "Recoveries"],
+                            17 => ["PRINCIPAL WRITEOFF" => "Write-off"],
+                            18 => ["WITHDRAWAL" => "Cash_withdrawal"]
                         ], // Thousands seperator, typically "."
                         "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
                     // is ALWAYS the contents of the cell
