@@ -16,7 +16,7 @@
  *
  *
  * @author
- * @version 0.5
+ * @version 0.6
  * @date 2018-03-05
  * @package
  *
