@@ -60,7 +60,7 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation"));
     }
 
     var $dateFinish = "20171129";
@@ -316,6 +316,35 @@ class TestsController extends AppController {
         }
     }
 
+  
+    /**
+     *  to test the new API for location
+     * 
+     * 
+     */
+    function testLocation() {
+        $this->autoRender = false;
+        Configure::write('debug', 2); 
+        $accessKey = "40d49470983cedfb136010af6c2c9d4ePPPPP";
+        $ipAddress = "88.12.243.232";
+        
+        // Initialize CURL:
+        $ch = curl_init('http://api.ipstack.com/'.$ipAddress.'?access_key='.$accessKey.'');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Store the data:
+        $json = curl_exec($ch);
+        curl_close($ch);
+
+        // Decode JSON response:
+        $api_result = json_decode($json, true);
+        print_r($api_result);
+        debug($api_result);
+
+    }
+    
+    
+    
     function convertPdf() {
         // Parse pdf file and build necessary objects.
         $parser = new \Smalot\PdfParser\Parser();
