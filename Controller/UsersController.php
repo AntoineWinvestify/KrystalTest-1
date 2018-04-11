@@ -166,6 +166,8 @@ public function loginAction()
                         $this->Investor->save(array('id' => $investorId, 'investor_language' => $lang));
 			$this->checkUserInvestmentData();
 			$this->User->updateLastAccessed($investorId);
+                        echo $this->Auth->redirectUrl();
+                      
 			return $this->redirect($this->Auth->redirectUrl());
 		}
 		else {
