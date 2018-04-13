@@ -196,5 +196,4 @@ print_r($slices);
         }
     }   
 
-    
 }

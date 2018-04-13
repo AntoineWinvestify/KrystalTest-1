@@ -337,9 +337,14 @@ class TestsController extends AppController {
         curl_close($ch);
 
         // Decode JSON response:
-        $api_result = json_decode($json, true);
-        print_r($api_result);
-        debug($api_result);
+        $apiResult = json_decode($json, true);
+        if (isset($apiResult['error'])) {
+            echo "Errorcode = " . $apiResult['error']['code'];
+            debug($apiResult['error']);     
+            
+        }
+
+        debug($apiResult);
 
     }
     
