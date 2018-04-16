@@ -198,6 +198,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                         case WIN_FLOW_TRANSACTION_FILE:
                             $this->callbackInit($tempResult, $companyHandle, $callbacks["transactionFile"]);
                             $totalParsingresultTransactions = $tempResult;
+                            ksort($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
@@ -373,7 +374,7 @@ print_r($totalParsingresultControlVariables);
             $urlReturnData[$linkedAccountKey] = $companyHandle->saveFilePFP('tempArray.json', json_encode($returnData[$linkedAccountKey]));
             ////
         }
-        //$data['tempArray'] = $returnData;
+        $data['tempArray'] = $returnData;
         $data['tempUrlArray'] = $urlReturnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
@@ -388,7 +389,7 @@ print_r($totalParsingresultControlVariables);
         echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
 
         foreach($data['tempArray'] as $linkAccountId => $dateArray){
-            ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);          
+            ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);
         }
         
         return json_encode($data);

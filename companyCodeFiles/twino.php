@@ -61,7 +61,7 @@ class twino extends p2pCompany {
                 [
                     "type" => "date", // Winvestify standardized name 
                     "inputData" => [
-                        "input2" => "d/m/Y", // Input parameters. The first parameter
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
                     // is ALWAYS the contents of the cell
                     ],
                     "functionName" => "normalizeDate",
@@ -239,7 +239,8 @@ class twino extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+            'sortParameter' => array("date","investment_loanId"), // used to "sort" the array and use $sortParameter(s) as prime index.  
+
         ]
     ];
     
