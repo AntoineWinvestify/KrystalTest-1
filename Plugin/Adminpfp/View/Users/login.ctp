@@ -23,11 +23,6 @@
 	echo $this->element('navbaradminpfp');
 ?>
 <div class="loginContainer">
-    <div class="adminLogos" style3="display:none">
-        <img src="/img/logo_winvestify/logo.png" class="logo1"/>
-        <img src="/img/logo_winvestify/logo_texto.png" class="logo2"/>
-        <p class="paragraph"><?php echo __('párrafo')?></p>
-    </div>
     <div class="loginBox">
         <div class="row">    
             <div class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">

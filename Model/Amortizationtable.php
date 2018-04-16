@@ -139,6 +139,7 @@ class Amortizationtable extends AppModel
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 print_r($loanId);
 print_r($investmentSlice);
+print_r($sliceIdentifier);
 print_r($data);           
 echo __FUNCTION__ . " " . __LINE__ . "\n";
         // support for partial payment is not fully implemented

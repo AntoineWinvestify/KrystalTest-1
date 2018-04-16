@@ -44,12 +44,12 @@
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                     <h2 class="g-color--primary"><?php echo __('Dashboard')?></h2>
                     <h4><?php echo __('Más Información, Más Control')?></h4>
-                    <p>Para que sepa a qué ritmo inviertes y donde pierdes dinero</p>
+                    <p><?php echo __('Para que sepa a qué ritmo inviertes y donde pierdes dinero')?></p>
                     <ul>
-                        <li>Un análisis a medida para conocer el estado de tus cuentas</li>
-                        <li>Un panel de mando con toda la información estandarizada</li>
-                        <li>Inversiones agrupadas automáticamente por plataformas</li>
-                        <li>Conoce tu nivel de morosidad, comisiones aplicadas y pérdidas</li>
+                        <li><?php echo __('Un análisis a medida para conocer el estado de tus cuentas')?></li>
+                        <li><?php echo __('Un panel de mando con toda la información estandarizada')?></li>
+                        <li><?php echo __('Inversiones agrupadas automáticamente por plataformas')?></li>
+                        <li><?php echo __('Conoce tu nivel de morosidad, comisiones aplicadas y pérdidas')?></li>
                     </ul>
                     <img src="/img/landingpage/next.png" class="imgResponsive center-block" alt="next"/>
                 </div>
@@ -58,12 +58,12 @@
                 <hr class="specialHr">
                 <h2 class="g-color--primary"><?php echo __('Global Marketplace')?></h2>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-                    <h4><?php echo ('Más oferta, más diversificación')?></h4>
+                    <h4><?php echo __('Más oferta, más diversificación')?></h4>
                     <p><?php echo __('En Winvestify mostramos los mejores préstamos activos para invertir y conectamos con las plataformas de Crowdlending más rentables')?></p>
                     <ul>
-                        <li>Miramos por tu interés, sea cual sea la plataforma</li>
-                        <li>Concentramos toda la oferta del mercado en un único portal</li>
-                        <li>Filtra atendiendo a tus criterios de inversión</li>
+                        <li><?php echo __('Miramos por tu interés, sea cual sea la plataforma')?></li>
+                        <li><?php echo __('Concentramos toda la oferta del mercado en un único portal')?></li>
+                        <li><?php echo __('Filtra atendiendo a tus criterios de inversión')?></li>
                     </ul>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6"><img src="/img/screenshots/marketplace.png" class="imgResponsive investorsImg center-block"/></div>
@@ -75,9 +75,9 @@
                     <h4><?php echo __('Más accesible, más ágil')?></h4>
                     <p><?php echo __('En Winvestify apostamos fuerte por este modelo de inversión alternativa. Colaboramos activamente con las plataformas más importantes para facilitar tu acceso a ellas:')?></p>
                     <ul>
-                        <li>Registrate en cualquier plataformas ¡Sin salir de Winvestify!</li>
-                        <li>Un único formulario de registro para acceder a las principales plataformas</li>
-                        <li>Proceso sencillo y seguro</li>
+                        <li><?php echo __('Registrate en cualquier plataformas ¡Sin salir de Winvestify!')?></li>
+                        <li><?php echo __('Un único formulario de registro para acceder a las principales plataformas')?></li>
+                        <li><?php echo __('Proceso sencillo y seguro')?></li>
                     </ul>
                 </div>
                 <div>
