@@ -47,7 +47,7 @@ class Linkedaccount extends AppModel {
      *
      * 	@param 		array 	$filteringConditions	Must indicate at least "investorId"
      * 	@param 		bool	$multiple	true 	delete all if more then one record is found
-     * 									false	delete only *first* record if more found [i.e the one with the lowest index]
+     * 						false	delete only *first* record if more found [i.e the one with the lowest index]
      *
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fullfilled $filteringConditions
@@ -91,7 +91,7 @@ class Linkedaccount extends AppModel {
      *
      * 	Returns an array of the linkedaccount items and their data that fullfil the filterConditions
      *
-     * 	@param 		array 	$filteringConditions
+     * 	@param 		array 	$filterConditions
      * 	@return 	array 	Data of each linkedaccount item as an element of an array
      * 			
      */
@@ -127,7 +127,7 @@ class Linkedaccount extends AppModel {
      * 	@param 		string 	$password		password
      *
      * 	@return 	boolean	true	Account linked
-     * 						false	Error happened, account not linked
+     * 				false	Error happened, account not linked
      * 						
      */
     public function createNewLinkedAccount($companyId, $investorId, $username, $password) {
@@ -150,6 +150,7 @@ class Linkedaccount extends AppModel {
     
     /**
      * Get linkedaccounts id with nothing in process
+     * 
      * @param string $queueUserReference It is the user reference
      * @return array
      */
@@ -161,7 +162,7 @@ class Linkedaccount extends AppModel {
             'fields' => 'id',
             'recursive' => -1,
         ));
-        //print_r($jobInvestor);
+
         $investorId = $jobInvestor['Investor']['id'];
         $filterConditions = array(
             'investor_id' => $investorId,
@@ -182,7 +183,8 @@ class Linkedaccount extends AppModel {
      * 
      * @param type $linkaccountId id of the linkaccount
      * @param type $newPass new password
-     * @return boolean  
+     * @return boolean 
+     *  
      */
     public function changePasswordLinkaccount($linkaccountId, $newPass){
         $this->save(['id' => $linkaccountId, 'linkedaccount_password' => $newPass]);
@@ -218,6 +220,7 @@ class Linkedaccount extends AppModel {
      * @param boolean $created
      * @param array $option
      * @return boolean
+     * 
      */
     public function afterSave($created, $option = array()) {
         if ($created) {
