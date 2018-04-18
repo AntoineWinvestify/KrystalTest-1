@@ -58,11 +58,11 @@ App::import('Shell', 'UserData');
 class ParseDataClientShell extends GearmanClientShell {
 
     public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
-    protected $variablesConfig;
+    protected $variablesConfig;      
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
- //       return;
+        return;
         echo "Deleting Investment\n";
         $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
