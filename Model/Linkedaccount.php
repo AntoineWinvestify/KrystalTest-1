@@ -104,7 +104,9 @@ class Linkedaccount extends AppModel {
     }
 
     /**
+     * 
      * Returns an array of the companies id depending on the filter Conditions
+     * 
      * @param array $filterConditions
      * @return array Each company id
      */
