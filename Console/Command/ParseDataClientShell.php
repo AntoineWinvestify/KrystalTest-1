@@ -1428,7 +1428,7 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its l
                                                         "recursive" => -1));
         
         $this->Investment->create();
-        $result['investment_backupCopyId'] = 0;
+        $result['investment_ backupCopyId'] = 0;
         $result['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
         $this->Investment->delete($restoreFromInvestmentId, $cascade = false);  
