@@ -532,7 +532,12 @@ class ParseDataClientShell extends GearmanClientShell {
                         $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                         echo "FOUND in Newloans\n";
                         if ($arrayIndex !== false) {        // Deleting the array from new loans list
-                            unset($platformData['workingNewLoans'][$arrayIndex]);
+                            //unset($platformData['workingNewLoans'][$arrayIndex]);
+                            foreach ($platformData['workingNewLoans'] as $loanKey => $newLoan) {
+                                if ($newLoan == $dateTransaction[0]['investment_loanId']) {
+                                    unset($platformData['workingNewLoans'][$loanKey]);
+                                }
+                            }
                         }
 
                         echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
@@ -853,10 +858,16 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                         if (empty($database[$varName[0]])) {   //Dont rewrite investment value with 0
                             unset($database[$varName[0]]);
-                        }  
-
+                        }                          
                     }
                     
+                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
+                        $platformData['workingNewLoans'][] = $database['investment']['investment_loanId'];
+                    }
+                    /*if ($database['investment']['investment_loanId'] == "06-139593001") {
+                        print_r($database['investment']);
+                        exit;
+                    }*/
                     echo __FUNCTION__ . " " . __LINE__ . " printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
