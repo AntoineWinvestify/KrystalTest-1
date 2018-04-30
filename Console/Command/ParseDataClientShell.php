@@ -60,52 +60,78 @@ class ParseDataClientShell extends GearmanClientShell {
     public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
     protected $variablesConfig;      
 
-// Only used for defining a stable testbed definition
-    public function resetTestEnvironment() {
-  //      return;
-        echo "Deleting Investment\n";
-        $this->Investment->deleteAll(array('Investment.id >' => 0), false);
+    /**
+     * 
+     * Read the runtime parameters
+     * 
+     * @return array   list of all defined runtime parameters
+     *                 
+     */    
+    public function readRunTimeParameters() {
+        $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
+        return $runtimeParameters = $this->RuntimeConfiguration->getData(null, $field = "*");
+    }
+    
 
-        echo "Deleting Paymenttotal\n";
-        $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
+    /**
+     * 
+     * Check in which environment the code is running and take appropriate actions
+     * 
+     */
+    public function checkRunTimeEnvironment() {
 
-        echo "Deleting Payment\n";
-        $this->Payment = ClassRegistry::init('Payment');
-        $this->Payment->deleteAll(array('Payment.id >' => 0), false);
+        $runTimeParameters = $this->readRunTimeParameters();   
 
-        echo "Deleting Userinvestmentdata\n";
-        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-        $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+        switch ($runTimeParameters['runtimeconfiguration_executionEnvironment']) {
+            case WIN_LOCAL_TEST_ENVIRONMENT:
+            case WIN_REMOTE_TEST_ENVIRONMENT:
+                echo "Deleting Investment\n";
+                $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
-        echo "Deleting Globalcashflowdata\n";
-        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-        $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+                echo "Deleting Paymenttotal\n";
+                $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
 
-        echo "Deleting Globaltotalsdata\n";
-        $this->Globaltotalsdata = ClassRegistry::init('Globaltotalsdata');
-        $this->Globaltotalsdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
+                echo "Deleting Payment\n";
+                $this->Payment = ClassRegistry::init('Payment');
+                $this->Payment->deleteAll(array('Payment.id >' => 0), false);
 
-        echo "Deleting Investmentslice\n";
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');
-        $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
+                echo "Deleting Userinvestmentdata\n";
+                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+                $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
 
-        echo "Deleting AmortizationTable\n";
-        $this->AmortizationTable = ClassRegistry::init('Amortizationtable');
-        $this->AmortizationTable->deleteAll(array('Amortizationtable.id >' => 0), false);
+                echo "Deleting Globalcashflowdata\n";
+                $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+                $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
 
-        echo "Deleting Dashboardoverview table\n";
-        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
-        $this->Dashboardoverviewdata->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);
+                echo "Deleting Globaltotalsdata\n";
+                $this->Globaltotalsdata = ClassRegistry::init('Globaltotalsdata');
+                $this->Globaltotalsdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
 
-        echo "Deleting Roundingerrorcompensation table\n";
-        $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
-        $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);
-        return;
+                echo "Deleting Investmentslice\n";
+                $this->Investmentslice = ClassRegistry::init('Investmentslice');
+                $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
+
+                echo "Deleting AmortizationTable\n";
+                $this->AmortizationTable = ClassRegistry::init('Amortizationtable');
+                $this->AmortizationTable->deleteAll(array('Amortizationtable.id >' => 0), false);
+
+                echo "Deleting Dashboardoverview table\n";
+                $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+                $this->Dashboardoverviewdata->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);
+
+                echo "Deleting Roundingerrorcompensation table\n";
+                $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
+                $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);
+
+            case WIN_LIVE_ENVIRONMENT:
+                
+            default:
+        }
+        return;   
     }
 
     public function initClient() {
-
-        $this->resetTestEnvironment();      // Temporary function
+        $this->checkRunTimeEnvironment();      
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));

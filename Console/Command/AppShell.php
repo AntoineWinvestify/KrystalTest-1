@@ -337,7 +337,7 @@ class AppShell extends Shell {
         echo $output . "\n\n";
         if (strpos($output, $scriptName . " initClient") === false) {
             $command = __DIR__ . DS . ".." . DS . "cake " . $scriptName . " initClient";
-            echo "Not found, init client";
+            echo "Not found, init client\n";
             shell_exec($command);
         }
         else {
