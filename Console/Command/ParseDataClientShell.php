@@ -69,13 +69,14 @@ class ParseDataClientShell extends GearmanClientShell {
      */    
     public function readRunTimeParameters() {
         $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
-        return $runtimeParameters = $this->RuntimeConfiguration->getData(null, $field = "*");
+        $runtimeParameters = $this->Runtimeconfiguration->getData(null, $field = "*");
+        return [$runtimeParameters][0][0]['Runtimeconfiguration'];
     }
     
 
     /**
      * 
-     * Check in which environment the code is running and take appropriate actions
+     * Check in which environment the code is running and take aproppriate actions
      * 
      */
     public function checkRunTimeEnvironment() {
@@ -131,6 +132,7 @@ class ParseDataClientShell extends GearmanClientShell {
     }
 
     public function initClient() {
+
         $this->checkRunTimeEnvironment();      
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
