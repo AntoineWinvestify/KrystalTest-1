@@ -281,6 +281,19 @@ class AppController extends Controller {
                 $this->Session->write('sectorsMenu', $sectors);
             }
         }
+        
+        $runTimeParameters = $this->readRunTimeParameters();   
+        $fileName  = APP . "Config" . DS.  "googleCode.php";                    // file for Google Analytics
+        $fileName1 = APP . "Config" . DS.  "googleCode1.php";                   // file to disable Google Analytics
+        
+        switch ($runTimeParameters['runtimeconfiguration_executionEnvironment']) {
+            case WIN_LOCAL_TEST_ENVIRONMENT:
+            case WIN_REMOTE_TEST_ENVIRONMENT: 
+                rename ($fileName, $fileName1);
+            case WIN_LIVE_ENVIRONMENT:
+                rename ($fileName1, $fileName);       
+            default:
+        }  
     }
 
     /**
@@ -634,4 +647,19 @@ Configure::write('debug', 2);
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
     }
+    
+    /**
+     * 
+     * Read the runtime parameters
+     * 
+     * @return array   list of all defined runtime parameters
+     *                 
+     */    
+    public function readRunTimeParameters() {
+        $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
+        $runtimeParameters = $this->Runtimeconfiguration->getData(null, $field = "*");
+        return [$runtimeParameters][0][0]['Runtimeconfiguration'];
+    }    
+    
+    
 }
