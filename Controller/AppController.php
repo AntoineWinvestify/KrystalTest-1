@@ -481,63 +481,6 @@ Configure::write('debug', 2);
         }
     }
 
-    /** LOGGING IS NOT WORKING YET --> Delete this
-     *
-     * 	Get the location data of the user
-     *
-     */
-    /* public function getLocationData111() {
-
-      $curl = curl_init();
-      if (!$curl) {
-      $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
-      $msg = $msg . " \n";
-      return "";
-      }
-      $url = "http://icanhazip.com";
-      // Set the file URL to fetch through cURL
-      curl_setopt($curl, CURLOPT_URL, $url);
-
-      // Set a different user agent string (Googlebot)
-      curl_setopt($curl, CURLOPT_USERAGENT, 'Googlebot/2.1 (+http://www.google.com/bot.html)');
-
-      // Follow redirects, if any
-      curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-
-      // Fail the cURL request if response code = 400 (like 404 errors)
-      curl_setopt($curl, CURLOPT_FAILONERROR, true);
-
-      // Return the actual result of the curl result instead of success code
-      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-      // Wait for 10 seconds to connect, set 0 to wait indefinitely
-      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 20);
-
-      // Execute the cURL request for a maximum of 50 seconds
-      curl_setopt($curl, CURLOPT_TIMEOUT, 50);
-
-      // Do not check the SSL certificates
-      curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-      curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-      curl_setopt($curl, CURLOPT_COOKIEFILE, dirname(__FILE__) . '/cookies1.txt');  // important
-      curl_setopt($curl, CURLOPT_COOKIEJAR, dirname(__FILE__) . '/cookies1.txt');  // Important
-      // Fetch the URL and save the content
-      $ip = trim(curl_exec($curl));
-      $url = "http://freegeoip.net/json/" . $ip;
-
-
-      // Set the file URL to fetch through cURL
-      curl_setopt($curl, CURLOPT_URL, $url);
-
-      // Fetch the URL and save the content
-      $str = curl_exec($curl);
-      curl_close($curl);
-
-      $this->print_r2(json_decode($str, true));
-      return json_decode($str, true);
-      } */
-
     /**
      *
      * 	Get the geographical location data of the user
@@ -596,7 +539,7 @@ Configure::write('debug', 2);
     }
 
     /**
-     * Function to verify is an user has access to the controller or function
+     * Function to verify if a user has access to the controller or function
      * @param string $controller It is the route to the controller
      * @param string $access It is the access that the user has
      * @return boolean It is the access, it can be true or false

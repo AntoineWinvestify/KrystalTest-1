@@ -389,6 +389,19 @@ class AppShell extends Shell {
         $data = json_decode($fileString, true);
         return $data;
     }
+ 
     
+    /**
+     * 
+     * Read the runtime parameters
+     * 
+     * @return array   list of all defined runtime parameters
+     *                 
+     */    
+    public function readRunTimeParameters() {
+        $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
+        $runtimeParameters = $this->Runtimeconfiguration->getData(null, $field = "*");
+        return [$runtimeParameters][0][0]['Runtimeconfiguration'];
+    }
     
 }

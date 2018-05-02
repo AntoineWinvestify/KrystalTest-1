@@ -60,20 +60,7 @@ class ParseDataClientShell extends GearmanClientShell {
     public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
     protected $variablesConfig;      
 
-    /**
-     * 
-     * Read the runtime parameters
-     * 
-     * @return array   list of all defined runtime parameters
-     *                 
-     */    
-    public function readRunTimeParameters() {
-        $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
-        $runtimeParameters = $this->Runtimeconfiguration->getData(null, $field = "*");
-        return [$runtimeParameters][0][0]['Runtimeconfiguration'];
-    }
     
-
     /**
      * 
      * Check in which environment the code is running and take aproppriate actions
@@ -304,13 +291,14 @@ class ParseDataClientShell extends GearmanClientShell {
      * An 'userinvestmentdatas' table is generated for each day, i.e. even if no activity exists. This is only
      * done for the regular backups, not for the initial account linking procedure
      * 
+     * the principal data is available in various sub-arrays which are to be written
+     * (before checking if it is a duplicate) to the corresponding database table.
+     *     platform - (1-n)loanId - (1-n) concepts  
+     * 
      *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      *  @return boolean true
      *                  false
      *
-     * the principal data is available in various sub-arrays which are to be written
-     * (before checking if it is a duplicate) to the corresponding database table.
-     *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
 
