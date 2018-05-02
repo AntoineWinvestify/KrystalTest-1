@@ -134,9 +134,15 @@ class AppController extends Controller {
         $this->Security->blackHoleCallback = '_blackHole';
         $this->Security->requireSecure();
 
-// Load the application configuration file. Now it is available to the whole application	 
+// Load the application configuration file. Now it is available to the *whole* application	 
         Configure::load('p2pGestor.php', 'default');
 
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');                      
+        $runtime = new Winvestify();
+        $this->runTimeParameters = $runtime->readRunTimeParameters();  
+        $this->set('runTimeParameters', $this->runTimeParameters);
+       
         $durationPublic = array(0 => "Undefined",
             1 => "Días",
             2 => "Meses",
@@ -282,11 +288,10 @@ class AppController extends Controller {
             }
         }
         
-        $runTimeParameters = $this->readRunTimeParameters();   
         $fileName  = APP . "Config" . DS.  "googleCode.php";                    // file for Google Analytics
         $fileName1 = APP . "Config" . DS.  "googleCode1.php";                   // file to disable Google Analytics
         
-        switch ($runTimeParameters['runtimeconfiguration_executionEnvironment']) {
+        switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT: 
                 rename ($fileName, $fileName1);
@@ -487,7 +492,8 @@ Configure::write('debug', 2);
      *
      */
     public function getGeoLocationData($ip) {
-
+        $authKey = $this->runTimeParameters['runtimeconfiguration_geoLocationAuthKey'];
+           
         $curl = curl_init();
         if (!$curl) {
             $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
@@ -590,19 +596,5 @@ Configure::write('debug', 2);
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
     }
-    
-    /**
-     * 
-     * Read the runtime parameters
-     * 
-     * @return array   list of all defined runtime parameters
-     *                 
-     */    
-    public function readRunTimeParameters() {
-        $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
-        $runtimeParameters = $this->Runtimeconfiguration->getData(null, $field = "*");
-        return [$runtimeParameters][0][0]['Runtimeconfiguration'];
-    }    
-    
     
 }

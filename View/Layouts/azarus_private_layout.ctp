@@ -134,7 +134,8 @@
   <!-- /.content-wrapper -->
 
 <?php
-	echo $this->Element('privatefooter');
+print_r($runTimeParameters);
+    echo $this->Element('privatefooter', array('runTimeParameters' => $runTimeParameters));
 ?>
 
   <!-- Control Sidebar -->

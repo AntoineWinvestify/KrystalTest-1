@@ -68,9 +68,9 @@ class ParseDataClientShell extends GearmanClientShell {
      */
     public function checkRunTimeEnvironment() {
 
-        $runTimeParameters = $this->readRunTimeParameters();   
-
-        switch ($runTimeParameters['runtimeconfiguration_executionEnvironment']) {
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        
+        switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
                 echo "Deleting Investment\n";

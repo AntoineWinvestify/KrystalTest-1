@@ -45,8 +45,13 @@ App::uses('CakeEventListener', 'Event');
 
 class GlobalCommunicationListener implements CakeEventListener {
 
+    
+   
+    function __construct() {
+        Configure::load('p2pGestor.php', 'default');  
+    }
 
-
+    
 /**
 * IMPLEMENTED EVENTS:
 * confirmationCodeGenerated			Send a SMS with a code
@@ -60,7 +65,6 @@ public function implementedEvents() {
 			'confirmationCodeGenerated' => 'sendConfirmationCode',
 	);
 
-	Configure::load('p2pGestor.php', 'default');
 	$configuredEvents = Configure::read('event');
 
 	foreach ($configuredEvents as $key => $value) {
@@ -81,10 +85,14 @@ public function implementedEvents() {
 *
 */
 public function sendConfirmationCode(CakeEvent $event) {
-
-	Configure::load('p2pGestor.php', 'default');
+    
 	$adminData = Configure::read('SMSadmin');
-
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');                      
+        $runtime = new Winvestify();
+        $runTimeParameters = $runtime->readRunTimeParameters();   
+        $authKey = $runTimeParameters['runtimeconfiguration_smsProviderAuthKey'];        
+        
 	App::import('Vendor', 'php-rest-api-master', array('file'=>'autoload.php'));
 	require APP . 'Vendor/php-rest-api-master/autoload.php';
 	
@@ -94,7 +102,9 @@ public function sendConfirmationCode(CakeEvent $event) {
 // First collect all the required data
 	$resultInvestor = $this->Investor->findById($event->data['id']);
 
-	$MessageBird = new \MessageBird\Client($adminData['AuthKey']); 
+//	$MessageBird = new \MessageBird\Client($adminData['AuthKey']); 
+	$MessageBird = new \MessageBird\Client($authKey);  
+        
 	$Message             = new \MessageBird\Objects\Message();
 	$Message->originator = $adminData['SMS_Originator'];
 	$Message->recipients = array($resultInvestor['Investor']['investor_telephone']);
