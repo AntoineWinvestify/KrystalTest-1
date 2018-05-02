@@ -55,6 +55,12 @@ class twino extends p2pCompany {
 // 8/3/2017 20:39	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-185114001	1.0544
 // 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
 
+        protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 € in order to "close" an active investment
+    ];
+    
+    
     protected $valuesTransaction = [// All types/names will be defined as associative index in array
         [
             "A" => [
@@ -68,13 +74,44 @@ class twino extends p2pCompany {
                 ],
             ],
             "C" => [
-                "name" => "transactionDetail",
+                "name" => "tempConcept",
             ],
             "D" => [// Simply changing name of column to the Winvestify standardized name
                 [
-                    "type" => "transactionDetail",
+                    "type" => "original_concept",
                     "inputData" => [
-                        "input2" => [
+                        "input2" => " ",
+                        "input3" => FIFO,
+                        "input4" => "#current.tempConcept",
+                    ],
+                    "functionName" => "joinDataCells"
+                ]
+            ],
+            "E" => [// Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "investment_loanId",                              // Typically used for generating a 'psuedo loanid' for platform related actions
+                    "inputData" => [                                            // like for instance cash deposit or cash withdrawal
+                                "input2" => "global_",                                    
+                                "input3" => "rand",                   
+                                ],
+                    "functionName" => "generateId",
+                ],
+            ],
+            "F" => [// Simply changing name of column to the Winvestify standardized name
+                [
+                    "type" => "amount", // This is *mandatory* field which is required for the 
+                    "inputData" => [// "transactionDetail"
+                        "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                        "input3" => ".", // and its content is the result of the "getAmount" method
+                        "input4" => 4
+                    ],
+                    "functionName" => "getAmount",
+                ],
+                [
+                    "type" => "transactionDetail", // Winvestify standardized name   OK
+                    "inputData" => [// List of all concepts that the platform can generate format ["concept string platform", "concept string Winvestify"]
+                        "input2" => "#current.original_concept",
+                        "input3" => [
                             0 => ["FUNDING" => "Cash_deposit"], // OK
                             1 => ["PRINCIPAL BUY_SHARES" => "Primary_market_investment"],
                             2 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment"],
@@ -95,27 +132,16 @@ class twino extends p2pCompany {
                             15 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_negative"],
                             16 => ["PRINCIPAL RECOVERY" => "Recoveries"],
                             17 => ["PRINCIPAL WRITEOFF" => "Write-off"],
-                            18 => ["WITHDRAWAL" => "Cash_withdrawal"]
-                        ], // Thousands seperator, typically "."
-                        "input3" => "#current.transactionDetail", // Decimal seperator, typically ","
-                    // is ALWAYS the contents of the cell
+                            18 => ["WITHDRAWAL" => "Cash_withdrawal"],
+                            19 => ["PRINCIPAL REPURCHASE" => "Capital_repayment"],
+                            20 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
+                            21 => ["INTEREST REPAYMENT" => "Regular_gross_interest_cost"], //
+                            22 => ["PRINCIPAL REPAYMENT" => "Capital_repayment_cost"],
+                            23 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"]
+                        ],
                     ],
-                    "functionName" => "getMultipleInputTransactionDetail"
-                ]
-            ],
-            "E" => [// Simply changing name of column to the Winvestify standardized name
-                "name" => "investment_loanId"
-            ],
-            "F" => [// Simply changing name of column to the Winvestify standardized name
-                [
-                    "type" => "amount", // This is *mandatory* field which is required for the 
-                    "inputData" => [// "transactionDetail"
-                        "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
-                        "input3" => ".", // and its content is the result of the "getAmount" method
-                        "input4" => 4
-                    ],
-                    "functionName" => "getAmount",
-                ]
+                    "functionName" => "getComplexTransactionDetail",
+                ],
             ]
         ]
     ];
@@ -130,7 +156,7 @@ class twino extends p2pCompany {
             ],
             "C" => [
                 [
-                    "type" => "investment_investmentDate", // Winvestify standardized name 
+                    "type" => "investment_myInvestmentDate", // Winvestify standardized name 
                     "inputData" => [
                         "input2" => "m/d/Y", // Input parameters. The first parameter
                     // is ALWAYS the contents of the cell

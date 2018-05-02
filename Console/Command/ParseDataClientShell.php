@@ -1169,7 +1169,7 @@ print_r($filter);
                                   "investment_id" => $result['Investment']['id']);
 echo __FILE__ . " " . __LINE__ . " \n";
 print_r($filterConditions);
-                if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                /*if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
                 }
                 if ($this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
@@ -1180,10 +1180,10 @@ print_r($filterConditions);
                 }
                 if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";                     
-                }
+                }*/
             }
 echo __FILE__ . " " . __LINE__ . " \n";
-            $filterConditions = array ("date >" => $lastDateToCalculate,
+            /*$filterConditions = array ("date >" => $lastDateToCalculate,
                       "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
 print_r($filterConditions);         
             if ($this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
@@ -1198,7 +1198,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
 print_r($filterConditions);            
             if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                 echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";                 
-            }
+            }*/
 echo __FILE__ . " " . __LINE__ . " \n";       
             // Also remove any "assigned" loanIds/sliceIds for download
             foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {

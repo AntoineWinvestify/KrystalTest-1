@@ -198,6 +198,9 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
             $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
+        if (isset($resultData['payment']['payment_tempCamp'])) {
+            $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
+        }
         return $result;
     }
 
@@ -457,7 +460,9 @@ class UserDataShell extends AppShell {
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
+    public function calculateCapitalRepaymentCost(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
     /**
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
      * 
@@ -544,7 +549,9 @@ class UserDataShell extends AppShell {
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-      
+    public function calculateRegularGrossInterestCost(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }  
     /**
      *  Calculates the number of active investments. Various investments in the same loan 
      *  are counted as 1 investment

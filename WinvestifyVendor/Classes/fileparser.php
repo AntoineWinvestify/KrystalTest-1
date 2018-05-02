@@ -188,8 +188,7 @@ class Fileparser {
                 "type" => "globalcashflowdata_platformWithdrawals"          
                 ],
             3 => [
-                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default
-                                                                                //For example Mintos
+                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default                                               //For example Mintos
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
@@ -453,6 +452,19 @@ class Fileparser {
                 "type" => "investment_myInvestmentActiveVerification",  
                 "chars" => "ACTIVE_VERIFICATION"
                 ],
+            46 => [
+                "detail" => "Regular_gross_interest_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "payment_regularGrossInterestCost"           
+                ],
+            47 => [
+                "detail" => "Capital_repayment_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "payment_capitalRepaymentCost",
+                "chars" => "REPAYMENT"                   
+            ],
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept
