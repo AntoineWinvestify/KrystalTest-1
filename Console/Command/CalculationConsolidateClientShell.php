@@ -242,7 +242,7 @@ print_r($linkedAccountData);
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
 
-                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId),
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice_identifier' => $loanId),
                                                                            'recursive' => 1)
                                                                         );
 

@@ -45,6 +45,8 @@
  * 2018-03-05           version 0.5
  * function repaymentReceived updated. 
  * 
+ * 2018-05-02           version 0.6
+ * Read critical runtime configuration from Database and not from p2pConfig.php
  * 
  * 
  *
@@ -63,7 +65,7 @@ class ParseDataClientShell extends GearmanClientShell {
     
     /**
      * 
-     * Check in which environment the code is running and take aproppriate actions
+     * Check in which environment the code is running and take appropriate actions
      * 
      */
     public function checkRunTimeEnvironment() {
