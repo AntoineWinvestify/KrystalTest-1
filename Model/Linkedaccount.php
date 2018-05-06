@@ -48,12 +48,13 @@ class Linkedaccount extends AppModel {
      * 	@param 		array 	$filteringConditions	Must indicate at least "investorId"
      * 	@param 		bool	$multiple	true 	delete all if more then one record is found
      * 						false	delete only *first* record if more found [i.e the one with the lowest index]
-     *
+     *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
+     * 
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fullfilled $filteringConditions
      *
      */
-    public function deleteLinkedaccount($filteringConditions, $multiple = false) {
+    public function deleteLinkedaccount($filteringConditions, $multiple = false, $originator = WIN_USER_INITIATED) {
 
         $indexList = $this->find('list', $params = array('recursive' => -1,
             'conditions' => $filteringConditions,
@@ -138,8 +139,22 @@ class Linkedaccount extends AppModel {
             'investor_id' => $investorId,
             'linkedaccount_username' => $username,
             'linkedaccount_password' => $password,
+            'linkedaccount_status'   => WIN_LINKEDACCOUNT_ACTIVE,
+            'linkedaccount_statusExtended'   => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
             'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS
         );
+/*
+WIN_LINKEDACCOUNT_UNDEFINED
+ WIN_LINKEDACCOUNT_ACTIVE
+WIN_LINKEDACCOUNT_NOT_ACTIVE
+ * 
+ WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED
+WIN_LINKEDACCOUNT_ACTIVE_AND_REQUESTING_HISTORICAL_DATA
+WIN_LINKEDACCOUNT_ACTIVE_AND_PART_OF_REGULAR_UPDATE
+WIN_LINKEDACCOUNT_NOT_ACTIVE_AND_DELETED_BY_USER
+WIN_LINKEDACCOUNT_NOT_ACTIVE_TEMPORARILY_DISABLED_BY_SYSTEM
+WIN_LINKEDACCOUNT_NOT_ACTIVE_DELETED_BY_SYSTEM
+*/
 
         if ($this->save($linkedAccountData, $validation = true)) {
             $this->Investor = ClassRegistry::init('Investor');
