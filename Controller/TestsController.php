@@ -89,7 +89,7 @@ Configure::write('debug', 2);
         $this->autoRender = false;
 
             $filterConditions = array('investor_id' => 99);
- //           $this->Linkedaccount->deleteLinkedaccount($filterConditions, $multiple = false, WIN_USER_INITIATED);
+ //           $this->Linkedaccount->deleteLinkedaccount($filterConditions, WIN_USER_INITIATED);
 
 
 

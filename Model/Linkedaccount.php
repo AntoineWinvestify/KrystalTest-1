@@ -2,7 +2,7 @@
 /**
 // @(#) $Id$
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2016, http://yoursite                                   |
+// | Copyright (C) 2018, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -17,18 +17,18 @@
 // +-----------------------------------------------------------------------+
 //
 * @author Antoine de Poorter
-* @version 0.1
-* @date 2016-08-25
+* @version 0.2
+* @date 2018-05-08
 * @package
-*
-
+*/
+/*
 2016-08-25	  version 2016_0.1
 function deleteLinkedaccount()					[Not yet OK, test new functionality]
 getLinkedaccountDataList()					[OK, tested]
 function linkNewAccount()					[not Ok, not tested]
 
 
-2018-05-08	  version 2018_0.2
+2018-05-08	  version 2018_0.2                              [OK, tested]
  support for linkedaccount_status, linkedaccount_statusExtended and linkedaccount_statusExtendedOld fields
  
  * 
@@ -49,16 +49,13 @@ class Linkedaccount extends AppModel {
      * 	
      *
      * 	@param 		array 	$filterConditions	Must indicate at least "investor_id"
-     * 	@param 		bool	$multiple	true 	delete all if more then one record is found
-     * 						false	delete only *first* record if more found [i.e the one with the lowest index]
-     *                                          THIS FIELD IS NO LONGER USED
      *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
      * 
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
      *
      */
-    public function deleteLinkedaccount($filterConditions, $multiple = false, $originator = WIN_USER_INITIATED) {
+    public function deleteLinkedaccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
         if (!array_key_exists('investor_id', $filterConditions)) {
             return false;
@@ -105,9 +102,6 @@ class Linkedaccount extends AppModel {
         $linkedaccountResults = $this->find("all", $params = array('recursive' => -1,
                                                                 'conditions' => $filterConditions)
                                             );
-        print_r($linkedaccountResults);
-        echo "ANTITIT";
-        exit;
         return $linkedaccountResults;
     }
 
@@ -117,6 +111,7 @@ class Linkedaccount extends AppModel {
      * 
      * @param array $filterConditions
      * @return array Each company id
+     * 
      */
     public function getLinkedaccountIdList($filterConditions) {
 
@@ -166,6 +161,7 @@ class Linkedaccount extends AppModel {
      * 
      * @param string $queueUserReference It is the user reference
      * @return array
+     * 
      */
     public function getLinkAccountsWithNothingInProcess($queueUserReference) {
         $companyNothingInProcess = [];

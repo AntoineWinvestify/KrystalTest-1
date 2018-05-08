@@ -83,7 +83,7 @@ function deleteLinkedAccount() {
         $linkedaccountFilterConditions = array('investor_id' => $investorId,
             'id' => $_REQUEST['index']);
 
-        $this->Linkedaccount->deleteLinkedaccount($linkedaccountFilterConditions, $multiple = false); // Delete 1 account
+        $this->Linkedaccount->deleteLinkedaccount($linkedaccountFilterConditions); // Delete 1 account
 
         $linkedaccountFilterConditions = array('investor_id' => $investorId, 
                                     'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
