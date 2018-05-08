@@ -102,7 +102,8 @@ class CollectDataClientShell extends GearmanClientShell {
                         }
                         $filterConditions = array(
                                 'investor_id' => $investorId,
-                                'id' => $linkAccountId
+                                'id' => $linkAccountId,
+                                'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE
                             );
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);

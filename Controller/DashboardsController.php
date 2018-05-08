@@ -76,7 +76,9 @@ function getDashboardData()  {
 									));
 
 // Check if investor already has linked one or more accounts. 									
-	$resultLinkedaccounts = $this->Linkedaccount->find("count", array("investor_id" => $this->Session->read('Auth.User.Investor.id')));
+	$resultLinkedaccounts = $this->Linkedaccount->find("count", array("investor_id" => $this->Session->read('Auth.User.Investor.id'),
+                                                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE
+                                                            ));
 																											
 	if ($resultLinkedaccounts > 0) {	// user has one or more linked accounts
 		$dashboardGlobals = JSON_decode($dataResult['Data']['data_JSONdata'], true);

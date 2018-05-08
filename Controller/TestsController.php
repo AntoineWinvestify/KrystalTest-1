@@ -50,7 +50,7 @@ class TestsController extends AppController {
 
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Test', "Data", "Investor", "Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Company");
+    var $uses = array('Test', "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
 
     function beforeFilter() {
@@ -60,7 +60,7 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest"));
     }
 
     var $dateFinish = "20171129";
@@ -80,6 +80,41 @@ class TestsController extends AppController {
         echo $text;
         print_r($data);
     }
+    
+  
+    
+   
+     public function mytest(){
+Configure::write('debug', 2);
+        $this->autoRender = false;
+
+            $filterConditions = array('investor_id' => 99);
+ //           $this->Linkedaccount->deleteLinkedaccount($filterConditions, $multiple = false, WIN_USER_INITIATED);
+
+
+
+//   $this->Linkedaccount->createNewLinkedAccount(3, 1, "myUserName", "myPassword");
+
+//$this->Linkedaccount->disableLinkedAccount(array('investor_id' => 1), WIN_USER_INITIATED);
+$this->Linkedaccount->enableLinkedAccount(array('investor_id' => 1, 'company_id' => 3), WIN_USER_INITIATED);
+
+
+
+
+
+
+
+
+
+
+    }   
+    
+ 
+    
+    
+    
+    
+    
     
     
         private function extractDataFromString($input, $search, $separator, $mandatory = 0) {

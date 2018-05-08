@@ -85,7 +85,8 @@ function deleteLinkedAccount() {
 
         $this->Linkedaccount->deleteLinkedaccount($linkedaccountFilterConditions, $multiple = false); // Delete 1 account
 
-        $linkedaccountFilterConditions = array('investor_id' => $investorId);
+        $linkedaccountFilterConditions = array('investor_id' => $investorId, 
+                                    'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
 
         $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
 
@@ -239,7 +240,8 @@ function linkAccount() {
             $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
             $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
 
-            $linkedaccountFilterConditions = array('investor_id' => $investorId);
+            $linkedaccountFilterConditions = array('investor_id' => $investorId, 
+                                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
             $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
             $newComp->deleteCookiesFile();
             $this->set('linkedAccountResult', $linkedAccountResult);
@@ -259,7 +261,8 @@ function linkAccount() {
                 $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
                 $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
 
-                $linkedaccountFilterConditions = array('investor_id' => $investorId);
+                $linkedaccountFilterConditions = array('investor_id' => $investorId, 
+                                                'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                 $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
 
                 $this->set('linkedAccountResult', $linkedAccountResult);
@@ -330,7 +333,8 @@ function linkAccount() {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');    // Load the "Company" model
 
         $investorId = $this->Auth->user('Investor.id');
-        $conditions = array('investor_id' => $this->Auth->user('Investor.id'));
+        $conditions = array('investor_id' => $this->Auth->user('Investor.id'), 
+                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
 
         $linkedAccountResult = $this->Linkedaccount->find("all", $params = array('recursive' => -1,
             'conditions' => $conditions)
