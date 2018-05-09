@@ -59,7 +59,7 @@ class twino extends p2pCompany {
         'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
     ];
-    
+        
     
     protected $valuesTransaction = [// All types/names will be defined as associative index in array
         [
@@ -341,6 +341,8 @@ class twino extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
+        $this->minEmptySize = 3424;
+        $this->maxEmptySize = 3428;
 
         //$this->loanIdArray = array(629337, 629331, 629252);  
         //$this->maxLoans = count($this->loanIdArray);
@@ -485,15 +487,25 @@ class twino extends p2pCompany {
 
             //Dowanload finalized investment/expired loans
             case 6:
+                
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $headerError = $this->compareHeader();
-                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
-                    return $this->getError(__LINE__, __FILE__, $headerError);
-                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                    return $this->getError(__LINE__, __FILE__, $headerError);
+                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if (Configure::read('debug')) {
+                    echo 'File size:     ' . $size;
                 }
+                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {    
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    }
+                } else {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                }
+
                 //Download
                 $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["REPAID","SOLD","RECOVERED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
                 $this->idForSwitch++;
@@ -547,13 +559,22 @@ class twino extends p2pCompany {
                     echo 'error';
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $headerError = $this->compareHeader();
-                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
-                    return $this->getError(__LINE__, __FILE__, $headerError);
-                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                    return $this->getError(__LINE__, __FILE__, $headerError);
+                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if (Configure::read('debug')) {
+                    echo 'File size:     ' . $size;
                 }
-
+                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    }
+                    else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    }
+                }
+                else {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                }
                 $this->continue = $this->downloadTimePeriod($this->dateInit, $this->period);
 
                 echo 'Preparing cashflow download';
@@ -625,11 +646,21 @@ class twino extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                $headerError = $this->compareHeader();
-                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
-                    return $this->getError(__LINE__, __FILE__, $headerError);
-                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                    return $this->getError(__LINE__, __FILE__, $headerError);
+                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if (Configure::read('debug')) {
+                    echo 'File size:     ' . $size;
+                }
+                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                    $headerError = $this->compareHeader();
+                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    }
+                    else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                        return $this->getError(__LINE__, __FILE__, $headerError);
+                    }
+                }
+                else {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();

@@ -60,8 +60,32 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "readSize"));
     }
+    
+    
+      public function readSize(){
+          echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_6.xlsx");
+          echo 'hola';
+          echo $size;
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_7.xlsx");
+          echo 'hola';
+          echo $size;
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_8.xlsx");
+          echo 'hola';
+          echo $size;
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_9.xlsx");
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_10.xlsx");
+          echo 'hola';
+          echo $size;
+          echo 'hola';
+          echo $size;
+      }
 
     var $dateFinish = "20171129";
     var $numberOfFiles = 0;
