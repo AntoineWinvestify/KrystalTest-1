@@ -1568,7 +1568,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         //$result = bcadd($result, $transactionData['amount'], 16);
         return $transactionData['amount'];
     }
-    
+ 
 }
 
 

@@ -528,7 +528,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                         //$loanStatus = WIN_LOANSTATUS_FINISHED;
                     }
-                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])) {          // check if loanId is new
+                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])  && ($dateTransaction[0]["internalName"] == "investment_myInvestment" || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment")) {          // check if loanId is new
                         $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                         echo "FOUND in Newloans\n";
                         if ($arrayIndex !== false) {        // Deleting the array from new loans list

@@ -114,7 +114,12 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         
                         echo "PARAM TOTAL";
                     }
-                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
+                    $data = json_encode($params);
+                    $fileName = APP . 'Config/tempDataFile';
+                    $file = fopen($fileName, 'w+');
+                    fwrite($file, $data);
+                    fclose($file);
+                    $this->GearmanClient->addTask($workerFunction, $fileName, null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
                 $this->GearmanClient->runTasks();
                 

@@ -137,7 +137,9 @@ class twino extends p2pCompany {
                             20 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
                             21 => ["INTEREST REPAYMENT" => "Regular_gross_interest_cost"], //
                             22 => ["PRINCIPAL REPAYMENT" => "Capital_repayment_cost"],
-                            23 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"]
+                            23 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"],
+                            24 => ["INTEREST BUY_OUT" => "Regular_gross_interest_income"],
+                            25 => ["SALE LOSS_ON_WRITEOFF" => "Compensation_positive"]
                         ],
                     ],
                     "functionName" => "getComplexTransactionDetail",
