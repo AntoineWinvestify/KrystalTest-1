@@ -19,14 +19,14 @@
  * @version 0.1
  * @date 2017-01-11
  * @package
- *
+ */
+
+/*
+2017-01-11	version 0.1
 
 
-2017-01-11		version 0.1
-
-
-
-
+2018-05-16      version 0.2
+aftersave method with new event for sending information to user via SMS
 
 
 Pending:
@@ -74,9 +74,9 @@ class Queue2 extends AppModel {
 *										
 *	@return boolean			true		queueItem created
 *					false		undefined error, item NOT created
-*						
+* NOT USED CAN BE DELETED						
 */
-public function addToQueue($queueReference, $queueType, $queueAction) {
+public function addToQueueREMOVE($queueReference, $queueType, $queueAction) {
 	$data = array("queue2_userReference" => $queueReference,
 				  "queue2_action"   => $queueAction,
 				  "queue2_type"     => FIFO,
@@ -93,6 +93,7 @@ public function addToQueue($queueReference, $queueType, $queueAction) {
 
     /**
      * Put a new request into the queue for Dashboard 2.0
+     * 
      * @param array $queueReference The reference, as given by the user of the queue, to an item
      * @param json $queueInfo It is the information about the queue request
      * @param int $queueStatus It is the status to init the process of collecting information about the user's companies
@@ -119,13 +120,13 @@ public function addToQueue($queueReference, $queueType, $queueAction) {
     }
 
     /*
-*
-*	Removes all requests with value queueReference and which are not (yet) executing from the queue.
-*	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item
-*	@return boolean		true		reference deleted
-*				false		reference not found
-*						
-*/
+     *
+    *   Removes all requests with value queueReference and which are not (yet) executing from the queue.
+    *   @param	queueReference	varchar		the reference, as given by the user of the queue, to an item
+    *	@return boolean		true		reference deleted
+    *				false		reference not found
+    *						
+    */
 public function removeFromQueue($queueReference) {
 	
 	
@@ -243,10 +244,10 @@ public function beforeSave1($options = array()) {
         $conditions["queue2_status"] = $status;
         print_r($conditions);
         $result = $this->find("all", array(
-                    "conditions" => $conditions,
-                    "order" => $order,
-                    "limit" => $limit
-                ));
+                                "conditions" => $conditions,
+                                "order" => $order,
+                                "limit" => $limit
+                            ));
 
         if (empty($result)) {
             return;
@@ -264,10 +265,42 @@ public function beforeSave1($options = array()) {
     public function calculateDate($userReference) {
         $conditions["queue2_userReference"] = $userReference;
         $result = $this->find("all", array(
-                    "conditions" => $conditions,
-                    'order' => array('id DESC'),
-                    "limit" => 2
-                ));
+                            "conditions" => $conditions,
+                            'order' => array('id DESC'),
+                            "limit" => 2
+                        ));
         return $result;
     }
+    
+    /**
+     *
+     * 	Rules are defined for what should happen when a database record is created or updated.
+     * 	
+     */
+    function afterSave($created, $options = array()) {
+
+        if (isset($this->data['Queue2']['queue2_status'])) {                   // A job in Queue2 has finished
+            if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED) { 
+
+                $filterConditions = array("id" => $this->data['Queue2']['id']);
+                $result = $this->find("first", array(
+                                    "conditions" => $filterConditions,
+                                    ));
+
+                if ($result['Queue2']['queue2_type'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                    $event = new CakeEvent("accountLinkingFullyFinished", $this, 
+                                            array('investor_userReference' => $this->data['Queue2']['queue2_userReference'], 
+                                                    'messageContent'        => __('Account has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') ));
+
+                    $this->getEventManager()->dispatch($event);
+                }
+            }
+        }
+    }   
+    
+    
+    
+    
+    
+    
 }

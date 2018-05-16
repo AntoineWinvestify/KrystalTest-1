@@ -93,12 +93,7 @@ class Amortizationtable extends AppModel
         $this->saveMany($amortizationtable, array('validate' => true,
                                                 'callbacks' => "before",
                                                 ));
-
-// update mark in investment model stating that amortizationtable is available        
- //       $index = 0;
- //       $controlIndex = 0;
- //       $limit = WIN_DATABASE_READOUT_LIMIT;       
-    //    do {    
+   
             foreach ($investmentsliceIds as $investmentsliceId) {
                 $conditions = array("id" => $investmentsliceId);       
                 $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
@@ -106,10 +101,6 @@ class Amortizationtable extends AppModel
                                                                                'conditions' => $conditions
                                             ));
 
- //               if (count($result) < $limit) {          // No more results available
- //                   $controlIndex = 1;
- //               }
-                
                 $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
                                    'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
                 $investmentIds[] = $tempArray;
@@ -127,18 +118,18 @@ class Amortizationtable extends AppModel
  
     
      /** 
-     *  Updates the amortization table of an investment slice and creates the corresponding payment 
+     *  Updates the amortization table of an investment slice and creates the corresponding payment.
+     *
      * 
+     *  @param  int     $companyId          The company_id of the PFP
      *  @param  bigint  $loanId             The unique loanId 
      *  @param  bigint  $sliceIdentifier    Identifier of the investmentSlice to update
      *  @param  array   $data               Array with the payment data
      *  @return array   boolean  
      *
      */
-    public function addPayment($loanId, $sliceIdentifier, $data)  {
-echo __FUNCTION__ . " " . __LINE__ . "\n";
+    public function addPayment($companyId, $loanId, $sliceIdentifier, $data)  {
 print_r($loanId);
-print_r($investmentSlice);
 print_r($sliceIdentifier);
 print_r($data);           
 echo __FUNCTION__ . " " . __LINE__ . "\n";
@@ -162,10 +153,9 @@ print_r($slices);
         // support for partial payment is not fully implemented
         $filterConditions = array('amortizationtable_paymentStatus' => WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED);
         $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);    // all entries of table which are not yet fully paid 
-      //  if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
             print_r($amortizationTable);
-        //}
+
         $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                   
         
         $payment['amortizationtable_id'] = $tableDbReference;

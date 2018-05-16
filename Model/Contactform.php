@@ -108,7 +108,12 @@ public function createContactMessage($userName, $email, $subjectval ,$subjecttex
     function afterSave($created, $options = array()) {
 
         if ($created) {
-            $event = new CakeEvent("sendContactMessage", $this, array('name' => $this->data['name'], 'email' => $this->data['email'], 'subject' => $this->data['subjecttext'], 'text' => $this->data['text']));
+            $event = new CakeEvent("sendContactMessage", $this, 
+                                    array('name' => $this->data['name'], 
+                                        'email' => $this->data['email'], 
+                                        'subject' => $this->data['subjecttext'], 
+                                        'text' => $this->data['text']));
+            
             $this->getEventManager()->dispatch($event);
         }
         return true;

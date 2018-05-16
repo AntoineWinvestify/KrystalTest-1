@@ -50,7 +50,7 @@ class TestsController extends AppController {
 
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Test', "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
+    var $uses = array('Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
 
     function beforeFilter() {
@@ -85,10 +85,24 @@ class TestsController extends AppController {
     
    
      public function mytest(){
-Configure::write('debug', 2);
-        $this->autoRender = false;
-
-            $filterConditions = array('investor_id' => 99);
+         
+     $this->autoRender = false;
+         
+         
+   
+        $this->Queue2->addToQueueDashboard2("39048098ab409be490A" , 
+                                    $queueInfo= null, 
+                                    $queueStatus = 11, 
+                                    $queueId = null, 
+                                    $queueType = 1);       
+         
+         
+         
+ //        WIN_ACTION_ORIGIN_ACCOUNT_LINKING', 1);
+//  define('WIN_ACTION_ORIGIN_REGULAR_UPDATE'
+         
+     
+           
  //           $this->Linkedaccount->deleteLinkedaccount($filterConditions, WIN_USER_INITIATED);
 
 
@@ -96,7 +110,7 @@ Configure::write('debug', 2);
 //   $this->Linkedaccount->createNewLinkedAccount(3, 1, "myUserName", "myPassword");
 
 //$this->Linkedaccount->disableLinkedAccount(array('investor_id' => 1), WIN_USER_INITIATED);
-$this->Linkedaccount->enableLinkedAccount(array('investor_id' => 1, 'company_id' => 3), WIN_USER_INITIATED);
+//$this->Linkedaccount->enableLinkedAccount(array('investor_id' => 1, 'company_id' => 3), WIN_USER_INITIATED);
 
 
 

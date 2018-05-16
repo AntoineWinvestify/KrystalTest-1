@@ -50,8 +50,6 @@
  * 
  * 
  * TO BE DONE:
- * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.
- * detecting "unknown concept"
  * Rename the index loanId of a disinvestment record
  *
  */

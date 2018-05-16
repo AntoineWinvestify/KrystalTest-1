@@ -112,11 +112,15 @@ class Company extends AppModel {
             'Company.company_state' => ACTIVE);
 
         $conditions = array_merge($businessConditions, $filterConditions);
-
+echo "<br/>";
+print_r($conditions);
+echo "<br/>";
         $companyResult = $this->find("list", $params = array('recursive' => -1,
             'conditions' => $conditions,
         ));
-
+print_r($companyResult);
+echo "<br/>";
+echo "returning";
         return($companyResult);
     }
 

@@ -205,7 +205,7 @@ public function editUserProfileData() {
  */
 function linkAccount() {
         $error = false;
-
+Configure::write('debug', 0); 
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
