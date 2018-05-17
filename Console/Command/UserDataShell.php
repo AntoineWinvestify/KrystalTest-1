@@ -193,10 +193,10 @@ class UserDataShell extends AppShell {
             $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
-            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
+            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
-            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
         if (isset($resultData['payment']['payment_tempCamp'])) {
             $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
