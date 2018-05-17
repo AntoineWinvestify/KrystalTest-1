@@ -81,10 +81,22 @@ class TestsController extends AppController {
         print_r($data);
     }
     
-  
-    
+    public function mytest(){
+
+        $this->autoRender = false;
+   Configure::write('debug', 2);     
+        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');        
+        $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 5);   
+        
+        
+     echo "Finished<br/>";   
+    }
    
-     public function mytest(){
+    
+    
+    
+    
+     public function mytestOld(){
          
      $this->autoRender = false;
          

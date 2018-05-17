@@ -122,7 +122,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                             'pfp' => $pfp,
                             'userReference' => $job['Queue2']['queue2_userReference'],
                             'files' => $allFiles,
-                            'actionOrigin' => WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
+                            'actionOrigin' => $job['Queue2']['queue2_type'],          // this was WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
                             'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
 

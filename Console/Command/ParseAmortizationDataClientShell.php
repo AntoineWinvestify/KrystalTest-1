@@ -30,7 +30,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Queue2', 'Amortizationtable');  
+    public $uses = array('Amortizationtable');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -43,7 +43,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW3B";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-        $workerFunction = "collectamortizationtablesFileFlow";
+        $workerFunction = "parseamortizationtables";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
@@ -63,8 +63,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                                                   WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE,
                                                 $jobsInParallel);            
                         
-            
-            
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
@@ -114,9 +112,13 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         
                         echo "PARAM TOTAL";
                     }
-                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
+                    $parametersFile = $subDirectory . "/" . $pfp . "/flow3aTransferClientToWorker.json";
+                    file_put_contents($parametersFile, json_encode($params));
+                    $this->GearmanClient->addTask($workerFunction, $parametersFile, null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
                 $this->GearmanClient->runTasks();
+ 
+                
                 
                 
                 if (Configure::read('debug')) {
@@ -151,10 +153,21 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
     public function saveAmortizationtablesToDB() {
 $timeStart = time();
         foreach ($this->tempArray as $tempArray) {
+            echo "pfp = " . $tempArray('pfp');
+            $this->Company = ClassRegistry::init('Company');
+            $filterConditions = array('company_codeFile' => $tempArray('pfp'));
+            $companyResult = $this->Company->getCompanyDataList($filterConditions);
+            $companyTechnicalFeatures = $companyResult[0]['company_technicalFeatures'];
+            
+            if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES)  // Does P2P have global, non-individualized amortization tables?
             foreach ($tempArray as $amortizationData) {
-                $this->Amortizationtable->saveAmortizationtable($amortizationData);
+                $this->GlobalAmortizationtable->saveAmortizationtable($amortizationData, $companyResult[0]['id']);
             }
+            else {                                                                        
+                $this->Amortizationtable->saveAmortizationtable($amortizationData);
+            }            
         }
+        
 $timeStop = time();
 echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
     }

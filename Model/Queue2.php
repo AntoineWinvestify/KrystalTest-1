@@ -290,7 +290,8 @@ public function beforeSave1($options = array()) {
                 if ($result['Queue2']['queue2_type'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                     $event = new CakeEvent("accountLinkingFullyFinished", $this, 
                                             array('investor_userReference' => $this->data['Queue2']['queue2_userReference'], 
-                                                    'messageContent'        => __('Account has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') ));
+                                                    'messageContent'        => __('Your new account has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') 
+                                                ));
 
                     $this->getEventManager()->dispatch($event);
                 }

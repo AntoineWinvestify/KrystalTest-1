@@ -18,13 +18,16 @@
 *
 * @author Antoine de Poorter
 * @version 0.1
-* @date 2018-04-04
+* @date 2018-05-17
 * @package
 *
+*/
 
+/*
 
-2018-04-04		version 0.1
+2018-05-17		version 0.1
 initial version
+
 
 
 
@@ -40,9 +43,9 @@ Pending:
 
 */
 
-class Amortizationtable extends AppModel
+class Globalamortizationtable extends AppModel
 {
-	var $name= 'Amortizationtable';
+	var $name= 'Globalamortizationtable';
 
 
     /**
@@ -57,7 +60,7 @@ class Amortizationtable extends AppModel
     public $hasMany = array(
         'Amortizationpayment' => array(
             'className' => 'Amortizationpayment',
-            'foreignKey' => 'amortizationtable_id',
+            'foreignKey' => 'amortizationtable_id',         
             'fields' => '',
             'order' => '',
         ),
@@ -70,16 +73,62 @@ class Amortizationtable extends AppModel
      * Function to save the amortization table of a pfp 
      * It also writes a flag in the corresponding investment model indicating that the/an amortization table is available
      * 
-     * @param array $amortizationData   It contains the amortization data of an investment(slice)
+     * @param array     $amortizationData   It contains the amortization data of an investment(slice)
+     * @param integer   $companyId          It holds the company_id for which the table has to be stored. 
      * @return boolean
      */
-    public function saveAmortizationtable($amortizationData) {
+    public function saveAmortizationtable($amortizationData, $companyId) {
+echo __FILE__ . " " . __LINE__ . "\n<br>";        
+
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
-        $this->Investment = ClassRegistry::init('Investment');
+        $this->Investment = ClassRegistry::init('Investment');     
         $amortizationtable = [];
         $investmentsliceIds = [];
 
+    $existingList = $this->User->find("all", array(
+                                    'conditions' => array('User.investor_id' => 0, 'User.winadmin_id' => $companyId), 
+                                    'recursive' => -1,
+                                    'fields' => array('User.role_id'),
+                                    'group' => array('User.role_id'), 
+                                ));
+
+echo __FILE__ . " " . __LINE__ . "\n<br>";     
+
+ /*      
+        if actual loan is not in active list
+   add all loanInfo to $amortizationtable[]
+     
+ */       
 // connect amortization table to the correct Investmentslice model        
+ exit;
+ 
+        foreach ($amortizationData as $loanId => $loanData) {
+            foreach ($loanData as $value) {
+                $loanIdInformation = explode("_", $loanId);
+                $value['investmentslice_id'] = $loanIdInformation[0];
+                if (!in_array($loanIdInformation[0], $investmentsliceIds)) {
+                    $investmentsliceIds[] = $loanIdInformation[0];
+                }
+                $amortizationtable[] = $value;
+            }
+        }
+        $this->saveMany($amortizationtable, array('validate' => true,
+                                                'callbacks' => "before",
+                                                ));
+   
+        
+        
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
         foreach ($amortizationData as $loanId => $loanData) {
             foreach ($loanData as $value) {
                 $loanIdInformation = explode("_", $loanId);
