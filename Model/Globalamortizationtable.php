@@ -77,83 +77,54 @@ class Globalamortizationtable extends AppModel
      * @param integer   $companyId          It holds the company_id for which the table has to be stored. 
      * @return boolean
      */
-    public function saveAmortizationtable($amortizationData, $companyId) {
-echo __FILE__ . " " . __LINE__ . "\n<br>";        
-
+    public function saveAmortizationtable($amortizationData, $companyId) {     
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
-        $this->Investment = ClassRegistry::init('Investment');     
-        $amortizationtable = [];
+        $this->Investment = ClassRegistry::init('Investment');
+        $globalAmortizationtable = [];
         $investmentsliceIds = [];
+        
+        $existingListExtended = $this->find("all", array(
+                                        'conditions' => array('globalamortizationtable_companyId' => $companyId, ), 
+                                        'recursive' => -1,
+                                        'fields' => array('globalamortizationtable_loanId'),
+                                        'group' => array('globalamortizationtable_loanId'), 
+                                    ));
 
-    $existingList = $this->User->find("all", array(
-                                    'conditions' => array('User.investor_id' => 0, 'User.winadmin_id' => $companyId), 
-                                    'recursive' => -1,
-                                    'fields' => array('User.role_id'),
-                                    'group' => array('User.role_id'), 
-                                ));
-
-echo __FILE__ . " " . __LINE__ . "\n<br>";     
-
- /*      
-        if actual loan is not in active list
-   add all loanInfo to $amortizationtable[]
-     
- */       
-// connect amortization table to the correct Investmentslice model        
- exit;
- 
+        $existingList = Hash::extract($existingListExtended, '{n}.Globalamortizationtable.loanId');
+        return $existingList;
+    
+ // if actual amortizationtable is not in list then add it to DB
         foreach ($amortizationData as $loanId => $loanData) {
             foreach ($loanData as $value) {
                 $loanIdInformation = explode("_", $loanId);
-                $value['investmentslice_id'] = $loanIdInformation[0];
-                if (!in_array($loanIdInformation[0], $investmentsliceIds)) {
+
+                if (!in_array($loanIdInformation[1], $existingList)) {          // checking loanId
+                    $value['globalamortizationtable_companyId'] = $companyId;
+                    $value['globalamortizationtable_loanId'] = $loanIdInformation[1];
+                    $globalAmortizationtable[] = $value;
                     $investmentsliceIds[] = $loanIdInformation[0];
                 }
-                $amortizationtable[] = $value;
             }
         }
-        $this->saveMany($amortizationtable, array('validate' => true,
+return $globalAmortizationtable;
+
+        $this->saveMany($globalAmortizationtable, array('validate' => true,
                                                 'callbacks' => "before",
                                                 ));
    
         
-        
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-        foreach ($amortizationData as $loanId => $loanData) {
-            foreach ($loanData as $value) {
-                $loanIdInformation = explode("_", $loanId);
-                $value['investmentslice_id'] = $loanIdInformation[0];
-                if (!in_array($loanIdInformation[0], $investmentsliceIds)) {
-                    $investmentsliceIds[] = $loanIdInformation[0];
-                }
-                $amortizationtable[] = $value;
-            }
-        }
-        $this->saveMany($amortizationtable, array('validate' => true,
-                                                'callbacks' => "before",
-                                                ));
-   
-            foreach ($investmentsliceIds as $investmentsliceId) {
-                $conditions = array("id" => $investmentsliceId);       
-                $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
-                                                                               'fields' => array("id", "investment_id"),
-                                                                               'conditions' => $conditions
-                                            ));
+exit;
+        foreach ($investmentsliceIds as $investmentsliceId) {
+            $conditions = array("id" => $investmentsliceId);       
+            $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
+                                                                           'fields' => array("id", "investment_id"),
+                                                                           'conditions' => $conditions
+                                        ));
 
-                $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
-                                   'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
-                $investmentIds[] = $tempArray;
-            }
+            $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
+                               'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
+            $investmentIds[] = $tempArray;
+        }
     
         $this->Investment->saveMany($investmentIds, array('validate' => true));      
     return true;
