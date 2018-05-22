@@ -81,18 +81,48 @@ class TestsController extends AppController {
         print_r($data);
     }
     
+    
+  
+    
+    
+    
     public function mytest(){
+    $this->autoRender = false;
+    Configure::write('debug', 2);     
+    $this->Investmentslice = ClassRegistry::init('Investmentslice');      
+    $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');  
+    
+    $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice'); 
+ //       $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
+    
+    
+ //   $result7 = $this->Globalamortizationtable->testing();
+ //    $this->print_r2($result7);   
+     
+   
+    $result = $this->Globalamortizationtable->find("all", 
+                                            array ("recursive" => 1, 
+                                                    "conditions" => array("id " => 22 ))
+            );
+    $this->print_r2($result);    
+ exit;
+    echo "ssrtrtrtss<br>";   
+    $result2 = $this->GlobalamortizationtablesInvestmentslice->find("all", 
+                                            array ("recursive" => 2, 
+                                                    "conditions" => array("investmentslice_id > " => 2 ))
+            );
+    $this->print_r2($result2);     
+    echo "ssss<br>";
+        $result1 = $this->Investmentslice->find("all", array ("recursive" => 0));
+    $this->print_r2($result1);         
+    echo "Antoine2";
 
-        $this->autoRender = false;
-   Configure::write('debug', 2);     
-        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');        
-        $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
-        
-   $this->print_r2($result); 
 
      echo "Finished<br/>";   
     }
    
+    
+    
     
     
     

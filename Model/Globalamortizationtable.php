@@ -57,7 +57,7 @@ class Globalamortizationtable extends AppModel
 
     );
 
-    public $hasMany = array(
+/*    public $hasMany = array(
         'Amortizationpayment' => array(
             'className' => 'Amortizationpayment',
             'foreignKey' => 'amortizationtable_id',         
@@ -65,9 +65,51 @@ class Globalamortizationtable extends AppModel
             'order' => '',
         ),
     );    
-    
-   
+ */
+    public $hasAndBelongsToMany = array(
+        'Investmentslice' =>
+                array(
+                    'className' => 'Investmentslice',
+                    'joinTable' => 'globalamortizationtables_investmentslices',
+                    'foreignKey' => 'globalamortizationtable_id',
+                    'associationForeignKey' => 'investmentslice_id',   
+                    'unique' => true,
+      /*              'conditions' => '',
+                    'fields' => '',
+                    'order' => '',
+                    'limit' => '',
+                    'offset' => '',
+                    'finderQuery' => '',
+                    'with' => '' */
+                 )
+    );   
 
+   
+    
+    public function testing() {  
+      $result2 = $this->find("all",   array (
+          "recursive" => 1, 
+                                     "conditions" => array("id " => 22 ))
+            );  
+    
+      print_r($result2);
+      echo "WWWW";
+      return $result2;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     /**
      * Function to save the amortization table of a pfp 
