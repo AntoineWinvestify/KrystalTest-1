@@ -285,6 +285,24 @@ class ParseDataClientShell extends GearmanClientShell {
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
+        
+        
+            //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
+        foreach ($platformData['parsingResultTransactions'] as $date => $value) {
+            foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
+                if (count($platformData['parsingResultTransactions'][$date][$loanId]) == 1 || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == 'ACTIVE') {
+                    continue;
+                }
+                foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
+                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE') {
+                        $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
+                        $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
+                        $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
+                        break;
+                    }
+                }
+            }
+        }
 
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
@@ -373,7 +391,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
             echo __FUNCTION__ . " " . __LINE__ . "\ndateKey = $dateKey \n";
-
+                    
             // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
             if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
                 $date1 = new DateTime($oldDateKey);
