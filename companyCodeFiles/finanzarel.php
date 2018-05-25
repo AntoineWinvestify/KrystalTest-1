@@ -93,9 +93,13 @@ class finanzarel extends p2pCompany {
         ]
     ];
     
+    
+    
+    
+    
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
         [
-            "D" =>  [
+            "E" =>  [
                 [
                     "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -104,7 +108,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ] 
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // trick to get the complete cell data as purpose
@@ -115,7 +119,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ]
             ], 
-            "F" => [// NOT FINISHED YET
+            "G" => [// NOT FINISHED YET
                 [
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate
@@ -139,7 +143,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getTransactionDetail",
                 ]
             ],
-            "G" => [
+            "H" => [
                 [
                     "type" => "amount",                                         // Winvestify standardized name  OK
                     "inputData" => [                               
@@ -150,7 +154,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "H" => [
+            "I" => [
                 [
                     "type" => "balance",                                        // Winvestify standardized name  OK
                     "inputData" => [                             
@@ -170,7 +174,7 @@ class finanzarel extends p2pCompany {
             ]
         ],
         [
-            "D" =>  [
+            "E" =>  [
                 [
                     "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
@@ -179,7 +183,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ] 
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // trick to get the complete cell data as purpose
@@ -190,7 +194,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ]
             ], 
-            "F" => [
+            "G" => [
                 [
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate
@@ -208,7 +212,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getTransactionDetail",
                 ]
             ],
-            "G" => [
+            "H" => [
                 [
                     "type" => "amount",                                         // Winvestify standardized name  OK
                     "inputData" => [                                       
@@ -1136,24 +1140,26 @@ class finanzarel extends p2pCompany {
                                     "O" => "Fecha de vencimiento");
     
     protected $transactionHeader = array(    
-                                "A" => "Id",
-                                "B" => "A?o",
-                                "C" => "Trimestre",
-                                "D" => "Fecha",
-                                "E" => "Subasta",
-                                "F" => "Descripcion",
-                                "G" => "Importe",
-                                "H" => "Saldo");
+                                 "A" => "Id",
+                                 "B" => "A?o",
+                                 "C" => "Mes",
+                                 "D" => "Trimestre",
+                                 "E" => "Fecha",
+                                 "F" => "Subasta",
+                                 "G" => "Descripcion",
+                                 "H" => "Importe",
+                                 "I" => "Saldo");
     
     protected $transaction2Header = array(
                                  "A" => "Id",
                                  "B" => "A?o",
-                                 "C" => "Trimestre",
-                                 "D" => "Fecha",
-                                 "E" => "Subasta",
-                                 "F" => "Descripcion",
-                                 "G" => "Importe",
-                                 "H" => "Saldo");
+                                 "C" => "Mes",
+                                 "D" => "Trimestre",
+                                 "E" => "Fecha",
+                                 "F" => "Subasta",
+                                 "G" => "Descripcion",
+                                 "H" => "Importe",
+                                 "I" => "Saldo");
     
 
     
