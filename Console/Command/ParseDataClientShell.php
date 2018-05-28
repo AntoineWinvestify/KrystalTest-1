@@ -294,7 +294,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     continue;
                 }
                 foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
-                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE') {
+                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE") {
                         $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
                         $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
                         $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
@@ -546,7 +546,9 @@ class ParseDataClientShell extends GearmanClientShell {
                         $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                         //$loanStatus = WIN_LOANSTATUS_FINISHED;
                     }
-                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])  && ($dateTransaction[0]["internalName"] == "investment_myInvestment" || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment")) {          // check if loanId is new
+
+                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) && ($dateTransaction[0]["internalName"] == "investment_myInvestment" || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" || $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification"|| $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" )) {          // check if loanId is new
+
                         $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                         echo "FOUND in Newloans\n";
                         if ($arrayIndex !== false) {        // Deleting the array from new loans list
@@ -880,7 +882,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         }                          
                     }
                     
-                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
+                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED || $database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_CANCELLED) {
                         $platformData['workingNewLoans'][] = $database['investment']['investment_loanId'];
                     }
                     /*if ($database['investment']['investment_loanId'] == "06-139593001") {
