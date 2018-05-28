@@ -205,7 +205,7 @@ public function editUserProfileData() {
  */
 function linkAccount() {
         $error = false;
-Configure::write('debug', 0); 
+
         if (!$this->request->is('ajax')) {
             throw new
             FatalErrorException(__('You cannot access this page directly'));
@@ -399,10 +399,10 @@ Configure::write('debug', 0);
             //If we can login, change the password
             if($userLogin){
                 $this->Linkedaccount->changePasswordLinkaccount($linkaccountId, $newPass);
-                $this->set('chagePasswordResponse', '1');
+                $this->set('changePasswordResponse', '1');
             } 
             else {
-                $this->set('chagePasswordResponse', '0');
+                $this->set('changePasswordResponse', '0');
             }
         }
     }

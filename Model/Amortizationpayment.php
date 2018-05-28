@@ -50,9 +50,12 @@ class Amortizationpayment extends AppModel {
     public $belongsTo = array(
         'Amortizationtable' => array(
             'className' => 'Amortizationtable',
-            'foreignKey' =>  'Amortizationtable_id'
+            'foreignKey' =>  'amortizationtable_id'
+        ),
+        'Globalamortizationtable' => array(
+            'className' => 'Globalamortizationtable',
+            'foreignKey' =>  'globalamortizationtable_id'
         )
-    );
-    
+    );    
   
 }

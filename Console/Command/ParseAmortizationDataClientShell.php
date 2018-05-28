@@ -159,10 +159,9 @@ $timeStart = time();
             $companyResult = $this->Company->getCompanyDataList($filterConditions);
             $companyTechnicalFeatures = $companyResult[0]['company_technicalFeatures'];
             
-            if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES)  // Does P2P have global, non-individualized amortization tables?
-            foreach ($tempArray as $amortizationData) {
+            if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { // Does P2P have global, non-individualized amortization tables?
                 $this->GlobalAmortizationtable->saveAmortizationtable($amortizationData, $companyResult[0]['id']);
-            }
+            }                                                       
             else {                                                                        
                 $this->Amortizationtable->saveAmortizationtable($amortizationData);
             }            

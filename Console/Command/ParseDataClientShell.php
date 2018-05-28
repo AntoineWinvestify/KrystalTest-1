@@ -1305,7 +1305,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
      * This would mean that one or more payments are with delay.
      * Currently I can only deal with 1 amortization payment per loan per day.
      * Cannot deal with MINTOS as I have seen that various amortization payments can be received
-     * This method must be executed after the analysis of each transaction
+     * This method must be executed after the analysis of each transaction. The transaction reference (=transactionId) must also be provided (if it exists)
      * 
      *  Updates the amortization table of an loan when a repayment is detected.
      *  This method is executed AFTER (?) all the transactions for the loan have been processed by the main flow.
@@ -1320,6 +1320,10 @@ echo __FILE__ . " " . __LINE__ . " \n";
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
 echo __FUNCTION__ . " " . __LINE__ . " \n";
+        if (isset($transactionData['transactionId'])) {
+            $data['transactionId'] = $transactionData['transactionId'];
+        }
+        
         if ($resultData['payment']['payment_principalAndInterestPayment'] <> 0) {
             echo __FUNCTION__ . " " . __LINE__ . " \n";
             $data['capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
@@ -1341,8 +1345,6 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
         }
         $data['paymentDate'] = $transactionData['date'];
               
-        // support for partial payment is not fully implemented
-        $data['paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
 echo __FUNCTION__ . " " . __LINE__ . " \n";
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         
@@ -1352,6 +1354,7 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
         }
         else {
             echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
+            // Perhaps should write an applicationError
         }
 echo "Exiting on " . __FUNCTION__ . " " . __LINE__ . "\n";
 

@@ -92,33 +92,32 @@ class TestsController extends AppController {
     $this->Investmentslice = ClassRegistry::init('Investmentslice');      
     $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');  
     
-    $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice'); 
+
  //       $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
     
-    
- //   $result7 = $this->Globalamortizationtable->testing();
- //    $this->print_r2($result7);   
-     
+
    
     $result = $this->Globalamortizationtable->find("all", 
-                                            array ("recursive" => 1, 
-                                                    "conditions" => array("id " => 22 ))
+                                            array ("recursive" => 2, 
+                                                    "conditions" => array("Globalamortizationtable.id" => 17 ))
             );
     $this->print_r2($result);    
- exit;
-    echo "ssrtrtrtss<br>";   
-    $result2 = $this->GlobalamortizationtablesInvestmentslice->find("all", 
-                                            array ("recursive" => 2, 
-                                                    "conditions" => array("investmentslice_id > " => 2 ))
-            );
-    $this->print_r2($result2);     
+    
     echo "ssss<br>";
-        $result1 = $this->Investmentslice->find("all", array ("recursive" => 0));
-    $this->print_r2($result1);         
-    echo "Antoine2";
+        $this->Investmentslice->Behaviors->load('Containable');
+        $this->Investmentslice->contain('Globalamortizationtable');
+        $result1 = $this->Investmentslice->find("all", 
+                                            array ("recursive" => 2,
+                                                     "conditions" => array("Investmentslice.id" => 100 )));
+    $this->print_r2($result1); 
 
+    foreach ($result1[0]['Globalamortizationtable'] as $GlobalamortizationtableIndex) {
+        echo "id = " . $GlobalamortizationtableIndex['id'] . "<br/>";
+        echo "scheduledDate " . $GlobalamortizationtableIndex['globalamortizationtable_scheduledDate'] . "<br/>";
+    }
+    
 
-     echo "Finished<br/>";   
+    echo "Finished<br/>";   
     }
    
     

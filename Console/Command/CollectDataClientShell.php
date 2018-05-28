@@ -46,7 +46,7 @@ class CollectDataClientShell extends GearmanClientShell {
         //$pendingJobs = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
         //$pendingJobs[] = $this->Queue->getNextFromQueue(FIFO);
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 1 Client\n");
+    //        $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 1 Client\n");
         }
 
         $inActivityCounter++;                                           // Gearman client 
@@ -63,7 +63,7 @@ class CollectDataClientShell extends GearmanClientShell {
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
             if (Configure::read('debug')) {
-                $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
+ //               $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n");
             } 
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA),
                                                   WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA,
@@ -77,7 +77,7 @@ class CollectDataClientShell extends GearmanClientShell {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
                     print_r($pendingJobs);
                 }
-                $linkedaccountsResults = [];
+  //              $linkedaccountsResults = [];
                 $companiesInFlowExist = [];
                 foreach ($pendingJobs as $job) {
                     $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
@@ -102,8 +102,7 @@ class CollectDataClientShell extends GearmanClientShell {
                         }
                         $filterConditions = array(
                                 'investor_id' => $investorId,
-                                'id' => $linkAccountId,
-                                'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE
+                                'id' => $linkAccountId
                             );
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
@@ -141,7 +140,7 @@ class CollectDataClientShell extends GearmanClientShell {
                         }
                     }
                     if (Configure::read('debug')) {
-                        $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "The companies in flow are");
+    //                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "The companies in flow are");
                         print_r($this->queueInfo[$job['Queue2']['id']]['companiesInFlow']);
                     }
                     //We will change the status of linkingProcess to workInProcess
@@ -155,7 +154,7 @@ class CollectDataClientShell extends GearmanClientShell {
                 }
                 
                 if (Configure::read('debug')) {
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n");
+   //                 $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending the previous information to Worker\n");
                 }
 
 
@@ -171,7 +170,7 @@ class CollectDataClientShell extends GearmanClientShell {
                         }
                         $data["date"] = $this->date;
                         if (Configure::read('debug')) {
-                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+ //                           $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
                             print_r($data["companies"]);
                             echo "userReference ". $data["queue_userReference"] . "\n";
                             echo "queueId " . $data["queue_id"] . "\n";
@@ -188,7 +187,7 @@ class CollectDataClientShell extends GearmanClientShell {
                 $this->GearmanClient->runTasks();
 
                 if (Configure::read('debug')) {
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
+//                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
                 $this->verifyStatus(WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_START_COLLECTING_DATA, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
                 unset($pendingJobs);
@@ -200,13 +199,13 @@ class CollectDataClientShell extends GearmanClientShell {
             else {
                 $inActivityCounter++;
                 if (Configure::read('debug')) {       
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
+ //                   $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n");
                 }     
                 sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
-                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
+ //                   $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
                 }                     
                 exit;
             }

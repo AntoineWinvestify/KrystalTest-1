@@ -58,8 +58,9 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $this->queueCurlFunction = "collectUserGlobalFilesParallel";
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         $this->Structure = ClassRegistry::init('Structure');
+        $this->Investment = ClassRegistry::init('Investment');
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
+//            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($data);
         }
         
@@ -76,12 +77,14 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             
             $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_SINGLE_INVESTMENT_PAGE);
             $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_INVESTMENTS_FILE_HTML);
+            $investmentList = $this->Investment->getData(array('linkedaccount_id' => $linkedaccount['Linkedaccount']['id']), array('investment_loanId'));
             $this->newComp[$i]->setTableStructure($structure);
+            $this->newComp[$i]->setInvestmentList($investmentList);
             
             $i++;
         }
         $companyNumber = 0;
-        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_START = " . microtime());
+  //      $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_START = " . microtime());
         //We start at the same time the queue on every company
         foreach ($data["companies"] as $linkedaccount) {
             $this->newComp[$companyNumber]->$queueCurlFunction();
@@ -96,7 +99,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->queueCurls->socketSelect();
         }
 
-        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
+  //      $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
         
         $lengthTempArray = count($this->tempArray);
         $statusCollect = [];
@@ -113,7 +116,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $data['statusCollect'] = $statusCollect;
         $data['errors'] = $errors;
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+  //          $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
             print_r($data);
         }
         return json_encode($data);
