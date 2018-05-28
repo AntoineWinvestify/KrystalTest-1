@@ -290,11 +290,19 @@ class ParseDataClientShell extends GearmanClientShell {
             //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
             foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
-                if (count($platformData['parsingResultTransactions'][$date][$loanId]) == 1 || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == 'ACTIVE') {
+                
+                
+                
+                if (count($platformData['parsingResultTransactions'][$date][$loanId]) == 1 
+                        || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == 'ACTIVE'  
+                        || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == "ACTIVE_VERIFICATION" 
+                        || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == "PREACTIVE") {
                     continue;
                 }
                 foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
-                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE") {
+                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
+                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
+                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE"){
                         $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
                         $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
                         $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
@@ -547,7 +555,11 @@ class ParseDataClientShell extends GearmanClientShell {
                         //$loanStatus = WIN_LOANSTATUS_FINISHED;
                     }
 
-                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) && ($dateTransaction[0]["internalName"] == "investment_myInvestment" || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" || $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification"|| $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" )) {          // check if loanId is new
+                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) && 
+                            ($dateTransaction[0]["internalName"] == "investment_myInvestment" 
+                            || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" 
+                            || $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification"
+                            || $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" )) {          // check if loanId is new
 
                         $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                         echo "FOUND in Newloans\n";
