@@ -285,24 +285,26 @@ class ParseDataClientShell extends GearmanClientShell {
      *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
-        
-        
+               
             //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
             foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
-                
-                
-                
-                if (count($platformData['parsingResultTransactions'][$date][$loanId]) == 1 
-                        || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == 'ACTIVE'  
-                        || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == "ACTIVE_VERIFICATION" 
-                        || $platformData['parsingResultTransactions'][$date][$loanId][0]['conceptChars'] == "PREACTIVE") {
-                    continue;
-                }
                 foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
-                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
-                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
-                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE"){
+
+                    if (Configure::read('flow2Filter')) {
+                        $wantedInvestments = WANTEDINVESTMENT;
+                        if (!in_array( $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
+                            print_r($wantedInvestments);
+                            print_r($platformData['parsingResultTransactions'][$date][$loanId][$transaction]);
+                            unset($platformData['parsingResultTransactions'][$date][$loanId]);
+                            
+                           if (empty($platformData['parsingResultTransactions'][$date])) {
+                                unset($platformData['parsingResultTransactions'][$date]);
+                            }
+                        }
+                    }
+                    
+                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE") {
                         $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
                         $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
                         $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
@@ -311,7 +313,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 }
             }
         }
-
+                    
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
