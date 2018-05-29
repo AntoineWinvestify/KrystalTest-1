@@ -697,22 +697,26 @@ class ParseDataClientShell extends GearmanClientShell {
                             
                             if (isset($getAmortizationTable) && $getAmortizationTable) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
+
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
                                 // if not then reate a new array with the data available so far, sliceIdentifier and loanId
                                 $isNewTable = YES;
+                                
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                                     if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
                                         $isNewTable = NO;
                                         break;
                                     }
                                 }
+                                
                                 if ($isNewTable == YES) {
                                     echo __FILE__ . " " . __LINE__ .  "get new Amortization Table for loanId " . $transactionData['investment_loanId'] . "\n";
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                    unset($getAmortizationTable);
                                 }
-                                }
+                            }
                             
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
@@ -1452,6 +1456,7 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from investment r
 echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its loanId\n";
             $sliceIdentifier = $transactionData['investment_loanId'];
         }
+
         return $sliceIdentifier;
     }
 
