@@ -1319,7 +1319,8 @@ echo __FILE__ . " " . __LINE__ . " \n";
      *                  
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-echo __FUNCTION__ . " " . __LINE__ . " \n";
+echo "Entering function " . __FUNCTION__ . " " . __LINE__ . " \n";
+print_r($transactionData);
         if (isset($transactionData['transactionId'])) {
             $data['transactionId'] = $transactionData['transactionId'];
         }
@@ -1356,7 +1357,7 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
             echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
             // Perhaps should write an applicationError
         }
-echo "Exiting on " . __FUNCTION__ . " " . __LINE__ . "\n";
+echo "Exiting function " . __FUNCTION__ . " " . __LINE__ . "\n";
 
         return;
     }

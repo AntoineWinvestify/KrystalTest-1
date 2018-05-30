@@ -227,7 +227,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
     public function consolidateData(&$linkedAccountData) {
  
 echo __FUNCTION__ . " " . __LINE__ . "\n";
-$timeStart = time();
+        $timeStart = time();
 print_r($linkedAccountData);
 
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
@@ -241,19 +241,29 @@ print_r($linkedAccountData);
                 $tempNextScheduledDate = "";
                 $this->Investmentslice->Behaviors->load('Containable');
                 $this->Investmentslice->contain('Amortizationtable');              
-
+                $this->Investmentslice->contain('GlobalamortizationtableInvestmentslice');
                 $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice_identifier' => $loanId),
                                                                            'recursive' => 1)
                                                                         );
 
-                $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
-
+                if (isset($result[0]['Globalamortizationtable'])) {
+                    $reversedData = array_reverse($result[0]['Globalamortizationtable']);     // prepare to search backwards in amortization table
+                }
+                else {
+                    $reversedData = array_reverse($result[0]['Amortizationtable']);           // prepare to search backwards in amortization table
+                }
+                
                 foreach ($reversedData as $table) {
                     if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID)
-                        {                      
-                        $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
+                                    $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                                    $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
+  
+                            $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
+                        }
+                    if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
+                                    $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                                    $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
+                            $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
                     }                 
                 }
 echo "tempNextScheduledDate = $tempNextScheduledDate\n";                
@@ -263,7 +273,7 @@ echo "tempNextScheduledDate = $tempNextScheduledDate\n";
             } 
         }
                              
-$timeStop = time();
+        $timeStop = time();
 echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
         return true;
     }
@@ -283,7 +293,7 @@ echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $t
     public function consolidatePaymentDelay(&$linkedAccountData) { 
  
 echo __FUNCTION__ . " " . __LINE__ . "\n";
-$timeStart = time();
+        $timeStart = time();
 
 
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
@@ -295,6 +305,14 @@ $timeStart = time();
             $limit = WIN_DATABASE_READOUT_LIMIT;
             $investment = array();
 
+echo "finishDate = "  . $linkedAccount['finishDate'] . "\n";              
+                $todayYear = substr($linkedAccount['finishDate'], 0, 4); 
+                $todayMonth = substr($linkedAccount['finishDate'], 4, 2);
+                $todayDay = substr($linkedAccount['finishDate'], 6 ,2);
+                $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
+                $todayTimeStamp = strtotime($today);
+echo "todayTimeStamp = $todayTimeStamp\n";
+            
             do {
                 $result = $this->Investment->find("all", array('conditions' => $conditions,
                                                                 'fields'    => array('id', 
@@ -304,31 +322,20 @@ $timeStart = time();
                                                                 'offset' => $index * $limit)
                                                  );
                   
-           
                 if (count($result) < $limit) {          // No more results available
                     $controlIndex = 1;
                 }
-//echo "finishDate = "  . $linkedAccount['finishDate'] . "\n";              
-                $todayYear = substr($linkedAccount['finishDate'], 0, 4); 
-                $todayMonth = substr($linkedAccount['finishDate'], 4, 2);
-                $todayDay = substr($linkedAccount['finishDate'], 6 ,2);
-                $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
-                $todayTimeStamp = strtotime($today);
-
-//echo "todayTimeStamp = $todayTimeStamp\n";
 
                 foreach ($result as $item) {                      
-                    echo "ITEM  = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
-                    print_r($item);
-                    echo "todayTimeStamp = $todayTimeStamp\n";
-                    
-                    $dateForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
-//echo "dateForPaymentDelayCalculation = $dateForPaymentDelayCalculation \n";
-                    if ($dateForPaymentDelayCalculation < $todayTimeStamp) {
-                        $tempArray['id'] = $item['Investment']['id'];
-                        
-                        echo "TTTT " . abs($todayTimeStamp - $dateForPaymentDelayCalculation) . "\n";
-                        $tempArray['investment_paymentStatus'] = ceil(abs($todayTimeStamp - $dateForPaymentDelayCalculation) / 86400);
+echo "ITEM  = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
+print_r($item);
+
+                    $dateTimeForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
+
+                    if ($dateTimeForPaymentDelayCalculation < $todayTimeStamp) {
+                        $tempArray['id'] = $item['Investment']['id'];                       
+echo "Difference in seconds = " . abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) . "\n";
+                        $tempArray['investment_paymentStatus'] = ceil(abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) / 86400);
                     }
                     else {
                         $tempArray['investment_paymentStatus'] = 0;
@@ -342,12 +349,13 @@ print_r($tempArray);
             } 
             while($controlIndex < 1); 
 
-//print_r($investment);
             $this->Investment->saveMany($investment, array('validate' => true));
         }
-$timeStop = time();
-echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
-exit;
+        
+        $timeStop = time();
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+
         return true;
-    }    
+    }  
+    
 }
