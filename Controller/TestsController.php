@@ -91,8 +91,18 @@ class TestsController extends AppController {
     Configure::write('debug', 2);     
     $this->Investmentslice = ClassRegistry::init('Investmentslice');      
     $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');  
-    
+                
+    $filterConditions = array ("date" => "2018-01-11",
+                               "investment_id" => 1022);
+                
+    $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');  
+                if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";                 
+            }
 
+    
+    
+    
  //       $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
     
 

@@ -1142,7 +1142,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
 // Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
-        echo __FUNCTION__ . " " . __LINE__ . " Determine if a records needs to be deleted";
+        echo __FUNCTION__ . " " . __LINE__ . " Determine if a record needs to be deleted";
         $dateToDeleteAfter = new DateTime(date($finishDate));
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
 echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
@@ -1189,8 +1189,10 @@ print_r($filterConditions);
                     echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";                     
                 }
             }
+            // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
 echo __FILE__ . " " . __LINE__ . " \n";
-            $filterConditions = array ("date >" => $lastDateToCalculate,
+            $filterConditions = array (
+                        //"date >" => $lastDateToCalculate,??
                       "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
 print_r($filterConditions);         
             if ($this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
@@ -1199,7 +1201,9 @@ print_r($filterConditions);
             if ($this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                 echo __FILE__ . " " . __LINE__ . " Globaltotalsdata deleted \n";                  
             }
-            $filterConditions = array ("date >=" => $lastDateToCalculate,
+            // *Maximum* only one userinvestmentdata object shall be deleted
+            $filterConditions = array (
+           //     "date >=" => $lastDateToCalculate,
                                         "id" => $backupCopyUserinvestmentdataId);
 echo __FILE__ . " " . __LINE__ . " \n";            
 print_r($filterConditions);            

@@ -30,7 +30,7 @@ require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
 class AppShell extends Shell {
     var $runTimeParameters;
    
-        function __construct() {
+    function __construct() {
         parent::__construct();
         Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
