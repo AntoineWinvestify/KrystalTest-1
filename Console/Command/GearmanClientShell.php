@@ -145,8 +145,6 @@ class GearmanClientShell extends AppShell {
                 $this->tempArray[$data[0]][$linkaccountId] = $dataTempArray;
             }
         }
-//        print_r($this->userResult);
-//        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
