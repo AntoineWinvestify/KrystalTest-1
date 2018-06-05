@@ -94,27 +94,27 @@ class Amortizationtable extends AppModel
                                                 'callbacks' => "before",
                                                 ));
    
-            foreach ($investmentsliceIds as $investmentsliceId) {
-                $conditions = array("id" => $investmentsliceId);       
-                $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
-                                                                               'fields' => array("id", "investment_id"),
-                                                                               'conditions' => $conditions
-                                            ));
+        foreach ($investmentsliceIds as $investmentsliceId) {
+            $conditions = array("id" => $investmentsliceId);       
+            $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
+                                                                           'fields' => array("id", "investment_id"),
+                                                                           'conditions' => $conditions
+                                        ));
 
-                $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
-                                   'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
-                $investmentIds[] = $tempArray;
-            }
+            $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
+                               'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
+            $investmentIds[] = $tempArray;
+        }
     
         $this->Investment->saveMany($investmentIds, array('validate' => true));      
-    return true;
+        return true;
     }
 
 
     
  
     
-     /** 
+    /** 
      *  Updates the amortization table of an investment slice and creates the corresponding payment.
      *
      *  @param  int     $companyId          The company_id of the PFP
@@ -122,7 +122,6 @@ class Amortizationtable extends AppModel
      *  @param  bigint  $sliceIdentifier    Identifier of the investmentSlice to update
      *  @param  array   $data               Array with the payment data
      *  @return array   boolean             true Table has been updated
-     *
      */
     public function addPayment($companyId, $loanId, $sliceIdentifier, $data)  {
 print_r($loanId);

@@ -48,7 +48,7 @@ class Globalamortizationtable extends AppModel
 	var $name= 'Globalamortizationtable';
 
 
-    /**
+   /**
     *	Apparently can contain any type field which is used in a field. It does NOT necessarily
     *	have to map to a existing field in the database. Very useful for automatic checks
     *	provided by framework
@@ -82,7 +82,7 @@ class Globalamortizationtable extends AppModel
     
     /**
      * Function to save the global amortization table of a loan in case no individual amortization tables exist for the PFP. 
-     * It also writes a flag in the corresponding investment model indicating that the/an amortization table is available
+     * It also writes a flag in the corresponding investment model indicating that the amortization table is available
      * 
      * @param array     $amortizationData   It contains the amortization data of an investment(slice)
      * @param integer   $companyId          It holds the company_id for which the global amortization table has to be stored. 
@@ -97,16 +97,13 @@ class Globalamortizationtable extends AppModel
         $investmentSliceIds = [];
        
         $existingListExtended = $this->find("all", array(
-                                        'conditions' => array('globalamortizationtable_companyId' => $companyId, ), 
+                                        'conditions' => array('globalamortizationtable_companyId' => $companyId), 
                                         'recursive' => -1,
                                         'fields' => array('id', 'globalamortizationtable_loanId'),
                                         'group' => array('globalamortizationtable_loanId'), 
                                     ));
 
         $existingLoanIdsList = Hash::extract($existingListExtended, '{n}.Globalamortizationtable.globalamortizationtable_loanId');
-//echo "Cleaned existing list = \n"; 
-//echo __FILE__ . " " . __LINE__ . " \n ";
-//print_r($existingLoanIdsList);
 
  // if actual amortizationtable is not in list then add it to DB
         foreach ($amortizationData as $loanId => $loanData) {
@@ -174,7 +171,7 @@ class Globalamortizationtable extends AppModel
     
  
     
-     /** 
+    /** 
      *  Updates the amortization table of an investment slice and creates the corresponding payment.
      *
      *  @param  int     $companyId          The company_id of the PFP
@@ -182,7 +179,6 @@ class Globalamortizationtable extends AppModel
      *  @param  bigint  $sliceIdentifier    Identifier of the investmentSlice to update
      *  @param  array   $data               Array with the payment data
      *  @return array   boolean             true Table has been updated or already existed
-     *
      */
     public function addPayment($companyId, $loanId, $sliceIdentifier, $data)  {
 print_r($loanId);

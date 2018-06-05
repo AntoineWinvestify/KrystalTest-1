@@ -44,16 +44,12 @@ class Linkedaccount extends AppModel {
     var $name = 'Linkedaccount';
 
     /**
-     *
      * 	Delete a record that fulfills the filteringConditions
      * 	
-     *
      * 	@param 		array 	$filterConditions	Must indicate at least "investor_id"
      *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
-     * 
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
-     *
      */
     public function deleteLinkedaccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
