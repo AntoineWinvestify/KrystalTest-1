@@ -120,15 +120,13 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 $this->GearmanClient->runTasks();
  
                 
-                
-                
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
                 
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $this->saveAmortizationtablesToDB();
-                echo "CCC";
+
                 unset($pendingJobs);
             }
             else {
@@ -153,7 +151,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
      * tables are completely updated until today. Although it seems that Zank takes its time to repay an amortization 
      */
     public function saveAmortizationtablesToDB() {
-$timeStart = time();
+        $timeStart = time();
 
         foreach ($this->tempArray as $tempArray) {
             foreach ($tempArray as $linkedaccount => $amortizationData) {
@@ -166,24 +164,17 @@ $timeStart = time();
                 $filterConditions = array('id' => $result['Linkedaccount']['company_id']);       
                 $companyResult = $this->Company->getCompanyDataList($filterConditions);
 
-     print_r($companyResult);
-     
                 $companyTechnicalFeatures = $companyResult[$result['Linkedaccount']['company_id']]['company_technicalFeatures'];         
                 if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { // Does P2P have global, non-individualized amortization tables?
                     $this->Globalamortizationtable->saveGlobalAmortizationtable($amortizationData, $result['Linkedaccount']['company_id']);
-echo "EXITING"; 
                 }                                                       
-                else {     
-                  echo "bbb";
-                  exit;                
+                else {        
                     $this->Amortizationtable->saveAmortizationtable($amortizationData);
                 }  
             }
         }
-        
-$timeStop = time();
-echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+        $timeStop = time();
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
     }
-
-    
+   
 }

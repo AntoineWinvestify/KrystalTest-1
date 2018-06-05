@@ -95,7 +95,7 @@ class Globalamortizationtable extends AppModel
         $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice');        
         $globalAmortizationtable = [];
         $investmentSliceIds = [];
-        
+       
         $existingListExtended = $this->find("all", array(
                                         'conditions' => array('globalamortizationtable_companyId' => $companyId, ), 
                                         'recursive' => -1,
@@ -103,11 +103,11 @@ class Globalamortizationtable extends AppModel
                                         'group' => array('globalamortizationtable_loanId'), 
                                     ));
 
-        $existingLoanIdsList = Hash::extract($existingListExtended, '{n}.Globalamortizationtable.loanId');
+        $existingLoanIdsList = Hash::extract($existingListExtended, '{n}.Globalamortizationtable.globalamortizationtable_loanId');
+//echo "Cleaned existing list = \n"; 
+//echo __FILE__ . " " . __LINE__ . " \n ";
+//print_r($existingLoanIdsList);
 
-echo __FILE__ . " " . __LINE__ . " \n ";
-print_r($existingLoanIdsList);
-    
  // if actual amortizationtable is not in list then add it to DB
         foreach ($amortizationData as $loanId => $loanData) {
             unset($globalAmortizationtable);
@@ -117,28 +117,31 @@ print_r($existingLoanIdsList);
             $investmentSliceIds[] = $sliceId;
          
             if (!in_array($loanIdInformation[1], $existingLoanIdsList)) {
+                $existingLoanIdsList[] = $loanIdInformation[1];
+
                 foreach ($loanData as $value) {                                             // data as obtained per file
                     $value['globalamortizationtable_companyId'] = $companyId;               // adding "table" to the database
                     $value['globalamortizationtable_loanId'] = $loanIdInformation[1];
-                    // AND SAVE MORE DATA?
+                    $value['globalamortizationtable_scheduledDate'] = $value['amortizationtable_scheduledDate'];
+  //                  $value['globalamortizationtable_quoteNumber'] = $value['amortizationtable_quoteNumber'];
+                    $value['globalamortizationtable_paymentStatus'] = $value['amortizationtable_paymentStatus'];    
+                    $value['globalamortizationtable_paymentStatusOriginal'] = $value['amortizationtable_paymentStatusOriginal'];                    
                     $globalAmortizationtable[] = $value;
                 }
-echo __FILE__ . " " . __LINE__ . " \n ";                
-                print_r($globalAmortizationtable);
 
                 $this->saveMany($globalAmortizationtable, array('validate' => true,         // save all records related to 1 table
                                                         'callbacks' => "before",
                                                         ));                  
             }
             
-            // table is in the list, for sure, so get id's of the database tables for globalamortizationtable
+            // The table is in the list, for sure, so get id's of the database tables for globalamortizationtable
             $amortizationTableIndexes = $this->find("list", array(
                                     'conditions' => array('globalamortizationtable_companyId' => $companyId,
                                                             'globalamortizationtable_loanId' => $loanIdInformation[1]), 
                                     'recursive' => -1,
                                     'fields' => array('id'),
                                 )); 
-//print_r($amortizationTableIndexes) ;           
+          
             unset($combinedTable);
             
             foreach ($amortizationTableIndexes as $index) {
@@ -146,14 +149,11 @@ echo __FILE__ . " " . __LINE__ . " \n ";
                 $tempTable['investmentslice_id'] = $sliceId;       
                 $combinedTable[] = $tempTable;    
             }  
-echo __FILE__ . " " . __LINE__ . " \n ";  
+ 
             $this->GlobalamortizationtablesInvestmentslice->create();         
-            print_r($combinedTable);
-echo __FILE__ . " " . __LINE__ . " \n";            
-
             $this->GlobalamortizationtablesInvestmentslice->saveMany($combinedTable);
         }
-        
+      
         foreach ($investmentSliceIds as $investmentSliceId) {
             $conditions = array("id" => $investmentSliceId);       
             $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
@@ -165,10 +165,8 @@ echo __FILE__ . " " . __LINE__ . " \n";
                                'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
             $investmentIds[] = $tempArray;
         }
-print_r($investmentIds);
  
         $this->Investment->saveMany($investmentIds, array('validate' => true)); 
-exit;
     return true;
     }
 
