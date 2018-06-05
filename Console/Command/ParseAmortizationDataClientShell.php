@@ -30,7 +30,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Amortizationtable');  
+    public $uses = array('Amortizationtable', 'Globalamortizationtable', 'Company', 'Linkedaccount');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -98,7 +98,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         $tempPfpName = explode("/", $allFiles[0]);
 
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
-                        echo "pfp = " . $pfp . "\n";
+                        echo "Pfp = " . $pfp . "\n";
 
                         $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
                         $i++;
@@ -114,6 +114,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     }
                     $parametersFile = $subDirectory . "/" . $pfp . "/flow3aTransferClientToWorker.json";
                     file_put_contents($parametersFile, json_encode($params));
+                    echo "file = $parametersFile";
                     $this->GearmanClient->addTask($workerFunction, $parametersFile, null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
                 }
                 $this->GearmanClient->runTasks();
@@ -127,6 +128,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $this->saveAmortizationtablesToDB();
+                echo "CCC";
                 unset($pendingJobs);
             }
             else {
@@ -152,19 +154,31 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
      */
     public function saveAmortizationtablesToDB() {
 $timeStart = time();
+
         foreach ($this->tempArray as $tempArray) {
-            echo "pfp = " . $tempArray('pfp');
-            $this->Company = ClassRegistry::init('Company');
-            $filterConditions = array('company_codeFile' => $tempArray('pfp'));
-            $companyResult = $this->Company->getCompanyDataList($filterConditions);
-            $companyTechnicalFeatures = $companyResult[0]['company_technicalFeatures'];
-            
-            if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { // Does P2P have global, non-individualized amortization tables?
-                $this->GlobalAmortizationtable->saveAmortizationtable($amortizationData, $companyResult[0]['id']);
-            }                                                       
-            else {                                                                        
-                $this->Amortizationtable->saveAmortizationtable($amortizationData);
-            }            
+            foreach ($tempArray as $linkedaccount => $amortizationData) {
+                $filterConditions = array('id' => $linkedaccount);
+                $result = $this->Linkedaccount->find("first", array('conditions' => $filterConditions,
+                                                                        'recursive' => -1,
+                                                                        'fields'  => 'company_id',
+                                                                       ));
+
+                $filterConditions = array('id' => $result['Linkedaccount']['company_id']);       
+                $companyResult = $this->Company->getCompanyDataList($filterConditions);
+
+     print_r($companyResult);
+     
+                $companyTechnicalFeatures = $companyResult[$result['Linkedaccount']['company_id']]['company_technicalFeatures'];         
+                if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { // Does P2P have global, non-individualized amortization tables?
+                    $this->Globalamortizationtable->saveGlobalAmortizationtable($amortizationData, $result['Linkedaccount']['company_id']);
+echo "EXITING"; 
+                }                                                       
+                else {     
+                  echo "bbb";
+                  exit;                
+                    $this->Amortizationtable->saveAmortizationtable($amortizationData);
+                }  
+            }
         }
         
 $timeStop = time();

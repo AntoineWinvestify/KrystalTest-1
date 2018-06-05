@@ -55,10 +55,11 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
      */   
     public function parseAmortizationtablesFileFlow($job) {
         $timeStart = time();  
-        $platformParametersFile = json_decode($job->workload(), true); 
+        $platformParametersFile = $job->workload(); 
+
         $parametersContent = file_get_contents($platformParametersFile);
         $platformData = json_decode($parametersContent, true);       
-        
+      
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         if (Configure::read('debug')) {
@@ -92,7 +93,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                 $this->myParser->setConfig($configParameters[0]);
                 $tempArray[$linkedAccountKey][$loanId] = $this->myParser->analyzeFile($file, $parserConfig, $extensionFile);
                 echo "tempResult " . $loanId . "\n";
-                $tempArray[$linkedAccountKey]['pfp'] = $data['pfp'];            // save name of p2p, as required in Client
+   //             $tempArray[$linkedAccountKey]['pfp'] = $data['pfp'];            // save name of p2p, as required in Client
                 $i++;
             }
             $this->callbackInit($tempArray[$linkedAccountKey], $companyHandle, $callbacks);

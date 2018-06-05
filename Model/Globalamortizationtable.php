@@ -74,14 +74,8 @@ class Globalamortizationtable extends AppModel
                     'foreignKey' => 'globalamortizationtable_id',
                     'associationForeignKey' => 'investmentslice_id',   
                     'unique' => true,
-      /*              'conditions' => '',
-                    'fields' => '',
-                    'order' => '',
-                    'limit' => '',
-                    'offset' => '',
-                    'finderQuery' => '',
-                    'with' => '' */
                  )
+        
     );   
 
   
@@ -94,7 +88,8 @@ class Globalamortizationtable extends AppModel
      * @param integer   $companyId          It holds the company_id for which the global amortization table has to be stored. 
      * @return boolean
      */
-    public function saveGlobalAmortizationtable($amortizationData, $companyId) {     
+    public function saveGlobalAmortizationtable($amortizationData, $companyId) {
+        $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice');
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
         $this->Investment = ClassRegistry::init('Investment');
         $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice');        
@@ -109,12 +104,14 @@ class Globalamortizationtable extends AppModel
                                     ));
 
         $existingLoanIdsList = Hash::extract($existingListExtended, '{n}.Globalamortizationtable.loanId');
-        
-echo __FILE__ . " " . __LINE__ . " <br/> ";
-print_($existingLoanIdsList);
+
+echo __FILE__ . " " . __LINE__ . " \n ";
+print_r($existingLoanIdsList);
     
  // if actual amortizationtable is not in list then add it to DB
         foreach ($amortizationData as $loanId => $loanData) {
+            unset($globalAmortizationtable);
+            
             $loanIdInformation = explode("_", $loanId);                                     // [0] = investmentsliceId and [1] = loanId
             $sliceId = $loanIdInformation[0];
             $investmentSliceIds[] = $sliceId;
@@ -126,6 +123,9 @@ print_($existingLoanIdsList);
                     // AND SAVE MORE DATA?
                     $globalAmortizationtable[] = $value;
                 }
+echo __FILE__ . " " . __LINE__ . " \n ";                
+                print_r($globalAmortizationtable);
+
                 $this->saveMany($globalAmortizationtable, array('validate' => true,         // save all records related to 1 table
                                                         'callbacks' => "before",
                                                         ));                  
@@ -138,20 +138,22 @@ print_($existingLoanIdsList);
                                     'recursive' => -1,
                                     'fields' => array('id'),
                                 )); 
-            
+//print_r($amortizationTableIndexes) ;           
             unset($combinedTable);
+            
             foreach ($amortizationTableIndexes as $index) {
                 $tempTable['globalamortizationtable_id'] = $index; 
                 $tempTable['investmentslice_id'] = $sliceId;       
                 $combinedTable[] = $tempTable;    
             }  
-            $this->GlobalamortizationtablesInvestmentslice->create();
-            $this->GlobalamortizationtablesInvestmentslice->saveMany($combinedTable[]);
+echo __FILE__ . " " . __LINE__ . " \n ";  
+            $this->GlobalamortizationtablesInvestmentslice->create();         
+            print_r($combinedTable);
+echo __FILE__ . " " . __LINE__ . " \n";            
+
+            $this->GlobalamortizationtablesInvestmentslice->saveMany($combinedTable);
         }
         
-echo __FILE__ . " " . __LINE__ . " <br/> ";
-print_r($amortizationTableIndexes);
-
         foreach ($investmentSliceIds as $investmentSliceId) {
             $conditions = array("id" => $investmentSliceId);       
             $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
@@ -163,11 +165,10 @@ print_r($amortizationTableIndexes);
                                'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
             $investmentIds[] = $tempArray;
         }
-        
-echo __FILE__ . " " . __LINE__ . " <br/> ";
 print_r($investmentIds);
-        
-        $this->Investment->saveMany($investmentIds, array('validate' => true));      
+ 
+        $this->Investment->saveMany($investmentIds, array('validate' => true)); 
+exit;
     return true;
     }
 
