@@ -85,7 +85,7 @@ class Globalamortizationtable extends AppModel
      * It also writes a flag in the corresponding investment model indicating that the amortization table is available
      * 
      * @param array     $amortizationData   It contains the amortization data of an investment(slice)
-     * @param integer   $companyId          It holds the company_id for which the global amortization table has to be stored. 
+     * @param int       $companyId          It holds the company_id for which the global amortization table has to be stored. 
      * @return boolean
      */
     public function saveGlobalAmortizationtable($amortizationData, $companyId) {

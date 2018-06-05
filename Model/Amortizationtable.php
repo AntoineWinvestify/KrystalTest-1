@@ -42,7 +42,7 @@ Pending:
 
 class Amortizationtable extends AppModel
 {
-	var $name= 'Amortizationtable';
+    var $name= 'Amortizationtable';
 
 
     /**

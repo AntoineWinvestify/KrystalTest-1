@@ -45,6 +45,7 @@ class Dashboardoverviewdata extends AppModel {
 
     /**
      * Get data of the last global Overview of an investor.
+     * 
      * @param string $investorId             investor database id.
      * @return array Last Dashboardoverviewdata rows for the user
      */

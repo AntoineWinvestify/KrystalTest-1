@@ -54,16 +54,13 @@ class Accountowner extends AppModel {
     
     
     /**
-     *
      * 	Delete a record that fulfills the filteringConditions
      * 	
      *
      * 	@param 		array 	$filterConditions	Must indicate at least "investor_id"
      *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
-     * 
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
-     *
      */
     public function deleteLinkedaccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
@@ -100,12 +97,10 @@ class Accountowner extends AppModel {
     }
 
     /**
-     *
      * 	Returns an array of the linkedaccount items and their data that fulfill the filterConditions
      *
      * 	@param 		array 	$filterConditions
-     * 	@return 	array 	Data of each linkedaccount item as an element of an array
-     * 			
+     * 	@return 	array 	Data of each linkedaccount item as an element of an array			
      */
     public function getLinkedaccountDataList($filterConditions) {
 
@@ -116,12 +111,10 @@ class Accountowner extends AppModel {
     }
 
     /**
-     * 
      * Returns an array of the companies id depending on the filter Conditions
      * 
      * @param array $filterConditions
      * @return array Each company id
-     * 
      */
     public function getLinkedaccountIdList($filterConditions) {
 
@@ -133,7 +126,6 @@ class Accountowner extends AppModel {
     }
 
     /**
-     *
      * 	Links a new investment account for an investor
      *
      * 	@param 		int 	$companyId		Identifier of company where linked account resides
@@ -142,8 +134,7 @@ class Accountowner extends AppModel {
      * 	@param 		string 	$password		password
      *
      * 	@return 	boolean	true	Account linked
-     * 				false	Error happened, account not linked
-     * 						
+     * 				false	Error happened, account not linked					
      */
     public function createNewLinkedAccount($companyId, $investorId, $username, $password) {
 
@@ -171,7 +162,6 @@ class Accountowner extends AppModel {
      * 
      * @param string $queueUserReference It is the user reference
      * @return array
-     * 
      */
     public function getLinkAccountsWithNothingInProcess($queueUserReference) {
         $companyNothingInProcess = [];
@@ -203,8 +193,7 @@ class Accountowner extends AppModel {
      * 
      * @param type $linkaccountId id of the linkaccount
      * @param type $newPass new password
-     * @return boolean 
-     *  
+     * @return boolean  
      */
     public function changePasswordLinkaccount($linkaccountId, $newPass){
         $this->save(['id' => $linkaccountId, 'linkedaccount_password' => $newPass]);
@@ -240,7 +229,6 @@ class Accountowner extends AppModel {
      * @param boolean $created
      * @param array $option
      * @return boolean
-     * 
      */
     public function afterSave($created, $option = array()) {
         
@@ -280,7 +268,6 @@ class Accountowner extends AppModel {
     
     
    /**
-     *
      * 	Disables the linked account(s) that fulfill $filterConditions. No action is taken in case account is NOT_ACTIVE 
      *  or already disabled.
      *
@@ -288,8 +275,7 @@ class Accountowner extends AppModel {
      *  @param          int     $originator         WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
      *
      * 	@return 	boolean	true	Account(s) disabled
-     * 				false	Error happened, account(s) not disabled
-     * 						
+     * 				false	Error happened, account(s) not disabled						
      */
     public function disableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
@@ -328,7 +314,6 @@ class Accountowner extends AppModel {
     
     
    /**
-     *
      * 	Enables the linked account(s) that fulfill $filterConditions. 
      *  Only accounts that are disabled can be enabled. Note that if no disabled account(s) fulfill the 
      *  filteringConditions, a true is returned.
@@ -337,8 +322,7 @@ class Accountowner extends AppModel {
      *  @param          int     $originator         WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
      *
      * 	@return 	boolean	true	Account(s) enabled
-     * 				false	Error happened, account(s) could not be enabled
-     * 						
+     * 				false	Error happened, account(s) could not be enabled						
      */
     public function enableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 

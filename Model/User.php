@@ -181,13 +181,11 @@ class User extends AppModel {
     }
 
     /**
-     *
-     * 	Generate a new SMS confirmation code
+     * Generate a new SMS confirmation code
      * 	
      * @param string	$username name of the user. Typically the email of the user
      * @return array	[0] requested code
      * 		[1] number of times a code has been requested 
-     * 	
      */
     public function generateNewConfirmationCode($username) {
 
@@ -207,13 +205,11 @@ class User extends AppModel {
     }
 
     /**
-     *
-     * 	Read the confirmation code used in the process of account registration/confirmation
+     * Read the confirmation code used in the process of account registration/confirmation
      * 	
      * @param string	$username	name of the user
      * @return array				[0] requested code
-     *                                       [1] number of times a code has been requested 
-     * 	
+     *                                       [1] number of times a code has been requested 	
      */
     public function readConfirmationCode($username) {
         $resultUser = $this->find('all', array('conditions' => array('User.username' => $username),
@@ -226,12 +222,10 @@ class User extends AppModel {
     }
 
     /**
-     *
      * 	Reset the (counter) information related to a confirmation code used in the process of account registration/confirmation
      * 	
      * 	@param 		string	$username	name of the user
-     * 	@return 	boolean	true/false
-     * 	
+     * 	@return 	boolean	true/false	
      */
     public function resetConfirmationCodeInformation($username) {
 
@@ -245,12 +239,10 @@ class User extends AppModel {
     }
 
     /**
-     *
      * 	Read the confirmation code used in the process of account registration
      * 	
      * 	@param 		string	$username	name of the user
-     * 	@return 	string				internal DB reference or 
-     * 	
+     * 	@return 	string				internal DB reference or 	
      */
     public function username2Id($username) {
         $resultUser = $this->find('all', array('conditions' => array('User.username' => $username),
@@ -260,13 +252,11 @@ class User extends AppModel {
     }
 
     /**
-     *
      *   Update the field "lastAccessed" of the user table
      * 	
      *   @param 	string	$investorId		DB Reference of the investor object
      *   @return 	boolean	true	field updated
-     * 			false	field NOT updated due to unspecified error
-     * 	
+     * 			false	field NOT updated due to unspecified error	
      */
     public function updateLastAccessed($investorId) {
 
@@ -282,13 +272,11 @@ class User extends AppModel {
     }
 
     /**
-     *
      *  Checks if a user record with status UNCONFIRMED_ACCOUNT exist
      *  but it may have been "reserved" by current user.
      * 
      *  @param 	string	$username The username
      *  @return 	array   $userData the user data of an unconfirmed account 
-     * 
      */
     public function isUncomfirmedAccount($username) {
 
@@ -370,6 +358,7 @@ class User extends AppModel {
 
     /**
      * Get the pfp admins of a company
+     * 
      * @param type $id
      * @return type
      */
@@ -384,6 +373,7 @@ class User extends AppModel {
 
     /**
      * Get pfp admins's mails
+     * 
      * @param type $id
      */
     public function getMailAdminPfpId($data) {
@@ -399,6 +389,7 @@ class User extends AppModel {
 
     /**
      * Get pfp admins's mails FROM PFPS TABLE(NOT USERS TABLE)
+     * 
      * @param type $id
      */
     public function getPfpAdminMail($id) {

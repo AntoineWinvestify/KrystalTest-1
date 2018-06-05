@@ -98,12 +98,11 @@ class Company extends AppModel {
         ),
     );
 
-    /*     * STILL TO BE DONE
+    /** STILL TO BE DONE
      *
      * 	Returns a *LIST* of companies that fullfil the filterConditions
      * 	
-     * 	@return array  array of all company Ids that fullfil filtering conditions
-     * 			
+     * 	@return array  array of all company Ids that fullfil filtering conditions	
      */
 
     public function getCompanyList($filterConditions) {
@@ -120,12 +119,10 @@ class Company extends AppModel {
     }
 
     /**
-     *
      * 	Returns an array of the companies and their data that fullfil the filterConditions
      * 	
      * 	@param 		array 	$filteringConditions	
-     * 	@return 	array 	 Data of each company as an element of an array
-     * 			
+     * 	@return 	array 	 Data of each company as an element of an array		
      */
     public function getCompanyDataList($filterConditions) {
 
@@ -148,6 +145,7 @@ class Company extends AppModel {
 
     /**
      * Get info needed for ocr.
+     * 
      * @param type $filter
      * @return type
      */
@@ -183,7 +181,7 @@ class Company extends AppModel {
         return $data;
     }
 
-    /*     * Check the service status for the company
+    /** Check the service status for the company
      * 
      * @param type $id
      * @return type
@@ -204,13 +202,11 @@ class Company extends AppModel {
     }
 
     /**
-     *
      * 	Returns the extended data an array of the company and their data that fullfil the filterConditions.
      * 	If more then one record fullfils the criterion, then the first one is returned
      * 	
      * 	@param 		array 	$filteringConditions	(basically the companyId)
-     * 	@return 	array 	 Data of each company as an element of an array
-     * 			
+     * 	@return 	array 	 Data of each company as an element of an array		
      */
     public function readExtendedData($filterConditions) {
 
