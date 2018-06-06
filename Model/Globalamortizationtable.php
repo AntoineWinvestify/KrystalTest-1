@@ -120,7 +120,7 @@ class Globalamortizationtable extends AppModel
                     $value['globalamortizationtable_companyId'] = $companyId;               // adding "table" to the database
                     $value['globalamortizationtable_loanId'] = $loanIdInformation[1];
                     $value['globalamortizationtable_scheduledDate'] = $value['amortizationtable_scheduledDate'];
-  //                  $value['globalamortizationtable_quoteNumber'] = $value['amortizationtable_quoteNumber'];
+                    $value['globalamortizationtable_quoteNumber'] = $value['amortizationtable_quoteNumber'];
                     $value['globalamortizationtable_paymentStatus'] = $value['amortizationtable_paymentStatus'];    
                     $value['globalamortizationtable_paymentStatusOriginal'] = $value['amortizationtable_paymentStatusOriginal'];                    
                     $globalAmortizationtable[] = $value;
@@ -137,9 +137,7 @@ class Globalamortizationtable extends AppModel
                                                             'globalamortizationtable_loanId' => $loanIdInformation[1]), 
                                     'recursive' => -1,
                                     'fields' => array('id'),
-                                )); 
-          
-            unset($combinedTable);
+                                ));          
             
             foreach ($amortizationTableIndexes as $index) {
                 $tempTable['globalamortizationtable_id'] = $index; 
@@ -149,6 +147,7 @@ class Globalamortizationtable extends AppModel
  
             $this->GlobalamortizationtablesInvestmentslice->create();         
             $this->GlobalamortizationtablesInvestmentslice->saveMany($combinedTable);
+            unset($combinedTable);
         }
       
         foreach ($investmentSliceIds as $investmentSliceId) {
@@ -164,7 +163,7 @@ class Globalamortizationtable extends AppModel
         }
  
         $this->Investment->saveMany($investmentIds, array('validate' => true)); 
-    return true;
+        return true;
     }
 
 

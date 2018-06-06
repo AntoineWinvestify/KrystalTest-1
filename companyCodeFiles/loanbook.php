@@ -306,8 +306,8 @@ class loanbook extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd' => 0,
-            'sortParameter' => array("date", "investment_loanId")               // used to "sort" the array and use $sortParameter(s) as prime index.               
-        ]
+            'sortParameter' => array("date", "investment_loanId"),              // used to "sort" the array and use $sortParameter(s) as prime index.               
+            ]
     ];
     protected $investmentConfigParms = [
         [

@@ -1305,22 +1305,21 @@ echo __FILE__ . " " . __LINE__ . " \n";
 
     /** 
      * PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION 
-     * It is possible that during the same day various amortization payments are processed by the platform. 
-     * This would mean that one or more payments are with delay.
+     * (It is possible that during the same day various amortization payments are processed by the platform. 
+     * This would mean that probably one or more payments are with delay.
      * Currently I can only deal with 1 amortization payment per loan per day.
      * Cannot deal with MINTOS as I have seen that various amortization payments can be received
-     * This method must be executed after the analysis of each transaction. The transaction reference (=transactionId) must also be provided (if it exists)
+     * This method must be executed after the analysis of each transaction. The transaction reference (=transactionId) must also 
+     * be provided (if it exists))
      * 
-     *  Updates the amortization table of an loan when a repayment is detected.
-     *  This method is executed AFTER (?) all the transactions for the loan have been processed by the main flow.
-     *  In this way the system can also take into account concepts like commission, late payment fee etc. etc. BUT IS THIS NEEDED
-     *  THIS DOES NOT WORK PROPERLY IF AN INVESTOR CAN RECEIVE MORE THAN ONE AMORTIZATION PAYMENT (=REPAYMENT) FOR A LOAN PER DAY
-     *  This method is NOT used during the account linking procedure
+     * Updates the amortization table of an loan when a repayment is detected.
+     * This method is executed at the end of each transaction for a loan that has been processed by the main flow.
+     * Concepts like commission, late payment fee etc. etc. cannot be taken into consideration.
+     * This method is NOT used during the account linking procedure
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return 
-     *                  
+     *  @return                
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
 echo "Entering function " . __FUNCTION__ . " " . __LINE__ . " \n";
@@ -1374,8 +1373,7 @@ echo "Exiting function " . __FUNCTION__ . " " . __LINE__ . "\n";
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return array
-     *                  
+     *  @return array               
      */
     function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments, &$investmentLoanIdsPerDay) {
         echo "looking for a lost investment in Zank";
@@ -1416,8 +1414,7 @@ echo "Exiting function " . __FUNCTION__ . " " . __LINE__ . "\n";
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to the DB
-     *  @return string  sliceIndentifier
-     *                  
+     *  @return string  sliceIndentifier               
      */
     public function getSliceIdentifier(&$transactionData, &$resultData) {
 
@@ -1443,8 +1440,7 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its l
      * 
      *  @param  bigint   database id of database record to restore FROM
      *  @param  bigint   database id of database record to restore TO
-     *  @return string  sliceIndentifier
-     *                  
+     *  @return string  sliceIndentifier                  
      */
     public function restoreInvestment($restoreFromInvestmentId, $restoreToInvestmentId) {
         // copy the complete record
@@ -1465,8 +1461,7 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its l
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return bigint  id of new investment record
-     *                  
+     *  @return bigint  id of new investment record                
      */
     public function copyInvestment($investmentId) {
 echo __FUNCTION__ . " " . __LINE__ . " create a copy of investmentRecord of record $investmentId\n";
