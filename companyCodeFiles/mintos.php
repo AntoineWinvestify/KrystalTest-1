@@ -736,8 +736,8 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3108;
-        $this->maxEmptySize = 3110;
+        $this->minEmptySize = 3106;
+        $this->maxEmptySize = 3112;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);

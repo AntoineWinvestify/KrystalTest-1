@@ -1036,6 +1036,9 @@ class twino extends p2pCompany {
             case "DEFAULTED":
                 $data = WIN_LOANSTATUS_ACTIVE;
                 break;
+            case 'BUYBACK':
+                $data = WIN_LOANSTATUS_FINISHED;
+                break;
             case "SOLD":
                 $data = WIN_LOANSTATUS_FINISHED;
                 break;

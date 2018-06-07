@@ -294,8 +294,8 @@ class ParseDataClientShell extends GearmanClientShell {
                     if (Configure::read('flow2Filter')) {
                         $wantedInvestments = WANTEDINVESTMENT;
                         if (!in_array( $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
-                            print_r($wantedInvestments);
-                            print_r($platformData['parsingResultTransactions'][$date][$loanId][$transaction]);
+                            //print_r($wantedInvestments);
+                            //print_r($platformData['parsingResultTransactions'][$date][$loanId][$transaction]);
                             unset($platformData['parsingResultTransactions'][$date][$loanId]);
                             
                            if (empty($platformData['parsingResultTransactions'][$date])) {
@@ -314,6 +314,8 @@ class ParseDataClientShell extends GearmanClientShell {
             }
         }
                     
+ 
+        
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
@@ -622,7 +624,8 @@ class ParseDataClientShell extends GearmanClientShell {
                             "investment_priceInSecondaryMarket", "investment_outstandingPrincipal", "investment_totalGrossIncome",
                             "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
                             "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan",
-                            "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState"),
+                            "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState",
+                            "investment_loanId"),
                                 array('date DESC'));
 
                         $investmentId = $tempInvestmentData[0]['Investment']['id'];
@@ -657,6 +660,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     //        $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
                             $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
                             $database['investment']['id'] = $investmentId;
+                            $database['investment']['investment_loanId'] = $tempInvestmentData[0]['Investment']['investment_loanId'];
                         }
                     }
 

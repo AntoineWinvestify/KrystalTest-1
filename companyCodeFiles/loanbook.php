@@ -129,7 +129,8 @@ class loanbook extends p2pCompany {
                             9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
                             10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
                             11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
-                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"]    //When is negative
+                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
+                            13 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",

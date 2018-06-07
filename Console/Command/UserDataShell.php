@@ -397,6 +397,8 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
+        print_r($resultData);
+        echo '/////////';
         if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
