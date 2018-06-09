@@ -878,7 +878,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . " printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
-                    echo "probando reserved funds \n";
+                    echo "testing reserved funds \n";
 print_r($database);
 echo "Writing conceptChars array\n";                    
 print_r($conceptChars);

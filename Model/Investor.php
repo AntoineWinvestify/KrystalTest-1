@@ -296,7 +296,7 @@ class Investor extends AppModel {
     }
 
     /**
-     * Read the cheack data
+     * Read the check data
      * 
      * @param type $investorId
      * @return type

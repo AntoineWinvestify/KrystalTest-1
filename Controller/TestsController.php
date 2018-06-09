@@ -60,7 +60,7 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest", "mytest1"));
     }
 
     var $dateFinish = "20171129";
@@ -82,8 +82,63 @@ class TestsController extends AppController {
     }
     
     
-  
-    
+    public function mytest1(){
+    $this->autoRender = false;
+    Configure::write('debug', 2);    
+    $this->Investor->Behaviors->load('Containable');
+    $this->Investor->contain('Linkedaccount');
+    $result = $this->Investor->find("all", 
+                                            array ("recursive" => 2, 
+                                                    "conditions" => array("Investor.investor_identity" => "39048098ab409be490A"), 
+                                                                          array( 'Linkedaccount' => array('Linkedaccount.linkedaccount_statusExtended' => 10) 
+                                                        ))
+            );   
+
+    $companyNothingInProcess = [];
+        $this->Investor = ClassRegistry::init('Investor');
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+// Find all the objects of Investor   
+	$filterConditions = array('Investor.investor_identity' => "39048098ab409be490A");       // Me
+
+	$this->Investor->Behaviors->load('Containable');
+	$this->Investor->contain('Linkedaccount');  							// Own model is automatically included
+	$resultInvestorsData = $this->Investor->find("all", $params = array('recursive'     => 2,
+                                                                            'conditions'    => $filterConditions));
+
+        if (!isset($resultInvestorsData['Accountowner'])) {
+            echo "No linked accounts<br/>";
+            return [];
+        }       
+        
+        $accountOwnerIds = array();
+        foreach ($resultInvestorsData[0]['Linkedaccount'] as $account) {
+            if ($account['linkedaccount_status'] == 2) {
+                $accountOwnerIds[] = ['id' => $account['id']];
+            }
+        }
+ $this->print_r2($accountOwnerIds);    
+        if (empty($accountOwnerIds)) {
+            echo "empty result to quit\n";
+            return;
+        }
+
+        $filterConditions = array(
+            "OR" => $accountOwnerIds,
+            "AND" => array( array ('linkedaccount_linkingProcess' => 1, 
+                            'linkedaccount_statusExtended' => 10
+                )),
+        );      
+
+        $linkedAccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+$this->print_r2($linkedAccountsResults);
+
+        $companyNothingInProcess = array();
+        foreach ($linkedAccountsResults as $key => $linkedAccountResult) {
+            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $companyNothingInProcess[] = $linkedAccountResult['Linkedaccount']['id'];
+        }  
+    $this->print_r2($companyNothingInProcess);   
+    }
     
     
     public function mytest(){
