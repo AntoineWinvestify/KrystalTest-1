@@ -57,8 +57,10 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
      *                      array with all errorData related to occurred error
      */   
     public function collectamortizationtablesFileFlow($job) {
- $timeStart = time();  
-        $platformData = json_decode($job->workload(), true);
+ $timeStart = time();
+        $filename = $job->workload();
+        $data = file_get_contents($filename);
+        $platformData = json_decode($data, true);
         $this->job = $job;
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         if (Configure::read('debug')) {

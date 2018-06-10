@@ -707,14 +707,14 @@ class mintos extends p2pCompany {
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
             'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 'I' => 'Next Payment',
-            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Term', 'N' => 'Payments Received', 'O' => 'Status', 
+            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Remaining Term', 'N' => 'Payments Received', 'O' => 'Status', 
             'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Purchase' , 'S' => 'Received Payments', 
             'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
             );
      
       protected $expiredLoansHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
             'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 
-            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Term', 'L' => 'Payments Received', 'M' => 'Status', 
+            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Remaining Term', 'L' => 'Payments Received', 'M' => 'Status', 
             'N' => 'Buyback Guarantee', 'O' => 'My Investments', 'P' => 'Date of Purchase' , 'Q' => 'Received Payments', 
             'R' => 'Outstanding Principal', 'S' => 'Amount in Secondary Market', 'T' => 'Price', 'U' => 'Discount/Premium', 
             'V' => 'Currency', 'W' => 'Finished');
@@ -736,8 +736,8 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3108;
-        $this->maxEmptySize = 3110;
+        $this->minEmptySize = 3106;
+        $this->maxEmptySize = 3112;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);

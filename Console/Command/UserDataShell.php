@@ -193,10 +193,10 @@ class UserDataShell extends AppShell {
             $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
-            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
+            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
-            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
         if (isset($resultData['payment']['payment_tempCamp'])) {
             $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
@@ -397,6 +397,8 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
+        print_r($resultData);
+        echo '/////////';
         if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
@@ -1568,7 +1570,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         //$result = bcadd($result, $transactionData['amount'], 16);
         return $transactionData['amount'];
     }
-    
+ 
 }
 
 

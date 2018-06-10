@@ -391,7 +391,7 @@ print_r($totalParsingresultControlVariables);
         foreach($data['tempArray'] as $linkAccountId => $dateArray){
             ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);
         }
-        
+           
         return json_encode($data);
     }
     

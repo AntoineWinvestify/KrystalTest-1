@@ -137,11 +137,20 @@ class twino extends p2pCompany {
                             20 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
                             21 => ["INTEREST REPAYMENT" => "Regular_gross_interest_cost"], //
                             22 => ["PRINCIPAL REPAYMENT" => "Capital_repayment_cost"],
-                            23 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"]
+                            23 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"],
+                            24 => ["INTEREST BUY_OUT" => "Regular_gross_interest_income"],
+                            25 => ["SALE LOSS_ON_WRITEOFF" => "Compensation_positive"]
                         ],
                     ],
                     "functionName" => "getComplexTransactionDetail",
                 ],
+                [
+                    "type" => "conceptChars",                                   // Winvestify standardized name
+                    "inputData" => [
+                                    "input2" => "#current.internalName",            // get Winvestify concept
+                                ],
+                    "functionName" => "getConceptChars",
+                ]
             ]
         ]
     ];
@@ -189,7 +198,16 @@ class twino extends p2pCompany {
                 "name" => "investment_originalDuration"
             ],
             //"J" => ASK ANTOINE Extended
-            //"K" => IT IS NEXT PAYMENT, ASK ANTOINE IF IT NEEDED TO TAKE 
+            "K" =>  [
+                [
+                    "type" => "investment_nextPaymentDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ], 
             "L" => [
                 "name" => "investment_capitalRepaymentFromP2P"
             ],
@@ -213,8 +231,139 @@ class twino extends p2pCompany {
             ]
         ]
     ];
+    
+    protected $valuesExpiredLoan = [// All types/names will be defined as associative index in array
+        [
+            "A" => [
+                "name" => "investment_country"                              // Winvestify standardized name  OK
+            ],
+            "B" => [
+                "name" => "investment_loanId",
+            ],
+            "C" => [
+                [
+                    "type" => "investment_myInvestmentDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ],
+            "D" => [
+                "name" => "investment_riskRating",
+            ],
+            "E" => [
+                "name" => "investment_originalState",
+            ],
+            "F" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
+            "G" => [
+                "name" => "investment_expectedAnnualYield"
+            ],
+            //"H" => ASK ANTOINE Remaining Term
+            "I" => [
+                "name" => "investment_originalDuration"
+            ],
+            //"J" => ASK ANTOINE Extended
+            /*"K" => [
+                [
+                    "type" => "investment_nextPaymentDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ], */
+            "L" => [
+                "name" => "investment_capitalRepaymentFromP2P"
+            ],
+            "M" => [
+                [
+                    "type" => "investment_myInvestment", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ".",
+                        "input4" => 4
+                    ],
+                    "functionName" => "getAmount",
+                ],
+            ],
+            //"N" => ASK ANTOINE Interest income
+            "O" => [
+                "name" => "investment_outstandingPrincipalFromP2P"
+            ],
+            "P" => [
+                "name" => "investment_forSale"
+            ]
+        ]
+    ];
+    
+    protected $valuesInvestment2 = [// All types/names will be defined as associative index in array
+        [
+            "B" => [
+                "name" => "investment_loanId",
+            ],
+            "C" => [
+                [
+                    "type" => "investment_myInvestmentDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",                   
+                ],
+            ],
+            "H" => [
+                [
+                    "type" => "investment_remaingTerm", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ".",
+                        "input4" => 1,
+                    ],
+                    "functionName" => "getAmount",
+                ],
+            ],
+            "I" => [
+                "name" => "investment_originalDuration"
+            ],
+            "K" => [
+                [
+                    "type" => "investment_nextPaymentDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "m/d/Y", // Input parameters. The first parameter
+                    // is ALWAYS the contents of the cell
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ],
+        ]
+    ];
     protected $valuesAmortizationTable = [
-        3 => [
+        
+        0 => [
+            [
+                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => "Y-M-D",
+                ],
+                "functionName" => "normalizeDate",
+            ],           
+        ],
+
+
+            /*3 => [
             [
                 "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
                 "inputData" => [
@@ -258,7 +407,7 @@ class twino extends p2pCompany {
         ],
         12 => [
             "name" => "amortizationtable_paymentStatus"
-        ]
+        ]*/
     ];
     
     protected $transactionConfigParms = [
@@ -271,6 +420,14 @@ class twino extends p2pCompany {
     ];
     
     protected $investmentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd'     => 0,
+            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+       ]
+    ]; 
+    
+    protected $expiredLoanConfigParms = [
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
@@ -685,8 +842,72 @@ class twino extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str = null) {
-        switch ($this->idForSwitch) {
+    function collectAmortizationTablesParserFile($str = null) {
+        
+        $this->loanTotalIds = $this->loanIds;
+        $this->myParser = new Fileparser();                                                                             //Call the parser
+        $folder = $this->getFolderPFPFile();
+        $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
+        $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
+        $info = $this->myParser->analyzeFile($file, $this->valuesInvestment2[0], $this->typeFileInvestment);             //Parse the file
+        foreach ($info as $key => $value) {
+            if (!in_array($key, $this->loanIds)) {
+                //echo $key . " dont found, dont compare \n";
+                unset($info[$key]); //Delete old investments that we don't have in loanId.json from parsed array.
+                continue;
+            }
+
+            foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find
+                
+                $this->loanTotalIds = $this->loanIds;
+                $this->myParser = new Fileparser();                                                                             //Call the parser
+                $folder = $this->getFolderPFPFile();
+                $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
+                $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
+                $info = $this->myParser->analyzeFile($file, $this->valuesInvestment2[0], $this->typeFileInvestment);             //Parse the file
+                
+                $this->tempArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the investment table.                          //                                                                   
+                //echo $slice . " " . $id . " slice and id from json" . "\n";
+                //echo $key . " investment file id" . "\n\n\n\n\n\n\n";
+
+                if ($key == $id) {
+                    //echo 'compare ok';
+                    $this->tempArray['correctTables'][$slice] = $key; //If the investment exist in the file, we can get the table. Save the id in correcTables.
+                    continue;
+                }
+            }
+
+            foreach ($this->tempArray['correctTables'] as $slice => $id) {
+                unset($this->tempArray['errorTables'][$slice]); //If we can get the amortization table of the investment, delete from errorTables,.
+            }
+
+
+
+            $counter = $value[0]['investment_remaingTerm'];
+            echo 'counter: ' . $counter;
+            $table[0]['date'] = $value[0]['investment_nextPaymentDate'];
+            for($i = 1; $i <= $counter-1; $i++){
+                $tempDate = explode("-", $table[$i-1]['date']);
+                $month = $tempDate[1] + 1;
+                $year = $tempDate[0];
+                if($month > 12){
+                    $year = $year + 1;
+                    $month = 1;
+                }
+                $table[$i]['date'] = $year . "-" . $month . "-" . $tempDate[2];
+            }
+            echo 'id = ' . $key;
+            print_r($table);
+            $this->tempArray['tables'][$key] = $this->arrayToTableConversion($table); //Get the html table from the array
+            unset($table);
+        }
+        print_r($this->tempArray);
+        return $this->tempArray;
+        
+        
+        
+        //OLD METOD
+       /* switch ($this->idForSwitch) {
             /////////////LOGIN
             case 0:
                 $this->loanTotalIds = $this->loanIds;
@@ -714,7 +935,7 @@ class twino extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }*/
-                foreach ($containers as $container) {
+                /*foreach ($containers as $container) {
                     $divs = $container->getElementsByTagName('div');
                     $this->verifyNodeHasElements($divs);
                     if (!$this->hasElements) {
@@ -790,7 +1011,7 @@ class twino extends p2pCompany {
                     return $this->tempArray;
                     break;
                 }
-        }
+        }*/
     }
 
     /**
@@ -814,6 +1035,9 @@ class twino extends p2pCompany {
                 break;
             case "DEFAULTED":
                 $data = WIN_LOANSTATUS_ACTIVE;
+                break;
+            case 'BUYBACK':
+                $data = WIN_LOANSTATUS_FINISHED;
                 break;
             case "SOLD":
                 $data = WIN_LOANSTATUS_FINISHED;

@@ -905,13 +905,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
 
         echo "totalRows = $maxRows\n";
-     
+
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
                 unset($rowDatas[$i]);
             }
         }   
- 
+
         // remove items at from the end of the array
         for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
             array_pop($rowDatas);
@@ -928,7 +928,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
-                    eval($tempString);                   
+                    eval($tempString); 
                 }
                 else {          // "type" => .......
                     foreach ($value as $myKey => $userFunction ) {
