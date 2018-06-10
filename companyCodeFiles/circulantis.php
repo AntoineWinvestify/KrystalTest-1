@@ -72,7 +72,7 @@ class circulantis extends p2pCompany {
 // OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
 // OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
     protected $valuesTransaction = [
-        "A" => [
+         "A" => [
             [
                 "type" => "original_concept", // Winvestify standardized name   OK
                 "inputData" => [// trick to get the complete cell data as purpose
