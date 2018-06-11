@@ -1,6 +1,5 @@
 <?php
 /**
-// @(#) $Id$
 // +-----------------------------------------------------------------------+
 // | Copyright (C) 2018, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
@@ -28,7 +27,7 @@ getLinkedaccountDataList()					[OK, tested]
 function linkNewAccount()					[not Ok, not tested]
 
 
-2018-05-08	version 2018_0.2                              [OK, tested]
+2018-05-08	version 2018_0.2                                [OK, tested]
  support for linkedaccount_status, linkedaccount_statusExtended and linkedaccount_statusExtendedOld fields
  
 2018-06-08      version 0.3
@@ -94,8 +93,7 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     *
-     * 	Returns an array of the linkedaccount items and their data that fulfill the filterConditions
+     * 	Returns an array of the linkedaccount object and the associated data that fulfill the filterConditions
      *
      * 	@param 		array 	$filterConditions
      * 	@return 	array 	Data of each linkedaccount item as an element of an array
@@ -110,8 +108,7 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     * 
-     * Returns an array of the companies id depending on the filter Conditions
+     * Returns an array of the companies ids depending on the filter Conditions
      * 
      * @param array $filterConditions
      * @return array Each company id
@@ -127,7 +124,6 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     *
      * 	Links a new investment account for an investor
      *
      * 	@param 		int 	$companyId		Identifier of company where linked account resides
@@ -136,8 +132,7 @@ class Linkedaccount extends AppModel {
      * 	@param 		string 	$password		password
      *
      * 	@return 	boolean	true	Account linked
-     * 				false	Error happened, account not linked
-     * 						
+     * 				false	Error happened, account not linked					
      */
     public function createNewLinkedAccount($companyId, $investorId, $username, $password) {
 
@@ -163,7 +158,6 @@ class Linkedaccount extends AppModel {
      * 
      * @param string $queueUserReference It is the user reference
      * @return array        List of linkedaccount ids of Investor
-     * 
      */
     public function getLinkAccountsWithNothingInProcess($queueUserReference) {
         $companyNothingInProcess = [];
@@ -250,7 +244,6 @@ class Linkedaccount extends AppModel {
  
     
    /**
-     *
      * 	Disables the linked account(s) that fulfill $filterConditions. No action is taken in case account is NOT_ACTIVE 
      *  or already disabled.
      *  Note that "disabled" is not the same as "deleted"
@@ -259,8 +252,7 @@ class Linkedaccount extends AppModel {
      *  @param          int     $originator         WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
      *
      * 	@return 	boolean	true	Account(s) disabled
-     * 				false	Error happened, account(s) not disabled
-     * 						
+     * 				false	Error happened, account(s) not disabled					
      */
     public function disableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
@@ -299,7 +291,6 @@ class Linkedaccount extends AppModel {
     
     
    /**
-     *
      * 	Enables the linked account(s) that fulfill $filterConditions. 
      *  Only accounts that are disabled can be enabled. Note that if no disabled account(s) fulfill the 
      *  filteringConditions, a true is returned.

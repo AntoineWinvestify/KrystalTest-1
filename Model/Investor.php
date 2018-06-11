@@ -1,5 +1,4 @@
 <?php
-
 /**
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2017, http://www.winvestify.com                         |
@@ -16,7 +15,12 @@
   // | Author: Antoine de Poorter                                            |
   // +-----------------------------------------------------------------------+
   //
-
+* @author Antoine de Poorter
+* @version 0.7
+* @date 2017-17-10
+* @package
+*/
+/*
   2016-10-18	  version 0.1
   function updateAccountCreationStatus						[Not OK, Not tested]
 
@@ -198,6 +202,7 @@ class Investor extends AppModel {
 
     /**
      * 	Reads the status of the account of an investor
+     * 
      * 	@param 		int	$investorReference  The database handler of the investor
      * 	@param 		bitmap	$statusBit          The "status characteristic" to be checked of the current account
      *                                                   The definition of the bitmap is defined in database table
@@ -215,6 +220,7 @@ class Investor extends AppModel {
 
     /**
      * 	Updates the status of the account of an investor
+     * 
      * 	@param 		int	$investorReference	The database handler of the investor
      * 	@param 		bitmap	$addStatusBit		A new characteristic to be added to the current account creation status
      * 							The definition of the bitmap is defined in database table
@@ -282,8 +288,7 @@ class Investor extends AppModel {
      * 
      * 	@param 		int		$investorId	Identifier of the investor
      * 	@return 	boolean	true	All OK, data has been saved
-     * 				false	Error occured
-     * 						
+     * 				false	Error occured				
      */
     function increaseLinkedAccounts($investorId) {
         $this->id = $investorId;
@@ -414,6 +419,7 @@ class Investor extends AppModel {
 
     /**
      * Get all data of a investor
+     * 
      * @param type $id
      * @return type
      */

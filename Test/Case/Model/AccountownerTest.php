@@ -1,7 +1,6 @@
 <?php
-
 /* 
- * Copyright (C) 2018 antoine
+ * Copyright (C) 2018 http://www.winvestify.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*
+This class tests all the methods of the Model Accountowner
+ * 
+2018-05-08	  version 2018_0.1      
+First version 
+ * 
+ *                  
+ * 
+Pending:
+
+*/
+
 App::uses('Accountowner', 'Model');
 class AccountownerTest extends CakeTestCase {
 

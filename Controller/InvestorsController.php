@@ -18,7 +18,8 @@
  * @version 0.1
  * @date 2016-08-25
  * @package
- *
+ */
+/*
 
   2016-08-25	  version 0.1
   function linkAccount									[OK]

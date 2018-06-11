@@ -1,7 +1,5 @@
 <?php
-
 /**
-  // @(#) $Id$
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2009, http://www.winvestify.com                         |
   // +-----------------------------------------------------------------------+
@@ -19,7 +17,8 @@
  * @version 0.2
  * @date 2017-03-04
  * @package
- *
+ */
+/*
 
   2016-10-18	  version 0.1
   function createAccount()                                                            [OK, tested]
@@ -120,7 +119,6 @@ class User extends AppModel {
      * @param string $username 
      * @param string $userPassword   
      * @param string $telephone
-     *
      * @return array[0]	true	account created
      * 				false	account not created, unknown error
      * 				array[1]	information about errorfield(s)

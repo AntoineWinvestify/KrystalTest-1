@@ -19,7 +19,8 @@
  * @version 0.6
  * @date 2018-03-05
  * @package
- *
+ */
+/*
  * This client deals with parsing of the files that have been downloaded
  * from the PFP's. Once the data has been parsed by the Worker, the Client starts analyzing
  * the data and writes the data-elements to the corresponding database tables.

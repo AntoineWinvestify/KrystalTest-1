@@ -35,7 +35,8 @@
  * @version v 0.2
  * @date    2017-10-26
  * @package
- *
+ */
+/*
  *
  * 2017-08-11           version 0.1
  * Basic version

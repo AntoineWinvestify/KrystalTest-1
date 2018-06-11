@@ -1,7 +1,5 @@
 <?php
-
 /**
-  // @(#) $Id$
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2009, http://yoursite                                   |
   // +-----------------------------------------------------------------------+
@@ -17,6 +15,12 @@
   // | Author: Antoine de Poorter                                            |
   // +-----------------------------------------------------------------------+
   //
+ * @author Antoine de Poorter
+ * @version 0.1 
+ * @date 2017-06-29
+ * @package
+ */
+/*
 
   2016-10-07	  version 2016_0.1
   function getCompanyDataList(). Revisit again and use pollId as id, not companyId	[OK, but retest due to changes]

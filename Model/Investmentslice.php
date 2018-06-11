@@ -20,7 +20,8 @@
 * @version 0.1
 * @date 2017-10-18
 * @package
-*
+*/
+/*
 
 
 2017-10-18		version 0.1
@@ -31,10 +32,6 @@ initial version
 
 
 Pending:
-
-
-
-
 
 
 
@@ -101,8 +98,7 @@ class Investmentslice extends AppModel
      * Reads the date of the next [expected] payment
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
-     * 	@return 	bigint                          Database Id of the slice   
-     * 			
+     * 	@return 	bigint                          Database Id of the slice   		
      */
     public function getNextPaymentDate ($investmentId) {
 

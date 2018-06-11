@@ -1,8 +1,7 @@
 <?php
 /**
-// @(#) $Id$
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2009, http://yoursite                                   |
+*  | Copyright (C) 2017, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -20,7 +19,8 @@
 * @version 0.1
 * @date 2016-09-26
 * @package
-*
+*/
+/*
 
 2016-09-26	  version 2016_0.1
 function getUrlsequence()													[OK, tested]

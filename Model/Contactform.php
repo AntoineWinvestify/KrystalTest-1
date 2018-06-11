@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://beyond-language-skills.com                 |
  * +-----------------------------------------------------------------------+
@@ -21,7 +20,8 @@
  * @version 0.1
  * @date 2017-03-29
  * @package
- * 
+ * /
+ /*
   2017-03-29
   validation
   function createContactMessage()
@@ -68,7 +68,6 @@ class Contactform extends AppModel {
     );
 
     /**
-     *
      * 	Create the message in the data base and the event for send the mail.
      * 	
      * 	@param 		string	$name
@@ -76,10 +75,9 @@ class Contactform extends AppModel {
      * 	@param		string	$text
      *  @param          string  $subject
      *
-     * 	@return 	array	
-     * 							
+     * 	@return 	array								
      */
-public function createContactMessage($userName, $email, $subjectval ,$subjecttext ,$text) {
+    public function createContactMessage($userName, $email, $subjectval ,$subjecttext ,$text) {
         $data = array(
             'name' => $userName,
             'email' => $email,
