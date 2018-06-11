@@ -286,36 +286,44 @@ class ParseDataClientShell extends GearmanClientShell {
      */
     public function mapData(&$platformData) {
                
-            //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
+        //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
+        $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
-            foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
+            foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {                                       
                 foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
 
+                    //Loan id filter
                     if (Configure::read('flow2Filter')) {
                         $wantedInvestments = WANTEDINVESTMENT;
-                        if (!in_array( $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
-                            //print_r($wantedInvestments);
-                            //print_r($platformData['parsingResultTransactions'][$date][$loanId][$transaction]);
+                        if (!in_array($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
                             unset($platformData['parsingResultTransactions'][$date][$loanId]);
-                            
-                           if (empty($platformData['parsingResultTransactions'][$date])) {
+                            if (empty($platformData['parsingResultTransactions'][$date])) {
                                 unset($platformData['parsingResultTransactions'][$date]);
                             }
                         }
                     }
-                    
-                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE") {
+
+                    //Sort and put transaction that create an investment first
+                    if (($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
+                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
+                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE")) {
                         $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
                         $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
                         $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
                         break;
-                    }
+                    }      
                 }
+                 
+                //Sort and put transaction without loan id last
+                if (strpos($loanId, 'global') !== false && !in_array($loanId, $sortedGlobalId)) {
+                        $noLoanIdTransaction = $platformData['parsingResultTransactions'][$date][$loanId];
+                        unset($platformData['parsingResultTransactions'][$date][$loanId]);
+                        $platformData['parsingResultTransactions'][$date][$loanId] = $noLoanIdTransaction;
+                        $sortedGlobalId[] = $loanId;
+                }                       
             }
         }
-                    
- 
-        
+
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
@@ -497,7 +505,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
 
-                if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                if (/*$dateTransactionNames[0] == "global"*/  strpos($keyDateTransaction, "global") !== false) {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     
                     
                     // cycle through all individual fields of the transaction record
