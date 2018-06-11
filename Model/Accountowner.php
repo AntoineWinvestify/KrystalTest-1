@@ -199,7 +199,7 @@ class Accountowner extends AppModel {
      */
     public function changeAccountPassword($accountownerId, $newPass){
         if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
-      /////      return true;
+         return true;
         }
         return false;
     }
