@@ -56,22 +56,18 @@ class Linkedaccount extends AppModel {
     
     
     /**
-     * 	Delete a record that fulfills the filteringConditions
+     * 	Delete a an account that fulfills the filteringConditions
      * 	
      * 	@param 		array 	$filterConditions	Must indicate at least "investor_id"
      *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
      */
-    public function deleteLinkedaccountxx($filterConditions, $originator = WIN_USER_INITIATED) {
-
-        if (!array_key_exists('investor_id', $filterConditions)) {
-            return false;
-        }
+    public function deleteLinkedaccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
         $indexList = $this->find('all', $params = array('recursive' => -1,
                                                         'conditions' => $filterConditions,
-                                                        'fields' => array('id', 'investor_id'))
+                                                        'fields' => array('id', 'accountowner_id'))
                                 );
 
         if (empty($indexList)) {
@@ -88,10 +84,10 @@ class Linkedaccount extends AppModel {
         $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
         $this->updateAll($newData, $filterConditions);       
 
-        $this->Investor = ClassRegistry::init('Investor');  
+        $this->Accountowner = ClassRegistry::init('Accountowner');  
         
         foreach ($indexList as $index) {
-            $this->Investor->decreaseLinkedAccounts($index['linkedaccount']['investor_id]']);
+            $this->Accountowner->accountDeleted ($index['accountowner_id']);
         }
 
         return true;
@@ -155,7 +151,7 @@ class Linkedaccount extends AppModel {
                                                         );    
             
             if ($this->save($linkedAccountData, $validation = true)) {
-                $this->accountAdded ($accountOwnerId);
+                $this->Accountowner->accountAdded ($accountOwnerId);
                 return true;
             } 
         }

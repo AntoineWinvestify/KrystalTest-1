@@ -79,7 +79,6 @@ class Investmentslice extends AppModel
      *  @param          string  $sliceIdentifier        Unique identifier of the slice
      *  @param          date    $date                   Date of creation
      * 	@return 	bigint                          Database Id of the slice   
-     * 			
      */
     public function getNewSlice ($investmentId, $sliceIdentifier, $date) {
 
@@ -128,8 +127,7 @@ class Investmentslice extends AppModel
      * Reads the amount of the next [expected] payment
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
-     * 	@return 	bigint                          Database Id of the slice   
-     * 			
+     * 	@return 	bigint                          Database Id of the slice   			
      */
     public function getNextPaymentAmount ($investmentId) {
         $this->create();

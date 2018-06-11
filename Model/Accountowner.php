@@ -110,7 +110,7 @@ class Accountowner extends AppModel {
                                     );
 
         if ($this->save($data, $validation = true)) {
-            return true;
+            return $this->id;
         } 
         return false;
     }
@@ -129,12 +129,15 @@ class Accountowner extends AppModel {
         $filterConditions = array('id' => $accountownerId);
         $resultCounter = $this->find('first', array('conditions' => $filterConditions,
                                                     'recursive'  => -1,
-                                                    'fields'     => 'accountowner_linkedAccountCounter',
+                                                    'fields'     => array('accountowner_linkedAccountCounter', 'investor_id'),
                                                     ));
         
-        $newCounterValue = $resultCounter + 1;
+        $newCounterValue = $resultCounter['Accountowner']['accountowner_linkedAccountCounter'] + 1;
         $data = array ('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue);
         if ($this->save($data, $validate = true)) {
+            $this->Investor = ClassRegistry::init('Investor');
+            $this->Investor->increaseLinkedAccounts($resultCounter['Accountowner']['id]']);
+
             $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
             ($newCounterValue > 1) ? $newAliasState = WIN_ALIAS_SYSTEM_CONTROLLED : $newAliasState = WIN_ALIAS_USER_CONTROLLED;
@@ -151,7 +154,7 @@ class Accountowner extends AppModel {
     /**
      * Remove a linked account from the accountowner. This is ONLY
      * required if the account is deleted. Disabling an account
-     * has not effect. Also the number of linked accounts tied to an accountowner object
+     * has no effect. Also the number of linked accounts tied to an accountowner object
      * is decremented.
      * 
      * @param int $accountownerId   It is the reference of the accountowner object
@@ -162,12 +165,15 @@ class Accountowner extends AppModel {
         $filterConditions = array('id' => $accountownerId);
         $resultCounter = $this->find('first', array('conditions' => $filterConditions,
                                                     'recursive'  => -1,
-                                                    'fields'     => 'accountowner_linkedAccountCounter',
+                                                    'fields'     => array('accountowner_linkedAccountCounter','investor_id')
                                                     ));
         
-        $newCounterValue = $resultCounter - 1;
+        $newCounterValue = $resultCounter['Accountowner']['accountowner_linkedAccountCounter'] - 1;
         $data = array ('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue);
         if ($this->save($data, $validate = true)) {
+            $this->Investor = ClassRegistry::init('Investor');
+            $this->Investor->decreaseLinkedAccounts($resultCounter['Accountowner']['id]']);            
+            
             $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
             if ($newCounterValue == 0) { 
                 $this->deleteAccountOwner($accountownerId);

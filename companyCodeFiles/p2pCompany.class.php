@@ -2922,6 +2922,15 @@ FRAGMENT
     }
 
     /**
+     * Function to set the investment list for a linkaccount from database
+     * @param string $tableStructure It is the table structure to compare
+     */
+    function setInvestmentList($investmentList) {
+        $this->investmentList = $investmentList;
+    }    
+    
+    
+    /**
      * Function to create a new loanIds.json with the amortizationTables that failed
      * and rename the old file loanIds to oldIdsLoan
      */

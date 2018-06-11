@@ -38,6 +38,7 @@ class Userinvestmentdata extends AppModel {
     
     /**
      * Get data of the last linked accounts investments of an investor.
+     * 
      * @param string $investorId             investor database id.
      * @return array Last Userinvestmentdata rows for the linked accounts
      */
@@ -69,6 +70,7 @@ class Userinvestmentdata extends AppModel {
 
     /**
      * Get data of all the linked accounts of an investor.
+     * 
      * @param string $investorIdentity investor identity number
      * @return array Global data
      */
@@ -89,8 +91,7 @@ class Userinvestmentdata extends AppModel {
      * 	@param 		array 	$investmentdata 	All the data to be saved
      * 	@return 	array[0]    => boolean
      *                  array[1]    => detailed error information if array[0] = false
-     *                                 id if array[0] = true
-     * 			
+     *                                 id if array[0] = true		
      */
     public function createUserInvestmentData($userInvestmentData) {
         $this->create();
@@ -117,7 +118,7 @@ class Userinvestmentdata extends AppModel {
     }
     
     
-    public function getInvestmentIdByLoanId($loanIds) { // NOT NEEDED?? repalce with getData
+    public function getInvestmentIdByLoanId($loanIds) { // NOT NEEDED?? replace with getData
         $fields = array('Investment.investment_loanReference', 'Investment.id');
         $conditions = array('investment_loanReference' => $loanIds);
         $investmentIds = $this->find('list', $params = array('recursive' => -1,
