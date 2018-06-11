@@ -249,9 +249,9 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0,
-                                "input4" => ","
-                            ],
+                                "input3" => 4,
+                                 "input4" => ","
+                                ],
                     "functionName" => "handleNumber",
                 ],
                 [
@@ -363,7 +363,8 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0
+                                "input3" => 4,
+                                "input4" => ","
                                 ],
                     "functionName" => "handleNumber",
                 ]                                         

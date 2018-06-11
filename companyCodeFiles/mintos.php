@@ -284,9 +284,17 @@ class mintos extends p2pCompany {
             "K" =>  [
                 "name" => "investment_LTV"                                      // Winvestify standardized name   OK
              ],
-            "L" =>  [
-                    "name" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-             ],
+            "L" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
             "M" =>  [
                 "name" => "investment_numberOfInstalments"                      // Winvestify standardized name. This is, 
                                                                                 // at time of investing, the number of
@@ -537,9 +545,17 @@ class mintos extends p2pCompany {
                 ]           
              ],
     */
-            "J" =>  [
-                    "name" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-                 ],  
+            "J" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
             "M" =>  [
                     "name" => "investment_originalState"                        // Winvestify standardized name  OK
                  ], 
@@ -720,8 +736,8 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3108;
-        $this->maxEmptySize = 3110;
+        $this->minEmptySize = 3106;
+        $this->maxEmptySize = 3112;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);

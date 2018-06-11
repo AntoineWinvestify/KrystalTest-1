@@ -188,8 +188,7 @@ class Fileparser {
                 "type" => "globalcashflowdata_platformWithdrawals"          
                 ],
             3 => [
-                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default
-                                                                                //For example Mintos
+                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default                                               //For example Mintos
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
@@ -285,7 +284,7 @@ class Fileparser {
                 "detail" => "Recoveries",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept19"
+                "type" => "payment_loanRecoveries"
                 ],
             20 => [
                 "detail" => "Commission",
@@ -453,6 +452,19 @@ class Fileparser {
                 "type" => "investment_myInvestmentActiveVerification",  
                 "chars" => "ACTIVE_VERIFICATION"
                 ],
+            46 => [
+                "detail" => "Regular_gross_interest_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "payment_regularGrossInterestCost"           
+                ],
+            47 => [
+                "detail" => "Capital_repayment_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "payment_capitalRepaymentCost",
+                "chars" => "REPAYMENT"                   
+            ],
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept
@@ -893,13 +905,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
 
         echo "totalRows = $maxRows\n";
-     
+
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
                 unset($rowDatas[$i]);
             }
         }   
- 
+
         // remove items at from the end of the array
         for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
             array_pop($rowDatas);
@@ -916,7 +928,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
-                    eval($tempString);                   
+                    eval($tempString); 
                 }
                 else {          // "type" => .......
                     foreach ($value as $myKey => $userFunction ) {

@@ -193,10 +193,13 @@ class UserDataShell extends AppShell {
             $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
-            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
+            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
-            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
+        }
+        if (isset($resultData['payment']['payment_tempCamp'])) {
+            $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
         }
         return $result;
     }
@@ -394,6 +397,8 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
+        print_r($resultData);
+        echo '/////////';
         if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
@@ -457,7 +462,9 @@ class UserDataShell extends AppShell {
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
+    public function calculateCapitalRepaymentCost(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
     /**
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
      * 
@@ -544,7 +551,9 @@ class UserDataShell extends AppShell {
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-      
+    public function calculateRegularGrossInterestCost(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }  
     /**
      *  Calculates the number of active investments. Various investments in the same loan 
      *  are counted as 1 investment
@@ -1531,6 +1540,37 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         return $transactionData['amount'];
     }
     
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateRecoveries(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateCurrencyFluctation(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculatePlatformRecoveries(&$transactionData, &$resultData) {
+        //$result = $resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'];
+        //$result = bcadd($result, $transactionData['amount'], 16);
+        return $transactionData['amount'];
+    }
+ 
 }
 
 

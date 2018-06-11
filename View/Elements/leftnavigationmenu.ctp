@@ -66,7 +66,7 @@ $(document).ready(function() {
                 "Tallyman" => __("Tallyman"),
                 "Investor Checking" => __("Investor Checking"),
                 "Dashboard 2.0" => __("Dashboard 2.0"),
-                "Overview" => __("Overview"),
+                "Dashboard 2.0 Overview" => __("Overview"),
                 "Initial Panel" => __("Initial Panel"),
                 "Logout" => __("Logout")
                 //Bills is repeated
