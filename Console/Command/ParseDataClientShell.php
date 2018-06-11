@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2018, http://www.winvestify.com                   	  	|
@@ -17,10 +16,10 @@
  *
  * @author
  * @version 0.5
- * @date 2018-03-05
+ * @date 2018-06-11
  * @package
- *
- * This client deals with parsing of the files that have been downloaded
+ */
+ /* This client deals with parsing of the files that have been downloaded
  * from the PFP's. Once the data has been parsed by the Worker, the Client starts analyzing
  * the data and writes the data-elements to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
