@@ -63,8 +63,6 @@ class Investmentslice extends AppModel
         'Amortizationtable' => array(
             'className' => 'Amortizationtable',
             'foreignKey' => 'investmentslice_id',
-            'fields' => '',
-            'order' => '',
         ),
     );   
     
