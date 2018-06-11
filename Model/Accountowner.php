@@ -195,7 +195,7 @@ class Accountowner extends AppModel {
      * 
      * @param type $accountownerId  id of the linkaccountowner object
      * @param type $newPass         new password
-     * @return boolean  
+     * @return boolean        
      */
     public function changeAccountPassword($accountownerId, $newPass){
         if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
