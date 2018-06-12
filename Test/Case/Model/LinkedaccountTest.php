@@ -29,8 +29,9 @@ Pending:
 
 App::uses('Linkedaccount', 'Model');
 class LinkedaccountTest extends CakeTestCase {
-    public $fixtures = array('app.Linkedaccount');
-
+    public $fixtures = array('app.Accountowner', 'app.Linkedaccount');
+    
+    
     var $companyId; 
     var $investorId; 
     var $username;
@@ -43,16 +44,7 @@ class LinkedaccountTest extends CakeTestCase {
     }
     
     
-    public function testPublished() {
-        $result = $this->Article->published(array('id', 'title'));
-        $expected = array(
-            array('Article' => array('id' => 1, 'title' => 'First Article')),
-            array('Article' => array('id' => 2, 'title' => 'Second Article')),
-            array('Article' => array('id' => 3, 'title' => 'Third Article'))
-        );
-
-        $this->assertEquals($expected, $result);
-    }    
+   
 
     
 /*    

@@ -679,7 +679,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             if (isset($getAmortizationTable) && $getAmortizationTable) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                // if not then create a new array with the data available so far, sliceIdentifier and loanId
                                 $isNewTable = YES;
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                                     if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {

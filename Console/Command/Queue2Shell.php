@@ -1,16 +1,15 @@
 <?php
-
 /**
- * +-----------------------------------------------------------------------------+
- * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, https://www.winvestify.com                   	  	|
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
  * | the Free Software Foundation; either version 2 of the License, or 		|
  * | (at your option) any later version.                                      	|
  * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
  * +-----------------------------------------------------------------------------+
  *
@@ -19,7 +18,8 @@
  * @version 0.1
  * @date 2018-02-13
  * @package
- *
+ */
+/*
  *
  *  Shell for cron methods of queues2
  *
@@ -80,7 +80,7 @@ class Queue2Shell extends AppShell {
     }
 
     /**
-     * Put a new request into the queue for Dashboard 2.0
+     * Put a new request into the queue for Dashboard 2.0 in case of a regular update
      * 
      */
     public function cronAddToQueue2() {
@@ -90,7 +90,7 @@ class Queue2Shell extends AppShell {
         $this->Queue2 = ClassRegistry::init('Queue2');
 
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
-
+        
         foreach ($investors as $investor) {
             $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
         }
