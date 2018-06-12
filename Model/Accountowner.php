@@ -89,7 +89,7 @@ class Accountowner extends AppModel {
         // check if an accountowner already exists
         $filterConditions = array('company_id' => $companyId,
                                   'investor_id' => $investorId,
-                                  'linkedaccount_status' => WIN_ACCOUNTOWNER_ACTIVE
+                                  'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE
                                     );
         
         $result = $this->find("first", array('conditions' => $filterConditions,
@@ -97,7 +97,7 @@ class Accountowner extends AppModel {
                                              'fields'  => 'id',
                                              ));
         if (!empty($result)) {
-            return $result['id'];
+            return $result['Accountowner']['id'];
         }
         
         $data['Accountowner'] = array('company_id' => $companyId,
@@ -241,7 +241,7 @@ class Accountowner extends AppModel {
         }
 
         if (!empty($this->data['Accountowner']['accountowner_username'])) {
-            $this->data['Accountowner']['accountowner_username'] = $this->encryptDataBeforeSave($this->data['Accountowner']['accountownert_username']);
+            $this->data['Accountowner']['accountowner_username'] = $this->encryptDataBeforeSave($this->data['Accountowner']['accountowner_username']);
         }
 
         return true;

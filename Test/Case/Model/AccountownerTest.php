@@ -30,7 +30,7 @@ Pending:
 App::uses('Accountowner', 'Model');
 class AccountownerTest extends CakeTestCase {
 
-    public $fixtures = array('app.Accountowner');
+    public $fixtures = array('app.Accountowner', 'app.Linkedaccount', 'app.Investor');
 
     public function setUp() {
         parent::setUp();
@@ -40,16 +40,6 @@ class AccountownerTest extends CakeTestCase {
     
 
     
-    public function testPublished() {
-        $result = $this->Article->published(array('id', 'title'));
-        $expected = array(
-            array('Article' => array('id' => 1, 'title' => 'First Article')),
-            array('Article' => array('id' => 2, 'title' => 'Second Article')),
-            array('Article' => array('id' => 3, 'title' => 'Third Article'))
-        );
-
-        $this->assertEquals($expected, $result);
-    }   
  
 /*    
     public function tearDown()
@@ -66,8 +56,21 @@ class AccountownerTest extends CakeTestCase {
     }
     
     
-    public function testCreateAccountOwner($companyId, $investorId, $username, $password) {
-
+    public function testCreateAccountOwner() {
+        $expected = 42;                                                          // Create a new accountowner
+        $result = $this->Accountowner->CreateAccountOwner($companyId = 20, 
+                                                        $investorId = 25, 
+                                                        $username = "inigo.iturburua@gmail.com", 
+                                                        $password = "8870mit");
+        $this->assertEquals($expected, $result);      
+        
+        $expected1 = 5;                                                         // Return existing one
+        $result1 = $this->Accountowner->CreateAccountOwner($companyId = 10, 
+                                                        $investorId = 63, 
+                                                        $username = "inigo.iturburua@gmail.com", 
+                                                        $password = "8870mit");
+        $this->assertEquals($expected1, $result1);         
+        
     }
     
        
@@ -88,14 +91,6 @@ class AccountownerTest extends CakeTestCase {
     }
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
 }

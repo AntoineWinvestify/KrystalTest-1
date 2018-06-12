@@ -80,7 +80,7 @@ class Queue2Shell extends AppShell {
     }
 
     /**
-     * Put a new request into the queue for Dashboard 2.0
+     * Put a new request into the queue for Dashboard 2.0 in case of a regular update
      * 
      */
     public function cronAddToQueue2() {
@@ -90,7 +90,7 @@ class Queue2Shell extends AppShell {
         $this->Queue2 = ClassRegistry::init('Queue2');
 
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
-
+        
         foreach ($investors as $investor) {
             $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
         }
