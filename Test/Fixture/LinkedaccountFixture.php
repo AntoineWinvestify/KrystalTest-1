@@ -76,32 +76,32 @@ class LinkedaccountFixture extends CakeTestFixture {
           ),
            array(
             'id' => 3,
-            'company_id' => 25,              
-            'accountowner_id' => array('type' => 'integer'),
-            'linkedaccount_lastAccessed' => 'datetime',
+            'company_id' => 19,              
+            'accountowner_id' =>25,
+            'linkedaccount_lastAccessed' => '2017-12-28 10:43:23',
             'linkedaccount_linkingProcess' => 0,
             'linkedaccount_status' => 1,                                        // ACTIVE
             'linkedaccount_statusExtended' => 2,                                // CREDENTIALS_VERIFIED
             'linkedaccount_statusExtendedOld' => 0,
-            'linkedaccount_alias' => "DUMMY",
-            'linkedaccount_accountIdentity' => "DUMMY",
-            'linkedaccount_accountDisplayName' => "DUMMY",
+            'linkedaccount_alias' => "DUMMY_ALIAS",
+            'linkedaccount_accountIdentity' => "DUMMY_IDENTITY_1",
+            'linkedaccount_accountDisplayName' => "DUMMY_DISPLAYNAME_1",
             'linkedaccount_isControlledBy' => 2,                                // SYSTEM_CONTROLLED
             'created' => '2007-03-18 10:43:23',
             'modified' => '2007-03-18 10:45:31'
           ) ,          
           array(
             'id' => 4,
-            'company_id' => 7,              
-            'accountowner_id' => array('type' => 'integer'),
-            'linkedaccount_lastAccessed' => 'datetime',
+            'company_id' => 3,              
+            'accountowner_id' => 41,
+            'linkedaccount_lastAccessed' => '2017-07-28 10:43:23',
             'linkedaccount_linkingProcess' => 0,
             'linkedaccount_status' => 1,                                        // ACTIVE
             'linkedaccount_statusExtended' => 2,                                // CREDENTIALS_VERIFIED
             'linkedaccount_statusExtendedOld' => 0,
-            'linkedaccount_alias' => "DUMMY",
-            'linkedaccount_accountIdentity' => "DUMMY",
-            'linkedaccount_accountDisplayName' => "DUMMY",
+            'linkedaccount_alias' => "DUMMY_ALIAS",
+            'linkedaccount_accountIdentity' => "DUMMY_IDENTITY_2",
+            'linkedaccount_accountDisplayName' => "DUMMY_DISPLAYNAME_2",
             'linkedaccount_isControlledBy' => 2,                                // SYSTEM_CONTROLLED
             'created' => '2007-03-18 10:43:23',
             'modified' => '2007-03-18 10:45:31'
@@ -109,15 +109,15 @@ class LinkedaccountFixture extends CakeTestFixture {
           array(
             'id' => 5,
             'company_id' => 4,             
-            'accountowner_id' => array('type' => 'integer'),
-            'linkedaccount_lastAccessed' => 'datetime',
+            'accountowner_id' => k,
+            'linkedaccount_lastAccessed' => '2007-07-18 10:43:23',
             'linkedaccount_linkingProcess' => 0,
             'linkedaccount_status' => 1,                                        // ACTIVE
             'linkedaccount_statusExtended' => 2,                                // CREDENTIALS_VERIFIED
             'linkedaccount_statusExtendedOld' => 0,
-            'linkedaccount_alias' => "DUMMY",
-            'linkedaccount_accountIdentity' => "DUMMY",
-            'linkedaccount_accountDisplayName' => "DUMMY",
+            'linkedaccount_alias' => "DUMMY_ALIAS",
+            'linkedaccount_accountIdentity' => "DUMMY_IDENTITY_3",
+            'linkedaccount_accountDisplayName' => "DUMMY_DISPLAYNAME_3",
             'linkedaccount_isControlledBy' => 2,                                // SYSTEM_CONTROLLED 
             'created' => '2007-03-18 10:43:23',
             'modified' => '2007-03-18 10:45:31'
@@ -125,15 +125,15 @@ class LinkedaccountFixture extends CakeTestFixture {
           array(
             'id' => 6,
             'company_id' => 1,             
-            'accountowner_id' => 23,
-            'linkedaccount_lastAccessed' => 'datetime',
+            'accountowner_id' => 26,
+            'linkedaccount_lastAccessed' => '2017-03-28 10:43:23',
             'linkedaccount_linkingProcess' => 0,
             'linkedaccount_status' => 2,                                        // NOT ACTIVE
             'linkedaccount_statusExtended' => 12,                               // DELETED BY USER
             'linkedaccount_statusExtendedOld' => 0,
             'linkedaccount_alias' => "DUMMY",
-            'linkedaccount_accountIdentity' => "DUMMY",
-            'linkedaccount_accountDisplayName' => "DUMMY",
+            'linkedaccount_accountIdentity' => "DUMMY_IDENIITY_4",
+            'linkedaccount_accountDisplayName' => "DUMMY_DISPLAYNAME_4",
             'linkedaccount_isControlledBy' => 2,                                // SYSTEM_CONTROLLED
             'created' => '2007-03-18 10:43:23',
             'modified' => '2007-03-18 10:45:31',

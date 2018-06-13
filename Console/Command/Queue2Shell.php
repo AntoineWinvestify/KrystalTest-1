@@ -47,8 +47,9 @@ class Queue2Shell extends AppShell {
         $this->Company = ClassRegistry::init('Company');
 
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
-
-        $companiesWithPreprocess = $this->Company->getData(['company_typeAccessPreprocess !=' => null], ['id']);                //if company_typeAccessPreprocess isnt null, the company must have preprocess
+        
+        //if company_typeAccessPreprocess isnt null, the company must have preprocess
+        $companiesWithPreprocess = $this->Company->getData(['company_typeAccessPreprocess !=' => null], ['id']);                
         foreach ($companiesWithPreprocess as $companyWithPreprocess) {
             $hasPreprocess[] = $companyWithPreprocess['Company']['id'];
         }
@@ -92,8 +93,10 @@ class Queue2Shell extends AppShell {
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
         
         foreach ($investors as $investor) {
-            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
-        }
+            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 
+                                                                            'linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS], 
+                                                                            ['id', 'company_id']);
+        }       
 
         foreach ($linkaccounts as $investorIdentity => $linkaccount) {
             foreach ($linkaccount as $linkedPfp) {

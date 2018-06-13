@@ -692,6 +692,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+              // ADPO                      $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $;
                                 }
                             }
                             
@@ -813,6 +814,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                       //ADPO             $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $sliceIdentifier;
                                 }
                             }
                             

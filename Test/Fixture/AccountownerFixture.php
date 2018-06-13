@@ -23,7 +23,7 @@
 
 class AccountownerFixture extends CakeTestFixture {
 
-    public $useDbConfig = 'test';
+//    public $useDbConfig = 'test';
     public $fields = array(
         'id' => array('type' => 'integer', 'key' => 'primary'),
         'company_id'=> array('type' => 'integer'),
@@ -69,7 +69,29 @@ class AccountownerFixture extends CakeTestFixture {
         'accountowner_linkedAccountCounter' => 1, 
         'created' => '2007-03-18 10:43:23',
         'modified' => '2007-03-18 10:45:31'
-        )
+        ),
+          array(
+        'id' => 26,
+        'company_id'=> 1,
+        'investor_id' => 25,
+        'accountowner_username' => "daniel@winvestify.com",
+        'accountowner_password' => "8870mit",
+        'accountowner_status' => 1,                                             // NOT ACTIVE
+        'accountowner_linkedAccountCounter' => 1, 
+        'created' => '2007-03-18 10:43:23',
+        'modified' => '2007-03-18 10:45:31'
+        ),  
+          array(
+        'id' => 27,
+        'company_id'=> 1,
+        'investor_id' => 25,
+        'accountowner_username' => "daniel@winvestify.com",
+        'accountowner_password' => "8870mit",
+        'accountowner_status' => 1,                                             // NOT ACTIVE
+        'accountowner_linkedAccountCounter' => 1, 
+        'created' => '2007-03-18 10:43:23',
+        'modified' => '2007-03-18 10:45:31'
+        )           
     );
  }
 
