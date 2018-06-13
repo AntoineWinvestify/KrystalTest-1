@@ -111,6 +111,9 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                                 );
                         
                         echo "PARAM TOTAL";
+                        if (in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
+                            break;
+                        }
                     }
                     $parametersFile = $subDirectory . "/" . $pfp . "/flow3aTransferClientToWorker.json";
                     file_put_contents($parametersFile, json_encode($params));
