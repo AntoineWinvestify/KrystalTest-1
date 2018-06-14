@@ -933,7 +933,7 @@ print_r($conceptChars);
                     $dateToDeleteAfter1 = new DateTime(date($finishDate));
                     $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
 
-                    if ($dateKey >= $lastDateToCalculate) {
+                    if ($dateKey == $lastDateToCalculate) {
                         $tempBackupCopyId = $this->copyInvestment($investmentId);
 echo __FUNCTION__ . " " . __LINE__ ." Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";                        
 echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKey, and backupCopyId = " .  $tempBackupCopyId ."\n";
@@ -1149,7 +1149,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
         $dateToDeleteAfter = new DateTime(date($finishDate));
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
 echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
-        if ($dateKey >= $lastDateToCalculate) {           // clean up
+        if ($dateKey == $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
             echo "\n get all ids of the investments records which have a backup\n";
             $filter = array("investment_backupCopyId >" => 0,
@@ -1167,7 +1167,7 @@ print_r($filter);
                 
                 // check if the investment has the same date as the date of account linking, if so delete the record
                 $filter = array ('id' => $result['Investment']['id'],
-                                'date >=' => $dateKey);
+                                'date' => $lastDateToCalculate);
                 
                 $investmentData = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
                 print_r($investmentData);
