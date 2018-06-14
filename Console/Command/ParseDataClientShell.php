@@ -1159,8 +1159,8 @@ echo __FILE__ . " " . __LINE__ . " showing filter\n";
 print_r($filter);            
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
             
-//echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
-//print_r($results);
+echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
+print_r($results);
 
             foreach ($results as $result) {
                 $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
