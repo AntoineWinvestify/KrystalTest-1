@@ -20,7 +20,8 @@
 * @version 0.1
 * @date 2017-10-18
 * @package
-*
+*/
+/*
 
 Hold "total" values of many of the concepts that are applicable to a loan
 
@@ -29,13 +30,7 @@ initial version
 
 
 
-
-
 Pending:
-
-
-
-
 
 
 

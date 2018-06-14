@@ -1,5 +1,4 @@
 <?php
-
 /**
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2017, https://www.winvestify.com                        |
@@ -21,9 +20,8 @@
  * @version 0.1
  * @date 2017-10-18
  * @package
- *
-
-
+ */
+/*
   holds the logic of an individual investment
 
   2017-10-18		version 0.1
@@ -37,8 +35,8 @@
   Pending:
 
 
-
  */
+
 class Investment extends AppModel {
 
     var $name = 'Investment';
