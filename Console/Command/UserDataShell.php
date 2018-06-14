@@ -1026,6 +1026,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculatePrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        if(isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || !empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])){
+            $resultData['payment']['payment_partialPrincipalAndInterestPayment'] = $resultData['payment']['payment_partialPrincipalAndInterestPayment'] + $transactionData['amount'];
+            return;
+        }
         return $transactionData['amount'];
     }
     
@@ -1036,6 +1040,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculatePartialPrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        if(isset($resultData['payment']['payment_principalAndInterestPayment']) || !empty($resultData['payment']['payment_principalAndInterestPayment'])){
+            $resultData['payment']['payment_principalAndInterestPayment'] = $resultData['payment']['payment_principalAndInterestPayment'] + $transactionData['amount'];
+            return;
+        }
         return $transactionData['amount'];
     }
     
