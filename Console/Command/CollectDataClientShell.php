@@ -183,9 +183,7 @@ class CollectDataClientShell extends GearmanClientShell {
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }
-echo "Final Data array\n";                
-print_r($data);
-echo "Exiting\n";
+
                 $this->GearmanClient->runTasks();
 
                 if (Configure::read('debug')) {
