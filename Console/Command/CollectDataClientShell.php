@@ -59,7 +59,7 @@ class CollectDataClientShell extends GearmanClientShell {
         $companyTypes = $this->Company->find('list', array(
             'fields' => array('Company.company_typeAccessTransaction')
         ));
-        $this->date = date("Ymd", strtotime("-1 day"));
+        $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
             if (Configure::read('debug')) {
@@ -183,7 +183,9 @@ class CollectDataClientShell extends GearmanClientShell {
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }
-
+echo "Final Data array\n";                
+print_r($data);
+echo "Exiting\n";
                 $this->GearmanClient->runTasks();
 
                 if (Configure::read('debug')) {

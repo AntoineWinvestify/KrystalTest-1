@@ -61,18 +61,23 @@ class Accountowner extends AppModel {
      * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
      */
     function deleteAccountOwner($accountOwnerId) {
+        // Check if accountowner really exists.
+        $filterConditions = ['id' => $accountOwnerId];
+        $resultCounter = $this->find('first', array('conditions' => $filterConditions,
+                                                    'recursive'  => -1,
+                                                    ));
+        
+        if (!empty($resultCounter)) {
+            $data = array ('id' => $accountOwnerId,
+                        'accountowner_status'   => WIN_LINKEDACCOUNT_NOT_ACTIVE,
+                        'accountowner_username' => "FINISHED",
+                        'accountowner_password' => "FINISHED");
 
-        $data = array ('id' => $accountOwnerId,
-                    'accountowner_status'   => WIN_LINKEDACCOUNT_NOT_ACTIVE,
-                    'accountowner_username' => "FINISHED",
-                    'accountowner_password' => "FINISHED");
-
-        if ($this->save($data, $validation = true)) {
-            return true;
-        } 
-        else {
-            return false;
+            if ($this->save($data, $validation = true)) {
+                return true;
+            } 
         }
+        return false;
     }
     
     
@@ -89,7 +94,7 @@ class Accountowner extends AppModel {
         // check if an accountowner already exists
         $filterConditions = array('company_id' => $companyId,
                                   'investor_id' => $investorId,
-                                  'linkedaccount_status' => WIN_ACCOUNTOWNER_ACTIVE
+                                  'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE
                                     );
         
         $result = $this->find("first", array('conditions' => $filterConditions,
@@ -97,7 +102,7 @@ class Accountowner extends AppModel {
                                              'fields'  => 'id',
                                              ));
         if (!empty($result)) {
-            return $result['id'];
+            return $result['Accountowner']['id'];
         }
         
         $data['Accountowner'] = array('company_id' => $companyId,
@@ -127,23 +132,25 @@ class Accountowner extends AppModel {
         $filterConditions = array('id' => $accountownerId);
         $resultCounter = $this->find('first', array('conditions' => $filterConditions,
                                                     'recursive'  => -1,
-                                                    'fields'     => array('accountowner_linkedAccountCounter', 'investor_id'),
+                                                    'fields'     => array('id','accountowner_linkedAccountCounter', 'investor_id'),
                                                     ));
+        if (empty($resultCounter)) {
+            return false;
+        }  
         
         $newCounterValue = $resultCounter['Accountowner']['accountowner_linkedAccountCounter'] + 1;
         $data = array ('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue);
         if ($this->save($data, $validate = true)) {
             $this->Investor = ClassRegistry::init('Investor');
-            $this->Investor->increaseLinkedAccounts($resultCounter['Accountowner']['id]']);
+            $this->Investor->increaseLinkedAccounts($resultCounter['Accountowner']['id']);
 
             $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
             ($newCounterValue > 1) ? $newAliasState = WIN_ALIAS_SYSTEM_CONTROLLED : $newAliasState = WIN_ALIAS_USER_CONTROLLED;
             
-            $this->Linkedaccount->updateAll(
-                        array('Linkedaccount.linkedaccount_isControlledBy' => $newAliasState),
-                        array ('Linkedaccount.accountowner_id' => $accountownerId)
-                        );
+            $this->Linkedaccount->updateAll(array('Linkedaccount.linkedaccount_isControlledBy' => $newAliasState),
+                                            array ('Linkedaccount.accountowner_id' => $accountownerId)
+                                            );
             return true;
         }
         return false;
@@ -163,14 +170,17 @@ class Accountowner extends AppModel {
         $filterConditions = array('id' => $accountownerId);
         $resultCounter = $this->find('first', array('conditions' => $filterConditions,
                                                     'recursive'  => -1,
-                                                    'fields'     => array('accountowner_linkedAccountCounter','investor_id')
+                                                    'fields'     => array('id', 'accountowner_linkedAccountCounter','investor_id')
                                                     ));
+        if (empty($resultCounter)) {
+            return false;
+        }
         
         $newCounterValue = $resultCounter['Accountowner']['accountowner_linkedAccountCounter'] - 1;
         $data = array ('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue);
         if ($this->save($data, $validate = true)) {
             $this->Investor = ClassRegistry::init('Investor');
-            $this->Investor->decreaseLinkedAccounts($resultCounter['Accountowner']['id]']);            
+            $this->Investor->decreaseLinkedAccounts($resultCounter['Accountowner']['id']);            
             
             $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
             if ($newCounterValue == 0) { 
@@ -191,15 +201,23 @@ class Accountowner extends AppModel {
     
  
     /**
-     * Change a password on a PFP for a USER
+     * Change the password on a PFP for a USER
      * 
-     * @param type $accountownerId  id of the linkaccountowner object
+     * @param type $accountownerId  id of the accountowner object
      * @param type $newPass         new password
      * @return boolean        
      */
     public function changeAccountPassword($accountownerId, $newPass){
-        if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
-         return true;
+        // Check if accountowner really exists.
+        $filterConditions = ['id' => $accountownerId];
+        $resultCounter = $this->find('first', array('conditions' => $filterConditions,
+                                                    'recursive'  => -1,
+                                                    ));
+        
+        if (!empty($resultCounter)) {
+            if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
+                return true;
+            } 
         }
         return false;
     }
@@ -241,9 +259,8 @@ class Accountowner extends AppModel {
         }
 
         if (!empty($this->data['Accountowner']['accountowner_username'])) {
-            $this->data['Accountowner']['accountowner_username'] = $this->encryptDataBeforeSave($this->data['Accountowner']['accountownert_username']);
+            $this->data['Accountowner']['accountowner_username'] = $this->encryptDataBeforeSave($this->data['Accountowner']['accountowner_username']);
         }
-
         return true;
     }
     

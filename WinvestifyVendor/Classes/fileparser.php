@@ -465,6 +465,8 @@ class Fileparser {
                 "type" => "payment_capitalRepaymentCost",
                 "chars" => "REPAYMENT"                   
             ],
+
+
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept

@@ -29,30 +29,19 @@ Pending:
 
 App::uses('Linkedaccount', 'Model');
 class LinkedaccountTest extends CakeTestCase {
-    public $fixtures = array('app.Linkedaccount');
-
-    var $companyId; 
-    var $investorId; 
-    var $username;
-    var $password;
+    public $fixtures = array('app.Accountowner', 'app.Linkedaccount', 'app.Investor');
     
     
     public function setUp() {
         parent::setUp();
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $username = "antoine@winvestify";
+        $password = "8870mit";       
+        
     }
     
     
-    public function testPublished() {
-        $result = $this->Article->published(array('id', 'title'));
-        $expected = array(
-            array('Article' => array('id' => 1, 'title' => 'First Article')),
-            array('Article' => array('id' => 2, 'title' => 'Second Article')),
-            array('Article' => array('id' => 3, 'title' => 'Third Article'))
-        );
-
-        $this->assertEquals($expected, $result);
-    }    
+   
 
     
 /*    
@@ -84,16 +73,24 @@ class LinkedaccountTest extends CakeTestCase {
 
 
     public function testCreateNewLinkedAccount() {
-        
-        $result = $this->Linkedaccount->createNewLinkedAccount($this->companyId, $this->investorId, $this->username, $this->password);
-        
-        $expected = array(
-            array('Article' => array('id' => 1, 'title' => 'First Article')),
-            array('Article' => array('id' => 2, 'title' => 'Second Article')),
-            array('Article' => array('id' => 3, 'title' => 'Third Article'))
-        );
-
+        // A linked account on a new PFP
+        $expected = true;
+        $companyId = 7;
+        $investorId = 63;
+        $result = $this->Linkedaccount->createNewLinkedAccount($companyId, $investorId, 
+                                                    __LINE__ . $this->username, __LINE__ . $this->password);
         $this->assertEquals($expected, $result);
+
+        
+         // A new linked account on a PFP where the user already has at least one linked account       
+        $expected1 = true;
+        $companyId = 10;
+        $investorId = 63;        
+        $result1 = $this->Linkedaccount->createNewLinkedAccount($companyId, $investorId, 
+                                                    __LINE__ . $this->username, __LINE__ . $this->password);        
+        
+        $this->assertEquals($expected1, $result1);        
+        
     }
     
 

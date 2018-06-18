@@ -70,7 +70,7 @@ class ParseDataClientShell extends GearmanClientShell {
     public function checkRunTimeEnvironment() {
 
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        
+        //return;
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
@@ -730,7 +730,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
 
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                // if not then create a new array with the data available so far, sliceIdentifier and loanId
                                 $isNewTable = YES;
                                 
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
@@ -746,6 +746,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
                                     unset($getAmortizationTable);
+              // ADPO                      $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $;
                                 }
                             }
                             
@@ -867,6 +868,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                       //ADPO             $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $sliceIdentifier;
                                 }
                             }
                             
@@ -991,7 +993,7 @@ print_r($conceptChars);
                     $dateToDeleteAfter1 = new DateTime(date($finishDate));
                     $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
 
-                    if ($dateKey >= $lastDateToCalculate) {
+                    if ($dateKey == $lastDateToCalculate) {
                         $tempBackupCopyId = $this->copyInvestment($investmentId);
 echo __FUNCTION__ . " " . __LINE__ ." Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";                        
 echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKey, and backupCopyId = " .  $tempBackupCopyId ."\n";
@@ -1207,7 +1209,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
         $dateToDeleteAfter = new DateTime(date($finishDate));
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
 echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
-        if ($dateKey >= $lastDateToCalculate) {           // clean up
+        if ($dateKey == $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
             echo "\n get all ids of the investments records which have a backup\n";
             $filter = array("investment_backupCopyId >" => 0,
@@ -1217,15 +1219,15 @@ echo __FILE__ . " " . __LINE__ . " showing filter\n";
 print_r($filter);            
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
             
-//echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
-//print_r($results);
+echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
+print_r($results);
 
             foreach ($results as $result) {
                 $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
                 
                 // check if the investment has the same date as the date of account linking, if so delete the record
                 $filter = array ('id' => $result['Investment']['id'],
-                                'date >=' => $dateKey);
+                                'date' => $lastDateToCalculate);
                 
                 $investmentData = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
                 print_r($investmentData);

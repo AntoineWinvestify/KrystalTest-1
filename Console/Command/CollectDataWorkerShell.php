@@ -60,7 +60,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $this->Structure = ClassRegistry::init('Structure');
         $this->Investment = ClassRegistry::init('Investment');
         if (Configure::read('debug')) {
-//            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($data);
         }
         

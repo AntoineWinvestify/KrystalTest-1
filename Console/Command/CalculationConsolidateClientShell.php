@@ -266,7 +266,10 @@ print_r($linkedAccountData);
                             $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
                     }                 
                 }
-echo "tempNextScheduledDate = $tempNextScheduledDate\n";                
+                if (Configure::read('debug')) {
+                    echo "tempNextScheduledDate = $tempNextScheduledDate\n"; 
+                }                
+               
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
                                                'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
                                                );             
@@ -348,9 +351,8 @@ print_r($tempArray);
                 }
                 $index++;
             } 
-            while($controlIndex < 1); 
-
-            $this->Investment->saveMany($investment, array('validate' => true));
+            while($controlIndex < 1);
+                $this->Investment->saveMany($investment, array('validate' => true));
         }
         
         $timeStop = time();

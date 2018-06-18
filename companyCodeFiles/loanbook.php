@@ -376,8 +376,9 @@ class loanbook extends p2pCompany {
         "B" => "Tipo de movimiento",
         "C" => "Descripción",
         "D" => "Importe",
-        "E" => "Referencia",
-        "F" => "Nombre de la Operación",
+        "E" => "Saldo",
+        "F" => "Referencia",
+        "G" => "Nombre de la Operación",
     );
 
     function __construct() {                                                    // Do whatever is needed for this subsclass

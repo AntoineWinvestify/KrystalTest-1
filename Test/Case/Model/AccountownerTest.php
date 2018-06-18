@@ -30,8 +30,10 @@ Pending:
 App::uses('Accountowner', 'Model');
 class AccountownerTest extends CakeTestCase {
 
-    public $fixtures = array('app.Accountowner');
+    public $fixtures = array('app.Accountowner', 'app.Linkedaccount', 'app.Investor');
 
+    protected $exampleVar; 
+    
     public function setUp() {
         parent::setUp();
         $this->Accountowner = ClassRegistry::init('Accountowner');
@@ -40,16 +42,6 @@ class AccountownerTest extends CakeTestCase {
     
 
     
-    public function testPublished() {
-        $result = $this->Article->published(array('id', 'title'));
-        $expected = array(
-            array('Article' => array('id' => 1, 'title' => 'First Article')),
-            array('Article' => array('id' => 2, 'title' => 'Second Article')),
-            array('Article' => array('id' => 3, 'title' => 'Third Article'))
-        );
-
-        $this->assertEquals($expected, $result);
-    }   
  
 /*    
     public function tearDown()
@@ -61,41 +53,101 @@ class AccountownerTest extends CakeTestCase {
     
     
 
-    public function testDeleteAccountOwner($accountOwnerId) {
-
+    public function testDeleteAccountOwner() {
+        $expected = true;
+        $accountOwnerId = $this->Accountowner->createAccountOwner($companyId = 25, 
+                                                       $investorId = 25, 
+                                                        $username = "inigo.iturburua@gmail.com", 
+                                                        $password = "8870mit");        
+        
+        $result = $this->Accountowner->deleteAccountOwner($accountOwnerId);
+              
+        $this->assertEquals($expected, $result);  
     }
     
     
-    public function testCreateAccountOwner($companyId, $investorId, $username, $password) {
+    
+    public function testCreateAccountOwner() {
+        $expected = 42;                                                         // Create a new accountowner
+        $result = $this->Accountowner->createAccountOwner($companyId = 20, 
+                                                       $investorId = 25, 
+                                                        $username = "inigo.iturburua@gmail.com", 
+                                                        $password = "8870mit");
+        $this->assertEquals($expected, $result);      
 
+        
+        $expected1 = 5;                                                         // Return existing one
+        $result1 = $this->Accountowner->createAccountOwner($companyId = 10, 
+                                                        $investorId = 63, 
+                                                        $username = "inigo.iturburua@gmail.com", 
+                                                        $password = "8870mit");
+        $this->assertEquals($expected1, $result1);         
+        
     }
     
        
-    public function testAccountAdded ($accountownerId) {
-
-
+    public function testNewLinkedAccountAddedToExistingAccountOwner() {
+        // Add new account to an already defined PFP
+        $result = $this->Accountowner->createAccountOwner($companyId = 10, 
+                                                $investorId = 63, 
+                                                $username = __FILE__ . "inigo.iturburua@gmail.com", 
+                                                $password = __FILE__ . "8870mit");
+        $accountownerId = $result;
+        $expected = 5;         
+        $this->assertEquals($expected, $result);        
+    
+        $expected = true;
+        $result1 = $this->Accountowner->accountAdded($accountownerId);
+        $this->assertEquals($expected, $result1);      
+    }
+        
+    public function testNewLinkedAccountAddedToNewAccountOwner() {      
+        // add a new account to a new accountowner
+        $result10 = $this->Accountowner->createAccountOwner($companyId = 11, 
+                                                $investorId = 63, 
+                                                $username = __FILE__ . "inigo.iturburua@gmail.com", 
+                                                $password = __FILE__ . "8870mit");
+        $accountownerId10 = $result10;      
+        $expected10 = 42;  
+        $this->assertEquals($expected10, $result10);         
+        // Return existing one
+        $expected11 = true;
+        $result11 = $this->Accountowner->accountAdded($accountownerId10);
+        $this->assertEquals($expected11, $result11);         
+        
     }
     
     
-    public function testAccountDeleted($accountownerId) {
- 
- 
+    public function testAccountDeleted()  {
+        // add a new account to a new accountowner
+        $accountOwnerId = $this->Accountowner->createAccountOwner($companyId = 11, 
+                                                $investorId = 63, 
+                                                $username = __FILE__ . "inigo.iturburua@gmail.com", 
+                                                $password = __FILE__ . "8870mit");                                              
+        $result11 = $this->Accountowner->accountAdded($accountOwnerId);
+        $result12 = $this->Accountowner->accountAdded($accountOwnerId);  
+        $result13 = $this->Accountowner->accountAdded($accountOwnerId); 
+
+
+        $expected = true;
+        $result = $this->Accountowner->accountDeleted($accountOwnerId );    
+        $this->assertEquals($expected, $result);   
     }     
     
  
-    public function testChangeAccountPassword($accountownerId, $newPass){
+    public function testChangeAccountPassword(){
+        $newPass = "newPassword";   
+        $expected = true;
 
+        $accountOwnerId = $this->Accountowner->createAccountOwner($companyId = 10, 
+                                                $investorId = 63, 
+                                                $username = __FILE__ . "inigo.iturburua@gmail.com", 
+                                                $password = __FILE__ . "8870mit");                                              
+
+        $result = $this->Accountowner->changeAccountPassword($accountOwnerId, $newPass);
+        $this->assertEquals($expected, $result);          
     }
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 }

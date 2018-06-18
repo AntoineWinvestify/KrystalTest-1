@@ -131,6 +131,7 @@ class mintos extends p2pCompany {
                                             21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
                                             23 => ["Affiliate bonus" => "Incentives_and_bonus"],
+                                            24 => ["Investment share buyer pays to a seller."  => "Secondary_market_investment"],
                                         ],
                                 ],
                     "functionName" => "getTransactionDetail",
@@ -177,6 +178,8 @@ class mintos extends p2pCompany {
                                             21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
                                             23 => ["Affiliate bonus" => "Incentives_and_bonus"],
+                                            24 => ["Investment share buyer pays to a seller."  => "Disinvestment_secundary_market"],
+
                                         ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",

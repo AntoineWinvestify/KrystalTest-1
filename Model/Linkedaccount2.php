@@ -149,6 +149,9 @@ class Linkedaccount extends AppModel {
                 $this->Accountowner->accountAdded ($accountOwnerId);
                 return true;
             } 
+            else {
+                return false;
+            }
         }
         return false;
     }
