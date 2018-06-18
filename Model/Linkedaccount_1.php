@@ -16,21 +16,25 @@
 // +-----------------------------------------------------------------------+
 //
 * @author Antoine de Poorter
-* @version 0.2
-* @date 2018-05-08
+* @version 0.3
+* @date 2018-08-08
 * @package
 */
 /*
-2016-08-25	  version 2016_0.1
+2016-08-25      version 2016_0.1
 function deleteLinkedaccount()					[Not yet OK, test new functionality]
 getLinkedaccountDataList()					[OK, tested]
 function linkNewAccount()					[not Ok, not tested]
 
 
-2018-05-08	  version 2018_0.2                              [OK, tested]
+2018-05-08	version 2018_0.2                                [OK, tested]
  support for linkedaccount_status, linkedaccount_statusExtended and linkedaccount_statusExtendedOld fields
  
- * 
+2018-06-08      version 0.3
+ Parent object is now Accountowner and NOT Investor. Reshuffle between this object and 
+ Accountowner of some methods 
+
+ 
 Pending:
 
 
@@ -42,8 +46,16 @@ class Linkedaccount extends AppModel {
 
     var $name = 'Linkedaccount';
 
+    public $belongsTo = array(
+        'Accountowner' => array(
+                'className' => 'Accountowner',
+                'foreignKey' => 'accountowner_id'
+            ));     
+    
+    
+    
     /**
-     * 	Delete a record that fulfills the filteringConditions
+     * 	Delete a an account that fulfills the filteringConditions
      * 	
      * 	@param 		array 	$filterConditions	Must indicate at least "investor_id"
      *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
@@ -52,13 +64,9 @@ class Linkedaccount extends AppModel {
      */
     public function deleteLinkedaccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
-        if (!array_key_exists('investor_id', $filterConditions)) {
-            return false;
-        }
-
         $indexList = $this->find('all', $params = array('recursive' => -1,
                                                         'conditions' => $filterConditions,
-                                                        'fields' => array('id', 'investor_id'))
+                                                        'fields' => array('id', 'accountowner_id'))
                                 );
 
         if (empty($indexList)) {
@@ -75,24 +83,23 @@ class Linkedaccount extends AppModel {
         $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
         $this->updateAll($newData, $filterConditions);       
 
-        $this->Investor = ClassRegistry::init('Investor');  
+        $this->Accountowner = ClassRegistry::init('Accountowner');  
         
         foreach ($indexList as $index) {
-            $this->Investor->decreaseLinkedAccounts($index['linkedaccount']['investor_id]']);
+            $this->Accountowner->accountDeleted ($index['accountowner_id']);
         }
 
         return true;
     }
 
     /**
-     *
-     * 	Returns an array of the linkedaccount items and their data that fulfill the filterConditions
+     * 	Returns an array of the linkedaccount object and the associated data that fulfill the filterConditions
      *
      * 	@param 		array 	$filterConditions
      * 	@return 	array 	Data of each linkedaccount item as an element of an array
-     * 			
+     * 			USERID/PASS SHOULD ALSO BE RETURNED
      */
-    public function getLinkedaccountDataList($filterConditions) {
+    public function getLinkedaccountDataListxx($filterConditions) {
 
         $linkedaccountResults = $this->find("all", $params = array('recursive' => -1,
                                                                 'conditions' => $filterConditions)
@@ -101,14 +108,13 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     * 
-     * Returns an array of the companies id depending on the filter Conditions
+     * Returns an array of the companies ids depending on the filter Conditions
      * 
      * @param array $filterConditions
      * @return array Each company id
-     * 
+     * USERID/PASS SHOULD ALSO BE RETURNED
      */
-    public function getLinkedaccountIdList($filterConditions) {
+    public function getLinkedaccountIdListxx($filterConditions) {
 
         $linkedaccountResults = $this->find("all", $params = array('recursive' => -1,
                                                                     'fields' => array('company_id'),
@@ -118,7 +124,6 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     *
      * 	Links a new investment account for an investor
      *
      * 	@param 		int 	$companyId		Identifier of company where linked account resides
@@ -127,96 +132,94 @@ class Linkedaccount extends AppModel {
      * 	@param 		string 	$password		password
      *
      * 	@return 	boolean	true	Account linked
-     * 				false	Error happened, account not linked
-     * 						
+     * 				false	Error happened, account not linked					
      */
     public function createNewLinkedAccount($companyId, $investorId, $username, $password) {
 
-        $linkedAccountData['Linkedaccount'] = array('company_id' => $companyId,
-                                                    'investor_id' => $investorId,
-                                                    'linkedaccount_username' => $username,
-                                                    'linkedaccount_password' => $password,
-                                                    'linkedaccount_status'   => WIN_LINKEDACCOUNT_ACTIVE,
-                                                    'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
-                                                    'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS
-        );
-
-        if ($this->save($linkedAccountData, $validation = true)) {
-            $this->Investor = ClassRegistry::init('Investor');
-            $this->Investor->increaseLinkedAccounts($investorId);
-            return true;
-        } 
-        else {
-            return false;
+        $accountOwnerId = $this->createAccountOwner($companyId, $investorId, $username, $password);
+        if ($accountOwnerId > 0) {    
+            $linkedAccountData['Linkedaccount'] = array('linkedaccount_status'   => WIN_LINKEDACCOUNT_ACTIVE,
+                                                        'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
+                                                        'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
+                                                        'accountowner_id' => $accountOwnerId,
+                                                        'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED
+                                                        );    
+            
+            if ($this->save($linkedAccountData, $validation = true)) {
+                $this->Accountowner->accountAdded ($accountOwnerId);
+                return true;
+            } 
+            else {
+                return false;
+            }
         }
+        return false;
     }
     
     /**
-     * Get linkedaccounts id with nothing in process
+     * Get linkedaccounts ids with 'nothing in process' for an investor
      * 
      * @param string $queueUserReference It is the user reference
-     * @return array
-     * 
+     * @return array        List of linkedaccount ids of Investor
      */
     public function getLinkAccountsWithNothingInProcess($queueUserReference) {
         $companyNothingInProcess = [];
         $this->Investor = ClassRegistry::init('Investor');
-        $jobInvestor = $this->Investor->find("first", array('conditions' =>
-            array('Investor.investor_identity' => $queueUserReference),
-            'fields' => 'id',
-            'recursive' => -1,
-        ));
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+// Find all the Accountowner objects of Investor   
+	$filterConditions = array('Investor.investor_identity' => $queueUserReference);
 
-        $investorId = $jobInvestor['Investor']['id'];
-        $filterConditions = array(
-            'investor_id' => $investorId,
-            'linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS,
-            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE
-        );
-        $linkedaccountsResults[] = $this->getLinkedaccountDataList($filterConditions);
-        foreach ($linkedaccountsResults as $key => $linkedaccountResult) {
-            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
-            $i = 0;
-            foreach ($linkedaccountResult as $linkedaccount) {
-                $companyNothingInProcess[] = $linkedaccount['Linkedaccount']['id'];
+	$this->Investor->Behaviors->load('Containable');
+	$this->Investor->contain('Accountowner');  							// Own model is automatically included
+	$resultInvestorsData = $this->Investor->find("all", $params = array('recursive'     => 1,
+                                                                            'conditions'    => $filterConditions));
+ // The result should contain information about Accountowner and LinkedAccount models      
+        if (!isset($resultInvestorsData['Accountowner'])) {
+            return [];
+        }
+        
+        $accountOwnerIds = array();
+ // search through the obtained data array
+        foreach ($resultInvestorsData['Linkedaccount'] as $account) {
+            if ($account['accountowner_status'] == WIN_ACCOUNTOWNER_ACTIVE) {
+                $accountOwnerIds[] = ['id' => $account['id']];
             }
+        }
+        if (empty($accountOwnerIds)) {
+            return [];
+        }
+        
+        $filterConditions = array(
+            "OR" => $accountOwnerIds,
+            "AND" => array (array('linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS,
+                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
+                            ));
+        
+        $linkedAccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+        
+        $companyNothingInProcess = array();
+        foreach ($linkedAccountsResults as $linkedAccountResult) {
+            $companyNothingInProcess[] = $linkedAccountResult['Linkedaccount']['id'];
         }
         return $companyNothingInProcess;
     }
     
     /**
+     * Change the password on a PFP of a user's account
      * 
      * @param type $linkaccountId id of the linkaccount
      * @param type $newPass new password
      * @return boolean 
-     *  
      */
-    public function changePasswordLinkaccount($linkaccountId, $newPass){
-        $this->save(['id' => $linkaccountId, 'linkedaccount_password' => $newPass]);
+    public function changePasswordLinkaccount($linkedAccountId, $newPass){
+        $filterConditions = array('id' => $linkedAccountId);
+        $accountOwnerId = $this->find("first", $params = array('recursive' => -1,
+                                                               'fields'    => array('accountowner_id'),
+                                                               'conditions' => $filterConditions)
+                                           );       
+        $this-> changeAccountPassword($accountOwnerId, $newPass);
     }
 
-    /**
-     *
-     * 	Callback Function
-     * 	Decrypt the sensitive data provided by the investor
-     *
-     */
-    public function afterFind($results, $primary = false) {
-
-        foreach ($results as $key => $val) {
-            if (isset($val['Linkedaccount']['linkedaccount_password'])) {
-                
-                $results[$key]['Linkedaccount']['linkedaccount_password'] = $this->decryptDataAfterFind(
-                        $val['Linkedaccount']['linkedaccount_password']);
-            }
-            if (isset($val['Linkedaccount']['linkedaccount_username'])) {
-
-                $results[$key]['Linkedaccount']['linkedaccount_username'] = $this->decryptDataAfterFind(
-                        $val['Linkedaccount']['linkedaccount_username']);
-            }
-        }
-        return $results;
-    } 
     
     /**
      * Callback function
@@ -225,7 +228,6 @@ class Linkedaccount extends AppModel {
      * @param boolean $created
      * @param array $option
      * @return boolean
-     * 
      */
     public function afterSave($created, $option = array()) {
         
@@ -242,39 +244,18 @@ class Linkedaccount extends AppModel {
             return $result;
         }
     }
-
-    /**
-     *
-     * 	Callback Function
-     * 	Encrypt the sensitive fields of the information provided by the investor
-     *
-     */
-    public function beforeSave($options = array()) {
-
-        if (!empty($this->data['Linkedaccount']['linkedaccount_password'])) {
-            $this->data['Linkedaccount']['linkedaccount_password'] = $this->encryptDataBeforeSave($this->data['Linkedaccount']['linkedaccount_password']);
-        }
-
-        if (!empty($this->data['Linkedaccount']['linkedaccount_username'])) {
-            $this->data['Linkedaccount']['linkedaccount_username'] = $this->encryptDataBeforeSave($this->data['Linkedaccount']['linkedaccount_username']);
-        }
-
-        return true;
-    }
-
-    
+ 
     
    /**
-     *
      * 	Disables the linked account(s) that fulfill $filterConditions. No action is taken in case account is NOT_ACTIVE 
      *  or already disabled.
+     *  Note that "disabled" is not the same as "deleted"
      *
      * 	@param 		array   $filterConditions	
      *  @param          int     $originator         WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
      *
      * 	@return 	boolean	true	Account(s) disabled
-     * 				false	Error happened, account(s) not disabled
-     * 						
+     * 				false	Error happened, account(s) not disabled					
      */
     public function disableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
@@ -313,7 +294,6 @@ class Linkedaccount extends AppModel {
     
     
    /**
-     *
      * 	Enables the linked account(s) that fulfill $filterConditions. 
      *  Only accounts that are disabled can be enabled. Note that if no disabled account(s) fulfill the 
      *  filteringConditions, a true is returned.
@@ -355,5 +335,35 @@ class Linkedaccount extends AppModel {
         $this->saveMany($changedData, array('validate' => true));       
         return true;
     }     
+  
     
+    /**
+     * 	Callback Function
+     * 	Check if we can/need to send the Alias
+     *
+     */
+    public function afterFind($results, $primary = false) {
+
+        if (!isset($results['Linkedaccount']['linkedaccount_isControlledBy'])) {
+            $linkedAccountResult = $this->find('first', $params = array(
+                                        'conditions' => array('Linkedaccount.id' => $result['id']),
+                                        'recursive' => -1,                          //int
+                                        'fields' => array('Linkedaccount.linkedaccountisControlledBy'),
+                                        'callbacks' => false,
+                                        ));
+            $isControlledBy = $linkedAccountResult['Linkedaccount']['linkedaccount_isControlledBy'];
+        }
+        else {
+            $isControlledBy = $results['Linkedaccount']['linkedaccount_isControlledBy'];
+        }
+        
+        if ($isControlledBy == WIN_ALIAS_SYSTEM_CONTROLLED) {
+            if (isset($results['Linkedaccount']['linkedaccount_alias'])) {
+                unset($results['Linkedaccount']['linkedaccount_alias']);  
+            }
+        }
+        return $results;
+    }     
+  
+ 
 }
