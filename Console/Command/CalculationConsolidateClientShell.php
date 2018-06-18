@@ -139,14 +139,18 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                
                 // before calling the method you should download all amortization tables and store them in the database (Flow 3A and 3B)
                 
-                
-                
+
                 echo "Calling consolidateData\n";
                 $this->consolidateData($params);
                 
 
- echo "Calling consolidatePaymentDelay\n";               
+                echo "Calling consolidatePaymentDelay\n";               
                 $this->consolidatePaymentDelay($params);
+                
+                
+                echo "Calling calculateNextPaymentDates\n";  
+                $this->calculateNextPaymentDates($params);
+                
                 
                 foreach ($this->queueInfo as $queueIdKey => $info) {
                     foreach ($info['companiesInFlow'] as $companieInFlow) {
@@ -277,7 +281,7 @@ print_r($linkedAccountData);
         }
                              
         $timeStop = time();
-echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
         return true;
     }
     
@@ -359,5 +363,143 @@ print_r($tempArray);
 
         return true;
     }  
+
+
+
+    
+    
+    
+      
+    
+    /** 
+     * 
+     * This method scans through *ALL* active loans per P2P of an investor and writes the field "investment_nextPaymentDate", 
+     * based on the data in our amortization tables, in the investment model object.
+     *  
+     *  @param  $array      Array which holds the id's of Investment Model for which field "investment_nextPaymentDate
+     *                      needs to be updated, based on the data available in the amortization tables
+     *  @return boolean
+     *
+     */
+    public function calculateNextPaymentDates(&$linkedAccountData) { 
+ 
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+        $timeStart = time();
+
+
+
+        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
+            $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
+                                                      'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE,
+                                                      'linkedaccount_id'  => $linkedAccountKey
+                                              ));            
+
+            $result = $this->Investment->find("list", array('conditions' => $conditions,
+                                                            'recursive' => 1,
+                                                            'fields' => array('id', 'investment_loanId' ))
+                                             );
+
+            
+            
+            $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
+
+
+
+            
+            foreach ($loanDataId as $loanId) { 
+                $tempNextScheduledDate = "";
+                $this->Investmentslice->Behaviors->load('Containable');
+                $this->Investmentslice->contain('Amortizationtable');              
+
+                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice.id' => $loanId),
+                                                                           'recursive' => 1)
+                                                                        );
+
+                $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
+
+                foreach ($reversedData as $table) {
+                    if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID)
+                        {                      
+                        $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
+                    }                 
+                }
+echo "tempNextScheduledDate = $tempNextScheduledDate\n";                
+                $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
+                                               'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
+                                               );             
+            } 
+        }
+        
+    $timeStop = time();
+    echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+
+    return true;
+    }      
+    
+    
+    
+    /** 
+     * This method scans an amortization table and returns the NEXT payment date, based on the
+     * dates of proposed payment in the amortization table¡
+     *  
+     *  @param  array       $amortizationTableIds   List of ids of which the total amortization table is made up
+     *  @param  array       $model                  the model of the table, 'Amortizationtable' or 'Globalamortizationtable'
+     *  @param  string      $dateVariableToCheck    The name of the variable in the amortization table to use for finding nextPaymentDate
+     *  @return date
+     */   
+    public function getNextPaymentDateForLoanSlice($investmentSliceId, $model) { 
+        $scheduledDate = "";
+        $today  = date('Y-m-d', time());
+        $variableName = $model . "_scheduledDate";
+        
+
+        if ($model == "amortizationTable") {
+            $amortizationTable = $this->$model->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
+                                                                      'fields' => array('id', $model . '_scheduledDate')
+                                                    )); 
+        }
+        else {      // Model = Globalamortizationtable
+            $lists = $this->GlobalamortizationtableInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $investmentSliceId), 
+                                                                      'fields' => array('id', 'globalamortizationtable_id')
+                                                    )); 
+            foreach ($lists as $list) {
+                $this->Globalamortizationtable->create();
+                $globaltable[] = $this->Globalamortizationtable->find("all", array('fields' => 'id', 'globalamortizationtable_scheduledDate' ));  
+                }
+            } 
+            $amortizationTable = Hash::extract($globaltable, '{n}.User.id');
+        }
+         
+        
+         
+        
+        
+        
+        
+        
+        
+        // scan through tables from "new" to "old"
+        $reversedAmortizationTable = array_reverse($amortizationTable);
+   
+        foreach ($reversedAmortizationTable[$model] as $paymentSchedule) {   
+            if ($today > $paymentSchedule[$variableName]) {    
+                $scheduledDate = $paymentSchedule[$variableName];   
+            }
+            else {
+                break;
+            }
+        }
+        
+        return $scheduledDate;
+
+        }
+        
+    
+    
+
+
+
     
 }
