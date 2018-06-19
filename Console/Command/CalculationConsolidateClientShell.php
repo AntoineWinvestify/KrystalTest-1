@@ -47,8 +47,9 @@ App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
 class CalculationConsolidateClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue2', 'Investment', 'Investmentslice');
-
+    public $uses = array('Queue2', 'Investment', 'Investmentslice', 'Amortizationtable', 
+                        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable');
+    public $today;
 
 // Only used for defining a stable testbed definition
     public function resetTestEnvironment() {
@@ -57,7 +58,8 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
     
     public function initClient() {
-
+        $this->today  = date('Y-m-d', time());
+        
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
@@ -141,11 +143,11 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                 
 
                 echo "Calling consolidateData\n";
-                $this->consolidateData($params);
+  //              $this->consolidateData($params);
                 
 
                 echo "Calling consolidatePaymentDelay\n";               
-                $this->consolidatePaymentDelay($params);
+  //              $this->consolidatePaymentDelay($params);
                 
                 
                 echo "Calling calculateNextPaymentDates\n";  
@@ -382,13 +384,10 @@ print_r($tempArray);
      *
      */
     public function calculateNextPaymentDates(&$linkedAccountData) { 
- 
-echo __FUNCTION__ . " " . __LINE__ . "\n";
         $timeStart = time();
 
-
-
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
+echo __FUNCTION__ . "  " . __LINE__ . " linkedAccountKey = $linkedAccountKey\n";            
             $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
                                                       'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE,
                                                       'linkedaccount_id'  => $linkedAccountKey
@@ -396,93 +395,89 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
 
             $this->Investment->Behaviors->load('Containable');
             $this->Investment->contain('Investmentslice');            
-            $investmentResults = $this->Investment->find("list", array('conditions' => $conditions,
+            $investmentResults = $this->Investment->find("all", array('conditions' => $conditions,
                                                                     'recursive' => 1,
                                                                     'fields' => array('id')
                                                       ));
             unset ($nextDates);
+
             foreach ($investmentResults as $result) {
+echo __FUNCTION__ . "  " . __LINE__ . " Value of investmentslice = " . $result['Investmentslice'][0]['id'] . "\n";                
                 if (isset($result['Investmentslice'][0]['id'])) {
                     $nextPaymentDate = $this->getNextPaymentDateForLoanSlice($result['Investmentslice'][0]['id']); 
                     $nextDates[] = array('id' => $result['Investment']['id'],
                                         'investment_nextPaymentDate' => $nextPaymentDate);
                 }
             } 
-            $this->Investment->saveMany($nextDates, array('validate' => true));
+echo __FUNCTION__ . "  " . __LINE__ . "\n";            
+$this->print_r2($nextDates);    
+
+  //          $this->Investment->saveMany($nextDates, array('validate' => true));
         }
-
-
-
-        
+  
         $timeStop = time();
         echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
 
         return true;
     }      
-/*    
-    [39] => Array
-        (
-            [Investment] => Array
-                (
-                    [id] => 2133
-                )
 
-            [Investmentslice] => Array
-                (
-                    [0] => Array
-                        (
-                            [id] => 529
-                            [investment_id] => 2133
-                            [investmentslice_identifier] => CM-1855
-                            [created] => 2018-06-07 08:52:08
-                            [modified] => 2018-06-07 08:52:08
-                            [date] => 
-                        )
-                )
-        )
- */   
-    
-    
-    
     
     /** 
      * This method scans an amortization table and returns the NEXT payment date, based on the
-     * dates of proposed payment in the amortization table¡
+     * dates of proposed payment date as stored in the amortization table¡
      *  
      *  @param  array       $investmentSliceId      id of model Investmentslice
      *  @return date
      */   
     public function getNextPaymentDateForLoanSlice($investmentSliceId) { 
-        $scheduledDate = "";
-        $today  = date('Y-m-d', time());
 
+        $scheduledDate = "";
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
-        $model = "Amortizationtable";
-        if ($this->Investmentslice->hasChild($investmentSliceId, "Amortizationtable")) {
-            $variableName = "amortizationtable_scheduledDate";
-            $amortizationTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
+
+        if ($this->Investmentslice->hasChild($investmentSliceId, "Amortizationtable")) {  
+            $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
                                                                       'fields' => array('id', 'amortizationtable_scheduledDate')
                                                     )); 
+            $amortizationTable = Hash::extract($globalTable, '{n}.Amortizationtable.amortizationtable_scheduledDate');
+echo __FUNCTION__ . " " . __LINE__ . "\n"; 
         }
         else {                       
-            $model = "Globalamortizationtable";
-            $variableName = "globalamortizationtable_scheduledDate";
-            $lists = $this->GlobalamortizationtableInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $investmentSliceId), 
+            $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $investmentSliceId), 
                                                                       'fields' => array('id', 'globalamortizationtable_id')
                                                     )); 
+            
             foreach ($lists as $list) {
-                $this->Globalamortizationtable->create();
-                $globaltable[] = $this->Globalamortizationtable->find("all", array('fields' => array('id', 'globalamortizationtable_scheduledDate' )));  
-            }            
-            $amortizationTable = Hash::extract($globaltable, '{n}.GlobalamortizationtableInvestmentslice.globalamortizationtableInvestmentslice_dateForPaymentDelayCalculation');
+                $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
+                $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
+                                                                                  'fields' => array('id', 'globalamortizationtable_scheduledDate' )));  
+                $globalTable[] = $result;
+            }
+            $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.globalamortizationtable_scheduledDate');
         }
-          
+ 
+$this->print_r2($amortizationTable);
+/*
+    [0] => 2018-11-29
+    [1] => 2018-10-29
+    [2] => 2018-09-29
+    [3] => 2018-08-29
+    [4] => 2018-07-29
+    [5] => 2018-06-29
+    [6] => 2018-05-29
+    [7] => 2018-04-29
+    [8] => 2018-03-29
+    [9] => 2018-02-28
+    [10] => 2018-01-29
+    [11] => 2017-12-29
+*/
+echo __FUNCTION__ . " " . __LINE__ . "\n"; 
         // scan through tables from "new" to "old"
         $reversedAmortizationTable = array_reverse($amortizationTable);
-        
-        foreach ($reversedAmortizationTable[$model] as $paymentSchedule) {   
-            if ($today > $paymentSchedule[$variableName]) {    
-                $scheduledDate = $paymentSchedule[$variableName];   
+$this->print_r2($reversedAmortizationTable); 
+
+        foreach ($reversedAmortizationTable as $paymentSchedule) { 
+            if ($this->today < $paymentSchedule) {
+                $scheduledDate = $paymentSchedule;   
             }
             else {
                 break;

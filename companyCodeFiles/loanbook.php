@@ -1823,7 +1823,7 @@ class loanbook extends p2pCompany {
         $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PAGO ÚNICO":
-                $type = WIN_PATMENTFREQUENCY_ONEPAYMENT;
+                $type = WIN_PAYMENTFREQUENCY_ONEPAYMENT;
                 break;
             case "TRIMESTRAL":
                 $type = WIN_PAYMENTFREQUENCY_YEAR_CUARTER;

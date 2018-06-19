@@ -753,12 +753,13 @@ $this->print_r2($linkedAccountsResults);
         
         $this->Investment = ClassRegistry::init('Investment');
         
-        $this->Investment->Behaviors->load('Containable');
-        $this->Investment->contain('Investmentslice');         
-        
-        $result = $this->Investment->find("all", array('conditions' => $conditions,
-                                                        'recursive' => 1,
-                                                        'fields' => array('id' ))
+  
+        $filteringConditions = array('id >' => 1);
+        echo "filter = ";
+        print_r($filteringConditions);
+        $result = $this->Investment->find("all", array('conditions' => $filteringConditions,
+                                                        'recursive' => -1,
+                                                        'fields' => array('id', 'linkedaccount_id' ))
                                          );        
         
         $this->print_r2($result);
