@@ -89,15 +89,14 @@ class Contactform extends AppModel {
         $this->set($data);
         if ($this->validates()) {   // OK
             $this->save($data);
-        } else {                     // validation false
+        } 
+        else {                     // validation false
             $result[0] = 0;
             $errors = array('errors' => 'Form error', $this->validationErrors);
             $result[1] = $errors;
             return $result;
         }
 
-        /* $event = new CakeEvent("sendContactMessage", $this, array('name' => $userName, 'email' => $email, 'subject' => $subject, 'text' => $text)); //Create the event to send the mail
-          $this->getEventManager()->dispatch($event); */
         $result[0] = 1;
         //Insert OK
         return $result;

@@ -16,7 +16,7 @@
  *
  * @author Antoine de Poorter
  * @version 0.1
- * @date 2017-01-11
+ * @date 2018-05-16
  * @package
  */
 
@@ -61,16 +61,16 @@ class Queue2 extends AppModel {
 
 
     /**
-    *	Put a new request into the queue
-    * 
-    *	@param	queueReference	array 			the reference, as given by the user of the queue, to an item.
-    *	@param	queueType		int		LIFO, FIFO, CIRCULAR
-    *	@param	action			varchar		url string of the action to be perfomed 
-    *										
-    *	@return boolean			true		queueItem created
-    *					false		undefined error, item NOT created
-    * NOT USED CAN BE DELETED						
-    */
+     *	Put a new request into the queue
+     * 
+     *	@param	queueReference	array 		the reference, as given by the user of the queue, to an item.
+     *	@param	queueType	int		LIFO, FIFO, CIRCULAR
+     *	@param	action		varchar		url string of the action to be perfomed 
+     *										
+     *	@return boolean		true		queueItem created
+     *				false		undefined error, item NOT created
+     * NOT USED CAN BE DELETED						
+     */
     public function addToQueueREMOVE($queueReference, $queueType, $queueAction) {
 	$data = array("queue2_userReference" => $queueReference,
 				  "queue2_action"   => $queueAction,
@@ -88,7 +88,6 @@ class Queue2 extends AppModel {
 
     /**
      * Put a new request into the queue for Dashboard 2.0
-     * 
      * 
      * @param array $queueReference The reference, as given by the user of the queue, to an item
      * @param json $queueInfo It is the information about the queue request
@@ -118,10 +117,9 @@ class Queue2 extends AppModel {
     /**
      *  Removes all requests with value queueReference and which are not (yet) executing from the queue.
      * 
-     *  @param	queueReference	varchar		the reference, as given by the user of the queue, to an item
-     *	@return boolean		true		reference deleted
-     *				false		reference not found
-     *						
+     *  @param	queueReference	varchar	the reference, as given by the user of the queue, to an item
+     *	@return boolean		true	reference deleted
+     *				false	reference not found					
      */
     public function removeFromQueue($queueReference) {
 
@@ -136,10 +134,9 @@ class Queue2 extends AppModel {
     /**
      *	Check if an item exists in the queue, with status 'IDLE', 'WAITING_FOR_EXECUTION' or 'EXECUTING'	
      * 
-     *	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item
+     *	@param	queueReference	varchar	the reference, as given by the user of the queue, to an item
      *	@return boolean			true		one or more items found with requested reference
-     *							false		reference not found
-     *
+     *					false		reference not found
      */
     public function checkQueue($queueReference) {
 	$result = $this->find("first", array("recursive" => -1,
@@ -149,10 +146,8 @@ class Queue2 extends AppModel {
 	if (empty($result)) {
 		return false;
 	}
-	else {
-		return true;
-	}
-}
+	return true;
+    }
 
 
 
@@ -161,9 +156,8 @@ class Queue2 extends AppModel {
     /**
      *	Get the next request from the queue for executing purposes
      * 
-     *	@return queueReference	array		Array holding the relevant information of the item in the queue
-     *				empty 		queue is empty
-     *							
+     *	@return queueReference	array	Array holding the relevant information of the item in the queue
+     *				empty 	queue is empty						
      */ 
     public function getNextFromQueue($queuetype) {
 	// check queue type
@@ -193,7 +187,6 @@ class Queue2 extends AppModel {
 
 
     /**
-     *
      *	Callback Function
      *	Generates the "created" field
      *
@@ -247,7 +240,6 @@ class Queue2 extends AppModel {
             return;
         }
 
-//        print_r($result);
         return $result;
     }
     

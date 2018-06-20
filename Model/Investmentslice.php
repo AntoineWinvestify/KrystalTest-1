@@ -142,10 +142,6 @@ class Investmentslice extends AppModel
     }    
 
 
-
-
-
-
     /** NOT YET TESTED
      *  Reads the amortization table of an investment slice. The entries are sorted according 
      *  to its scheduled repayment date
@@ -171,8 +167,8 @@ print_r($result);
 
     
     /** NOT YET TESTED
-     *  Deletes the *amortization table* of an investment slice. The sliceIdentifier model 
-     *  IS NOT DELETED, 
+     *  Deletes the amortization table of an investment slice. The sliceIdentifier model 
+     *  IS NOT DELETED, This can only (?) be done for individual amortization tables
      * 
      *  @param  bigint  Database reference of model investmentslice
      *  @return array   boolean     
@@ -185,10 +181,5 @@ print_r($conditions);
         return $result;
     } 
 
-
-
-
-
-    
 
 }

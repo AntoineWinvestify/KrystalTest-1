@@ -15,8 +15,8 @@
  *
  *
  * @author 
- * @version
- * @date
+ * @version 0.1
+ * @date 2018-06-18
  * @package
  */
 
@@ -51,7 +51,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 3B Client\n");
         }
         
-        $inActivityCounter++;                                           // Gearman client 
+        $inActivityCounter++;                                                   // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $numberOfIteration = 0;
         while ($numberOfIteration == 0) {
@@ -74,7 +74,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $userReference = $job['Queue2']['queue2_userReference'];
                     $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                     $dir = new Folder($directory);
-                    $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
+                    $subDir = $dir->read(true, true, $fullPath = true);         // get all sub directories
 
                     $i = 0;
                     foreach ($subDir[0] as $subDirectory) {
@@ -136,7 +136,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             }
             
             $inActivityCounter++;
-            if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
+            if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
                 }                     
@@ -163,8 +163,10 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 $filterConditions = array('id' => $result['Linkedaccount']['company_id']);       
                 $companyResult = $this->Company->getCompanyDataList($filterConditions);
 
-                $companyTechnicalFeatures = $companyResult[$result['Linkedaccount']['company_id']]['company_technicalFeatures'];         
-                if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { // Does P2P have global, non-individualized amortization tables?
+                $companyTechnicalFeatures = $companyResult[$result['Linkedaccount']['company_id']]['company_technicalFeatures'];  
+                
+                // Does P2P have global, non-individualized amortization tables?
+                if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { 
                     $this->Globalamortizationtable->saveGlobalAmortizationtable($amortizationData, $result['Linkedaccount']['company_id']);
                 }                                                       
                 else {        

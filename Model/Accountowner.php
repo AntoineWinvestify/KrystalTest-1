@@ -22,11 +22,12 @@
 */
 /*
 This model holds the credentials of the account(s) on a P2P
+ 
 2018-05-08	  version 2018_0.1      
 First version 
- * 
- *                  
- * 
+  
+                   
+ 
 Pending:
 
 

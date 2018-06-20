@@ -20,10 +20,9 @@
  * @package
  */
  /*
- * This client deals with performing the parsing of the amortization tables data that has been downloaded
- * from the PFP's. The Client starts analyzing
- * the data and writes the data-elements nextPaymentDate,  investment_dateForPaymentDelayCalculation
-  * to the corresponding database tables.
+ * This client deals with performing the parsing of the amortization tables data that have been downloaded
+ * from the PFP's. The Client starts analyzing the data and writes the data-elements nextPaymentDate,  
+ * investment_dateForPaymentDelayCalculation to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
  *
  *
@@ -31,16 +30,12 @@
  * Basic version
  *
  * 2018-06-18           version 0.2
- * 
- * 
- * 
- * 
- * 
+ * Added "netPaymentDate"
  * 
  * 
  * PENDING:
  * get paidInstalments
- * get nextpaymentDate * 
+ *
  * 
  */
 App::import('Shell', 'GearmanClient');
@@ -139,67 +134,24 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                 }
                
-                // before calling the method you should download all amortization tables and store them in the database (Flow 3A and 3B)
-                
-
                 echo "Calling consolidateData\n";
-  //              $this->consolidateData($params);
+                $this->consolidateData($params);
                 
-
                 echo "Calling consolidatePaymentDelay\n";               
-  //              $this->consolidatePaymentDelay($params);
-                
+                $this->consolidatePaymentDelay($params);
                 
                 echo "Calling calculateNextPaymentDates\n";  
                 $this->calculateNextPaymentDates($params);
-                
-                
+
+                //?
                 foreach ($this->queueInfo as $queueIdKey => $info) {
                     foreach ($info['companiesInFlow'] as $companieInFlow) {
                         $this->userResult[$queueIdKey][$companieInFlow] = 1;
                     }
                 }
 
-
                 $this->verifyStatus(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, "Amortization tables succesfully stored", WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
-
-
-        //        $this->GearmanClient->runTasks();
-
-                // ######################################################################################################
-            /*
-                if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
-                }
-                foreach ($this->tempArray as $queueIdKey => $result) {
-                    foreach ($result as $platformKey => $platformResult) {
-                        // First check for application level errors
-                        // if an error is found then all the files related to the actions are to be
-                        // deleted including the directory structure.
-                        if (!empty($platformResult['error'])) {         // report error
-                            $this->Applicationerror = ClassRegistry::init('applicationerror');
-                            $this->Applicationerror->saveAppError("ERROR ", json_encode($platformResult['error']), 0, 0, 0);
-                            // Delete all files for this user for this regular update
-                            // break
-                            continue;
-                        }
-                        $userReference = $platformResult['userReference'];
-                        $baseDirectory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
-                        $baseDirectory = $baseDirectory . $platformKey . DS . $platformResult['pfp'] . DS;
-// Add the status per PFP, 0 or 1
-                        
-                        $newFlowState = WIN_queue2_STATUS_CALCULATION_CONSOLIDATION_FINISHED;
-
-                    }
-
-                    $this->Queue->id = $queueIdKey;
-                    $this->Queue->save(array('queue2_status' => $newFlowState,
-                        'queue2_info' => json_encode($this->queueInfo[$queueIdKey]),
-                            ), $validate = true
-                    );
-                }
-                break;
-            */    
+    
             } 
             else {
                 $inActivityCounter++;
@@ -219,7 +171,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
 
 
-    /** FLOW 3C
+    /** 
      * This method writes the 'investment_dateForPaymentDelayCalculation' in the investment object. 
      * This is done for the loanIds/loanslices whose amortization tables
      * are stored in the directory currently under processing. 
@@ -228,7 +180,6 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
      * 
      *  @param  $array          Array which holds global data of the P2P
      *  @return boolean 
-     *
      */
     public function consolidateData(&$linkedAccountData) {
  
@@ -286,18 +237,14 @@ print_r($linkedAccountData);
         echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
         return true;
     }
-    
-    
-    
+
     
     /** 
-     * 
      * This method scans through *ALL* active loans per P2P of an investor and calculates the number of days of 
      * payment delay. The result is written in the investment model object.
      *  
      *  @param  $array      Array which holds global data of the P2P
      *  @return boolean
-     *
      */
     public function consolidatePaymentDelay(&$linkedAccountData) { 
  
@@ -366,12 +313,6 @@ print_r($tempArray);
         return true;
     }  
 
-
-
-    
-    
-    
-      
     
     /** 
      * 
@@ -386,8 +327,7 @@ print_r($tempArray);
     public function calculateNextPaymentDates(&$linkedAccountData) { 
         $timeStart = time();
 
-        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
-echo __FUNCTION__ . "  " . __LINE__ . " linkedAccountKey = $linkedAccountKey\n";            
+        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {          
             $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
                                                       'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE,
                                                       'linkedaccount_id'  => $linkedAccountKey
@@ -399,25 +339,20 @@ echo __FUNCTION__ . "  " . __LINE__ . " linkedAccountKey = $linkedAccountKey\n";
                                                                     'recursive' => 1,
                                                                     'fields' => array('id')
                                                       ));
-            unset ($nextDates);
-
-            foreach ($investmentResults as $result) {
-echo __FUNCTION__ . "  " . __LINE__ . " Value of investmentslice = " . $result['Investmentslice'][0]['id'] . "\n";                
+            
+            foreach ($investmentResults as $result) {             
                 if (isset($result['Investmentslice'][0]['id'])) {
                     $nextPaymentDate = $this->getNextPaymentDateForLoanSlice($result['Investmentslice'][0]['id']); 
                     $nextDates[] = array('id' => $result['Investment']['id'],
                                         'investment_nextPaymentDate' => $nextPaymentDate);
                 }
-            } 
-echo __FUNCTION__ . "  " . __LINE__ . "\n";            
-$this->print_r2($nextDates);    
-
-  //          $this->Investment->saveMany($nextDates, array('validate' => true));
+            }     
+            $this->Investment->saveMany($nextDates, array('validate' => true));
+            unset ($nextDates);
         }
   
         $timeStop = time();
         echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
-
         return true;
     }      
 
@@ -432,14 +367,12 @@ $this->print_r2($nextDates);
     public function getNextPaymentDateForLoanSlice($investmentSliceId) { 
 
         $scheduledDate = "";
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');
 
         if ($this->Investmentslice->hasChild($investmentSliceId, "Amortizationtable")) {  
             $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
                                                                       'fields' => array('id', 'amortizationtable_scheduledDate')
                                                     )); 
             $amortizationTable = Hash::extract($globalTable, '{n}.Amortizationtable.amortizationtable_scheduledDate');
-echo __FUNCTION__ . " " . __LINE__ . "\n"; 
         }
         else {                       
             $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $investmentSliceId), 
@@ -455,25 +388,8 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
             $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.globalamortizationtable_scheduledDate');
         }
  
-$this->print_r2($amortizationTable);
-/*
-    [0] => 2018-11-29
-    [1] => 2018-10-29
-    [2] => 2018-09-29
-    [3] => 2018-08-29
-    [4] => 2018-07-29
-    [5] => 2018-06-29
-    [6] => 2018-05-29
-    [7] => 2018-04-29
-    [8] => 2018-03-29
-    [9] => 2018-02-28
-    [10] => 2018-01-29
-    [11] => 2017-12-29
-*/
-echo __FUNCTION__ . " " . __LINE__ . "\n"; 
         // scan through tables from "new" to "old"
         $reversedAmortizationTable = array_reverse($amortizationTable);
-$this->print_r2($reversedAmortizationTable); 
 
         foreach ($reversedAmortizationTable as $paymentSchedule) { 
             if ($this->today < $paymentSchedule) {

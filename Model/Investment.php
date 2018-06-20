@@ -188,7 +188,7 @@ var $validate = array(
 
     /** NOT YET TESTED
      * 
-     *  Reads the references of the all the investmentslices of an investment
+     *  Reads the references of all the investmentslices of an investment
      * 
      *  @param  bigint  database reference of Investment, i.e. investmentId
      *  @return array   slices (database references) and sliceIdentifier of each slice

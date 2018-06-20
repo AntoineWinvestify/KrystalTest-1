@@ -31,8 +31,8 @@ function linkNewAccount()					[not Ok, not tested]
  support for linkedaccount_status, linkedaccount_statusExtended and linkedaccount_statusExtendedOld fields
  
 2018-06-08      version 0.3
- Parent object is now Accountowner and NOT Investor. Reshuffle between this object and 
- Accountowner of some methods 
+Parent object is now Accountowner and NOT Investor. Reshuffle between this object and 
+Accountowner of some methods 
 
  
 Pending:
