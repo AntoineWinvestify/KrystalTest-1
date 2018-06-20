@@ -136,7 +136,7 @@ class loanbook extends p2pCompany {
                     "functionName" => "getComplexTransactionDetail",
                 ]
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",
                     "inputData" => [
@@ -1875,7 +1875,7 @@ class loanbook extends p2pCompany {
         $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PAGO ÚNICO":
-                $type = WIN_PATMENTFREQUENCY_ONEPAYMENT;
+                $type = WIN_PAYMENTFREQUENCY_ONE_PAYMENT;
                 break;
             case "TRIMESTRAL":
                 $type = WIN_PAYMENTFREQUENCY_YEAR_CUARTER;

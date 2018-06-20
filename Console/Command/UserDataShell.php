@@ -201,6 +201,9 @@ class UserDataShell extends AppShell {
         if (isset($resultData['payment']['payment_tempCamp'])) {
             $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
         }
+        if (isset($resultData['payment']['payment_secondaryMarketSell'])) {
+            $result = bcsub($result, $resultData['payment']['payment_secondaryMarketSell'], 16);
+        }
         return $result;
     }
 
@@ -1576,6 +1579,10 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
     function calculatePlatformRecoveries(&$transactionData, &$resultData) {
         //$result = $resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'];
         //$result = bcadd($result, $transactionData['amount'], 16);
+        return $transactionData['amount'];
+    }
+    
+    function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
  

@@ -465,6 +465,12 @@ class Fileparser {
                 "type" => "payment_capitalRepaymentCost",
                 "chars" => "REPAYMENT"                   
             ],
+            48 =>[
+                "detail" => "Sell_secondary_market",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_secondaryMarketSell",
+            ],
 
 
         
