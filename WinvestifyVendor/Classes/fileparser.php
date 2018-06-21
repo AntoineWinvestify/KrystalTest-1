@@ -94,7 +94,7 @@
  */
 class Fileparser {
     
-    protected $config = array ('offsetStart' => 0,
+    protected $config =  ['offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
                             'sortParameter' => "",                  // used to "sort" the array and use $sortParameter as prime index.
@@ -102,13 +102,13 @@ class Fileparser {
                                                                     // Typically used for sorting by loanId index
                             'changeCronologicalOrder' => 0          // Do not 'sort' order of the resulting array. This option is executed AFTER
                                                                     // the 'sortParameter' is checked. 
-                            );
+                            ];
 
-    protected $errorData = array();                                 // Contains the information of the last occurred error
+    protected $errorData = [];                                 // Contains the information of the last occurred error
     
     protected $defaultFinishDate;
 
-    protected $currencies = array(EUR => ["EUR", "€"],
+    protected $currencies = [EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
                                     USD => ["USD", "$"],
                                     ARS => ["ARS", "$"],
@@ -121,10 +121,10 @@ class Fileparser {
                                     CHF => ["CHF", "Fr"],
                                     MXN => ["MXN", "$"],
                                     RUB => ["RUB", "₽"],
-                                    );
+                                    ];
 
     // dictionary lookup for trying to identify an unknown concept
-    protected $dictionaryWords = array('tax'    => WIN_CONCEPT_TYPE_COST,
+    protected $dictionaryWords = ['tax'    => WIN_CONCEPT_TYPE_COST,
                                 'instalment'    => WIN_CONCEPT_TYPE_INCOME,
                                 'installment'   => WIN_CONCEPT_TYPE_INCOME,
                                 'payment'       => WIN_CONCEPT_TYPE_COST,
@@ -143,7 +143,7 @@ class Fileparser {
                                 'sale'          => WIN_CONCEPT_TYPE_INCOME,
                                 'earning'       => WIN_CONCEPT_TYPE_INCOME
 
-                            );   
+                            ];   
  // "char" is a space seperated list of the following lables. Note that more then 1 lable can be assigned to the same concept.
  // Possible lables that can be applied to each concept are:
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
@@ -946,8 +946,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
                         array_unshift($userFunction['inputData'], trim($rowData[$key]));       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
-                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
-                                                                       $userFunction['functionName']),
+                            $tempResult = call_user_func_array([__NAMESPACE__ .'Fileparser',
+                                                                       $userFunction['functionName']],
                                                                        $userFunction['inputData']);
 
                             if (is_array($tempResult)) {                                
@@ -1182,15 +1182,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function normalizeDate($date, $currentFormat) {
-        $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
+        $internalFormat = $this->multiexplode([":", " ", ".", "-", "/"], $currentFormat);
         (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
-        $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+        $tempDate = $this->multiexplode([":", " ", ".", "-", "/"], $date);
 
         if (count($tempDate) == 1) {
            return;
         }
 
-        $finalDate = array();
+        $finalDate = [];
 
         $length = strlen($dateFormat);
         for ($i = 0; $i < $length; $i++) {
@@ -1285,10 +1285,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 $decArray = explode($char, $input);
                 $dec = preg_replace("/[-]/", "", $decArray[1]);
                 $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                $input = strtr($input, array(',' => '.'));    
+                $input = strtr($input, [',' => '.']);    
                 $input = number_format(floatval($input), $dec + $dec2);
             } else{
-                $input = strtr($input, array(',' => '.'));    
+                $input = strtr($input, [',' => '.']);    
                 $input = number_format(floatval($input), 0);
             }
             $separator = "\.";
@@ -1355,7 +1355,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }        
           
         if ($found == YES) {
-            $result = array($internalConceptName,"type" => "internalName");
+            $result = [$internalConceptName,"type" => "internalName"];
             return $result;
         }
         else {
@@ -1377,7 +1377,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     private function getCurrency($loanCurrency) {
 
-        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
+        $filter = [".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "];
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {        
@@ -1432,7 +1432,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             }
         }        
         if ($found == YES) {
-            $result = array($internalConceptName,"type" => "internalName");
+            $result = [$internalConceptName,"type" => "internalName"];
             return $result;
         }
         else {
@@ -1665,8 +1665,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                         array_unshift($userFunction['inputData'], $valueTd);       // Add cell content to list of input parameters
  //                       print_r($userFunction['inputData']);
                         if ($outOfRange == false) {
-                            $tempResult = call_user_func_array(array($this,
-                                                                       $userFunction['functionName']),
+                            $tempResult = call_user_func_array([$this,
+                                                                       $userFunction['functionName']],
                                                                        $userFunction['inputData']
                                     );
 //                            print_r($tempResult);
