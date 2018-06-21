@@ -1902,8 +1902,7 @@ class zank extends p2pCompany {
                 //Change account
                 $this->credentials['_username'] = $this->user;
                 $this->credentials['_password'] = $this->password;
-                //$this->credentials['_username'] = "Klauskuk@gmail.com";
-                //$this->credentials['_password'] = "P2Pes2017";
+
                 // get login page
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -2256,7 +2255,7 @@ class zank extends p2pCompany {
      * 
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
-     */
+     */ 
     public function translateInvestmentMarket($inputData) {
         
     }

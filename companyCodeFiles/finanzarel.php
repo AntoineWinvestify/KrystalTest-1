@@ -1,19 +1,18 @@
 <?php
 
 /**
- * +--------------------------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
- * +--------------------------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or 	|
- * | (at your option) any later version.                                      		|
- * | This file is distributed in the hope that it will be useful   		    	|
+ * | it under the terms of the GNU General Public License as published by       |
+ * | the Free Software Foundation; either version 2 of the License, or          |
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
- * | GNU General Public License for more details.        			              	|
- * +---------------------------------------------------------------------------------------------------------------+
- *
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              	|
+ * | GNU General Public License for more details.        			|
+ * +----------------------------------------------------------------------------+
  *
  * @author
  * @version 0.5
@@ -80,8 +79,8 @@ class finanzarel extends p2pCompany {
                 ],
                 2 => [
                     "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
-                    "to" => ["investment_outstandingPrincipal"],              //To are all the values we modify the values
-                    "sign" => "negative"                                         //Sign could be positive or negative
+                    "to" => ["investment_outstandingPrincipal"],                //To are all the values we modify the values
+                    "sign" => "negative"                                        //Sign could be positive or negative
                                                                                 //If it is positive, the + will be + and the - will be -
                                                                                 //If it is negative, the + will be - and the - will be +
                 ]
@@ -433,7 +432,7 @@ class finanzarel extends p2pCompany {
             
             "E" => [  
                 [
-                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -505,7 +504,7 @@ class finanzarel extends p2pCompany {
             ],
             "E" => [  
                 [
-                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -574,7 +573,7 @@ class finanzarel extends p2pCompany {
             
             "E" => [  
                 [
-                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -633,7 +632,7 @@ class finanzarel extends p2pCompany {
         ],
         [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "B" => [
                 [
@@ -654,7 +653,7 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             "C" => [
-                "name" => "investment_debtor",                           // Winvestify standardized name  OK
+                "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
             "D" => [
                 "name" => "investment_riskRating",
@@ -664,7 +663,7 @@ class finanzarel extends p2pCompany {
             ],
             "F" => [  
                 [
-                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -695,9 +694,9 @@ class finanzarel extends p2pCompany {
             ],
             "K" =>  [
                 [
-                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [                                            // trick to get the complete cell data as purpose
-                                "input2" => "",                                // May contain trailing spaces
+                                "input2" => "",                                 // May contain trailing spaces
                                 "input3" => "&",
                             ],
                     "functionName" => "extractDataFromString",
@@ -716,7 +715,7 @@ class finanzarel extends p2pCompany {
             ],
             "O" => [
                 [
-                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -724,7 +723,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ],
                 [
-                    "type" => "investment_dueDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_dueDate",                             // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -787,7 +786,7 @@ class finanzarel extends p2pCompany {
 
         protected $parserValuesAmortizationTable2 = [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "H" => [
                 [
@@ -877,14 +876,14 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => ["date","investment_loanId"],               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["date","investment_loanId"],                    // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => ["date","investment_loanId"],               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["date","investment_loanId"],                    // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
             'callback' => [
                 "cleanTempArray" => [
@@ -901,8 +900,8 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-                            'sortParameter' => ["date","investment_loanId"],   // used to "sort" the array and use $sortParameter(s) as prime index.
-            //'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+                            'sortParameter' => ["date","investment_loanId"],    // used to "sort" the array and use $sortParameter(s) as prime index.
+            //'changeCronologicalOrder' => 1,                                   // 1 = inverse the order of the elements in the transactions array
         ]
     ];
     
@@ -917,13 +916,13 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'debugEnd' => true,
-            'sortParameter' => ["investment_loanId"]                       // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"]                            // Used to "sort" the array and use $sortParameter as prime index.
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => ["investment_loanId"],                      // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"],                           // Used to "sort" the array and use $sortParameter as prime index.
             'callback' => [
                 "cleanTempArray" => [
                     "findValueInArray" => [
@@ -939,7 +938,7 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => ["investment_loanId"],   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["investment_loanId"],                           // used to "sort" the array and use $sortParameter(s) as prime index.
         ]
     ];
     
@@ -954,19 +953,19 @@ class finanzarel extends p2pCompany {
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'debugEnd' => true,
-            'sortParameter' => ["investment_loanId"]                       // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"]                            // Used to "sort" the array and use $sortParameter as prime index.
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => ["investment_loanId"],                      // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"],                           // Used to "sort" the array and use $sortParameter as prime index.
         ],
         2 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => ["investment_loanId"],   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["investment_loanId"],                           // used to "sort" the array and use $sortParameter(s) as prime index.
         ]
     ];
     
@@ -974,7 +973,7 @@ class finanzarel extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd' => 0,
-            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
     
@@ -1067,7 +1066,7 @@ class finanzarel extends p2pCompany {
             'cleanArrayByKey' => [
                 "value" => "valuesToDeleteForExpiredLoans"                      //Second, we use the array to delete all the duplicate keys
             ],
-            "cleanTempArrayByLevels" => [                                               //We must clean the array of previous dates of 2016-01-01
+            "cleanTempArrayByLevels" => [                                       //We must clean the array of previous dates of 2016-01-01
                 "findValueInArray" => [                                         //We need to clean the array
                     "key" => "investment_issueDate",
                     "function" => "verifyPreviousDateIsLess",              
