@@ -2871,6 +2871,7 @@ FRAGMENT
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
         echo "our config: ";
         print_r($this->headerComparation);
+        $data = array_filter($data);
 
         if (!empty(array_diff($this->headerComparation, $data)) || !empty(array_diff($data, $this->headerComparation)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
             $date = date("Ymd");
