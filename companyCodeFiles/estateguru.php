@@ -100,8 +100,6 @@ class estateguru extends p2pCompany {
                 break;
             }
         }
-
-
         return $confirm;
     }
 
