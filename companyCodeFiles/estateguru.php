@@ -28,17 +28,17 @@
  */
 class estateguru extends p2pCompany {
 
-    protected $transactionConfigParms = array('offsetStart' => 1,
+    protected $transactionConfigParms = ['offsetStart' => 1,
         'offsetEnd' => 0,
         'separatorChar' => ";",
         'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $investmentConfigParms = array('offsetStart' => 1,
+    ];
+    protected $investmentConfigParms = ['offsetStart' => 1,
         'offsetEnd' => 0,
         'separatorChar' => ";",
         'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $transactionHeader = array(
+    ];
+    protected $transactionHeader = [
         'A' => 'UniqueId',
         'B' => 'Payment Date',
         'C' => 'Confirmation Date',
@@ -48,7 +48,7 @@ class estateguru extends p2pCompany {
         'G' => 'Currency',
         'H' => 'Amount',
         'I' => 'Available to invest'
-    );
+    ];
 
     /*    NOT YET READY
       protected $investmentConfigParms = array ('offsetStart' => 1,
@@ -68,7 +68,7 @@ class estateguru extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    function companyUserLogin($user = "", $password = "", $options = []) {
         /*
           FIELDS USED BY estateguru DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
@@ -211,10 +211,10 @@ class estateguru extends p2pCompany {
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
                 if (empty($this->credentialsInvestments)) {
-                    $this->credentialsInvestments = array(
+                    $this->credentialsInvestments = [
                         "filterProjectValue" => 1, //1->Funded loans(contain late) 2->Repaid loans 3->Late Loans(only late) 4->Deaulted loans
                         "userId" => $this->userId,
-                    );
+                    ];
                 }
                 if (empty($this->tempUrl['investmentFilter'])) {
                     $this->tempUrl['investmentFilter'] = array_shift($this->urlSequence);
@@ -295,13 +295,13 @@ class estateguru extends p2pCompany {
         $dom2 = new DOMDocument();
         $dom2->loadHTML($node2);
         
-        $dom1 = $this->cleanDomTag($dom1, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'tbody'),
-        ));
+        $dom1 = $this->cleanDomTag($dom1, [
+            ['typeSearch' => 'tagElement', 'tag' => 'tbody'],
+        ]);
          
-        $dom2 = $this->cleanDomTag($dom2, array(
-            array('typeSearch' => 'tagElement', 'tag' => 'tbody'),
-        ));
+        $dom2 = $this->cleanDomTag($dom2, [
+            ['typeSearch' => 'tagElement', 'tag' => 'tbody'],
+        ]);
         
         echo 'compare structure';
         $structureRevision = $this->verifyDomStructure($dom1, $dom2);
