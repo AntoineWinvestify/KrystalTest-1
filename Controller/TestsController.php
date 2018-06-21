@@ -62,6 +62,7 @@ class TestsController extends AppController {
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest", "mytest1"));
             "testDateDiff", "xlsxConvert", "read", "pdfTest", "readSize"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1"));
     }
     
     
@@ -765,4 +766,52 @@ $this->print_r2($linkedAccountsResults);
         echo 20170000 - 20130000 . "<br>";
     }
 
+    
+    
+    /**
+     *  to test the new API for location
+     * 
+     * 
+     */
+    function testChildModel() {    
+        $this->autoRender = false;
+        Configure::write('debug', 2);          
+        
+        $this->Investment = ClassRegistry::init('Investment');
+        
+  
+        $filteringConditions = array('id >' => 1);
+        echo "filter = ";
+        print_r($filteringConditions);
+        $result = $this->Investment->find("all", array('conditions' => $filteringConditions,
+                                                        'recursive' => -1,
+                                                        'fields' => array('id', 'linkedaccount_id' ))
+                                         );        
+        
+        $this->print_r2($result);
+        exit;
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        $filterConditions = array('id' => 2105);
+        print_r($filterConditions);
+     	$resultInvestmentData = $this->Investment->find("all", $params = array('recursive'     => 1,
+                                                                             'conditions'    => $filterConditions));              
+            
+        $myInstance = $resultInvestmentData[0]['Investment']['id'];  
+        $myInstance = 55;
+echo $myInstance;
+//        $this->print_r2($resultInvestmentData);
+
+    
+        $result = $this->Investment->hasChild($myInstance, 'Investmentslice');
+        echo "FINAL";
+        $this->print_r2($result);
+    }    
 }

@@ -65,34 +65,32 @@ class Queue extends AppModel {
 
 
 
-/*
-*
-*	Put a new request into the queue
-*	@param	queueReference	array 			the reference, as given by the user of the queue, to an item.
-*	@param	queueType		int				LIFO, FIFO, CIRCULAR
-*	@param	action			varchar			url string of the action to be perfomed
-*										
-*	@return boolean			true			queueItem created
-*							false			undefined error, item NOT created
-*						
-*/
-public function addToQueue($queueReference, $queueType, $queueAction) {
+    /**
+     *
+     *	Put a new request in the queue
+     * 
+     *	@param	queueReference	array 	the reference, as given by the user of the queue, to an item.
+     *	@param	queueType	int	LIFO, FIFO, CIRCULAR
+     *	@param	action		varchar	url string of the action to be perfomed										
+     *	@return boolean		true	queueItem created
+     *				false	undefined error, item NOT created					
+     */
+    public function addToQueue($queueReference, $queueType, $queueAction) {
 	$data = array("queue_userReference" => $queueReference,
-				  "queue_action"		=> $queueAction,
-				  "queue_type"			=> FIFO,
-				  "queue_status"		=> WAITING_FOR_EXECUTION,
+				  "queue_action"    => $queueAction,
+				  "queue_type"      => FIFO,
+				  "queue_status"    => WAITING_FOR_EXECUTION,
 				 );
 	
 	if ($this->save($data, $validate = true)) {
-		return true;
+            return true;
 	}
-	else {
-		return false;
-	}
-}
+	return false;
+    }
 
     /**
      * Put a new request into the queue for Dashboard 2.0
+     * 
      * @param array $queueReference The reference, as given by the user of the queue, to an item
      * @param json $queueInfo It is the information about the queue request
      * @param int $queueStatus It is the status to init the process of collecting information about the user's companies
@@ -113,38 +111,33 @@ public function addToQueue($queueReference, $queueType, $queueAction) {
 
         if ($this->save($data, $validate = true)) {
             return true;
-        } else {
-            return false;
-        }
+        } 
+        return false;
     }
 
-    /*
-*
-*	Removes all requests with value queueReference and which are not (yet) executing from the queue.
-*	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item
-*	@return boolean			true		reference deleted
-*							false		reference not found
-*						
-*/
-public function removeFromQueue($queueReference) {
+    /**
+     *	Removes all requests with value queueReference and which are not (yet) executing from the queue.
+     * 
+     *	@param	queueReference	varchar	the reference, as given by the user of the queue, to an item
+     *	@return boolean		true	reference deleted
+     *				false	reference not found					
+     */
+    public function removeFromQueue($queueReference) {
 	
 	
 	
-}
+    }
 
 
 
-
-
-/*
-*
-*	Check if an item exists in the queue, with status 'IDLE', 'WAITING_FOR_EXECUTION' or 'EXECUTING'	
-*	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item
-*	@return boolean			true		one or more items found with requested reference
-*							false		reference not found
-*
-*/
-public function checkQueue($queueReference) {
+    /**
+     *
+     *	Check if an item exists in the queue, with status 'IDLE', 'WAITING_FOR_EXECUTION' or 'EXECUTING'	
+     *	@param	queueReference	varchar	the reference, as given by the user of the queue, to an item
+     *	@return boolean	true		one or more items found with requested reference
+     *			false		reference not found
+     */
+    public function checkQueue($queueReference) {
 	$result = $this->find("first", array("recursive" => -1,
 			"conditions" => array("queue_userReference" => $queueReference,
 			"queue_status"  => WAITING_FOR_EXECUTION),
@@ -155,20 +148,19 @@ public function checkQueue($queueReference) {
 	else {
 		return true;
 	}
-}
+    }
 
 
 
 
 
-/*
-*
-*	Get the next request from the queue for executing purposes
-*	@return queueReference	array		Array holding the relevant information of the item in the queue
-*							empty 		queue is empty
-*							
-*/ 
-public function getNextFromQueue($queuetype) {
+    /**
+     *	Get the next request from the queue for executing purposes
+     * 
+     *	@return queueReference	array	Array holding the relevant information of the item in the queue
+     *				empty 		queue is empty						
+     */ 
+    public function getNextFromQueue($queuetype) {
 	// check queue type
 	switch ($queuetype) {
 		case FIFO:
@@ -192,26 +184,27 @@ public function getNextFromQueue($queuetype) {
 	$this->id = $result['Queue']['id'];	
 	$this->save(array("queue_status" => EXECUTING));
 	return $result;
-}
+    }
 
 
 
 
 
-/**
-*
-*	Callback Function
-*	Generates the "created" field
-*
-*/
-public function beforeSave1($options = array()) {
+    /**
+     *
+     *	Callback Function
+     *	Generates the "created" field
+     *
+     */
+    public function beforeSave1($options = array()) {
 
-    $this->data[$this->alias]['created'] = date("Y-m-d H:i:s", time());
-    return true;
-}
+        $this->data[$this->alias]['created'] = date("Y-m-d H:i:s", time());
+        return true;
+    }
     
     /**
      * Function to get queue request by status
+     * 
      * @param int $queuetype It is the type of the queue
      * @param int $status It is the status of the queue
      * @param array $info It is a json with info data about the queue
@@ -252,12 +245,12 @@ public function beforeSave1($options = array()) {
             return;
         }
 
-//        print_r($result);
         return $result;
     }
     
     /**
      * Function to retrieve the date of the last time the user get the data
+     * 
      * @param string $userReference It is the user's internal id
      * @return array It is the information of the user
      */

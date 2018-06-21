@@ -1161,7 +1161,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
 
             $controlVariables['outstandingPrincipal'] = $database['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'];  // Holds the *last* calculated value so far
             $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];      // Holds the *last* calculated valueso far
-            $controlVariables['activeInvestments'] = $activeInvestments; // Holds the last calculated valueso far
+            $controlVariables['activeInvestments'] = $activeInvestments; // Holds the last calculated values so far
 
             print_r($database['Userinvestmentdata']);
 
@@ -1204,7 +1204,8 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
         }
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
-// Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
+// Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. but for control variables we need the very latest information
+// All the database objects generated for the "present" day shall be deleted
         echo __FUNCTION__ . " " . __LINE__ . " Determine if a record needs to be deleted";
         $dateToDeleteAfter = new DateTime(date($finishDate));
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
@@ -1254,8 +1255,9 @@ print_r($filterConditions);
             }
             // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
 echo __FILE__ . " " . __LINE__ . " \n";
-            /*$filterConditions = array ("date >" => $lastDateToCalculate,
-                      "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
+            $filterConditions = array ("date" => $lastDateToCalculate,
+                      "userinvestmentdata_id" => $backupCopyUserinvestmentdataId
+                    );
 print_r($filterConditions);         
             if ($this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                 echo __FILE__ . " " . __LINE__ . " Globalcashflowdata deleted \n";                 
@@ -1264,18 +1266,16 @@ print_r($filterConditions);
                 echo __FILE__ . " " . __LINE__ . " Globaltotalsdata deleted \n";                  
             }
             // *Maximum* only one userinvestmentdata object shall be deleted
-            $filterConditions = array (
-           //     "date >=" => $lastDateToCalculate,
-                                        "id" => $backupCopyUserinvestmentdataId);
+            $filterConditions = array ("id" => $backupCopyUserinvestmentdataId);
 echo __FILE__ . " " . __LINE__ . " \n";            
 print_r($filterConditions);            
             if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                 echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";                 
-            }*/
+            }
 echo __FILE__ . " " . __LINE__ . " \n";       
-            // Also remove any "assigned" loanIds/sliceIds for download
+            // Also remove any "assigned" loanIds/sliceIds for download with the date of "finishDate"
             foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                if ($tableToCollect['date'] >= $dateKey) {
+                if ($tableToCollect['date'] == $lastDateToCalculate) {
                     unset($slicesAmortizationTablesToCollect[$tableCollectKey]);
                 }
             }            
@@ -1301,14 +1301,24 @@ echo __FILE__ . " " . __LINE__ . " \n";
         unset($tempDatabase);
         // Make sure that we have an entry in Userinvestmentdata for 'yesterday'                                                                                                                             as required for yield calculation     
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
-            $date = new DateTime(date($finishDate));
-            $lastDateToCalculate = $date->format('Y-m-d');
-            if ($dateKey < $lastDateToCalculate) {
+       //     $date = new DateTime(date($finishDate));
+         //   $lastDateToCalculate = $date->format('Y-m-d');
+       //     $lastDateToStore = $date->format('Y-m-d');                          // The date of the last userinvestment 
+                                                                                // that will be stored in database
+     //       $this->date = date("Ymd", strtotime("-1 day"));
+
+            
+            $date = new DateTime($finishDate);                                  // The date of the last userinvestment
+            $date->modify('-1 day');                                            // that will be stored in databas
+            $lastDateToStore = $date->format('Y-m-d');                        
+
+            
+            if ($dateKey < $lastDateToStore) {
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
 
                 $this->Userinvestmentdata->create();
-                $tempDatabase['Userinvestmentdata']['date'] = $lastDateToCalculate;
+                $tempDatabase['Userinvestmentdata']['date'] = $lastDateToStore;
                 $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
                 $this->Userinvestmentdata->save($tempDatabase, $validate = true);
                 if (Configure::read('debug')) {
@@ -1318,7 +1328,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
         }
 
 
-        // Copy the userinvestmentdata for all missing days
+        // Copy the userinvestmentdata for all 'missing days'. This is only applicable in case of non-daily regular update
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $date = new DateTime($dateKey);
             $date->modify('+1 day');

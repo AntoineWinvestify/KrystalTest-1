@@ -2074,8 +2074,7 @@ class zank extends p2pCompany {
 
         $credentials['_username'] = $user;
         $credentials['_password'] = $password;
-print_r($credentials);
-echo "BBB";
+
 // get login page
         $str = $this->getCompanyWebpage();  // needed so I can read the csrf code
         $dom = new DOMDocument;
@@ -2085,8 +2084,7 @@ echo "BBB";
         $forms = $dom->getElementsByTagName('form');
 
         $index = 0;
-print_r($str);
-echo "AAA";
+
         foreach ($forms as $form) {
             $index = $index + 1;
             if ($index == 1) {
@@ -2116,7 +2114,7 @@ echo "AAA";
             $this->mainPortalPage = $str;
             return true;
         }
-echo "CCC";
+
         return false;
     }
 

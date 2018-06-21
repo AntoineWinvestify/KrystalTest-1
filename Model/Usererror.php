@@ -1,6 +1,5 @@
 <?php
 /**
-// @(#) $Id$
 // +-----------------------------------------------------------------------+
 // | Copyright (C) 2009, http://yoursite                                   |
 // +-----------------------------------------------------------------------+
@@ -25,7 +24,7 @@
 
 
 2017-01-01		version 0.1
-																	[OK, not tested]
+
 
 
 
@@ -61,24 +60,22 @@ var $validate = array(
 
 
 
-/**
-*
-*	Callback Function
-*	Rules are defined for what should happen when a database record is created or updated
-*	Generate event of object creation
-*/
-function afterSave ($created, $options = array()) {
+    /**
+     *	Callback Function
+     *	Rules are defined for what should happen when a database record is created or updated
+     *	Generate event of object creation
+     */
+    function afterSave ($created, $options = array()) {
 
-	if ($created) {
+        if ($created) {
+                $event = new CakeEvent('errorReported', $this, array('id' => $this->id,
+                                                                    'error' => $this->data[$this->alias],
+                                        ));
 
-		$event = new CakeEvent('errorReported', $this, array('id' 	=> $this->id,
-														'error' 	=> $this->data[$this->alias],
-																	));
-
-		$this->getEventManager()->dispatch($event);
-	}			
-	return true;
-}
+                $this->getEventManager()->dispatch($event);
+        }			
+        return true;
+    }
 
 
 }

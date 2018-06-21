@@ -158,7 +158,7 @@ class User extends AppModel {
                 'investor_photoChatGUID' => 'user1_128.png'
             );
 
-            if ($this->Investor->save($data, $validation = true)) {                                   // OK
+            if ($this->Investor->save($data, $validation = true)) {  
                 $investorId = $this->Investor->id;
                 // store this id in user model		
                 $this->id = $userId;
@@ -187,7 +187,7 @@ class User extends AppModel {
      */
     public function generateNewConfirmationCode($username) {
 
-        $tempCode[0] = $this->createReference();    // generate a new code
+        $tempCode[0] = $this->createReference();                // generate a new code
         $resultUser = $this->find("first", array('conditions' => array('username' => $username),
             'recursive' => 0));
 
@@ -205,9 +205,9 @@ class User extends AppModel {
     /**
      * Read the confirmation code used in the process of account registration/confirmation
      * 	
-     * @param string	$username	name of the user
-     * @return array				[0] requested code
-     *                                       [1] number of times a code has been requested 	
+     * @param string	$username   name of the user
+     * @return array                [0] requested code
+     *                              [1] number of times a code has been requested 	
      */
     public function readConfirmationCode($username) {
         $resultUser = $this->find('all', array('conditions' => array('User.username' => $username),
@@ -400,7 +400,6 @@ class User extends AppModel {
     }
 
     /**
-     *
      * 	Callback Function
      * 	Generates and stores a new password which the user SHOULD change
      *

@@ -276,4 +276,28 @@ public function matchFields($check = array(), $compareField = null) {
         return $lastLog['query'];
     }
 
+    
+    /** Checks if the current model has a child model
+     *  
+     *  @param  bigInt      $currentInstance    Instance of the parent Model
+     *  @param  string      $model              Name of child model
+     *  @return boolean
+     */   
+    public function hasChild($currentInstance, $model) {  
+
+        $this->Behaviors->load('Containable');
+        $this->contain($model);            
+
+        $result = $this->find("first", array('recursive' => 1,
+                                                        'fields' => array('id'),
+                                           'conditions' => array('id' => $currentInstance)
+                                        ));       
+        $count = count($result[$model]);
+
+        if ($count <> 0) { 
+            return true;
+        }
+        return false;
+    } 
+    
 }
