@@ -93,7 +93,6 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                     $userReference = $job['Queue2']['queue2_userReference'];
                     $queueId = $job['Queue2']['id'];
                     $this->queueInfo[$job['Queue2']['id']] = json_decode($job['Queue2']['queue2_info'], true);
-                    print_r($this->queueInfo);
                     $directory = Configure::read('dashboard2Files') . $userReference . "/" . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                     $dir = new Folder($directory);
                     $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
@@ -196,9 +195,9 @@ print_r($linkedAccountData);
 
             foreach ($loanDataId as $loanId) { 
                 $tempNextScheduledDate = "";
-                $this->Investmentslice->Behaviors->load('Containable');
-                $this->Investmentslice->contain('Amortizationtable');              
-                $this->Investmentslice->contain('GlobalamortizationtableInvestmentslice');
+                //$this->Investmentslice->Behaviors->load('Containable');
+                //$this->Investmentslice->contain('Amortizationtable');              
+                //$this->Investmentslice->contain('GlobalamortizationtableInvestmentslice');
                 $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice_identifier' => $loanId),
                                                                            'recursive' => 1)
                                                                         );
@@ -209,6 +208,7 @@ print_r($linkedAccountData);
                 else {
                     $reversedData = array_reverse($result[0]['Amortizationtable']);           // prepare to search backwards in amortization table
                 }
+
                 
                 foreach ($reversedData as $table) {
                     if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
@@ -285,6 +285,7 @@ echo "todayTimeStamp = $todayTimeStamp\n";
                 foreach ($result as $item) {                      
 echo "ITEM  = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
 print_r($item);
+
 
                     $dateTimeForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
 

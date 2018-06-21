@@ -129,13 +129,14 @@ class loanbook extends p2pCompany {
                             9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
                             10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
                             11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
-                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"]    //When is negative
+                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
+                            13 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
                 ]
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",
                     "inputData" => [
@@ -195,10 +196,15 @@ class loanbook extends p2pCompany {
             "J" => [
                 [
                     "type" => "investment_nominalInterestRate",
-                    "functionName" => "getPercentage",
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
                 ]
-            ],
-            "K" => [
+        ],
+        "K" => [
                 [
                     "type" => "investment_myInvestmentDate",                    // Winvestify standardized date  OK
                     "inputData" => [
@@ -240,7 +246,24 @@ class loanbook extends p2pCompany {
             ]
         ],
         3 => [
-            "name" => "amortizationtable_paymentStatus"
+                [
+                    "type" => "amortizationtable_paymentStatus",                          
+                    "inputData" => [                                            
+                                "input2" => "",                                  
+                                "input3" => "",
+                                "input4" => 0                                   
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],        
+                [
+                    "type" => "amortizationtable_paymentStatusOriginal",    
+                    "inputData" => [                                       
+                                "input2" => "",                        
+                                "input3" => "",
+                                "input4" => 0                             
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
         ],
         4 => [
             [
@@ -342,12 +365,20 @@ class loanbook extends p2pCompany {
             ]
         ]
     ];
+    
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus",
+        ]
+    ];   
+        
     protected $transactionHeader = array("A" => "Fecha",
         "B" => "Tipo de movimiento",
         "C" => "Descripción",
         "D" => "Importe",
-        "E" => "Referencia",
-        "F" => "Nombre de la Operación",
+        "E" => "Saldo",
+        "F" => "Referencia",
+        "G" => "Nombre de la Operación",
     );
 
     function __construct() {                                                    // Do whatever is needed for this subsclass
@@ -1250,7 +1281,7 @@ class loanbook extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for loanbook files
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/octet-stream"/*"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"*/){  //Compare mine type for loanbook files
                     echo 'mine type incorrect: ';
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
@@ -1756,7 +1787,28 @@ class loanbook extends p2pCompany {
             }
         }
     }
-
+    
+    /**
+     * Function to translate the company specific AmortizationPaymentStatus to the Winvestify standardized
+     * concept
+     * 
+     * @param string $inputData     company specific AmortizationPaymentStatus
+     * @return int                  Winvestify standardized AmortizationPaymentStatus
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+        $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+        $inputData = mb_strtoupper($inputData);
+        switch ($inputData) {
+            case "PENDIENTE":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;
+            case "INCIDENCIAS":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;                     
+        }
+        return $data;        
+    }
+    
     /**
      * Dom clean for structure revision
      * @param Dom $node1
@@ -1823,7 +1875,7 @@ class loanbook extends p2pCompany {
         $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PAGO ÚNICO":
-                $type = WIN_PAYMENTFREQUENCY_ONEPAYMENT;
+                $type = WIN_PAYMENTFREQUENCY_ONE_PAYMENT;
                 break;
             case "TRIMESTRAL":
                 $type = WIN_PAYMENTFREQUENCY_YEAR_CUARTER;

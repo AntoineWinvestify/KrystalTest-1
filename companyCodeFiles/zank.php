@@ -249,9 +249,9 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0,
-                                "input4" => ","
-                            ],
+                                "input3" => 4,
+                                 "input4" => ","
+                                ],
                     "functionName" => "handleNumber",
                 ],
                 [
@@ -363,7 +363,8 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0
+                                "input3" => 4,
+                                "input4" => ","
                                 ],
                     "functionName" => "handleNumber",
                 ]                                         
@@ -2027,7 +2028,7 @@ class zank extends p2pCompany {
                 }
                 foreach ($tables as $table) {
                     echo "Read table: ";
-                    if ($table->getAttribute('id') == 'parte' || $table->getAttribute('id') == 'todo') {
+                    if ($table->getAttribute('id') == 'parte' /*|| $table->getAttribute('id') == 'todo'*/) {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
@@ -2043,6 +2044,7 @@ class zank extends p2pCompany {
                         }
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                     }
+                    
                 }
                 if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;

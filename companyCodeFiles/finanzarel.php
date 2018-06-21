@@ -93,18 +93,22 @@ class finanzarel extends p2pCompany {
         ]
     ];
     
+    
+    
+    
+    
     protected $valuesTransaction = [                                            // All types/names will be defined as associative index in array
         [
-            "D" =>  [
+            "E" =>  [
                 [
                     "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/y",
+                                "input2" => "D/M/Y",
                                 ],
                     "functionName" => "normalizeDate",
                 ] 
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // trick to get the complete cell data as purpose
@@ -115,7 +119,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ]
             ], 
-            "F" => [// NOT FINISHED YET
+            "G" => [// NOT FINISHED YET
                 [
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate
@@ -139,7 +143,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getTransactionDetail",
                 ]
             ],
-            "G" => [
+            "H" => [
                 [
                     "type" => "amount",                                         // Winvestify standardized name  OK
                     "inputData" => [                               
@@ -150,7 +154,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ],
-            "H" => [
+            "I" => [
                 [
                     "type" => "balance",                                        // Winvestify standardized name  OK
                     "inputData" => [                             
@@ -170,16 +174,16 @@ class finanzarel extends p2pCompany {
             ]
         ],
         [
-            "D" =>  [
+            "E" =>  [
                 [
                     "type" => "date",                                           // Winvestify standardized name  OK
                     "inputData" => [
-                                "input2" => "D/M/y",
+                                "input2" => "D/M/Y",
                                 ],
                     "functionName" => "normalizeDate",
                 ] 
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // trick to get the complete cell data as purpose
@@ -190,7 +194,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ]
             ], 
-            "F" => [
+            "G" => [
                 [
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate
@@ -208,7 +212,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getTransactionDetail",
                 ]
             ],
-            "G" => [
+            "H" => [
                 [
                     "type" => "amount",                                         // Winvestify standardized name  OK
                     "inputData" => [                                       
@@ -302,7 +306,7 @@ class finanzarel extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ]
-            ], 
+            ],                   
             "F" => [
                 "name" => "investment_originalDuration"
             ],
@@ -345,13 +349,14 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]*/
                 [
-                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
-                    "inputData" => [                                            // trick to get the complete cell data as purpose
-                                "input2" => "",                                // May contain trailing spaces
-                                "input3" => "&",
-                            ],
-                    "functionName" => "extractDataFromString",
-                ]
+                    "type" => "investment_nominalInterestRate",
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 0,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
+                ] 
             ],
             "L" => [
                 [
@@ -362,7 +367,7 @@ class finanzarel extends p2pCompany {
                                 "input4" => 2
                                 ],
                     "functionName" => "getAmount",
-                ]
+                ],                        
             ],
             "M" => [
                 [
@@ -514,13 +519,13 @@ class finanzarel extends p2pCompany {
             ],
             "I" =>  [
                 [
-                    "type" => "investment_nominalInterestRate",                           // Winvestify standardized name
+                    "type" => "investment_nominalInterestRate",
                     "inputData" => [
-				"input2" => ".",
-                                "input3" => ",",
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
                 ]
             ],
             //FAKE CELL, IT IS A DEFAULT VALUE

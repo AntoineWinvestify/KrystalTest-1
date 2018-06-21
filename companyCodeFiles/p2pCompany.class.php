@@ -2869,19 +2869,23 @@ FRAGMENT
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
+        echo "our config: ";
+        print_r($this->headerComparation);
+        $data = array_filter($data);
 
-        if (!empty(array_diff($this->headerComparation, $data)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+        if (!empty(array_diff($this->headerComparation, $data)) || !empty(array_diff($data, $this->headerComparation)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
             $date = date("Ymd");
-            $fileErrorDir = $pathError. $this->companyName . DS . $this->userReference . DS . $date . DS ;
-            
+            $fileErrorDir = $pathError . $this->companyName . DS . $this->userReference . DS . $date . DS;
+
             if (!file_exists($fileErrorDir)) {
-                 mkdir($fileErrorDir, 0777, true);
+                mkdir($fileErrorDir, 0777, true);
             }
-            copy($this->getFolderPFPFile()  . DS . $this->fileName,  $fileErrorDir . DS . $this->fileName);     
-            
-            if (!empty($configParam[0]['chunkInit'])) {  
+            copy($this->getFolderPFPFile() . DS . $this->fileName, $fileErrorDir . DS . $this->fileName);
+
+            if (!empty($configParam[0]['chunkInit'])) {
                 return $this->compareMulti();                                   //Multi sheet
-            } else {    
+            }
+            else {
                 return $this->compareSimple();                                  //Single sheet
             }
         }
@@ -2927,8 +2931,7 @@ FRAGMENT
      */
     function setInvestmentList($investmentList) {
         $this->investmentList = $investmentList;
-    }    
-    
+    }
     
     /**
      * Function to create a new loanIds.json with the amortizationTables that failed
@@ -2943,8 +2946,9 @@ FRAGMENT
 
         if (!empty($this->tempArray['errorTables'])) {
             $path = $this->getFolderPFPFile();
-            $oldFilePath = $path . DS . "oldLoanIds.json";
+            $oldFilePath = $path . DS . "goodLoanIds.json";
             $filePath = $path . DS . "loanIds.json";
+            $badLoansPath = $path . DS . "badLoanIds.json";
 
             if (!empty($this->tempArray['correctTables'])) {
                 $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
@@ -2954,9 +2958,9 @@ FRAGMENT
             }
 
             unlink($filePath);
-            $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+            $idsJsonFile = fopen($badLoansPath, "w"); //badLoanIds must be replaced, we can delete this info
             $jsonIds = json_encode($this->tempArray['errorTables']);
-            fwrite($idsJsonFile, $jsonIds);
+            fwrite($badLoansPath, $jsonIds);
             fclose($idsJsonFile);
         }
     }

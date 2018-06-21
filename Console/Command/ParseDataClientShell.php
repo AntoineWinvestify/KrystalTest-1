@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2018, http://www.winvestify.com                   	  	|
@@ -16,12 +15,11 @@
  *
  *
  * @author
- * @version 0.6
- * @date 2018-03-05
+ * @version 0.5
+ * @date 2018-06-11
  * @package
  */
-/*
- * This client deals with parsing of the files that have been downloaded
+ /* This client deals with parsing of the files that have been downloaded
  * from the PFP's. Once the data has been parsed by the Worker, the Client starts analyzing
  * the data and writes the data-elements to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
@@ -72,7 +70,7 @@ class ParseDataClientShell extends GearmanClientShell {
     public function checkRunTimeEnvironment() {
 
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        
+        //return;
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
@@ -304,6 +302,44 @@ class ParseDataClientShell extends GearmanClientShell {
      *
      */
     public function mapData(&$platformData) {
+               
+        //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
+        $sortedGlobalId = array();
+        foreach ($platformData['parsingResultTransactions'] as $date => $value) {
+            foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {                                       
+                foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
+
+                    //Loan id filter
+                    if (Configure::read('flow2Filter')) {
+                        $wantedInvestments = WANTEDINVESTMENT;
+                        if (!in_array($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
+                            unset($platformData['parsingResultTransactions'][$date][$loanId]);
+                            if (empty($platformData['parsingResultTransactions'][$date])) {
+                                unset($platformData['parsingResultTransactions'][$date]);
+                            }
+                        }
+                    }
+
+                    //Sort and put transaction that create an investment first
+                    if (($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
+                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
+                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE")) {
+                        $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
+                        $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
+                        $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
+                        break;
+                    }      
+                }
+                 
+                //Sort and put transaction without loan id last
+                if (strpos($loanId, 'global') !== false && !in_array($loanId, $sortedGlobalId)) {
+                        $noLoanIdTransaction = $platformData['parsingResultTransactions'][$date][$loanId];
+                        unset($platformData['parsingResultTransactions'][$date][$loanId]);
+                        $platformData['parsingResultTransactions'][$date][$loanId] = $noLoanIdTransaction;
+                        $sortedGlobalId[] = $loanId;
+                }                       
+            }
+        }
 
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
@@ -392,7 +428,7 @@ class ParseDataClientShell extends GearmanClientShell {
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
             echo __FUNCTION__ . " " . __LINE__ . "\ndateKey = $dateKey \n";
-
+                    
             // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
             if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
                 $date1 = new DateTime($oldDateKey);
@@ -486,7 +522,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
 
-                if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                if (/*$dateTransactionNames[0] == "global"*/  strpos($keyDateTransaction, "global") !== false) {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     
                     
                     // cycle through all individual fields of the transaction record
@@ -547,11 +583,22 @@ class ParseDataClientShell extends GearmanClientShell {
                         $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                         //$loanStatus = WIN_LOANSTATUS_FINISHED;
                     }
-                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans'])) {          // check if loanId is new
+
+                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) && 
+                            ($dateTransaction[0]["internalName"] == "investment_myInvestment" 
+                            || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" 
+                            || $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification"
+                            || $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" )) {          // check if loanId is new
+
                         $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                         echo "FOUND in Newloans\n";
                         if ($arrayIndex !== false) {        // Deleting the array from new loans list
-                            unset($platformData['workingNewLoans'][$arrayIndex]);
+                            //unset($platformData['workingNewLoans'][$arrayIndex]);
+                            foreach ($platformData['workingNewLoans'] as $loanKey => $newLoan) {
+                                if ($newLoan == $dateTransaction[0]['investment_loanId']) {
+                                    unset($platformData['workingNewLoans'][$loanKey]);
+                                }
+                            }
                         }
 
                         echo "Storing the data of a 'NEW LOAN' in the shadow DB table\n";
@@ -602,7 +649,9 @@ class ParseDataClientShell extends GearmanClientShell {
                             "investment_priceInSecondaryMarket", "investment_outstandingPrincipal", "investment_totalGrossIncome",
                             "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
                             "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan",
-                            "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState"));
+                            "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState",
+                            "investment_loanId"),
+                                array('date DESC'));
 
                         $investmentId = $tempInvestmentData[0]['Investment']['id'];
                         if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
@@ -633,9 +682,10 @@ class ParseDataClientShell extends GearmanClientShell {
                             $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];
                             $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
                             $database['investment']['investment_reservedFunds'] = $tempInvestmentData[0]['Investment']['investment_reservedFunds'];
-                    //        $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
+                            $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
                             $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
                             $database['investment']['id'] = $investmentId;
+                            $database['investment']['investment_loanId'] = $tempInvestmentData[0]['Investment']['investment_loanId'];
                         }
                     }
 
@@ -678,20 +728,24 @@ class ParseDataClientShell extends GearmanClientShell {
                             
                             if (isset($getAmortizationTable) && $getAmortizationTable) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
+
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
                                 // if not then create a new array with the data available so far, sliceIdentifier and loanId
                                 $isNewTable = YES;
+                                
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                                     if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
                                         $isNewTable = NO;
                                         break;
                                     }
                                 }
+                                
                                 if ($isNewTable == YES) {
                                     echo __FILE__ . " " . __LINE__ .  "get new Amortization Table for loanId " . $transactionData['investment_loanId'] . "\n";
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                    unset($getAmortizationTable);
               // ADPO                      $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $;
                                 }
                             }
@@ -874,10 +928,16 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                         if (empty($database[$varName[0]])) {   //Dont rewrite investment value with 0
                             unset($database[$varName[0]]);
-                        }  
-
+                        }                          
                     }
                     
+                    if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED || $database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_CANCELLED) {
+                        $platformData['workingNewLoans'][] = $database['investment']['investment_loanId'];
+                    }
+                    /*if ($database['investment']['investment_loanId'] == "06-139593001") {
+                        print_r($database['investment']);
+                        exit;
+                    }*/
                     echo __FUNCTION__ . " " . __LINE__ . " printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
@@ -1180,7 +1240,7 @@ print_r($results);
                                   "investment_id" => $result['Investment']['id']);
 echo __FILE__ . " " . __LINE__ . " \n";
 print_r($filterConditions);
-                if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                /*if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
                 }
                 if ($this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
@@ -1191,7 +1251,7 @@ print_r($filterConditions);
                 }
                 if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";                     
-                }
+                }*/
             }
             // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
 echo __FILE__ . " " . __LINE__ . " \n";
@@ -1444,6 +1504,7 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from investment r
 echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its loanId\n";
             $sliceIdentifier = $transactionData['investment_loanId'];
         }
+
         return $sliceIdentifier;
     }
 

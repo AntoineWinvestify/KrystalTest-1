@@ -60,8 +60,34 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest", "mytest1"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "readSize"));
             "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1"));
     }
+    
+    
+      public function readSize(){
+          echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_6.xlsx");
+          echo 'hola';
+          echo $size;
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_7.xlsx");
+          echo 'hola';
+          echo $size;
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_8.xlsx");
+          echo 'hola';
+          echo $size;
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_9.xlsx");
+                    echo 'patata ';
+          $size = filesize( APP .  "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_10.xlsx");
+          echo 'hola';
+          echo $size;
+          echo 'hola';
+          echo $size;
+      }
 
     var $dateFinish = "20171129";
     var $numberOfFiles = 0;
@@ -73,7 +99,7 @@ class TestsController extends AppController {
 
 // Parse pdf file and build necessary objects.
         $parser = new \Smalot\PdfParser\Parser();
-        $pdf = $parser->parseFile('/home/eduardo/Documents/screenshots/Esateguru/prueba2.pdf');
+        $pdf = $parser->parseFile('/home/eduardo/Downloads/inversion 3.pdf');
         $text = $pdf->getText();
         $data['A'] = trim($this->extractDataFromString($text, 'PROJECT NAME:', 'CONTRACT NUMBER:'));
         $data['B'] = trim($this->extractDataFromString($text, 'INTEREST RATE:', 'LOAN PURPOSE:'));

@@ -44,9 +44,9 @@ App::uses('CakeEvent', 'Event');
 class Dashboard2sController extends AppController {
 
     var $name = 'Dashboard2s';
-    var $helpers = array('Html', 'Js');
-    public $components = array('DataTable');
-    var $uses = array("Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment", "Dashboardoverviewdata");
+    var $helpers = ['Html', 'Js'];
+    public $components = ['DataTable'];
+    var $uses = ["Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Investment", "Dashboardoverviewdata"];
 
     function beforeFilter() {
 
@@ -77,16 +77,16 @@ class Dashboard2sController extends AppController {
         $this->disableCache();
 
         //Read investment info
-        $filterConditions = array('id' => $userInvestmentData, 'linkedaccount_id' => $linkedAccount);
-        $dataResult = $this->Userinvestmentdata->getData($filterConditions, array('id', 'linkedaccount_id', '*'));
+        $filterConditions = ['id' => $userInvestmentData, 'linkedaccount_id' => $linkedAccount];
+        $dataResult = $this->Userinvestmentdata->getData($filterConditions, ['id', 'linkedaccount_id', '*']);
         $dataResult['logo'] = $logo;
         $dataResult['name'] = $name;
 
         // Get loans // 
         //$activeInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE), array("*"));
-        $defaultedInvestments = $this->Investment->getData(array("linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90), array("*"));
+        $defaultedInvestments = $this->Investment->getData(["linkedaccount_id" => $linkedAccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "investment_paymentStatus >" => 90], ["*"]);
         //Set result
-        $result = array(true, $dataResult);
+        $result = [true, $dataResult];
         $this->set('companyInvestmentDetails', $result);
         //$this->set('activeInvestments', $activeInvestments);
         $this->set('defaultedInvestments', $defaultedInvestments);
@@ -102,17 +102,17 @@ class Dashboard2sController extends AppController {
 
         $this->autoRender = false;
 
-        $this->Investment->virtualFields = array(
+        $this->Investment->virtualFields = [
             'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
             'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
             'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
             'ProgressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
-        );
+        ];
 
-        $this->paginate = array(
-            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id", "Investment.ProgressFloat"),
-            'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.investment_paymentStatus >" => 90, "Investment.linkedaccount_id" => $linkedAccount),
-        );
+        $this->paginate = [
+            'fields' => ['Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id", "Investment.ProgressFloat"],
+            'conditions' => ["Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.investment_paymentStatus >" => 90, "Investment.linkedaccount_id" => $linkedAccount],
+        ];
 
 
         $this->DataTable->mDataProp = true;
@@ -130,16 +130,16 @@ class Dashboard2sController extends AppController {
 
         $this->autoRender = false;
 
-        $this->Investment->virtualFields = array(
+        $this->Investment->virtualFields = [
             'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
             'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
             'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
             'ProgressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
-        );
-        $this->paginate = array(
-            'fields' => array('Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id", "Investment.ProgressFloat"),
-            'conditions' => array("Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.linkedaccount_id" => $linkedAccount),
-        );
+        ];
+        $this->paginate = [
+            'fields' => ['Investment.investment_loanId', 'Investment.investment_myInvestmentDate', 'MyInvestmentFloat', 'InterestFloat', 'Investment.investment_instalmentsProgress', 'OutstandingFloat', 'Investment.investment_nextPaymentDate', 'Investment.investment_statusOfLoan', 'Investment.investment_paymentStatus', "Investment.linkedaccount_id", "Investment.ProgressFloat"],
+            'conditions' => ["Investment.investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE, "Investment.linkedaccount_id" => $linkedAccount],
+        ];
         $this->DataTable->mDataProp = true;
 
         $investments = $this->DataTable->getResponse(null, 'Investment');
@@ -192,7 +192,7 @@ class Dashboard2sController extends AppController {
         $allInvestment = $this->Userinvestmentdata->getLastInvestment($investorId);
 
         //Get global data 
-        $this->range = array();
+        $this->range = [];
         $global['totalVolume'] = 0;
         $global['investedAssets'] = 0;
         $global['reservedFunds'] = 0;
@@ -214,11 +214,11 @@ class Dashboard2sController extends AppController {
                 switch ($key) {
                     case "linkedaccount_id":
                         //Get the pfp id of the linked acount
-                        $companyIdLinkaccount = $this->Linkedaccount->getData(array('id' => $individualData), array('company_id'));
+                        $companyIdLinkaccount = $this->Linkedaccount->getData(['id' => $individualData], ['company_id']);
                         $pfpId = $companyIdLinkaccount[0]['Linkedaccount']['company_id'];
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpId'] = $pfpId;
                         //Get pfp logo and name
-                        $pfpOtherData = $this->Company->getData(array('id' => $pfpId), array("company_logoGUID", "company_name"));
+                        $pfpOtherData = $this->Company->getData(['id' => $pfpId], ["company_logoGUID", "company_name"]);
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpLogo'] = $pfpOtherData[0]['Company']['company_logoGUID'];
                         $allInvestment[$globalKey]['Userinvestmentdata']['pfpName'] = $pfpOtherData[0]['Company']['company_name'];
                         $this->range[$i] = $this->Investment->getDefaultedByOutstanding($individualData);
@@ -269,8 +269,8 @@ class Dashboard2sController extends AppController {
         //Set an array with individual info
         $this->set('individualInfoArray', $allInvestment);
 
-        $graphData = array(12, 24, 48, 24, 12, 6, 18, 36, 24, 48, 60); //Must be data from DB
-        $graphLabel = array(__("Jan"), __("Feb"), __("Mar"), __("Apr"), __("May"), __("Jun"), __("Jul"), __("Aug"), __("Sep"), __("Oct"), __("Nov"), __("Dec"));
+        $graphData = [12, 24, 48, 24, 12, 6, 18, 36, 24, 48, 60]; //Must be data from DB
+        $graphLabel = [__("Jan"), __("Feb"), __("Mar"), __("Apr"), __("May"), __("Jun"), __("Jul"), __("Aug"), __("Sep"), __("Oct"), __("Nov"), __("Dec")];
         $this->set('graphLabel', json_encode($graphLabel, true));
         $this->set('graph', json_encode($graphData));
         
@@ -301,8 +301,8 @@ class Dashboard2sController extends AppController {
             $globalTotal = $globalTotal + $defaultedRange["total"];
         }
 
-        $globalValue = array();
-        $globalRange = array("1-7" => 0, "8-30" => 0, "31-60" => 0, "61-90" => 0, ">90" => 0);
+        $globalValue = [];
+        $globalRange = ["1-7" => 0, "8-30" => 0, "31-60" => 0, "61-90" => 0, ">90" => 0];
 
         //Calculate global range
         foreach ($this->range as $defaultedRange) {

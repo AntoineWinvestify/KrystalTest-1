@@ -29,17 +29,17 @@ class investly extends p2pCompany {
 
     
     
-    protected $transactionConfigParms = array ('offsetStart' => 1,
+    protected $transactionConfigParms =  ['offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+                                 ];
  
-    protected $investmentConfigParms = array ('offsetStart' => 1,
+    protected $investmentConfigParms =  ['offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+                                 ];
 
 /*    NOT YET READY
     protected $investmentConfigParms = array ('OffsetStart' => 1,
@@ -59,7 +59,7 @@ class investly extends p2pCompany {
     
     
     
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    function companyUserLogin($user = "", $password = "", $options = []) {
         //Need casper js
         
     }

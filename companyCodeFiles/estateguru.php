@@ -65,6 +65,7 @@ class estateguru extends p2pCompany {
         $this->typeFileInvestment = "html";
         $this->typeFileExpiredLoan = "html";
         $this->transactionErrorRevision = false;
+        $this->offsetPagination = 0;
 // Do whatever is needed for this subsclass
     }
 
@@ -278,11 +279,76 @@ class estateguru extends p2pCompany {
                 $h3s = $dom->getElementsByTagName('h3');
                 /*foreach($h3s as $key => $h3){
                     echo $key . " => " . $h3->nodeValue;
-                }*/
-                
+                }*/                        
                 $this->tempArray["global"]["myWallet"] = $h3s[4]->nodeValue;
                 $this->tempArray['global']['outstandingPrincipal'] = $h3s[2]->nodeValue;
-                return $this->tempArray;
+                if(empty($this->tempUrl['downloadPage'])){
+                    $this->tempUrl['downloadPage'] = array_shift($this->urlSequence);
+                }
+                $url = str_replace("{#pagination}",$this->offsetPagination,$this->tempUrl['downloadPage']);
+                $this->offsetPagination = $this->offsetPagination + 10;
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($url);
+                break;
+            case 8:
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                
+                $titles = $this->getElements($dom, 'div', 'class', 'headline');
+                
+                $tables = $dom->getElementsByTagName('blockquote');
+                foreach($titles as $key => $value){
+                    
+                    $continue = false;
+                    if(strpos($value->nodeValue, "SITE LINKS") !== false){
+                        break;
+                    }
+                    foreach($this->investmentList as $investmentList){
+                        if(strpos($titles[$key]->nodeValue, $investmentList['Investment']['investment_loanId']) !== false){
+                            unset($titles[$key]);                               //we have this loan in db
+                            $continue = true;
+                            break;
+                        }
+                    }
+                    if($continue == true){
+                        continue;
+                    }
+                    else{
+                        $a = $tables[$key]->getElementsByTagName('a')[1];
+                        $this->tempUrl['singleFileList'][] = $a->getAttribute('href');
+                        continue;
+                    }       
+                }
+                if(empty($this->tempUrl['mainUrl'])){
+                    $this->tempUrl['mainUrl'] = array_shift($this->urlSequence);
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl( $this->tempUrl['mainUrl']);
+                break;
+            case 9:
+                if(empty($this->tempUrl['downloadSingle'])){
+                    $this->tempUrl['downloadSingle'] = array_shift($this->urlSequence);
+                }
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "_" . $this->numPartFileInvestment . "." . "pdf";
+                $this->numPartFileInvestment++;
+                $fileUrl =  array_shift($this->tempUrl['singleFileList']);           
+                if(empty($fileUrl)){
+                    return $this->tempArray;
+                }  
+                $this->getPFPFileMulticurl($this->tempUrl['downloadSingle'] . $fileUrl, false, false, false, $this->fileName);
+                $this->idForSwitch++;
+                break;
+            case 10: 
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "_" . $this->numPartFileInvestment . "." . "pdf";
+                $this->numPartFileInvestment++;
+                $fileUrl =  array_shift($this->tempUrl['singleFileList']);             
+                if(empty($fileUrl)){
+                    return $this->tempArray;
+                }  
+                $this->idForSwitch--;
+                $this->getPFPFileMulticurl($this->tempUrl['downloadSingle'] . $fileUrl, false, false, false, $this->fileName);
+                break;
         }
     }
 

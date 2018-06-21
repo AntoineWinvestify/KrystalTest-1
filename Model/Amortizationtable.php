@@ -63,8 +63,12 @@ class Amortizationtable extends AppModel
         ),
     );    
     
-   
-
+   public $belongsTo = array(
+       'Investmentslice' => array(
+            'className' => 'Investmentslice',
+            'foreignKey' => 'investmentslice_id'
+        )
+   );
     
     /**
      * Function to save the amortization table of a pfp 

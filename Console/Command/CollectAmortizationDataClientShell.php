@@ -71,19 +71,36 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $pathToJsonFile = $dir->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
                     foreach ($pathToJsonFile as $key => $path) {
                         $tempName = explode("/", $path);
+                        print_r($tempName);
                         if (Configure::read('debug')) {
-                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");
-                            print_r($tempName);
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");                            
                         }
+                        
+                        $tempName2 = $tempName;
+
+                        $yesterday = strtotime('-1 day', strtotime ($tempName[9])) ;
+                        $yesterday = date ("Ymd", $yesterday );
+                        $tempName2[9] = $yesterday;
+                        $tempName2[12] = "badLoanIds.json";
+                        $yesterdayPath = implode($tempName2, "/");
+                    
                         $linkedAccountId = $tempName[count($tempName) - 3];
                         if (!in_array($linkedAccountId, $queueInfo['companiesInFlow'])) {
                             continue;
                         }
                         $file = new File($path);
+                        $fileYesterday = new File($yesterdayPath);                        
                         $jsonLoanIds = $file->read(true, 'r');
+                        $jsonLoanIdsYesterday = $fileYesterday->read(true, 'r');
                         $loanIds = json_decode($jsonLoanIds, true);
+                        $loanIdsYesterday = json_decode($jsonLoanIdsYesterday, true);
+                        if(!empty($loanIdsYesterday)){
+                            $finalLoanIds = array_merge($loanIds, $loanIdsYesterday);
+                        } else {
+                            $finalLoanIds = $loanIds;
+                        }
                         $linkAccountIds[] = $linkedAccountId;
-                        $loanIdsPerCompany[$linkedAccountId] = $loanIds;
+                        $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
                     $filterConditions = array('id' => $linkAccountIds, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
