@@ -1003,7 +1003,7 @@ class finanzarel extends p2pCompany {
             ]
         ], 
             
-        "activeInvestments" => [
+ /*       "activeInvestments" => [
             [
                 "type" => "activeInvestments",                                  // Winvestify standardized name  OK
                 "inputData" => [
@@ -1013,7 +1013,7 @@ class finanzarel extends p2pCompany {
                 ],
                 "functionName" => "handleNumber",
             ]
-        ],
+        ],*/
    
         "outstandingPrincipal" => [
             [
@@ -1141,22 +1141,24 @@ class finanzarel extends p2pCompany {
     protected $transactionHeader = [    
                                 "A" => "Id",
                                 "B" => "A?o",
-                                "C" => "Trimestre",
-                                "D" => "Fecha",
-                                "E" => "Subasta",
-                                "F" => "Descripcion",
-                                "G" => "Importe",
-                                "H" => "Saldo"];
+                                "C" => "Mes",        
+                                "D" => "Trimestre",
+                                "E" => "Fecha",
+                                "F" => "Subasta",
+                                "G" => "Descripcion",
+                                "H" => "Importe",
+                                "I" => "Saldo"];
     
     protected $transaction2Header = [
                                  "A" => "Id",
                                  "B" => "A?o",
-                                 "C" => "Trimestre",
-                                 "D" => "Fecha",
-                                 "E" => "Subasta",
-                                 "F" => "Descripcion",
-                                 "G" => "Importe",
-                                 "H" => "Saldo"];
+                                 "C" => "Mes",
+                                 "D" => "Trimestre",
+                                 "E" => "Fecha",
+                                 "F" => "Subasta",
+                                 "G" => "Descripcion",
+                                 "H" => "Importe",
+                                 "I" => "Saldo"];
     
 
     

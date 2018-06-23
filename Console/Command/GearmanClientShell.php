@@ -295,7 +295,7 @@ class GearmanClientShell extends AppShell {
     }    
     
     /**
-     * Function to save an application error produce on a Gearman Worker
+     * Function to save an application error produced on a Gearman Worker
      * @param array $error It contains all the information about the error
      *              $error['line'] It is the line where the error happened
      *              $error['file'] It is the file where the error happened

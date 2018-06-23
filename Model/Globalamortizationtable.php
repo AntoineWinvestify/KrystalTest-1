@@ -194,18 +194,8 @@ print_r($slices);
                 break;
             }
         }
-
-
-
-//+++++++++++++++++++++++++++++++++++++++++++++++     
-        $filterConditions = array("investmentslice_id" => $sliceDbreference);   // Get the complete table for the loan
-        $globalAmortizationTable = $this->GlobalamortizationtableInvestmentslice->find('all', array(
-                                                'conditions' => $filterConditions,  
-                                                'recursive' => 0,  // or 1? I neede hasOne relationship, incorporate smortizationPayment 
-                                                ));
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($globalAmortizationTable);           
-      
+         
+        $globalAmortizationTable = $this->readFullAmortizationTable($sliceDbreference);
             
         if (!empty($globalAmortizationTable)) {                                 // This is an error, and should NEVER happen.
             // Collect data for error analysis:
@@ -226,28 +216,28 @@ print_r($globalAmortizationTable);
         
         $payment = WIN_PAYMENT_DATA_NOT_STORED;    
         foreach ($globalAmortizationTable as $table) {
-            if ($table['GlobalAmortizationPayment']['globalamortizationpayment_paymentDate'] == $data['paymentDate']) {              
-                if (isset($table['AmortizationPayment']['amortizationpayment_paymentinterest'])) {
-                    if ($table['AmortizationPayment']['globalamortizationpayment_paymentinterest'] == $data['interest']) {
+            if ($table['GlobalAmortizationpayment']['globalamortizationpayment_paymentDate'] == $data['paymentDate']) {              
+                if (isset($table['Globalamortizationpayment']['globalamortizationpayment_paymentinterest'])) {
+                    if ($table['Amortizationpayment']['amortizationpayment_paymentinterest'] == $data['interest']) {
                         $payment = WIN_PAYMENT_ALREADY_STORED;         
                     }
                 }        
-                if (isset($table['AmortizationPayment']['amortizationpayment_capitalRepayment']))  {
-                    if ($table['GlobalAmortizationPayment']['amortizationpayment_capitalRepayment'] == $data['capitalRepayment'] ) {
+                if (isset($table['Globalamortizationpayment']['globalamortizationpayment_capitalRepayment']))  {
+                    if ($table['Amortizationayment']['amortizationpayment_capitalRepayment'] == $data['capitalRepayment'] ) {
                         $payment = WIN_PAYMENT_ALREADY_STORED;  
                     }
                 }
-                if (isset($table['AmortizationPayment']['amortizationpayment_capitalandInterestPayment'])) {
-                    if ($table['GlobalAmortizationPayment']['amortizationpayment_capitalandInterestPayment'] == $data['capitalAndInterestPayment']) {
+                if (isset($table['Globalamortizationpayment']['amortizationpayment_capitalandInterestPayment'])) {
+                    if ($table['Amortizationpayment']['amortizationpayment_capitalandInterestPayment'] == $data['capitalAndInterestPayment']) {
                         $payment = WIN_PAYMENT_ALREADY_STORED;  
                     }
                 }
             }
         } 
         
-        if  ($payment == WIN_PAYMENT_DATA_NOT_STORED) {  
+        if  ($payment == WIN_PAYMENT_DATA_NOT_STORED) {                         // We encountered a new payment for the first time
             foreach ($amortizationTable as $table) {
-                   // look for the FIRST record which is still unpaid
+                   // look for the FIRST record which is *still* unpaid
                 if ($table['GlobalAmortizationPayment_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {
                     $tableDbReference = $table['Amortizationtable']['id']; 
                     break;
@@ -258,7 +248,7 @@ print_r($globalAmortizationTable);
             return true;
         }
             
- //+++++++++++++++++++++++++++++++++++++++++++++++                            
+ // The payment sata was not yet stored, so store it                          
         
         $payment['globalamortizationtable_id'] = $tableDbReference;
         $payment['amortizationpayment_paymentDate'] = $data['paymentDate'];
@@ -268,16 +258,16 @@ print_r($globalAmortizationTable);
 
  echo __FUNCTION__ . " " . __LINE__ . "\n";   
         // Store the payment related data
-        if ($this->Glbalamortizationpayment->save($payment, array('validate' => true))) {
+        if ($this->Amortizationpayment->save($payment, array('validate' => true))) {
             // update the amortizationTable
             $amortizationId = $this->Amortizationpayment->id;
             $tableData['id'] = $tableDbReference;
             $tableData['amortizationtable_paymentStatus'] = $data['paymentStatus'];
-            if ($this->Amortizationtable->save($tableData, array('validate' => true))) {           
+            if ($this->Globalamortizationtable->save($tableData, array('validate' => true))) {           
                 return true;
             }
             else {
-                $this->Amortizationpayment->delete($tableDbReference);
+                $this->Amortizationpayment->delete($tableDbReference);          // Do a rollback of the previous save operation
                 return false;
             }
         } 
@@ -286,4 +276,46 @@ print_r($globalAmortizationTable);
         }
     }   
 
+    
+ 
+    
+    /** WIP
+     *  Reads a Globalamortization table
+     *
+     *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
+     *  @return array   Globalamortizationtable Contains *only* numeric indexes for the tables,
+     */
+    public function readFullAmortizationTable($sliceId) {
+        $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $sliceId), 
+                                                          'fields' => array('id', 'globalamortizationtable_id')
+                                        )); 
+
+        foreach ($lists as $list) {
+            $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
+            $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
+                                                                          ));  
+            $globalTable[] = $result;
+        }
+//            $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.{n}');    // This works???     
+        return $globalTable;
+            
+            
+            
+           
+            
+            
+            
+            
+ // option 2:
+        $filterConditions = array("investmentslice_id" => $sliceId);   // Get the complete table for the loan
+        $globalAmortizationTable = $this->GlobalamortizationtableInvestmentslice->find('all', array(
+                                                'conditions' => $filterConditions,  
+                                                'recursive' => 0,  // or 1? I need hasOne relationship, incorporate smortizationPayment 
+                                                ));
+echo __FUNCTION__ . " " . __LINE__ . "\n";
+print_r($globalAmortizationTable);           
+ 
+            
+    }
+    
 }

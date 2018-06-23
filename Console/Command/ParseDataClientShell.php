@@ -303,7 +303,7 @@ class ParseDataClientShell extends GearmanClientShell {
      */
     public function mapData(&$platformData) {
                
-        //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
+        //We need this to put ACTIVE concept first, Twino has payment concept first and that cause zombie loan problems
         $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
             foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {                                       
@@ -348,6 +348,10 @@ class ParseDataClientShell extends GearmanClientShell {
         $userReference = $platformData['userReference'];
         $startDate = $platformData['startDate'];
         $finishDate = $platformData['finishDate'];
+         
+        $this->Company = ClassRegistry::init('Company');
+        $companyData = $this->Company->getData($filter = ['company_codeFile' => $platformData['pfp'] ]); 
+          
         $amortizationTablesNotNeeded = array();
         $collectTablesIndex = 0;
         //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
@@ -1160,9 +1164,9 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                 'conditions' => $filterConditions));
 
             $controlVariables['outstandingPrincipal'] = $database['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'];  // Holds the *last* calculated value so far
-            $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];      // Holds the *last* calculated valueso far
-            $controlVariables['activeInvestments'] = $activeInvestments; // Holds the last calculated values so far
-
+            $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];         // Holds the *last* calculated valueso far
+            $controlVariables['activeInvestments'] = $activeInvestments;                                                  // Holds the last calculated values so far
+            $controlVariables['reservedFunds'] = $database['Userinvestmentdata']['userinvestmentdata_reservedAssets'];    // Holds the *last* calculated valueso far
             print_r($database['Userinvestmentdata']);
 
             $backupCopyUserinvestmentdataId = $database['Userinvestmentdata']['id'];
@@ -1185,22 +1189,33 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
 
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";
+        // Control Variables shall only be checked if PFP supports up to date xls files
+        if ($companyData['Company'['companyTechnicalFeatures &&  WIN_PROVIDE_UP_TO_DATE_FILES']] == WIN_PROVIDE_UP_TO_DATE_FILES) {            
+            $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
+            if ($controlVariablesCheck > 0) {                                   // mismatch detected
+                $this->Applicationerror = ClassRegistry::init('Applicationerror');
+                
+                echo "FLOW 2 DID NOT PASS CONTROL VARIABLES CHECK, application Error email will be generated \n";
 
-        $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
-        if ($controlVariablesCheck > 0) { // mismatch detected
-            echo "FLOW 2 DID NOT PASS CONTROL VARIABLES CHECK \n";
-            $errorData['line'] = __LINE__;
-            $errorData['file'] = __FILE__;
-            $errorData['urlsequenceUrl'] = "";
-            $errorData['subtypeErrorId'] = $controlVariablesCheck;              // It is the subtype of the error
-            $errorData['typeOfError'] = "Error" ;  // It is the type of error, like ERROR, WARNING, INFORMATION
-        
-            $detailedErrorInfo['internalControlVariableValues'] = $platformData['parsingResultControlVariables'];
-            $detailedErrorInfo['externalControlVariableValues'] = $controlVariables;         
-            
-            $errorData['detailedErrorInformation'] = json_encode($detailedErrorInfo);      // It is the detailed information of the error
-            $errorData['typeErrorId'];                                          // It is the principal id of the error           
-            $this->saveGearmanError($errorData);
+                $detailedErrorInfo['internalControlVariableValues'] = $platformData['parsingResultControlVariables'];
+                $detailedErrorInfo['externalControlVariableValues'] = $controlVariables;
+                $detailedErrorInfo['userReference'] = $platformData['userReference'];
+                $detailedErrorInfo['startDate'] = $platformData['startDate'];            
+                $detailedErrorInfo['finishDate'] = $platformData['finishDate'];
+                $this->Applicationerror->saveAppError("Error", 
+                                                        json_encode($detailedErrorInfo),  
+                                                        __LINE__, 
+                                                        __FILE__, 
+                                                        " ",
+                                                        $controlVariablesCheck,
+                                                        " "
+                                                        );
+            }
+        }
+        else {
+            if (Configure::read('debug')) {
+                echo "Checking of Control Variables omitted because PFP does support it\n";
+            }
         }
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
@@ -1240,7 +1255,7 @@ print_r($results);
                                   "investment_id" => $result['Investment']['id']);
 echo __FILE__ . " " . __LINE__ . " \n";
 print_r($filterConditions);
-                /*if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
                 }
                 if ($this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
@@ -1251,7 +1266,7 @@ print_r($filterConditions);
                 }
                 if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";                     
-                }*/
+                }
             }
             // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
 echo __FILE__ . " " . __LINE__ . " \n";
@@ -1303,7 +1318,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
        //     $date = new DateTime(date($finishDate));
          //   $lastDateToCalculate = $date->format('Y-m-d');
-       //     $lastDateToStore = $date->format('Y-m-d');                          // The date of the last userinvestment 
+       //     $lastDateToStore = $date->format('Y-m-d');                        // The date of the last userinvestment 
                                                                                 // that will be stored in database
      //       $this->date = date("Ymd", strtotime("-1 day"));
 
@@ -1391,7 +1406,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return                
+     *  @return boolean               
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
 echo "Entering function " . __FUNCTION__ . " " . __LINE__ . " \n";
@@ -1425,16 +1440,22 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         
         print_r($data);
-        if ($this->Amortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
-            echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
+        
+        if ($this->Investmentslice->hasChild($sliceIdentifier, "Amortizationtable")) {  
+            if ($this->Amortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
+                echo __FUNCTION__ . " " . __LINE__ . " Amortization and Amortizationpayment tables succesfully updated\n";
+                return true;
+            }
         }
         else {
-            echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
-            // Perhaps should write an applicationError
-        }
-echo "Exiting function " . __FUNCTION__ . " " . __LINE__ . "\n";
-
-        return;
+            if ($this->Globalamortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
+                echo __FUNCTION__ . " " . __LINE__ . " [Global]Amortization and Amortizationpayment tables succesfully updated\n";
+                return true;
+            }            
+        }    
+        
+        echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
+        return false;           
     }
 
     /**
@@ -1447,7 +1468,7 @@ echo "Exiting function " . __FUNCTION__ . " " . __LINE__ . "\n";
      *  @param  array   array with all data so far calculated and to be written to DB
      *  @return array               
      */
-    function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments, &$investmentLoanIdsPerDay) {
+    public function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments, &$investmentLoanIdsPerDay) {
         echo "looking for a lost investment in Zank";
         print_r($investmentLoanIdsPerDay);
         foreach ($investments as $investmentKey => $investment) {
@@ -1468,7 +1489,7 @@ echo "Exiting function " . __FUNCTION__ . " " . __LINE__ . "\n";
             if (($transaction['date']) == $expiredInvestment[0]['investment_myInvestmentDate']) {
                 if (($transaction['amount']) == $expiredInvestment[0]['investment_myInvestment']) {
                     if (!in_array($expiredInvestments[$investmentKey][0]['investment_loanId'], $investmentLoanIdsPerDay)) {
-                        echo "Found in expried \n";
+                        echo "Found in expired \n";
                         $investmentLoanIdsPerDay[] = $expiredInvestments[$investmentKey][0]['investment_loanId'];
                         return $expiredInvestment;
                     }
