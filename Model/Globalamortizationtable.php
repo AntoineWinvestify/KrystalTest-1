@@ -174,23 +174,25 @@ class Globalamortizationtable extends AppModel
      *  @return array   boolean             true Table has been updated or already existed
      */
     public function addPayment($companyId, $loanId, $sliceIdentifier, $data)  {
+        $this->Investment = ClassRegistry::init('Investment');
+        $this->Amortizationpayment = ClassRegistry::init('Amortizationpayment');
 print_r($loanId);
 print_r($sliceIdentifier);
-print_r($data);           
-echo __FUNCTION__ . " " . __LINE__ . "\n";
+$this->print_r2($data);           
+echo __FUNCTION__ . " " . __LINE__ . "<br/>";
         // support for partial payment is NOT fully implemented
         $data['paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
 // Should be using the hasOne or hasMany relationship between Investment model and Investmentslice model
         $slices = $this->Investment->getInvestmentSlices($loanId);
-print_r($slices);
+$this->print_r2($slices);
         // get internal database reference of Investmentslice object
 // Should be using the hasOne or hasMany relationship between Investment model and Investmentslice model
         foreach ($slices as $slice) {                                           // Initially we will find only 1 slice
-            echo __FUNCTION__ . " " . __LINE__ . " sliceIdentifier = $sliceIdentifier to be compared with " . $slice['investmentslice_identifier'] . "\n";
+            echo __FUNCTION__ . " " . __LINE__ . " sliceIdentifier = $sliceIdentifier to be compared with " . $slice['investmentslice_identifier'] . "<br/>";
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
+                echo __FUNCTION__ . " " . __LINE__ . " <br/>";
                 $sliceDbreference = $slice['id'];
-                echo "REFERENCE = $sliceDbreference\n";
+                echo "REFERENCE = $sliceDbreference<br/>";
                 break;
             }
         }
@@ -209,7 +211,7 @@ print_r($slices);
                                                 WIN_ERROR_AMORTIZATION_DATA_INCONSISTENCY);
 
             if (Configure::read('debug')) {
-                echo __FUNCTION__ . " " . __LINE__ . ": " . "Applicationerror in model Globalamortizationtable\n";
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Applicationerror in model Globalamortizationtable<br/>";
             }
             return;
         }     
@@ -236,42 +238,45 @@ print_r($slices);
         } 
         
         if  ($payment == WIN_PAYMENT_DATA_NOT_STORED) {                         // We encountered a new payment for the first time
+ echo __FUNCTION__ . " " . __LINE__ . "<br/>";            
             foreach ($amortizationTable as $table) {
                    // look for the FIRST record which is *still* unpaid
                 if ($table['GlobalAmortizationPayment_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {
+ echo __FUNCTION__ . " " . __LINE__ . "<br/>";                    
                     $tableDbReference = $table['Amortizationtable']['id']; 
                     break;
                 }
             } 
         }
         else {                                                                  // WIN_PAYMENT_ALREADY_STORED
+ echo __FUNCTION__ . " " . __LINE__ . "<br/>";
             return true;
         }
             
  // The payment sata was not yet stored, so store it                          
         
-        $payment['globalamortizationtable_id'] = $tableDbReference;
-        $payment['amortizationpayment_paymentDate'] = $data['paymentDate'];
-        $payment['amortizationpayment_capitalAndInterestPayment'] = $data['capitalAndInterestPayment'];
-        $payment['amortizationpayment_interest'] = $data['interest'];
-        $payment['amortizationpayment_capitalRepayment'] = $data['capitalRepayment'];               
+              
 
- echo __FUNCTION__ . " " . __LINE__ . "\n";   
+ echo __FUNCTION__ . " " . __LINE__ . "<br/>";   
         // Store the payment related data
         if ($this->Amortizationpayment->save($payment, array('validate' => true))) {
             // update the amortizationTable
             $amortizationId = $this->Amortizationpayment->id;
+  echo __FUNCTION__ . " " . __LINE__ . "<br/>";           
             $tableData['id'] = $tableDbReference;
             $tableData['amortizationtable_paymentStatus'] = $data['paymentStatus'];
-            if ($this->Globalamortizationtable->save($tableData, array('validate' => true))) {           
+            if ($this->Globalamortizationtable->save($tableData, array('validate' => true))) { 
+                 echo __FUNCTION__ . " " . __LINE__ . "<br/>";
                 return true;
             }
             else {
-                $this->Amortizationpayment->delete($tableDbReference);          // Do a rollback of the previous save operation
+                $this->delete($amortizationId );          // Do a rollback of the previous save operation
+                 echo __FUNCTION__ . " " . __LINE__ . "<br/>";
                 return false;
             }
         } 
         else {
+             echo __FUNCTION__ . " " . __LINE__ . "<br/>";
             return false;
         }
     }   
@@ -279,43 +284,29 @@ print_r($slices);
     
  
     
-    /** WIP
+    /** 
      *  Reads a Globalamortization table
      *
      *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
      *  @return array   Globalamortizationtable Contains *only* numeric indexes for the tables,
      */
     public function readFullAmortizationTable($sliceId) {
+
+        $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice');
+
         $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $sliceId), 
                                                           'fields' => array('id', 'globalamortizationtable_id')
                                         )); 
 
         foreach ($lists as $list) {
             $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
-            $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
+            $result = $this->find("first", array('conditions' => $filteringConditions,
                                                                           ));  
             $globalTable[] = $result;
-        }
-//            $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.{n}');    // This works???     
+        }     
         return $globalTable;
-            
-            
-            
-           
-            
-            
-            
-            
- // option 2:
-        $filterConditions = array("investmentslice_id" => $sliceId);   // Get the complete table for the loan
-        $globalAmortizationTable = $this->GlobalamortizationtableInvestmentslice->find('all', array(
-                                                'conditions' => $filterConditions,  
-                                                'recursive' => 0,  // or 1? I need hasOne relationship, incorporate smortizationPayment 
-                                                ));
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($globalAmortizationTable);           
- 
-            
     }
+   
     
+   
 }

@@ -138,8 +138,8 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
 // Should be using the hasOne or hasMany relationship between Investment model and Investmentslice model
         $slices = $this->Investment->getInvestmentSlices($loanId);
 print_r($slices);
+
         // get internal database reference
-// Should be using the hasOne or hasMany relationship between Investment model and Investmentslice model
         foreach ($slices as $slice) {                                           // Initially we will find only 1 slice
             echo __FUNCTION__ . " " . __LINE__ . " sliceIdentifier = $sliceIdentifier to be compared with " . $slice['investmentslice_identifier'] . "\n";
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
@@ -170,12 +170,15 @@ print_r($slices);
             // update the amortizationTable
             $amortizationId = $this->Amortizationpayment->id;
             $tableData['id'] = $tableDbReference;
+            echo __FUNCTION__ . " " . __LINE__ . "\n";
             $tableData['amortizationtable_paymentStatus'] = $data['paymentStatus'];
-            if ($this->Amortizationtable->save($tableData, array('validate' => true))) {           
+            if ($this->Amortizationtable->save($tableData, array('validate' => true))) {   
+                echo __FUNCTION__ . " " . __LINE__ . "\n";
                 return true;
             }
             else {
                 $this->Amortizationpayment->delete($tableDbReference);
+                echo __FUNCTION__ . " " . __LINE__ . "\n";
                 return false;
             }
         } 

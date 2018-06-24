@@ -299,5 +299,11 @@ public function matchFields($check = array(), $compareField = null) {
         }
         return false;
     } 
+ 
     
+    function print_r2($val) {
+        echo '<pre>';
+        print_r($val);
+        echo '</pre>';
+    }    
 }

@@ -60,8 +60,7 @@ class TestsController extends AppController {
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest", "mytest1"));
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "readSize"));
+            "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment",
             "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1"));
     }
     
@@ -766,6 +765,41 @@ $this->print_r2($linkedAccountsResults);
         echo 20170000 - 20130000 . "<br>";
     }
 
+   
+    
+    
+    
+    
+    
+    function testAddPayment()  {
+        echo "Antoine";
+        $this->autoRender = false;
+        Configure::write('debug', 2); 
+        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        
+        
+        $companyId =25;
+        $loanId = "1703";
+        $sliceIdentifier = 603;
+        $data = ['paymentDate' => "2018-03-04", 
+            'capitalRepayment' => "111333.433",
+                     'interest' => "333.44",
+            ];
+        $result = $this->Amortizationtable->addPayment($companyId, $loanId, $sliceIdentifier, $data) ;
+        $this->print_r2($result);
+        
+        
+    }   
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     /**

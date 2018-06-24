@@ -193,15 +193,27 @@ var $validate = array(
      *  @param  bigint  database reference of Investment, i.e. investmentId
      *  @return array   slices (database references) and sliceIdentifier of each slice
      */
-    public function getInvestmentSlices ($investmentId) {
-//	$this->Behaviors->load('Containable');
-//	$this->contain('Investmentslice');  	
+    public function getInvestmentSlices ($loanId) {	
+        
+        $this->Behaviors->load('Containable');
+	$this->contain('Investmentslice');  	
+echo __FUNCTION__ . " " . __LINE__ . " investment_loanId = $loanId<br/>";
 
+        $slices = $this->find("all", array("conditions" => array("investment_loanId" => $loanId),
+                                     //       "fields" => array("id", "investmentslice_identifier"),                                   
+                                            "recursive" => 1,
+                                          )); 
+        print_r($slices);
+return $slices;
+        
+echo __FUNCTION__ . " " . __LINE__ . "<br/>";
+
+$this->Investmentslice = ClassRegistry::init('Investmentslice');
         $slices = $this->Investmentslice->find("all", array("conditions" => array("investment_id" => $investmentId),
                                             "fields" => array("id", "investmentslice_identifier"),                                   
                                             "recursive" => 0,
                                           )); 
-
+print_r($slices);
         return $slices['Investmentslice'];        
     }  
     
