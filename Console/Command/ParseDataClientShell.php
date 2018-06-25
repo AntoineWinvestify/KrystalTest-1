@@ -59,7 +59,8 @@ App::import('Shell', 'UserData');
 class ParseDataClientShell extends GearmanClientShell {
 
     public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
-    protected $variablesConfig;      
+    protected $variablesConfig;   
+    protected $companyData;
 
     
     /**
@@ -70,7 +71,7 @@ class ParseDataClientShell extends GearmanClientShell {
     public function checkRunTimeEnvironment() {
 
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        //return;
+
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
@@ -350,7 +351,7 @@ class ParseDataClientShell extends GearmanClientShell {
         $finishDate = $platformData['finishDate'];
          
         $this->Company = ClassRegistry::init('Company');
-        $companyData = $this->Company->getData($filter = ['company_codeFile' => $platformData['pfp'] ]); 
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $platformData['pfp'] ]); 
           
         $amortizationTablesNotNeeded = array();
         $collectTablesIndex = 0;
@@ -1190,7 +1191,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";
         // Control Variables shall only be checked if PFP supports up to date xls files
-        if ($companyData['Company'['companyTechnicalFeatures &&  WIN_PROVIDE_UP_TO_DATE_FILES']] == WIN_PROVIDE_UP_TO_DATE_FILES) {            
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {            
             $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
             if ($controlVariablesCheck > 0) {                                   // mismatch detected
                 $this->Applicationerror = ClassRegistry::init('Applicationerror');
@@ -1442,15 +1443,41 @@ echo __FUNCTION__ . " " . __LINE__ . " \n";
         print_r($data);
         
         if ($this->Investmentslice->hasChild($sliceIdentifier, "Amortizationtable")) {  
-            if ($this->Amortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
-                echo __FUNCTION__ . " " . __LINE__ . " Amortization and Amortizationpayment tables succesfully updated\n";
+            if ($this->Amortizationtable->addPayment($this->companyData[0]['Company']['id'], 
+                                                     $resultData['investment']['investment_loanId'], 
+                                                     $sliceIdentifier, $data)) {
+
+                // Write the date of the first unpaid instalment
+                $sliceId = $this->Investment->getInvestmentSlices ($resultData['Investment']['id']);               
+                $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($resultData['Investment']['id']);
+
+                if (empty($nextPendingInstalmentDate)) {
+                    $nextPendingInstalmentDate = "0000-00-00";
+                }
+                
+                $resultData['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
+
+                echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable and Amortizationpayment tables succesfully updated\n"; 
                 return true;
             }
         }
         else {
-            if ($this->Globalamortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
-                echo __FUNCTION__ . " " . __LINE__ . " [Global]Amortization and Amortizationpayment tables succesfully updated\n";
-                return true;
+            if ($this->Globalamortizationtable->addPayment($this->companyData[0]['Company']['id'], 
+                                                     $resultData['investment']['investment_loanId'], 
+                                                     $sliceIdentifier, $data)) {
+
+                // Write the date of the first unpaid instalment
+                $sliceId = $this->Investment->getInvestmentSlices ($resultData['Investment']['id']);
+                $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);
+
+                if (empty($nextPendingInstalmentDate)) {
+                    $nextPendingInstalmentDate = "0000-00-00";
+                } 
+               
+                $resultData['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
+
+                echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable and Amortizationpayment tables succesfully updated\n";              
+                return true; 
             }            
         }    
         

@@ -772,23 +772,57 @@ $this->print_r2($linkedAccountsResults);
     
     
     function testAddPayment()  {
-        echo "Antoine";
+        echo "start of method " . __METHOD__ . "<br/>";
         $this->autoRender = false;
         Configure::write('debug', 2); 
-        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
+        $sliceId = 1422;     
+        $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);     
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
+    
+    
+        $globalAmortizationTable = $this->Globalamortizationtable->readFullAmortizationTable($sliceId);  
+        $this->print_r2($globalAmortizationTable);   
+        echo __FUNCTION__ . " " . __LINE__ . " <br/>";       
         
+ 
         
         $companyId =25;
-        $loanId = "1703";
-        $sliceIdentifier = 603;
-        $data = ['paymentDate' => "2018-03-04", 
-            'capitalRepayment' => "111333.433",
-                     'interest' => "333.44",
+        $investmentId = 5529;
+        $sliceIdentifier = 3706;
+        $data = ['paymentDate' => "2018-10-22", 
+            'capitalRepayment' => "1713.3",
+                     'interest' => "5.2",
             ];
-        $result = $this->Amortizationtable->addPayment($companyId, $loanId, $sliceIdentifier, $data) ;
+        $result = $this->Globalamortizationtable->addPayment($companyId, $investmentId, $sliceIdentifier, $data) ;
         $this->print_r2($result);
         
+    
+        $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);     
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
+    
         
+        
+        $this->Company = ClassRegistry::init('Company');
+        $pfp = "zank";
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp ]);
+        $this->print_r2($this->companyData);        
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) { 
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";         
+        }  
+        else {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";  
+        }
+        
+        $pfp = "bondora";
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp ]);        
+        $this->print_r2($this->companyData);
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) { 
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";         
+        }  
+        else {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";  
+        }        
     }   
     
     

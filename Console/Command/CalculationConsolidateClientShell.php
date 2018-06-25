@@ -288,15 +288,21 @@ echo "todayTimeStamp = $todayTimeStamp\n";
                                                             'offset' => $index * $limit]
                                                  );
                   
-                if (count($result) < $limit) {          // No more results available
+                if (count($result) < $limit) {                                  // No more results available
                     $controlIndex = 1;
                 }
 
+ echo __FUNCTION__ . " " . __LINE__ . "\n";               
                 foreach ($result as $item) {                      
-echo "ITEM  = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
+//echo " dateForPaymentDelayCalculation = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
 print_r($item);
 
-
+                    if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])){           // skip over blank dates
+                        continue;
+                    }
+                    if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "0000-00-00"){           // skip over dummy dates
+                        continue;
+                    }                    
                     $dateTimeForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
                    
                     $tempArray['id'] = $item['Investment']['id'];
