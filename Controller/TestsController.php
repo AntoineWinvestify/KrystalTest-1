@@ -775,30 +775,30 @@ $this->print_r2($linkedAccountsResults);
         echo "start of method " . __METHOD__ . "<br/>";
         $this->autoRender = false;
         Configure::write('debug', 2); 
-        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
-        $sliceId = 1422;     
-        $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);     
+        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        $sliceId = 1373;     
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);     
         echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
     
-    
+/* 
         $globalAmortizationTable = $this->Globalamortizationtable->readFullAmortizationTable($sliceId);  
         $this->print_r2($globalAmortizationTable);   
         echo __FUNCTION__ . " " . __LINE__ . " <br/>";       
         
- 
-        
-        $companyId =25;
-        $investmentId = 5529;
-        $sliceIdentifier = 3706;
+ */   
+       
+        $companyId = 25;
+        $investmentId = 5467;
+        $sliceIdentifier = 3546;
         $data = ['paymentDate' => "2018-10-22", 
-            'capitalRepayment' => "1713.3",
-                     'interest' => "5.2",
+            'capitalRepayment' => "1093.3",
+                     'interest' => "1.2",
             ];
-        $result = $this->Globalamortizationtable->addPayment($companyId, $investmentId, $sliceIdentifier, $data) ;
+        $result = $this->Amortizationtable->addPayment($companyId, $investmentId, $sliceIdentifier, $data) ;
         $this->print_r2($result);
         
     
-        $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);     
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);     
         echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
     
         
@@ -806,7 +806,7 @@ $this->print_r2($linkedAccountsResults);
         $this->Company = ClassRegistry::init('Company');
         $pfp = "zank";
         $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp ]);
-        $this->print_r2($this->companyData);        
+    //    $this->print_r2($this->companyData);        
         if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) { 
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";         
         }  
@@ -814,9 +814,9 @@ $this->print_r2($linkedAccountsResults);
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";  
         }
         
-        $pfp = "bondora";
+        $pfp = "finanzarel";
         $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp ]);        
-        $this->print_r2($this->companyData);
+    //    $this->print_r2($this->companyData);
         if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) { 
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";         
         }  

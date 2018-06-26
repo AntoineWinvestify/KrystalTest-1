@@ -146,9 +146,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
             }
         }
 
-        $amortizationTable = $this->find("all", $params = [ 'recursive' => -1,
-                                                            'conditions' => ['investmentslice_id' => $sliceDbreference] ]
-                                        );
+        $amortizationTable = $this->readFullAmortizationTable($sliceDbreference);
         
         foreach ($amortizationTable as $table) {
             // look for the FIRST record which is *still* unpaid
@@ -161,9 +159,6 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
         if (empty($tableDbReference)) {
             return false;
         }    
- 
-echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
-$this->print_r2($amortizationTable);
   
         $paymentData['amortizationpayment_paymentDate'] = $data['paymentDate'];
 
@@ -203,11 +198,9 @@ $this->print_r2($amortizationTable);
      *  @return date of next pending instalment. Empty if all instalment have been paid
      */
     public function getNextPendingPaymentDate($sliceId) {
-        
-        $amortizationTable = $this->find("all", $params = [ 'recursive' => -1,
-                                                            'conditions' => ['investmentslice_id' => $sliceId] ]
-                                        );
-        foreach ($amortizationTable as $table) {
+        $amortizationTable = $this->readFullAmortizationTable($sliceId);
+
+        foreach ($amortizationTable as $table) {         
             // look for the FIRST record which is *still* unpaid
             if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {                 
                 return $table['amortizationtable_scheduledDate'];                 
@@ -216,4 +209,20 @@ $this->print_r2($amortizationTable);
         return;                                                                 // ALL INSTALMENTS HAVE BEEN PAID
     } 
 
+    
+    /** 
+     *  Reads a complete amortization table
+     *
+     *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
+     *  @return array   Amortizationtable   The complete amortization table. It contains *only* numeric indexes for the tables,
+     */
+    public function readFullAmortizationTable($sliceId) {
+        $amortizationTable = $this->find("all", $params = [ 'recursive' => -1,
+                                                            'conditions' => ['investmentslice_id' => $sliceId] ]
+                                        );
+       
+        $amortizationTableNormalized = Hash::extract($amortizationTable, '{n}.Amortizationtable');       
+        return $amortizationTableNormalized;
+    }    
+    
 }

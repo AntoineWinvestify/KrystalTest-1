@@ -273,7 +273,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Payment already stored<br/>";
  
     
     /** 
-     *  Reads a completeGlobalamortization table
+     *  Reads a complete Globalamortization table
      *
      *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
      *  @return array   Globalamortizationtable The complete global amortization table. It contains *only* numeric indexes for the tables,
@@ -293,8 +293,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Payment already stored<br/>";
             $globalTable[] = $result;
         }  
         
-        $globalTableNormalized = Hash::extract($globalTable, '{n}.Globalamortizationtable');     
-        return $globalTableNormalized;
+        $globalAmortizationTableNormalized = Hash::extract($globalTable, '{n}.Globalamortizationtable');     
+        return $globalAmortizationTableNormalized;
     }
    
   
