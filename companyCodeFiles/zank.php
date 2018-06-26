@@ -140,7 +140,7 @@ class zank extends p2pCompany {
                             ],
                     "functionName" => "extractDataFromString",
                 ],
-                [
+                /*[
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate  
                                                                                 // format ["concept string platform", "concept string Winvestify"]
@@ -148,7 +148,7 @@ class zank extends p2pCompany {
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
                                     2 => ["inversion" => "Primary_market_investment_preactive"],
-                        //            3 => ["inversion" => "Disinvestment"],  
+                                    3 => ["inversion" => "Disinvestment"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
                                     6 => ["recargo" => "Delayed_interest_income"],
@@ -157,7 +157,7 @@ class zank extends p2pCompany {
                                 ]                    
                             ],
                     "functionName" => "getTransactionDetail",
-                ]
+                ]*/
             ],
             "C" => [
                 
