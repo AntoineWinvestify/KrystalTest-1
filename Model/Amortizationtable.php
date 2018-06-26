@@ -125,6 +125,7 @@ class Amortizationtable extends AppModel
      *  @return array   boolean             true Table has been updated
      */
     public function addPayment($companyId, $investmentId, $sliceIdentifier, $data)  {
+        echo "Entering addPayment<br/>";
 $this->print_r2($investmentId);
 $this->print_r2($sliceIdentifier);
 $this->print_r2($data);           

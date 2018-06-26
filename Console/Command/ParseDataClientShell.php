@@ -1410,78 +1410,74 @@ echo __FILE__ . " " . __LINE__ . " \n";
      *  @return boolean               
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-echo "Entering function " . __FUNCTION__ . " " . __LINE__ . " \n";
-print_r($transactionData);
+     
         if (isset($transactionData['transactionId'])) {
             $data['transactionId'] = $transactionData['transactionId'];
         }
         
         if ($resultData['payment']['payment_principalAndInterestPayment'] <> 0) {
-            echo __FUNCTION__ . " " . __LINE__ . " \n";
-            $data['capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
+            $data['capitalAndInterestPayment'] = $resultData['payment']['payment_principalAndInterestPayment'];
             if ($resultData['payment']['payment_capitalRepayment'] <> 0) {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $data['capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
                 $data['interest'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             }
             else {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $data['capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
                 $data['interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
             }
         } 
         else {
-            echo __FUNCTION__ . " " . __LINE__ . " \n";
             $data['capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
             $data['interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
         }
         $data['paymentDate'] = $transactionData['date'];
-              
-echo __FUNCTION__ . " " . __LINE__ . " \n";
+$this->print_r2($data);                            
+
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
+        $sliceId = $this->translateSliceIdentifierToSliceId($sliceIdentifier, $resultData['investment']['id']); 
         
-        print_r($data);
-        
-        if ($this->Investmentslice->hasChild($sliceIdentifier, "Amortizationtable")) {  
+echo __FUNCTION__ . " " . __LINE__ . " sliceId = $sliceId<br/>\n";        
+        if ($this->Investmentslice->hasChild($sliceId, "Amortizationtable")) {  
             if ($this->Amortizationtable->addPayment($this->companyData[0]['Company']['id'], 
-                                                     $resultData['investment']['investment_loanId'], 
+                                                     $resultData['investment']['id'], 
                                                      $sliceIdentifier, $data)) {
-
+echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
                 // Write the date of the first unpaid instalment
-                $sliceId = $this->Investment->getInvestmentSlices ($resultData['Investment']['id']);               
-                $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($resultData['Investment']['id']);
-
+         //       $sliceId = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);               
+                $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);
+echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
                 if (empty($nextPendingInstalmentDate)) {
                     $nextPendingInstalmentDate = "0000-00-00";
                 }
-                
+echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";                
                 $resultData['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
 
-                echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable and Amortizationpayment tables succesfully updated\n"; 
+                echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable and Amortizationpayment tables succesfully updated<br/>\n"; 
                 return true;
             }
         }
         else {
+ echo __FUNCTION__ . " " . __LINE__ . " Global Model found<br/>\n";           
             if ($this->Globalamortizationtable->addPayment($this->companyData[0]['Company']['id'], 
                                                      $resultData['investment']['investment_loanId'], 
                                                      $sliceIdentifier, $data)) {
-
+echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
                 // Write the date of the first unpaid instalment
-                $sliceId = $this->Investment->getInvestmentSlices ($resultData['Investment']['id']);
+        //        $sliceId = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);
                 $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);
-
+echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
                 if (empty($nextPendingInstalmentDate)) {
                     $nextPendingInstalmentDate = "0000-00-00";
                 } 
-               
+echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";               
                 $resultData['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
 
-                echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable and Amortizationpayment tables succesfully updated\n";              
+                echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable and Amortizationpayment tables succesfully updated<br/>\n";              
                 return true; 
             }            
         }    
         
-        echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
+        echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference<br/>\n";
         return false;           
     }
 
@@ -1549,7 +1545,7 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from investment r
         }
 
         if (empty($sliceIdentifier)) {                                          // Take the default one
-echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its loanId\n";
+echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its loanId<br/>\n";
             $sliceIdentifier = $transactionData['investment_loanId'];
         }
 
@@ -1598,4 +1594,25 @@ print_r($result);
         return $this->Investment->id;
     }
 
+    
+    
+    /** WIP
+     *  Creates a copy of a investment database table
+     * 
+     *  @param bigint   $sliceIdentifier
+     *  @param bigint   $investmentId
+     *  @return bigint  database id of the investment slice              
+     */
+    public function translateSliceIdentifierToSliceId($sliceIdentifier, $investmentId) {
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        $result = $this->Investmentslice->find("first", array("conditions" => ["investment_id" => $investmentId,
+                                             "investmentslice_identifier" => $sliceIdentifier],
+                                                         "recursive" => -1));       
+echo __FUNCTION__ . " " . __LINE__ . " sliceId = " . $result['Investmentslice']['id'] . "<br/>\n";
+        return $result['Investmentslice']['id'];
+        
+    }   
+    
+    
+    
 }
