@@ -756,23 +756,23 @@ $this->print_r2($linkedAccountsResults);
         include APP . "Console/Command/ParseDataClientShell.php";
        
         $transactionData = ['transactionId' => 3242454534,
-                            'date'  => "2018-06-26",
-                            'investment_loanId' => 3689, 
+                            'date'  => "2018-07-05",
+                            'investment_loanId' => "1581870-01", 
                            ];
  
         $resultData = 
             ['payment' =>
                 [
-                    'payment_principalAndInterestPayment'  => "3434.8",
-                    'payment_capitalRepayment' => "3000.40",
-                    'payment_regularGrossInterestIncome' => "434.40",
+                    'payment_principalAndInterestPayment'  => "9434.8",
+                    'payment_capitalRepayment' => "6000.40",
+             //       'payment_regularGrossInterestIncome' => "434.40",
                 ],
             
             'investment' =>
                 [
-                    'investment_loanId' =>  3689,                                                   
-                    'id'  =>  5520,      
-                    'investment_dateForPaymentDelayCalculation' => "2018-06-23",
+                    'investment_loanId' => "1581870-01",                                                  
+                    'id'  =>  5529,      
+                    'investment_dateForPaymentDelayCalculation' => "2018-06-00",
                 ],
 
             ];

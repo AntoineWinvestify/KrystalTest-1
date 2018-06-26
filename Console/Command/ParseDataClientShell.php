@@ -58,7 +58,7 @@ App::import('Shell', 'UserData');
 
 class ParseDataClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
+    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Globalamortizationtable', 'Roundingerrorcompensation');
     protected $variablesConfig;   
     protected $companyData;
 
@@ -1436,46 +1436,34 @@ $this->print_r2($data);
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
         $sliceId = $this->translateSliceIdentifierToSliceId($sliceIdentifier, $resultData['investment']['id']); 
         
-echo __FUNCTION__ . " " . __LINE__ . " sliceId = $sliceId<br/>\n";        
-        if ($this->Investmentslice->hasChild($sliceId, "Amortizationtable")) {  
-            if ($this->Amortizationtable->addPayment($this->companyData[0]['Company']['id'], 
-                                                     $resultData['investment']['id'], 
-                                                     $sliceIdentifier, $data)) {
-echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
-                // Write the date of the first unpaid instalment
-         //       $sliceId = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);               
-                $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);
-echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
-                if (empty($nextPendingInstalmentDate)) {
-                    $nextPendingInstalmentDate = "0000-00-00";
-                }
-echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";                
-                $resultData['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
+echo __FUNCTION__ . " " . __LINE__ . " sliceId = $sliceId<br/>\n";   
 
-                echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable and Amortizationpayment tables succesfully updated<br/>\n"; 
-                return true;
-            }
+
+        if ($this->Investmentslice->hasChild($sliceId, "Amortizationtable")) {
+            echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable Model found<br/>\n";   
+            $modelPtr = $this->Amortizationtable;
         }
         else {
- echo __FUNCTION__ . " " . __LINE__ . " Global Model found<br/>\n";           
-            if ($this->Globalamortizationtable->addPayment($this->companyData[0]['Company']['id'], 
-                                                     $resultData['investment']['investment_loanId'], 
-                                                     $sliceIdentifier, $data)) {
+             echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable Model found<br/>\n";   
+            $modelPtr = $this->Globalamortizationtable;
+        }
+          
+        if ($modelPtr->addPayment($this->companyData[0]['Company']['id'], 
+                                                 $resultData['investment']['id'], 
+                                                 $sliceIdentifier, $data)) {
 echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
-                // Write the date of the first unpaid instalment
-        //        $sliceId = $this->Investment->getInvestmentSlices ($resultData['investment']['id']);
-                $nextPendingInstalmentDate = $this->Globalamortizationtable->getNextPendingPaymentDate($sliceId);
+            // Write the date of the first unpaid instalment
+            $nextPendingInstalmentDate = $modelPtr->getNextPendingPaymentDate($sliceId);
 echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
-                if (empty($nextPendingInstalmentDate)) {
-                    $nextPendingInstalmentDate = "0000-00-00";
-                } 
-echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";               
-                $resultData['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
-
-                echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable and Amortizationpayment tables succesfully updated<br/>\n";              
-                return true; 
-            }            
-        }    
+            if (empty($nextPendingInstalmentDate)) {
+                $nextPendingInstalmentDate = "0000-00-00";
+            } 
+echo __FUNCTION__ . " " . __LINE__ . " nextPendingInstalmentDate = $nextPendingInstalmentDate<br/>\n";               
+            $resultData['investment']['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
+$this->print_r2($resultData);
+            echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable and Amortizationpayment tables succesfully updated<br/>\n";              
+            return true; 
+        }              
         
         echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference<br/>\n";
         return false;           

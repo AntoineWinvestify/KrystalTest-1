@@ -236,7 +236,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Payment already stored<br/>";
         else {                                                                  // WIN_PAYMENT_ALREADY_STORED
             return true;
         }
-              
+ echo __FUNCTION__ . " " . __LINE__ . " Payment not yet stored, so it will be stored now<br/>";              
         // Store the payment related data
         $paymentData['amortizationpayment_paymentDate'] = $data['paymentDate'];
         
