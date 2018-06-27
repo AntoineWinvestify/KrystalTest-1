@@ -326,8 +326,6 @@ class ParseDataClientShell extends GearmanClientShell {
      *                  false
      */
     public function mapData(&$platformData) {
- echo "RRRRR";
- return 1;
         //We need this to put ACTIVE concept first, Twino has payment concept first and that cause zombie loan problems
         $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
