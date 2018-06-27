@@ -1402,7 +1402,7 @@ class mintos extends p2pCompany {
                 $type = WIN_AMORTIZATIONMETHOD_PARTIAL;
                 break;
             case "INTEREST-ONLY":
-                $type = WIN_AMORTIZATIONMETHOD_INTERESTONLY;
+                $type = WIN_AMORTIZATIONMETHOD_INTEREST_ONLY;
                 break;
             case "BULLET":
                 $type = WIN_AMORTIZATIONMETHOD_BULLET;
