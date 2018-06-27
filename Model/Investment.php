@@ -187,7 +187,7 @@ var $validate = array(
 
 
     /** 
-     *  Reads all the investmentslices of an investment
+     *  Reads the investmentslices of an investment. Currently the system can only handle 1 slice per investment
      * 
      *  @param  bigint  database reference of Investment, i.e. investmentId
      *  @return array   slices (database references) and sliceIdentifier of each slice

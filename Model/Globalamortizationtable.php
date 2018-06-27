@@ -302,7 +302,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Payment already stored<br/>";
     /** 
      *  Reads a next pending payment data according to the number of instalment that have been paid (or better: are still pending)
      *
-     *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
+     *  @param  bigint  $sliceId            The database Id of an investmentslice Model object (id)
      *  @return date of next pending instalment. Empty if all instalment have been paid
      */
     public function getNextPendingPaymentDate($sliceId) {

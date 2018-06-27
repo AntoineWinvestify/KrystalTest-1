@@ -245,20 +245,44 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($mapResult == true) {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
-                            if (!empty($newLoans)) {
-                                echo "WRITING LOANIDS\n";
-                                //          $controlVariableFile =  $platformData['controlVariableFile'];
-                                file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
+
+                            // Check if some loanIds from yesterday exist that could NOT be collected
+                            $tempName = explode("/", $baseDirectory);
+                            $this->print_r2($tempName);  
+                            $elementsInPath = count($tempName);
+
+                            $yesterdayTimeStamp = strtotime('-1 day', strtotime ($tempName[$elementsInPath - 4])) ;                        
+                            $yesterday = date ("Ymd", $yesterdayTimeStamp );
+
+                            $tempName[$elementsInPath - 4] = $yesterday;
+                            $tempName[$elementsInPath - 1] = "badLoanIds.json";
+                            $yesterdayPath = implode($tempName, "/");                           
+
+                            $fileYesterday = new File($yesterdayPath);                        
+                            $jsonLoanIdsYesterday = $fileYesterday->read(true, 'r');
+                            $loanIdsYesterday = json_decode($jsonLoanIdsYesterday, true);
+
+                            if(!empty($loanIdsYesterday)){
+                                echo "merging two arrays\n";
+                                $finalLoanIds = $newLoans + $loanIdsYesterday;
+                            } else {
+                                $finalLoanIds = $newLoans;
+                            }
+
+                            if (!empty($finalLoanIds)) {  
+                                echo "Writing the file 'LoanIds.json'\n";
+                                file_put_contents($baseDirectory . "loanIds.json", json_encode(($finalLoanIds)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                             }
                             else {
                                 $newFlowState = WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION;
                             }
+
                         }
                         else {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_ERROR;
                             echo "ERROR ENCOUNTERED\n";
-                        }
+                        }                   
                     }
                     $this->verifyStatus($newFlowState, "Data successfully downloaded", WIN_QUEUE_STATUS_GLOBAL_DATA_DOWNLOADED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
                     /*
@@ -293,17 +317,17 @@ class ParseDataClientShell extends GearmanClientShell {
      * An 'userinvestmentdatas' table is generated for each day, i.e. even if no activity exists. This is only
      * done for the regular backups, not for the initial account linking procedure
      * 
-     * the principal data is available in various sub-arrays which are to be written
+     * The principal data is available in various sub-arrays which are to be written
      * (before checking if it is a duplicate) to the corresponding database table.
      *     platform - (1-n)loanId - (1-n) concepts  
      * 
      *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      *  @return boolean true
      *                  false
-     *
      */
     public function mapData(&$platformData) {
-               
+ echo "RRRRR";
+ return 1;
         //We need this to put ACTIVE concept first, Twino has payment concept first and that cause zombie loan problems
         $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
@@ -1383,8 +1407,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
      *  @param bigInt   $investmentId       The database 'id' of the 'Investment' table
      *  @param string   $sliceIdentifier    The identifier of the new slice  
      *  @param  date    $date               The calculated date when the record is linked
-     *  @return bigInt                      The database reference of the 'Investmentslice' model
-     *                  
+     *  @return bigInt                      The database reference of the 'Investmentslice' model                 
      */
     public function linkNewSlice($investmentId, $sliceIdentifier, $date) {
         $id = $this->Investmentslice->getNewSlice($investmentId, $sliceIdentifier, $date);

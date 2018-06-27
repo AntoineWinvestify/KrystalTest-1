@@ -30,7 +30,7 @@ Based on article "http://martinbean.co.uk/blog/2013/11/22/getting-to-grips-with-
 /*
 
 2017-03-05      Version 0.1		
-Added function sendConfirmationCode									[Ok, tested]
+Added function sendConfirmationCode						[Ok, tested]
 
 2018-05-17      version 0.2
 A generic event wad added for sending transparent data via SMS
