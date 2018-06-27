@@ -340,7 +340,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 }                       
             }
         }
-
+        
         $timeStart = time();
         $calculationClassHandle = new UserDataShell();
         $investmentId = null;
@@ -472,11 +472,12 @@ class ParseDataClientShell extends GearmanClientShell {
             
             $investmentLoanIdsPerDay = [];
             
+
             foreach ($dates as $keyDateTransaction => $dateTransaction) { 
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
                 if ($keyDateTransactionNames[0] !== "global") {
                     foreach ($dateTransaction as $keyTransactionDate => $transaction) {
-                        if (stripos("investment_myInvestment", $transaction['interName']) !== false) {
+                        if (strpos($transaction['internalName'], "myInvestment") !== false) {
                             if (!in_array($transaction['investment_loanId'], $investmentLoanIdsPerDay)) {
                                 $investmentLoanIdsPerDay[] = $transaction['investment_loanId'];
                             }
@@ -484,7 +485,7 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
                 }
             }
-
+            
             foreach ($dates as $keyDateTransaction => $dateTransaction) {                       // read all *individual* transactions of a loanId per day           
 // Do some pre-processing in order to see if a *global* loanId really is a global loanId, i.e. 
 // convert the global loanId to a real loanId, this works for new investments only  
@@ -514,6 +515,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     break;
                             }
                             $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
+                            unset($keyDateTransaction);
                         }
                     }
                 }
@@ -522,7 +524,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
 
-                if (/*$dateTransactionNames[0] == "global"*/  strpos($keyDateTransaction, "global") !== false) {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                if ($dateTransactionNames[0] == "global" || strpos($keyDateTransaction, "global") !== false) {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     
                     
                     // cycle through all individual fields of the transaction record
