@@ -258,8 +258,8 @@ class twino extends p2pCompany {
             ],
             "F" => [
                 [
-                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
-                    "inputData" => [
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
+                    "inputData" => [           
                         "input2" => "100",
                         "input3" => 2,
                         "input4" => "."
@@ -277,7 +277,7 @@ class twino extends p2pCompany {
             //"J" => ASK ANTOINE Extended
             /*"K" => [
                 [
-                    "type" => "investment_nextPaymentDate", // Winvestify standardized name 
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name 
                     "inputData" => [
                         "input2" => "m/d/Y", // Input parameters. The first parameter
                     // is ALWAYS the contents of the cell
@@ -290,7 +290,7 @@ class twino extends p2pCompany {
             ],
             "M" => [
                 [
-                    "type" => "investment_myInvestment", // Winvestify standardized name   OK
+                    "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
                     "inputData" => [
                         "input2" => "",
                         "input3" => ".",
@@ -326,7 +326,7 @@ class twino extends p2pCompany {
             ],
             "H" => [
                 [
-                    "type" => "investment_remaingTerm", // Winvestify standardized name 
+                    "type" => "investment_remaingTerm",                         // Winvestify standardized name 
                     "inputData" => [
                         "input2" => "",
                         "input3" => ".",
@@ -340,7 +340,7 @@ class twino extends p2pCompany {
             ],
             "K" => [
                 [
-                    "type" => "investment_nextPaymentDate", // Winvestify standardized name 
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name 
                     "inputData" => [
                         "input2" => "m/d/Y", // Input parameters. The first parameter
                     // is ALWAYS the contents of the cell
@@ -354,7 +354,7 @@ class twino extends p2pCompany {
         
         0 => [
             [
-                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "Y-M-D",
                 ],
@@ -365,7 +365,7 @@ class twino extends p2pCompany {
 
             /*3 => [
             [
-                "type" => "amortizationtable_scheduledDate", // Winvestify standardized name   OK
+                "type" => "amortizationtable_scheduledDate",                    // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "Y-M-D",
                 ],
@@ -374,7 +374,7 @@ class twino extends p2pCompany {
         ],
         4 => [
             [
-                "type" => "amortizationtable_capitalAndInterestPayment", // Winvestify standardized name  OK
+                "type" => "amortizationtable_capitalAndInterestPayment",        // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
                     "input3" => ",",
@@ -385,7 +385,7 @@ class twino extends p2pCompany {
         ],
         5 => [
             [
-                "type" => "amortizationtable_capitalRepayment", // Winvestify standardized name  OK
+                "type" => "amortizationtable_capitalRepayment",                 // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
                     "input3" => ",",
@@ -396,7 +396,7 @@ class twino extends p2pCompany {
         ],
         6 => [
             [
-                "type" => "amortizationtable_interest", // Winvestify standardized name  OK
+                "type" => "amortizationtable_interest",                         // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
                     "input3" => ",",
@@ -414,8 +414,7 @@ class twino extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("date","investment_loanId"), // used to "sort" the array and use $sortParameter(s) as prime index.  
-
+            'sortParameter' => ["date","investment_loanId"]                     // used to "sort" the array and use $sortParameter(s) as prime index.               
         ]
     ];
     
@@ -423,7 +422,7 @@ class twino extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => array("investment_loanId")                       // used to "sort" the array and use $sortParameter as prime index.
        ]
     ]; 
     
@@ -431,15 +430,15 @@ class twino extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"]                            // used to "sort" the array and use $sortParameter as prime index.
        ]
     ]; 
     
-    protected $amortizationConfigParms = array('OffsetStart' => 0,
+    protected $amortizationConfigParms = ['OffsetStart' => 0,
         'offsetEnd' => 0,
         //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
+        'sortParameter' => "investment_loanId"                                  // used to "sort" the array and use $sortParameter as prime index.
+    ];
     
     protected $callbacks = [
         "investment" => [
@@ -448,7 +447,7 @@ class twino extends p2pCompany {
             ]
         ]
     ];
-    protected $investmentHeader = array('A' => "Country",
+    protected $investmentHeader = ['A' => "Country",
         'B' => "No.",
         'C' => "Date of investment",
         'D' => "Risk class",
@@ -463,17 +462,17 @@ class twino extends p2pCompany {
         'M' => "Bought shares, €",
         'N' => "Interest income, €",
         'O' => "Loan balance, €",
-        'P' => "For sale, €");
+        'P' => "For sale, €"];
     
-    protected $transactionHeader = array(
+    protected $transactionHeader = [
         'A' => "Processing Date",
         'B' => "Booking Date",
         'C' => "Type",
         'D' => "Description",
         'E' => "Loan Number",
-        'F' => "amount");
+        'F' => "amount"];
     
-    protected $expiredLoansHeader = array('A' => "Country",
+    protected $expiredLoansHeader = ['A' => "Country",
         'B' => "No.",
         'C' => "Date of investment",
         'D' => "Risk class",
@@ -488,7 +487,7 @@ class twino extends p2pCompany {
         'M' => "Bought shares, €",
         'N' => "Interest income, €",
         'O' => "Loan balance, €",
-        'P' => "For sale, €");
+        'P' => "For sale, €"];
        
 
     function __construct() {
@@ -517,7 +516,7 @@ class twino extends p2pCompany {
      * 			false: 		user could not log in
      * 	
      */
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    function companyUserLogin($user = "", $password = "", $options = []) {
 
         $credentials['name'] = $user;
         $credentials['password'] = $password;
@@ -741,12 +740,12 @@ class twino extends p2pCompany {
                 $dateInitArray = explode(",", $dateInit);
                 $dateFinishArray = explode(",", $dateFinish);
                 $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","processingDateFrom":[{$year1},{$month1},{$day1}],"processingDateTo":[{$year2},{$month2},{$day2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
-                $credentialsFile = strtr($credentialsFile, array('{$year1}' => (int) $dateInitArray[0]));
-                $credentialsFile = strtr($credentialsFile, array('{$year2}' => (int) $dateFinishArray[0]));
-                $credentialsFile = strtr($credentialsFile, array('{$month1}' => (int) $dateInitArray[1]));
-                $credentialsFile = strtr($credentialsFile, array('{$month2}' => (int) $dateFinishArray[1]));
-                $credentialsFile = strtr($credentialsFile, array('{$day1}' => (int) $dateInitArray[2]));
-                $credentialsFile = strtr($credentialsFile, array('{$day2}' => (int) $dateFinishArray[2]));
+                $credentialsFile = strtr($credentialsFile, ['{$year1}' => (int) $dateInitArray[0]]);
+                $credentialsFile = strtr($credentialsFile, ['{$year2}' => (int) $dateFinishArray[0]]);
+                $credentialsFile = strtr($credentialsFile, ['{$month1}' => (int) $dateInitArray[1]]);
+                $credentialsFile = strtr($credentialsFile, ['{$month2}' => (int) $dateFinishArray[1]]);
+                $credentialsFile = strtr($credentialsFile, ['{$day1}' => (int) $dateInitArray[2]]);
+                $credentialsFile = strtr($credentialsFile, ['{$day2}' => (int) $dateFinishArray[2]]);
                 if (empty($this->tempUrl['transactionDownloadInit'])) {
                     $this->tempUrl['transactionDownloadInit'] = array_shift($this->urlSequence);
                     $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);
@@ -1017,6 +1016,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the company specific loan status to the Winvestify standardized
      * loan type
+     * 
      * @param string $inputData     company specific loan status
      * @return int                  Winvestify standardized loan status
      */
@@ -1055,6 +1055,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the company specific loan type to the Winvestify standardized
      * loan type
+     * 
      * @param string $inputData     company specific loan type
      * @return int                  Winvestify standardized loan type
      */
@@ -1065,6 +1066,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the company specific amortization method to the Winvestify standardized
      * amortization type
+     * 
      * @param string $inputData     company specific amortization method
      * @return int                  Winvestify standardized amortization method
      */
@@ -1075,6 +1077,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the company specific type of investment to the Winvestify standardized
      * type of investment
+     * 
      * @param string $inputData     company specific type of investment
      * @return int                  Winvestify standardized type of investment
      */
@@ -1085,6 +1088,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the company specific payment frequency to the Winvestify standardized
      * payment frequency
+     * 
      * @param string $inputData     company specific payment frequency
      * @return int                  Winvestify standardized payment frequency
      */
@@ -1095,6 +1099,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the type of investment market to an to the Winvestify standardized
      * investment market concept
+     * 
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
      */
@@ -1105,6 +1110,7 @@ class twino extends p2pCompany {
     /**
      * Function to translate the company specific investmentBuyBackGuarantee to the Winvestify standardized
      * investmentBuyBackGuarantee
+     * 
      * @param string $inputData     company specific investmentBuyBackGuarantee
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
@@ -1113,7 +1119,6 @@ class twino extends p2pCompany {
     }
 
     /**
-     *
      * 	Logout of user from the company portal.
      * 	
      * 	@returnboolean	true: user has logged out 
@@ -1125,20 +1130,20 @@ class twino extends p2pCompany {
         return true;
     }
 
+    
     function structureRevisionAmortizationTable($node1, $node2) {
-
         $dom1 = new DOMDocument();
         $dom1->loadHTML($node1);
 
         $dom2 = new DOMDocument();
         $dom2->loadHTML($node2);
 
-        $dom1 = $this->cleanDomTagNotFirst($dom1, array(
-        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+        $dom1 = $this->cleanDomTagNotFirst($dom1, [
+        ['typeSearch' => 'tagElement', 'tag' => 'tr']]);
 
 
-        $dom2 = $this->cleanDomTagNotFirst($dom2, array(
-        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+        $dom2 = $this->cleanDomTagNotFirst($dom2, [
+        ['typeSearch' => 'tagElement', 'tag' => 'tr']]);
 
 
         echo 'compare structure';

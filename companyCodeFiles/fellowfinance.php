@@ -23,17 +23,17 @@
 
 class fellowfinance extends p2pCompany {
 
-    protected $transactionConfigParms = array ('offsetStart' => 1,
+    protected $transactionConfigParms =  ['offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+                                 ];
  
-    protected $investmentConfigParms = array ('offsetStart' => 1,
+    protected $investmentConfigParms =  ['offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
                                 'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+                                 ];
 
 /*    NOT YET READY
     protected $investmentConfigParms = array ('offsetStart' => 1,
@@ -58,13 +58,13 @@ class fellowfinance extends p2pCompany {
      * @param type $options
      * @return boolean
      */
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    function companyUserLogin($user = "", $password = "", $options = []) {
         /*
           FIELDS USED BY fellowfinance DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
          */
         $url = $this->urlSequence;
-        $totalArray = array();
+        $totalArray = [];
         $this->casperInit("https://secure.fellowfinance.fi/Login/Index?LanguageCode=en");
         $this->casperWaitSelector('#Login_UserName', 3000);
         $this->casperSendKey("input#Login_UserName", $user);

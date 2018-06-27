@@ -57,20 +57,20 @@ class mytriplea extends p2pCompany {
     protected $transactionConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  );
  
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  );
 
 /*    NOT YET READY
     protected $investmentConfigParms = array ('offsetStart' => 1,
                                 'offsetEnd'     => 0,
                                 'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
+                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
                                  );      
  
  */    
@@ -382,10 +382,10 @@ class mytriplea extends p2pCompany {
 
         $form = [//MyTripleA is like zank, need curl.
             'cargarMas' => true, //Must be true
-            'numeroPaginaMostrar' => $pageNumber, //Start with 0 
+            'numeroPaginaMostrar' => $pageNumber,                               //Start with 0 
         ];
 
-        $str = $this->getCompanyWebpageAjax($url, $form);  // load ajax reponse
+        $str = $this->getCompanyWebpageAjax($url, $form);                       // load ajax reponse
         $dom = new DOMDocument;
         $dom->loadHTML($str);
         $dom->preserveWhiteSpace = false;
@@ -886,7 +886,7 @@ class mytriplea extends p2pCompany {
         $dom = new DOMDocument;
         $dom->loadHTML($this->mainPortalPage);
         $dom->preserveWhiteSpace = false;
-//echo "BBBB" . $this->mainPortalPage;	
+
         /*
           $str = $this->getCompanyWebpage();		// load Webpage into a string variable so it can be parsed SHOULD SHOW LIST OF INVESTMENTS
           echo "AAAAA" . $str;
@@ -1081,7 +1081,6 @@ class mytriplea extends p2pCompany {
                 return $state;
             }
         }
-        echo "normalizedState = $normalizedState<br>";
         return $normalizedState;
     }
 

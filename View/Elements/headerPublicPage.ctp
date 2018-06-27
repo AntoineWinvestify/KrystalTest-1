@@ -9,7 +9,7 @@
                                 <div id="loginDropdown" class="dropdown-menu dropdown-menu-left" style="cursor:auto;z-index: 1">
                                     <div class="row">
                                         <div class="col-sm-offset-1 col-sm-10 col-xs-offset-1 col-xs-10" style="margin-top:10px;">
-                                            <?php echo $this->Form->create('User', array('url' => "/users/loginAction"));
+                                            <?php echo $this->Form->create('User', ['url' => "/users/loginAction"]);
                                             ?>
                                             <?php
                                             $authMsg = $this->Session->consume('Message.auth.message');

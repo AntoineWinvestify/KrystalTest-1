@@ -76,33 +76,19 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");                            
                         }
                         
-                        $tempName2 = $tempName;
-
-                        $yesterday = strtotime('-1 day', strtotime ($tempName[9])) ;
-                        $yesterday = date ("Ymd", $yesterday );
-                        $tempName2[9] = $yesterday;
-                        $tempName2[12] = "badLoanIds.json";
-                        $yesterdayPath = implode($tempName2, "/");
-                    
                         $linkedAccountId = $tempName[count($tempName) - 3];
                         if (!in_array($linkedAccountId, $queueInfo['companiesInFlow'])) {
                             continue;
                         }
-                        $file = new File($path);
-                        $fileYesterday = new File($yesterdayPath);                        
+                        $file = new File($path);                  
                         $jsonLoanIds = $file->read(true, 'r');
-                        $jsonLoanIdsYesterday = $fileYesterday->read(true, 'r');
                         $loanIds = json_decode($jsonLoanIds, true);
-                        $loanIdsYesterday = json_decode($jsonLoanIdsYesterday, true);
-                        if(!empty($loanIdsYesterday)){
-                            $finalLoanIds = array_merge($loanIds, $loanIdsYesterday);
-                        } else {
-                            $finalLoanIds = $loanIds;
-                        }
+                        $finalLoanIds = $loanIds;
+
                         $linkAccountIds[] = $linkedAccountId;
                         $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
-                    $filterConditions = array('id' => $linkAccountIds, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
+                    $filterConditions = array('id' => $linkAccountIds); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     //foreach ($queueInfo['loanIds'] as $key => $loanId) {
                     /*foreach ($loanIds as $key => $loanId) {

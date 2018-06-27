@@ -54,9 +54,9 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AdminpfpAppController {
 
     var $name = 'Users';
-    var $helpers = array('Html', 'Form', 'Js', 'Session');
-    var $uses = array('User', 'Adminpfp');
-    var $components = array('Security');
+    var $helpers = ['Html', 'Form', 'Js', 'Session'];
+    var $uses = ['User', 'Adminpfp'];
+    var $components = ['Security'];
     var $error;
 
     function beforeFilter() {
@@ -79,7 +79,7 @@ class UsersController extends AdminpfpAppController {
         if ($this->Auth->login()) {   
             $id = $this->Session->read('Auth.User.adminpfp_id');
             $lang = $this->Session->read('Config.language');
-            $this->Adminpfp->save(array('id' => $id, 'adminpfp_language' => $lang));
+            $this->Adminpfp->save(['id' => $id, 'adminpfp_language' => $lang]);
             $this->redirect($this->Auth->redirectUrl());
         }
         else {
@@ -108,8 +108,8 @@ class UsersController extends AdminpfpAppController {
 
     public function logout() {
         $user = $this->Auth->user();  // get all the data of the authenticated user
-        $event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
-        ));
+        $event = new CakeEvent('Controller.User_logout', $this, ['data' => $user,
+        ]);
         $this->getEventManager()->dispatch($event);
         $this->Session->destroy();      // NOT NEEDED?
         $this->Session->delete('Auth');
@@ -131,11 +131,11 @@ class UsersController extends AdminpfpAppController {
 
         $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
 
-        $resultTallyman = $this->Investorglobaldata->find("all", $params = array('recursive' => 1,
-            'conditions' => array(
+        $resultTallyman = $this->Investorglobaldata->find("all", $params = ['recursive' => 1,
+            'conditions' => [
                 //           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                'created >' => $cutoffDate),
-            'limit' => $limitNumber));
+                'created >' => $cutoffDate],
+            'limit' => $limitNumber]);
 
         $this->print_r2($resultTallyman);
     }

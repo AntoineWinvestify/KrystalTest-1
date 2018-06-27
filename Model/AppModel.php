@@ -292,12 +292,19 @@ public function matchFields($check = array(), $compareField = null) {
                                                         'fields' => array('id'),
                                            'conditions' => array('id' => $currentInstance)
                                         ));       
+
         $count = count($result[$model]);
 
-        if ($count <> 0) { 
+        if ($count <> 0) {            
             return true;
-        }
+        }       
         return false;
     } 
+ 
     
+    function print_r2($val) {
+        echo '<pre>';
+        print_r($val);
+        echo '</pre>';
+    }    
 }

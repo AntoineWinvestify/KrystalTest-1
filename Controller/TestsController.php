@@ -56,12 +56,12 @@ class TestsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
+    Configure::write('debug', 2); 
 
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "mytest", "mytest1"));
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "readSize"));
+            "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1"));
     }
     
@@ -114,10 +114,10 @@ class TestsController extends AppController {
     $this->Investor->Behaviors->load('Containable');
     $this->Investor->contain('Linkedaccount');
     $result = $this->Investor->find("all", 
-                                            array ("recursive" => 2, 
-                                                    "conditions" => array("Investor.investor_identity" => "39048098ab409be490A"), 
-                                                                          array( 'Linkedaccount' => array('Linkedaccount.linkedaccount_statusExtended' => 10) 
-                                                        ))
+                     array ("recursive" => 2, 
+                            "conditions" => array("Investor.investor_identity" => "39048098ab409be490A"), 
+                     array( 'Linkedaccount' => array('Linkedaccount.linkedaccount_statusExtended' => 10) 
+                     ))
             );   
 
     $companyNothingInProcess = [];
@@ -245,25 +245,9 @@ $this->print_r2($linkedAccountsResults);
 //$this->Linkedaccount->disableLinkedAccount(array('investor_id' => 1), WIN_USER_INITIATED);
 //$this->Linkedaccount->enableLinkedAccount(array('investor_id' => 1, 'company_id' => 3), WIN_USER_INITIATED);
 
-
-
-
-
-
-
-
-
-
     }   
     
- 
-    
-    
-    
-    
-    
-    
-    
+
         private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
 
         $position = stripos($input, $search);
@@ -471,11 +455,6 @@ $this->print_r2($linkedAccountsResults);
           exit;
          */
 
-
-
-
-
-
         $investorIdentity = $this->Auth->user('Investor.investor_identity');
         $dataFilterConditions = array('data_investorReference' => $userIdentity);
 
@@ -527,7 +506,6 @@ $this->print_r2($linkedAccountsResults);
         }
 
         debug($apiResult);
-
     }
     
     
@@ -766,6 +744,116 @@ $this->print_r2($linkedAccountsResults);
         echo 20170000 - 20130000 . "<br>";
     }
 
+   
+    public function testAddPayment()  {
+        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
+        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        Configure::write('debug', 2);         
+        echo "start of method " . __METHOD__ . "<br/>";
+        $this->autoRender = false;
+        
+
+        include APP . "Console/Command/ParseDataClientShell.php";
+       
+        $transactionData = ['transactionId' => 3242454534,
+                            'date'  => "2018-07-05",
+                            'investment_loanId' => "1581870-01", 
+                           ];
+ 
+        $resultData = 
+            ['payment' =>
+                [
+                    'payment_principalAndInterestPayment'  => "9434.8",
+                    'payment_capitalRepayment' => "6000.40",
+             //       'payment_regularGrossInterestIncome' => "434.40",
+                ],
+            
+            'investment' =>
+                [
+                    'investment_loanId' => "1581870-01",                                                  
+                    'id'  =>  5529,      
+                    'investment_dateForPaymentDelayCalculation' => "2018-06-00",
+                ],
+
+            ];
+        
+        $companyData[0]['Company']['id']  = 24; 
+        
+        $this->print_r2($transactionData);
+        $this->print_r2($resultData);        
+        
+        $myInd = new ParseDataClientShell();
+
+        $result = $myInd->repaymentReceived($transactionData, $resultData);        
+
+        echo "result = $result\n"; 
+  /* 
+        $sliceId = 1373;     
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);     
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
+        
+        
+  */      
+    }   
+    
+    
+    
+    
+    function testAddPayment66()  {
+        echo "start of method " . __METHOD__ . "<br/>";
+        $this->autoRender = false;
+        Configure::write('debug', 2); 
+        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        $sliceId = 1373;     
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);     
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
+    
+/* 
+        $globalAmortizationTable = $this->Globalamortizationtable->readFullAmortizationTable($sliceId);  
+        $this->print_r2($globalAmortizationTable);   
+        echo __FUNCTION__ . " " . __LINE__ . " <br/>";       
+        
+ */   
+       
+        $companyId = 25;
+        $investmentId = 5467;
+        $sliceIdentifier = 3546;
+        $data = ['paymentDate' => "2018-10-22", 
+            'capitalRepayment' => "1093.3",
+                     'interest' => "1.2",
+            ];
+        $result = $this->Amortizationtable->addPayment($companyId, $investmentId, $sliceIdentifier, $data) ;
+        $this->print_r2($result);
+        
+    
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);     
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";    
+    
+        
+        
+        $this->Company = ClassRegistry::init('Company');
+        $pfp = "zank";
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp ]);
+    //    $this->print_r2($this->companyData);        
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) { 
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";         
+        }  
+        else {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";  
+        }
+        
+        $pfp = "finanzarel";
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp ]);        
+    //    $this->print_r2($this->companyData);
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) { 
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";         
+        }  
+        else {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";  
+        }        
+    }   
+    
+    
     
     
     /**
@@ -791,14 +879,7 @@ $this->print_r2($linkedAccountsResults);
         $this->print_r2($result);
         exit;
         
-        
-        
-        
-        
-        
-        
-        
-        
+      
         $filterConditions = array('id' => 2105);
         print_r($filterConditions);
      	$resultInvestmentData = $this->Investment->find("all", $params = array('recursive'     => 1,

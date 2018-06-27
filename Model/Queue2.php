@@ -266,7 +266,7 @@ class Queue2 extends AppModel {
      */
     function afterSave($created, $options = array()) {
 
-        if (isset($this->data['Queue2']['queue2_status'])) {                   // A job in Queue2 has finished
+        if (isset($this->data['Queue2']['queue2_status'])) {                    // A job in Queue2 has finished
             if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED) { 
 
                 $filterConditions = array("id" => $this->data['Queue2']['id']);

@@ -298,11 +298,11 @@ class finbee extends p2pCompany {
             ]
         ];
     
-    protected $transactionConfigParms = array('offsetStart' => 1,
+    protected $transactionConfigParms = ['offsetStart' => 1,
         'offsetEnd' => 0,
         //'separatorChar' => ";",
-        'sortParameter' => array("investment_loanId")   // used to "sort" the array and use $sortParameter as prime index.
-    );
+        'sortParameter' => ["investment_loanId"]   // used to "sort" the array and use $sortParameter as prime index.
+    ];
     
     protected $investmentConfigParms = [
         "fileConfigParam" => [
@@ -316,14 +316,14 @@ class finbee extends p2pCompany {
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => array("investment_debtor"),   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => ["investment_debtor"],   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loans'
             ],
             [
                 'offsetStart' => 1,
                 'offsetEnd' => 0,
                 //'separatorChar' => ";",
-                'sortParameter' => array("investment_debtor"),   // used to "sort" the array and use $sortParameter as prime index.
+                'sortParameter' => ["investment_debtor"],   // used to "sort" the array and use $sortParameter as prime index.
                 'sheetName' => 'Active Loan Slices'
             ],
             /*[
@@ -364,16 +364,16 @@ class finbee extends p2pCompany {
         ]
     ];
     
-    protected $amortizationConfigParms = array('offsetStart' => 0,
+    protected $amortizationConfigParms = ['offsetStart' => 0,
         'offsetEnd' => 0,
         //'separatorChar' => ";",
         'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
         
-    );
+    ];
 
     
-    protected $investmentHeader = array(
-        0 => array(
+    protected $investmentHeader = [
+        0 => [
             'A' => "Loan request",
             'B' => "Borrower",
             'C' => "Purpose",
@@ -382,8 +382,8 @@ class finbee extends p2pCompany {
             'F' => "Int rate",
             'G' => "Type",
             'H' => "Loan status"
-        ),
-        1 => array(
+        ],
+        1 => [
             'A' => "ID",
             'B' => "Loan date",
             'C' => "Borrower",
@@ -395,24 +395,24 @@ class finbee extends p2pCompany {
             'I' => "% repaid",
             'J' => "Arrears (€)",
             'K' => "Type"
-        ),
-        2 => array(
+        ],
+        2 => [
             'A' => "Loan request",
             'B' => "Borrower",
             'C' => "Purpose",
             'D' => "Amount (€)",
             'E' => "Int rate",
             'F' => "Type"
-        ),
-        3 => array(
+        ],
+        3 => [
             'A' => "ID",
             'B' => "Loan request",
             'C' => "Borrower",
             'D' => "Purpose",
             'E' => "Amount (€)",
             'F' => "Type"
-        ),
-        4 => array(
+        ],
+        4 => [
             'A' => "Loan ID",
             'B' => "Sell request date",
             'C' => "Reserve price<br>±%",
@@ -426,8 +426,8 @@ class finbee extends p2pCompany {
             'K' => "Deal price (€)",
             'L' => "Fees paid (€)",
             'M' => "Final price (€)"
-        ),
-        5 => array(
+        ],
+        5 => [
             'A' => "Loan ID",
             'B' => "Seller",
             'C' => "Sell request date",
@@ -442,43 +442,43 @@ class finbee extends p2pCompany {
             'L' => "Final price (€)",
             'M' => "New loan ID",
             'N' => "New loan amount (€)"
-        )
-    );
+        ]
+    ];
     
-    protected $compareHeaderInvestmentConfigParam = array(
-        0 => array(
+    protected $compareHeaderInvestmentConfigParam = [
+        0 => [
             'chunkInit' => 1,
             'chunkSize' => 1,
             'sheetName' => 'Active Loans'
-        ),
-        1 => array(
+        ],
+        1 => [
             'chunkInit' => 1,
             'chunkSize' => 1,
             'sheetName' => 'Active Loan Slices'
-        ),
-        2 => array(
+        ],
+        2 => [
             'chunkInit' => 1,
             'chunkSize' => 1,
             'sheetName' => 'Completed Loans'
-        ),
-        3 => array(
+        ],
+        3 => [
             'chunkInit' => 1,
             'chunkSize' => 1,
             'sheetName' => 'Completed Loan Parts'
-        ),
-        4 => array(
+        ],
+        4 => [
             'chunkInit' => 1,
             'chunkSize' => 1,
             'sheetName' => 'Sold Loan Parts'
-        ),
-        5 => array(
+        ],
+        5 => [
             'chunkInit' => 1,
             'chunkSize' => 1,
             'sheetName' => 'Bought Loan Parts'
-        ),
-    );
+        ],
+    ];
     
-    protected $investment2Header = array(    
+    protected $investment2Header = [    
         'A' => 'Loan ID',
         'B' => 'Sell request date',
         'C' => 'Reserve price<br>±%',
@@ -492,16 +492,16 @@ class finbee extends p2pCompany {
         'K' => 'Deal price',
         'L' => 'Fees paid',
         'M' => 'Final price',
-    );
-    protected $compareHeaderInvestment2ConfigParam = array(
+    ];
+    protected $compareHeaderInvestment2ConfigParam = [
         'chunkInit' => 1,
         'chunkSize' => 2,
         'fromColumn' => 'A',
         'toColumn' => 'O'
-    );
+    ];
     
     
-    protected $transactionHeader = array(
+    protected $transactionHeader = [
         'A' => 'Date',
         'B' => 'Narrative',
         'C' => 'Description',
@@ -509,12 +509,12 @@ class finbee extends p2pCompany {
         'E' => 'Paid out',
         'F' => 'Balance',
         'G' => 'bid ID',
-    );
+    ];
     
-    protected $compareHeaderTransactionConfigParam = array(
+    protected $compareHeaderTransactionConfigParam = [
         'chunkInit' => 1,
         'chunkSize' => 1,
-    );
+    ];
 
     function __construct() {
         $this->i = 0;
@@ -824,7 +824,7 @@ class finbee extends p2pCompany {
                     $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
                 }
                 echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = strtr($this->tempUrl['investmentUrl'], array('{$loanId}' => $this->loanIds[$this->i]));
+                $url = strtr($this->tempUrl['investmentUrl'], ['{$loanId}' => $this->loanIds[$this->i]]);
                 echo "the table url is: " . $url;
                 $this->i = $this->i + 1;
                 $this->idForSwitch++;
