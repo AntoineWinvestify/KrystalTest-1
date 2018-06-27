@@ -283,7 +283,7 @@ public function matchFields($check = array(), $compareField = null) {
      *  @param  string      $model              Name of child model
      *  @return boolean
      */   
-    public function hasChild($currentInstance, $model) {  
+    public function hasChildModel($currentInstance, $model) {  
 
         $this->Behaviors->load('Containable');
         $this->contain($model);            

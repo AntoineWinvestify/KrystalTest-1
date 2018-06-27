@@ -891,7 +891,7 @@ echo $myInstance;
 //        $this->print_r2($resultInvestmentData);
 
     
-        $result = $this->Investment->hasChild($myInstance, 'Investmentslice');
+        $result = $this->Investment->hasChildModel($myInstance, 'Investmentslice');
         echo "FINAL";
         $this->print_r2($result);
     }    

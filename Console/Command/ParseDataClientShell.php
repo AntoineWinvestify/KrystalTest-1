@@ -1462,7 +1462,7 @@ $this->print_r2($data);
 echo __FUNCTION__ . " " . __LINE__ . " sliceId = $sliceId<br/>\n";   
 
 
-        if ($this->Investmentslice->hasChild($sliceId, "Amortizationtable")) {
+        if ($this->Investmentslice->hasChildModel($sliceId, "Amortizationtable")) {
             echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable Model found<br/>\n";   
             $modelPtr = $this->Amortizationtable;
         }

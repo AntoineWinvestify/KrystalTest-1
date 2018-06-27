@@ -196,7 +196,7 @@ print_r($linkedAccountData);
                                                                      'recursive' => 1)
                                                                         );
                 
-                if ($this->Investmentslice->hasChild($sliceId, "Amortizationtable")) {
+                if ($this->Investmentslice->hasChildModel($sliceId, "Amortizationtable")) {
                     $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
                     foreach ($reversedData as $table) {
                         if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
@@ -387,7 +387,7 @@ exit;
 
         $scheduledDate = "";
 
-        if ($this->Investmentslice->hasChild($investmentSliceId, "Amortizationtable")) {  
+        if ($this->Investmentslice->hasChildModel($investmentSliceId, "Amortizationtable")) {  
             $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
                                                                       'fields' => array('id', 'amortizationtable_scheduledDate')
                                                     )); 
