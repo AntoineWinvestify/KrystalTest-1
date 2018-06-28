@@ -182,14 +182,14 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
         $timeStart = time();
 print_r($linkedAccountData);
 
-        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
+        foreach ($linkedAccountData as $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
-     //           $tempIdData = explode(".", $name[2]);
-                $loanDataId[] = $name[1];
+                $sliceIdTemp = $name[count($name) - 2 ];
+                $loanDataId[] = $sliceIdTemp;
             }
 
-            foreach ($loanDataId as $sliceId) { 
+            foreach ($loanDataId as $sliceId) {
                 $tempNextScheduledDate = "";
 
                 $result = $this->Investmentslice->find("all", array('conditions' => ['Investmentslice.id' => $sliceId],       

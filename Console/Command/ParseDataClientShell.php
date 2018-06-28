@@ -1607,7 +1607,7 @@ print_r($result);
 
     
     
-    /** WIP
+    /** 
      *  Creates a copy of a investment database table
      * 
      *  @param bigint   $sliceIdentifier
