@@ -272,7 +272,7 @@ class Queue2 extends AppModel {
                 // queue2info is always present
                 $queue2_infoDecoded = json_decode($this->data['Queue2']['queue2_info'], true);
                 $originExecution = $queue2_infoDecoded['originExecution'];
-echo __METHOD__ . " " . __LINE__ . " originExecution = $originExecution\n";                
+               
                 if ($originExecution == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                     $filterConditions = array("queue2_info" => $this->data['Queue2']['queue2_info'], true);
                     $result = $this->find("first", array(

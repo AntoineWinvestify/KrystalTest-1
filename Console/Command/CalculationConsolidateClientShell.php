@@ -182,7 +182,7 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
         $timeStart = time();
 print_r($linkedAccountData);
 
-        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
+        foreach ($linkedAccountData as $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
                 $sliceIdTemp = $name[count($name) - 2 ];
