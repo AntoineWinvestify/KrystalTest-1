@@ -364,8 +364,7 @@ print_r($tempArray);
                                         'investment_nextPaymentDate' => $nextPaymentDate);
                 }
             }     
- //           $this->Investment->saveMany($nextDates, array('validate' => true));
-$this->print_r2 ($nextDates);            
+            $this->Investment->saveMany($nextDates, array('validate' => true));            
             unset ($nextDates);
         }
   
