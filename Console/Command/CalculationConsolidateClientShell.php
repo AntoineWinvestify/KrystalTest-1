@@ -185,8 +185,8 @@ print_r($linkedAccountData);
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
-                $tempIdData = explode(".", $name[2]);
-                $loanDataId[] = $tempIdData[0];
+     //           $tempIdData = explode(".", $name[2]);
+                $loanDataId[] = $name[1];
             }
 
             foreach ($loanDataId as $sliceId) { 
@@ -371,7 +371,6 @@ $this->print_r2 ($nextDates);
   
         $timeStop = time();
         echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
-exit;
         return true;
     }      
 

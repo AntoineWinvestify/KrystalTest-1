@@ -159,7 +159,8 @@ public function implementedEvents() {
                 $filterCondition = array('investor_identity' => $event->data['investor_userReference']);
             }
         }
-      
+        
+        $this->Investor->recursive = -1;
         $resultInvestor = $this->Investor->find("first", array(
                                     "conditions" => $filterCondition,
                                     ));            
@@ -188,7 +189,7 @@ public function implementedEvents() {
 		echo $e->getMessage();
 		CakeLog::write('SMS_LOG', 'writing error to log. error is ' . $e->getMessage());
 	}  
-}
+    }
 
 
 

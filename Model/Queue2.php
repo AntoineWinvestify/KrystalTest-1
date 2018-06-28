@@ -269,15 +269,30 @@ class Queue2 extends AppModel {
         if (isset($this->data['Queue2']['queue2_status'])) {                    // A job in Queue2 has finished
             if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED) { 
 
-                $filterConditions = array("id" => $this->data['Queue2']['id']);
+                $filterConditions = array("queue2_info" => $this->data['Queue2']['queue2_info'], true);
                 $result = $this->find("first", array(
                                     "conditions" => $filterConditions,
                                     ));
-
+                
+                // Lets personalize the message a little bit, add the company name                
+                $queue2_infoDecoded = json_decode($result['Queue2']['queue2_info']);
+                $this->print_r2($queue2_infoDecoded);
+                $linkedAccountId = $queue2_infoDecoded['companiesInFlow'];
+                
+                $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+                
+                $linkedAccountData = $this->Linkedaccount->getLinkedaccountDataList(['id' => $linkedAccountId]);
+                $this->print_r2($companyId);    
+                $this->Company = ClassRegistry::init('Company');
+                $data = $this->Company->getData( ['id' => $linkedAccountData[0]['Linkedaccount']['company_id'] ]);
+ 
+                $companyName = $data[0]['Company']['company_name'];
+                
                 if ($result['Queue2']['queue2_type'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                     $event = new CakeEvent("accountLinkingFullyFinished", $this, 
-                                            array('investor_userReference' => $this->data['Queue2']['queue2_userReference'], 
-                                                    'messageContent'        => __('Your new account has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') 
+                                            array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
+                                                'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
+                                                                           __('has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') 
                                                 ));
 
                     $this->getEventManager()->dispatch($event);
@@ -288,3 +303,4 @@ class Queue2 extends AppModel {
     
 
 }
+ 
