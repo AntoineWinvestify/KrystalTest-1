@@ -843,13 +843,15 @@ class twino extends p2pCompany {
      * @return array html of the tables
      */
     function collectAmortizationTablesParserFile($str = null) {
-        
+        echo 'Start /n/n/n';
         $this->loanTotalIds = $this->loanIds;
         $this->myParser = new Fileparser();                                                                             //Call the parser
         $folder = $this->getFolderPFPFile();
         $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
         $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
+        echo 'Analyze ' . $this->typeFileInvestment . " " . $file;
         $info = $this->myParser->analyzeFile($file, $this->valuesInvestment2[0], $this->typeFileInvestment);             //Parse the file
+        
         foreach ($info as $key => $value) {
             if (!in_array($key, $this->loanIds)) {
                 //echo $key . " dont found, dont compare \n";
@@ -857,15 +859,7 @@ class twino extends p2pCompany {
                 continue;
             }
 
-            foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find
-                
-                $this->loanTotalIds = $this->loanIds;
-                $this->myParser = new Fileparser();                                                                             //Call the parser
-                $folder = $this->getFolderPFPFile();
-                $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
-                $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
-                $info = $this->myParser->analyzeFile($file, $this->valuesInvestment2[0], $this->typeFileInvestment);             //Parse the file
-                
+            foreach ($this->loanIds as $slice => $id) { //Set the slice_id to the loans that we find       
                 $this->tempArray['errorTables'][$slice] = $id; //If we had a loan in loansId and that loan isnt in investment_1.csv, we cant get the investment table.                          //                                                                   
                 //echo $slice . " " . $id . " slice and id from json" . "\n";
                 //echo $key . " investment file id" . "\n\n\n\n\n\n\n";

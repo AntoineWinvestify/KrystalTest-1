@@ -2947,7 +2947,6 @@ FRAGMENT
         if (!empty($this->tempArray['errorTables'])) {
             $path = $this->getFolderPFPFile();
             $oldFilePath = $path . DS . "goodLoanIds.json";
-            $filePath = $path . DS . "loanIds.json";
             $badLoansPath = $path . DS . "badLoanIds.json";
 
             if (!empty($this->tempArray['correctTables'])) {

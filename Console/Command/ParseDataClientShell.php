@@ -111,9 +111,9 @@ class ParseDataClientShell extends GearmanClientShell {
                 echo "Deleting Roundingerrorcompensation table\n";
                 $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
                 $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);
-
+                break;
             case WIN_LIVE_ENVIRONMENT:
-                
+                break;
             default:
         }
         return;   
