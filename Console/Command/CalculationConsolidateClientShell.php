@@ -130,10 +130,10 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                 }
                
                 echo "Calling consolidateData\n";
-                //$this->consolidateData($params);
+                $this->consolidateData($params);
                 
                 echo "Calling consolidatePaymentDelay\n";               
-                //$this->consolidatePaymentDelay($params);
+                $this->consolidatePaymentDelay($params);
                 
                 echo "Calling calculateNextPaymentDates\n";  
                 $this->calculateNextPaymentDates($params);
