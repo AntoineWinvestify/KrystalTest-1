@@ -98,7 +98,7 @@ class Investmentslice extends AppModel
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
      * 	@return 	bigint                          Database Id of the slice   		
      */
-    public function getNextPaymentDate ($investmentId) {
+    public function getNextPaymentDate11 ($investmentId) {
 
         $this->create();
 	$this->Behaviors->load('Containable');
@@ -123,7 +123,7 @@ class Investmentslice extends AppModel
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
      * 	@return 	bigint                          Database Id of the slice   			
      */
-    public function getNextPaymentAmount ($investmentId) {
+    public function getNextPaymentAmount111 ($investmentId) {
         $this->create();
 	$this->Behaviors->load('Containable');
 	$this->contain('Amortizationtable');  	
@@ -148,7 +148,7 @@ class Investmentslice extends AppModel
      *  @param  $filterConditions   filter conditions which apply to the amortization data
      *  @return array  Amortizationtable 
      */
-    public function getAmortizationTable($slice, $filterConditions) {
+    public function getAmortizationTable111($slice, $filterConditions) {
         
         $conditions = array_merge(array("id" => $slice), $filterConditions);
 echo __FUNCTION__ . " " . __LINE__ . "\n";
@@ -164,14 +164,14 @@ print_r($result);
     
 
     
-    /** NOT YET TESTED
+    /** NOT YET TESTED, WIP
      *  Deletes the amortization table of an investment slice. The sliceIdentifier model 
      *  IS NOT DELETED, This can only (?) be done for individual amortization tables
      * 
      *  @param  bigint  Database reference of model investmentslice
      *  @return array   boolean     
      */
-    public function DeleteAmortizationTable($slice)  {       
+    public function DeleteAmortizationTable1111($slice)  {       
         $conditions = array('investmentslice_id' => $slice);
 echo __FUNCTION . " " . __LINE__ . "\n";
 print_r($conditions); 

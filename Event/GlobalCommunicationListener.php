@@ -30,7 +30,7 @@ Based on article "http://martinbean.co.uk/blog/2013/11/22/getting-to-grips-with-
 /*
 
 2017-03-05      Version 0.1		
-Added function sendConfirmationCode									[Ok, tested]
+Added function sendConfirmationCode						[Ok, tested]
 
 2018-05-17      version 0.2
 A generic event wad added for sending transparent data via SMS
@@ -159,7 +159,8 @@ public function implementedEvents() {
                 $filterCondition = array('investor_identity' => $event->data['investor_userReference']);
             }
         }
-      
+        
+        $this->Investor->recursive = -1;
         $resultInvestor = $this->Investor->find("first", array(
                                     "conditions" => $filterCondition,
                                     ));            
@@ -188,7 +189,7 @@ public function implementedEvents() {
 		echo $e->getMessage();
 		CakeLog::write('SMS_LOG', 'writing error to log. error is ' . $e->getMessage());
 	}  
-}
+    }
 
 
 

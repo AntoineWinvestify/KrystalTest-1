@@ -266,18 +266,34 @@ class Queue2 extends AppModel {
      */
     function afterSave($created, $options = array()) {
 
-        if (isset($this->data['Queue2']['queue2_status'])) {                   // A job in Queue2 has finished
+        if (isset($this->data['Queue2']['queue2_status'])) {                    // A job in Queue2 has finished
             if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED) { 
 
-                $filterConditions = array("id" => $this->data['Queue2']['id']);
-                $result = $this->find("first", array(
-                                    "conditions" => $filterConditions,
-                                    ));
+                // queue2info is always present
+                $queue2_infoDecoded = json_decode($this->data['Queue2']['queue2_info'], true);
+                $originExecution = $queue2_infoDecoded['originExecution'];
+               
+                if ($originExecution == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                    $filterConditions = array("queue2_info" => $this->data['Queue2']['queue2_info'], true);
+                    $result = $this->find("first", array(
+                                        "conditions" => $filterConditions,
+                                        ));
+                    
+                    // Lets personalize the message to the investor a little bit, add the company name 
+                    $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+                    
+                    $linkedAccountId = $queue2_infoDecoded['companiesInFlow'];
+                    $linkedAccountData = $this->Linkedaccount->getLinkedaccountDataList(['id' => $linkedAccountId]); 
+                    $this->Company = ClassRegistry::init('Company');
+                    $data = $this->Company->getData( ['id' => $linkedAccountData[0]['Linkedaccount']['company_id'] ]);
 
-                if ($result['Queue2']['queue2_type'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                    $companyName = $data[0]['Company']['company_name'];
+                
+                    // Generate an event
                     $event = new CakeEvent("accountLinkingFullyFinished", $this, 
-                                            array('investor_userReference' => $this->data['Queue2']['queue2_userReference'], 
-                                                    'messageContent'        => __('Your new account has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') 
+                                            array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
+                                                'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
+                                                                           __('has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') 
                                                 ));
 
                     $this->getEventManager()->dispatch($event);
@@ -288,3 +304,4 @@ class Queue2 extends AppModel {
     
 
 }
+ 

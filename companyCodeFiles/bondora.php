@@ -163,7 +163,7 @@ class bondora extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("date","investment_loanId") // used to "sort" the array and use $sortParameter(s) as prime index.               
+            'sortParameter' => ["date","investment_loanId"] // used to "sort" the array and use $sortParameter(s) as prime index.               
         ]
     ];
     
@@ -171,16 +171,16 @@ class bondora extends p2pCompany {
         [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
-            'sortParameter' => array("investment_loanId")  // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"]  // used to "sort" the array and use $sortParameter as prime index.
        ]
     ];
     
-    protected $amortizationConfigParms = array('offsetStart' => 1,
+    protected $amortizationConfigParms = ['offsetStart' => 1,
         'offsetEnd' => 1,
             //       'separatorChar' => ";",
             //'sortParameter' => "investment_loanId"   // used to "sort" the array and use $sortParameter as prime index.
-    );
-    protected $credentials = array(
+    ];
+    protected $credentials = [
         "NewReports[0].ReportType" => 'InvestmentsListV2',
         "NewReports[0].DateFilterRequired" => 'False',
         "NewReports[0].DateFilterShown" => 'True',
@@ -226,9 +226,9 @@ class bondora extends p2pCompany {
         "NewReports[8].DateFilterShown" => 'True',
         "NewReports[8].Selected" => 'false',
         "NewReports[8].DateFilterSelected" => 'false',
-    );
+    ];
 
-    protected $investmentHeader = array(
+    protected $investmentHeader = [
         'A' => 'LoanId',
         'B' => 'PartyId',
         'C' => 'note_id',
@@ -359,9 +359,9 @@ class bondora extends p2pCompany {
         'DX' => 'LoanDate',
         'DY' => 'EAD1',
         'DZ' => 'EAD2'
-    );
+    ];
     
-    protected $transactionHeaders = array(
+    protected $transactionHeaders = [
         'A' => 'TransferDate',
         'B' => 'Currency',
         'C' => 'Amount',
@@ -370,7 +370,7 @@ class bondora extends p2pCompany {
         'F' => 'LoanNumber',
         'G' => 'Counterparty',
         'H' => 'BalanceAfterPayment'
-    );
+    ];
     
    
     
@@ -399,7 +399,7 @@ class bondora extends p2pCompany {
      * 			false: 		user could not log in
      * 	
      */
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    function companyUserLogin($user = "", $password = "", $options = []) {
         /*
           FIELDS USED BY Bondora DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";
@@ -1232,10 +1232,10 @@ class bondora extends p2pCompany {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clene the table
 
-                        $clone = $this->cleanDomTag($clone, array(
-                            array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'white'),
-                            array('typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'gray'), //Delete rows that we don't want
-                        ));
+                        $clone = $this->cleanDomTag($clone, [
+                            ['typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'white'],
+                            ['typeSearch' => 'tagElement', 'tag' => 'tr', 'attr' => 'class', 'value' => 'gray'], //Delete rows that we don't want
+                        ]);
 
 
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
@@ -1335,12 +1335,12 @@ function structureRevisionAmortizationTable($node1, $node2) {
         $dom2 = new DOMDocument();
         $dom2->loadHTML($node2);
 
-        $dom1 = $this->cleanDomTagNotFirst($dom1, array(
-        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+        $dom1 = $this->cleanDomTagNotFirst($dom1, [
+        ['typeSearch' => 'tagElement', 'tag' => 'tr']]);
 
 
-        $dom2 = $this->cleanDomTagNotFirst($dom2, array(
-        array('typeSearch' => 'tagElement', 'tag' => 'tr')));
+        $dom2 = $this->cleanDomTagNotFirst($dom2, [
+        ['typeSearch' => 'tagElement', 'tag' => 'tr']]);
 
 
         echo 'compare structure';

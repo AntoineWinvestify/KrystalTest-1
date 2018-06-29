@@ -128,10 +128,6 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue2']['queue2_userReference']);
                 }
-
-                if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
-                }
                
                 echo "Calling consolidateData\n";
                 $this->consolidateData($params);
@@ -186,47 +182,60 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
         $timeStart = time();
 print_r($linkedAccountData);
 
-        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {           
+        foreach ($linkedAccountData as $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
-                $tempIdData = explode(".", $name[2]);
-                $loanDataId[] = $tempIdData[0];
+                $sliceIdTemp = $name[count($name) - 2 ];
+                $loanDataId[] = $sliceIdTemp;
             }
 
-            foreach ($loanDataId as $loanId) { 
+            foreach ($loanDataId as $sliceId) {
                 $tempNextScheduledDate = "";
-                //$this->Investmentslice->Behaviors->load('Containable');
-                //$this->Investmentslice->contain('Amortizationtable');              
-                //$this->Investmentslice->contain('GlobalamortizationtableInvestmentslice');
-                $result = $this->Investmentslice->find("all", array('conditions' => array('Investmentslice_identifier' => $loanId),
-                                                                           'recursive' => 1)
+
+                $result = $this->Investmentslice->find("all", array('conditions' => ['Investmentslice.id' => $sliceId],       
+                                                                     'recursive' => 1)
                                                                         );
-
-                if (isset($result[0]['Globalamortizationtable'])) {
-                    $reversedData = array_reverse($result[0]['Globalamortizationtable']);     // prepare to search backwards in amortization table
-                }
-                else {
-                    $reversedData = array_reverse($result[0]['Amortizationtable']);           // prepare to search backwards in amortization table
-                }
-
                 
-                foreach ($reversedData as $table) {
-                    if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                                    $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                                    $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
-  
+                if ($this->Investmentslice->hasChildModel($sliceId, "Amortizationtable")) {
+                    $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
+                    foreach ($reversedData as $table) {
+                        if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
+                                        $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                                        $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
+
                             $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
                         }
-                    if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                                    $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                                    $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
-                            $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
-                    }                 
+                    } 
+                   
                 }
+                else {      // NOT YET TESTED
+                    $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $sliceId), 
+                                                                      'fields' => array('id', 'globalamortizationtable_id')
+                                                    )); 
+            
+                    foreach ($lists as $list) {
+                        $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
+                        $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
+                                                                                          'fields' => ['id', 'globalamortizationtable_scheduledDate',
+                                                                                                             'globalamortizationtable_paymentStatus']
+                                                                                      ));  
+                        $globalTable[] = $result;
+                    }
+                    $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.{n}');    // This works???               
+                    $reversedData =  array_reverse($amortizationTable);         // prepare to search backwards in amortization table
+//print_r($reversedData);
+                    foreach ($reversedData as $table) { 
+                        if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
+                                        $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                                        $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
+                                $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
+                        } 
+                    }
+                }
+ 
                 if (Configure::read('debug')) {
                     echo "tempNextScheduledDate = $tempNextScheduledDate\n"; 
                 }                
-               
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
                                                'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
                                                );             
@@ -261,43 +270,50 @@ echo __FUNCTION__ . " " . __LINE__ . "\n";
             $limit = WIN_DATABASE_READOUT_LIMIT;
             $investment = array();
 
-echo "finishDate = "  . $linkedAccount['finishDate'] . "\n";              
+echo "finishDate = "  . $linkedAccount['finishDate'] . "\n"; 
+
                 $todayYear = substr($linkedAccount['finishDate'], 0, 4); 
                 $todayMonth = substr($linkedAccount['finishDate'], 4, 2);
                 $todayDay = substr($linkedAccount['finishDate'], 6 ,2);
                 $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
+
                 $todayTimeStamp = strtotime($today);
 echo "todayTimeStamp = $todayTimeStamp\n";
             
             do {
-                $result = $this->Investment->find("all", array('conditions' => $conditions,
-                                                                'fields'    => array('id', 
-                                                                                     'investment_dateForPaymentDelayCalculation'),
-                                                                'recursive'  => -1,
-                                                                'limit' => $limit,
-                                                                'offset' => $index * $limit)
+                $result = $this->Investment->find("all", ['conditions' => $conditions,
+                                                            'fields'    => ['id', 'investment_dateForPaymentDelayCalculation'],
+                                                            'recursive'  => -1,
+                                                            'limit' => $limit,
+                                                            'offset' => $index * $limit]
                                                  );
                   
-                if (count($result) < $limit) {          // No more results available
+                if (count($result) < $limit) {                                  // No more results available
                     $controlIndex = 1;
                 }
 
+ echo __FUNCTION__ . " " . __LINE__ . "\n";               
                 foreach ($result as $item) {                      
-echo "ITEM  = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
+//echo " dateForPaymentDelayCalculation = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
 print_r($item);
 
-
+                    if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])){           // skip over blank dates
+                        continue;
+                    }
+                    if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "0000-00-00"){           // skip over dummy dates
+                        continue;
+                    }                    
                     $dateTimeForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
-
-                    if ($dateTimeForPaymentDelayCalculation < $todayTimeStamp) {
-                        $tempArray['id'] = $item['Investment']['id'];                       
+                   
+                    $tempArray['id'] = $item['Investment']['id'];
+                    if ($dateTimeForPaymentDelayCalculation < $todayTimeStamp) {                     
 echo "Difference in seconds = " . abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) . "\n";
                         $tempArray['investment_paymentStatus'] = ceil(abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) / 86400);
                     }
                     else {
                         $tempArray['investment_paymentStatus'] = 0;
                     }
-                    $tempArray['id'] = $item['Investment']['id'];
+                   
 echo __FUNCTION__ . " " . __LINE__ . "\n";
 print_r($tempArray);
                     $investment[] = $tempArray;
@@ -348,7 +364,8 @@ print_r($tempArray);
                                         'investment_nextPaymentDate' => $nextPaymentDate);
                 }
             }     
-            $this->Investment->saveMany($nextDates, array('validate' => true));
+ //           $this->Investment->saveMany($nextDates, array('validate' => true));
+$this->print_r2 ($nextDates);            
             unset ($nextDates);
         }
   
@@ -369,7 +386,7 @@ print_r($tempArray);
 
         $scheduledDate = "";
 
-        if ($this->Investmentslice->hasChild($investmentSliceId, "Amortizationtable")) {  
+        if ($this->Investmentslice->hasChildModel($investmentSliceId, "Amortizationtable")) {  
             $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
                                                                       'fields' => array('id', 'amortizationtable_scheduledDate')
                                                     )); 

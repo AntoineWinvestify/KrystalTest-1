@@ -50,7 +50,7 @@ class AppShell extends Shell {
     /**
      * 	Creates a new instance of class with name company, like zank, or comunitae....
      *
-     * 	@param 	int 	$companyCodeFile		Name of "company"
+     * 	@param 	int 	$companyCodeFile Name of "company"
      * 	@return object 	instance of class "company"
      */
     function companyClass($companyCodeFile) {
@@ -179,13 +179,14 @@ class AppShell extends Shell {
      */
     public function getExtensionFile($file) {
         $file = new File($file);
-        $extension = $file->ext();
++        $extension = $file->ext();
         return $extension;
     }
         
     
     /** 
      * Function to get the loanId from the file name of an amortization table
+     * 
      * @param   string  $filePath   It is the full path to the file
      * @return  array               [0] contains investmentslice_id
      *                              [1] contains the loanId
@@ -298,7 +299,6 @@ class AppShell extends Shell {
      * 
      * @param string    $model
      * @param array     $filterConditions
-     *
      * @return array with data
      *          or false if $elements do not exist in two dimensional array
      */
