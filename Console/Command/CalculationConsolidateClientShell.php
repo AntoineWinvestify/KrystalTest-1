@@ -379,7 +379,7 @@ $this->print_r2 ($nextDates);
      * This method scans an amortization table and returns the NEXT payment date, based on the
      * dates of proposed payment date as stored in the amortization table¡
      *  
-     *  @param  array       $investmentSliceId      id of model Investmentslice
+     *  @param  array       $investmentSliceId      id of model Investmentslices
      *  @return date
      */   
     public function getNextPaymentDateForLoanSlice($investmentSliceId) { 
