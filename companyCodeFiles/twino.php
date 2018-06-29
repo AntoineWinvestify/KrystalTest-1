@@ -359,7 +359,14 @@ class twino extends p2pCompany {
                     "input2" => "Y-M-D",
                 ],
                 "functionName" => "normalizeDate",
-            ],           
+            ],    
+            [
+                "type" => "amortizationtable_paymentStatus",                    // Winvestify standardized name   OK
+                "inputData" => [
+                    "input2" => WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED,        //Amortization tables from twino only have future payment, scheduled payments are the default
+                ],
+                "functionName" => "getDefaultValue",
+            ],
         ],
 
 
@@ -434,7 +441,7 @@ class twino extends p2pCompany {
        ]
     ]; 
     
-    protected $amortizationConfigParms = ['OffsetStart' => 0,
+    protected $amortizationConfigParms = ['OffsetStart' => 1,
         'offsetEnd' => 0,
         //       'separatorChar' => ";",
         'sortParameter' => "investment_loanId"                                  // used to "sort" the array and use $sortParameter as prime index.

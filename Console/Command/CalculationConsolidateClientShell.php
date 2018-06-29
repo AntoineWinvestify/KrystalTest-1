@@ -130,10 +130,10 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                 }
                
                 echo "Calling consolidateData\n";
-                $this->consolidateData($params);
+                //$this->consolidateData($params);
                 
                 echo "Calling consolidatePaymentDelay\n";               
-                $this->consolidatePaymentDelay($params);
+                //$this->consolidatePaymentDelay($params);
                 
                 echo "Calling calculateNextPaymentDates\n";  
                 $this->calculateNextPaymentDates($params);
@@ -364,7 +364,7 @@ print_r($tempArray);
                                         'investment_nextPaymentDate' => $nextPaymentDate);
                 }
             }     
- //           $this->Investment->saveMany($nextDates, array('validate' => true));
+          $this->Investment->saveMany($nextDates, array('validate' => true));
 $this->print_r2 ($nextDates);            
             unset ($nextDates);
         }
@@ -384,7 +384,7 @@ $this->print_r2 ($nextDates);
      */   
     public function getNextPaymentDateForLoanSlice($investmentSliceId) { 
 
-        $scheduledDate = "";
+        $scheduledDate = "9999-12-31";
 
         if ($this->Investmentslice->hasChildModel($investmentSliceId, "Amortizationtable")) {  
             $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
