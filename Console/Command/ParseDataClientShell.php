@@ -1619,7 +1619,7 @@ print_r($result);
         $result = $this->Investmentslice->find("first", array("conditions" => ["investment_id" => $investmentId,
                                              "investmentslice_identifier" => $sliceIdentifier],
                                                          "recursive" => -1));       
-echo __FUNCTION__ . " " . __LINE__ . " sliceId = " . $result['Investmentslice']['id'] . "<br/>\n";
+        echo __FUNCTION__ . " " . __LINE__ . " sliceId = " . $result['Investmentslice']['id'] . "<br/>\n";
         return $result['Investmentslice']['id'];
         
     }   

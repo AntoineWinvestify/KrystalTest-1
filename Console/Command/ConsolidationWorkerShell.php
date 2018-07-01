@@ -50,7 +50,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addFunction('netAnnualReturn', array($this, 'calculateNetAnnualReturn'));
         $this->GearmanWorker->addFunction('netAnnualTotalFunds', array($this, 'calculateNetAnnualTotalFunds'));
         $this->GearmanWorker->addFunction('getFormulaCalculate', array($this, 'getFormulaCalculate'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
+        echo __CLASS__ . ": " . "Starting GEARMAN_FLOW4 to listen to data from its Client\n";
         while( $this->GearmanWorker->work());
     }
     

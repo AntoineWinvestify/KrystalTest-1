@@ -20,9 +20,9 @@
  * @package
  */
  /*
- * This client deals with performing the parsing of the amortization tables data that have been downloaded
- * from the PFP's. The Client starts analyzing the data and writes the data-elements nextPaymentDate,  
- * investment_dateForPaymentDelayCalculation to the corresponding database tables.
+ * This Client starts analyzing the data of the amortization tables and writes the data-elements 
+ * 'investment_nextPaymentDate', 'investment_dateForPaymentDelayCalculation' and 
+ * 'investment_paymentStatus' to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
  *
  *
@@ -153,9 +153,9 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Nothing in queue, so go to sleep for a short time\n";
                 }
-                sleep(4);                                          // Just wait a short time and check again
+                sleep(4);                                                       // Just wait a short time and check again
             }
-            if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
+            if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";    
                 }
@@ -177,10 +177,8 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
      *  @return boolean 
      */
     public function consolidateData(&$linkedAccountData) {
- 
-echo __FUNCTION__ . " " . __LINE__ . "\n";
+
         $timeStart = time();
-print_r($linkedAccountData);
 
         foreach ($linkedAccountData as $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
@@ -223,7 +221,7 @@ print_r($linkedAccountData);
                     }
                     $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.{n}');    // This works???               
                     $reversedData =  array_reverse($amortizationTable);         // prepare to search backwards in amortization table
-//print_r($reversedData);
+
                     foreach ($reversedData as $table) { 
                         if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
                                         $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
@@ -256,8 +254,7 @@ print_r($linkedAccountData);
      *  @return boolean
      */
     public function consolidatePaymentDelay(&$linkedAccountData) { 
- 
-echo __FUNCTION__ . " " . __LINE__ . "\n";
+
         $timeStart = time();
 
 
@@ -294,9 +291,8 @@ echo "todayTimeStamp = $todayTimeStamp\n";
 
  echo __FUNCTION__ . " " . __LINE__ . "\n";               
                 foreach ($result as $item) {                      
-//echo " dateForPaymentDelayCalculation = " . $item['Investment']['investment_dateForPaymentDelayCalculation'] . " \n";
-print_r($item);
 
+print_r($item);
                     if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])){           // skip over blank dates
                         continue;
                     }
