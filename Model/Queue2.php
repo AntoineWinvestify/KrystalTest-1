@@ -14,8 +14,9 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author Antoine de Poorter
+
  * @version 0.1
+ * @author Antoine de Poorter
  * @date 2018-05-16
  * @package
  */
@@ -76,15 +77,13 @@ class Queue2 extends AppModel {
 				  "queue2_action"   => $queueAction,
 				  "queue2_type"     => FIFO,
 				  "queue2_status"   => WAITING_FOR_EXECUTION,
-				 );
+                     );
 	
 	if ($this->save($data, $validate = true)) {
-		return true;
+            return true;
 	}
-	else {
-		return false;
-	}
-}
+        return false;
+    }
 
     /**
      * Put a new request into the queue for Dashboard 2.0
@@ -95,7 +94,7 @@ class Queue2 extends AppModel {
      * @param int $queueId It is the queueId of the request
      * @param int $queueType LIFO, FIFO, CIRCULAR
      * @return boolean true queueItem created
-     *                 false undefined error, item NOT created
+     *                 false undefined error, item has NOT been created
      */
     public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_QUEUE_STATUS_START_COLLECTING_DATA, $queueId = null, $queueType = FIFO) {
         
@@ -254,8 +253,8 @@ class Queue2 extends AppModel {
         $result = $this->find("all", array(
                             "conditions" => $conditions,
                             'order' => array('id DESC'),
-                            "limit" => 2
-                        ));
+                            "limit" => 2)
+                        );
         return $result;
     }
     
@@ -293,7 +292,8 @@ class Queue2 extends AppModel {
                     $event = new CakeEvent("accountLinkingFullyFinished", $this, 
                                             array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
                                                 'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
-                                                                           __('has been succesfully linked and analyzed. Your data is now available in your Winvestify Dashboard') 
+                                                                           __('has been succesfully linked and analyzed and will be monitored from now on.') . " " .
+                                                                           __('Your data is now available in your Winvestify Dashboard') 
                                                 ));
 
                     $this->getEventManager()->dispatch($event);

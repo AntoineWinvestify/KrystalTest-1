@@ -30,7 +30,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('parseamortizationtables', array($this, 'parseAmortizationtablesFileFlow'));   
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseAmortizationDataworker starting to listen to data from its Client\n";
+        echo __CLASS__ . ": " . "ParseAmortizationDataworker starting to listen to data from its Client\n";
         while($this->GearmanWorker->work());
     }
     
@@ -43,7 +43,6 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
      *      $data['linkedAccountId']['pfp']
      *      $data['linkedAccountId']['files'][filename1']           => array of filenames, FQDN's
      *      $data['linkedAccountId']['files'][filename2']
-     * 
      * 
      * @return array  
      * 

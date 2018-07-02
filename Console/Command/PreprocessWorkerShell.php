@@ -38,7 +38,7 @@ class PreprocessWorkerShell extends GearmanWorkerShell {
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multiCurlPreprocess', array($this, 'multiCurlInit'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo __CLASS__ . ": " . "Starting to listen to data from its Client\n";
         while( $this->GearmanWorker->work() );
     }
     

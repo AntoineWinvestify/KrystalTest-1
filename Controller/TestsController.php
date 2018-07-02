@@ -894,5 +894,8 @@ echo $myInstance;
         $result = $this->Investment->hasChildModel($myInstance, 'Investmentslice');
         echo "FINAL";
         $this->print_r2($result);
-    }    
+    } 
+    
+    
+    
 }

@@ -35,8 +35,8 @@ class LinkedaccountTest extends CakeTestCase {
     public function setUp() {
         parent::setUp();
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-        $username = "antoine@winvestify";
-        $password = "8870mit";       
+        $this->username = "antoine@winvestify";
+        $this->password = "8870mit";       
         
     }
     
@@ -72,6 +72,7 @@ class LinkedaccountTest extends CakeTestCase {
     }
 
 
+    
     public function testCreateNewLinkedAccount() {
         // A linked account on a new PFP
         $expected = true;

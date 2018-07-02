@@ -66,7 +66,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
 
         $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseDataWorker starting to listen to data from its Client\n";
+        echo __CLASS__ . ": " . "ParseDataWorker starting to listen to data from its Client\n";
         
         while($this->GearmanWorker->work());
 
@@ -108,7 +108,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
      
     public function parseFileFlow($job) {
- $timeStart = time();       
+        $timeStart = time();       
         //for debugging error purpose
         $this->job = $job;
         if (Configure::read('debug')) {

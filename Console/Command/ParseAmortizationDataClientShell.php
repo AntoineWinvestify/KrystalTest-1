@@ -91,7 +91,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": queueInfo " . $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'][0]);
                         }
                         $dirs = new Folder($subDirectory);
-//                        $nameCompany = $dirs->findRecursive();
 
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $tempPfpName = explode("/", $allFiles[0]);
