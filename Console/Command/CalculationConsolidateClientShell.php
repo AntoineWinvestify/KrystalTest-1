@@ -206,20 +206,24 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                     } 
                    
                 }
-                else {      // NOT YET TESTED
+                else {  
+                    echo "testing globals\n "; 
                     $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $sliceId), 
                                                                       'fields' => array('id', 'globalamortizationtable_id')
                                                     )); 
-            
+
                     foreach ($lists as $list) {
                         $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
+
                         $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
                                                                                           'fields' => ['id', 'globalamortizationtable_scheduledDate',
-                                                                                                             'globalamortizationtable_paymentStatus']
-                                                                                      ));  
+                                                                                                       'globalamortizationtable_paymentStatus'],
+                                                                                          'recursive' => -1
+                                                                                           ));  
                         $globalTable[] = $result;
                     }
-                    $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.{n}');    // This works???               
+                
+                    $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable');                     
                     $reversedData =  array_reverse($amortizationTable);         // prepare to search backwards in amortization table
 
                     foreach ($reversedData as $table) { 
@@ -237,11 +241,13 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
                                                'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
                                                );             
-            } 
+            }
+            
         }
-                             
+                   
         $timeStop = time();
         echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+        exit;         
         return true;
     }
 

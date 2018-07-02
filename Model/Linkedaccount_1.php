@@ -93,7 +93,7 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     * 	Returns an array of the linkedaccount object and the associated data that fulfill the filterConditions
+     * 	Returns an array of the Linkedaccount object and the associated data that fulfill the filterConditions
      *
      * 	@param 		array 	$filterConditions
      * 	@return 	array 	Data of each linkedaccount item as an element of an array

@@ -60,7 +60,7 @@ class TestsController extends AppController {
 
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
-            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
+            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod", "testingHash",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1"));
     }
@@ -894,5 +894,58 @@ echo $myInstance;
         $result = $this->Investment->hasChildModel($myInstance, 'Investmentslice');
         echo "FINAL";
         $this->print_r2($result);
-    }    
+    } 
+    
+    
+    
+    
+     /**
+     *  test hash format 'Hash::extract($globalTable, '{n}.Globalamortizationtable.{n}');   
+     * 
+     * 
+     */
+    function testingHash() { 
+        echo "start of method " . __METHOD__ . "<br/>";
+        $this->autoRender = false;
+        Configure::write('debug', 2);        
+        
+        $myArray = [
+                ["Global" => [
+                    ['ind1' => "antoine77",
+                        'ind2' => "charo77",
+                        'ind3' => "Daniel77"],
+                    ['ind1' => "antoine9",
+                        'ind2' => "charo9",
+                        'ind3' => "Daniel9"],
+                    ['ind1' => "antoine0",
+                        'ind2' => "charo0",
+                        'ind3' => "Daniel0"],
+                    ['ind1' => "antoine4",
+                        'ind2' => "charo4",
+                        'ind3' => "Daniel4"]  
+                    ]
+                ],
+                ["Global" => [
+                    ['ind1' => "1antoine77",
+                        'ind2' => "1charo77",
+                        'ind3' => "1Daniel77"],
+                    ['ind1' => "1antoine9",
+                        'ind2' => "1charo9",
+                        'ind3' => "1Daniel9"],
+                    ['ind1' => "1antoine0",
+                        'ind2' => "1charo0",
+                        'ind3' => "1Daniel0"],
+                    ['ind1' => "1antoine4",
+                        'ind2' => "1charo4",
+                        'ind3' => "1Daniel4"]  
+                ],                
+            ]
+        ];
+        
+        $this->print_r2($myArray);
+        
+        $newArray = Hash::extract($myArray, '{n}.Global.{n}');
+        $this->print_r2($newArray);        
+    }   
+    
 }
