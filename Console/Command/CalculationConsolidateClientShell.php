@@ -246,8 +246,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
         }
                    
         $timeStop = time();
-        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
-        exit;         
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";    
         return true;
     }
 
@@ -377,7 +376,7 @@ print_r($tempArray);
 
     
     /** 
-     * This method scans an amortization table and returns the NEXT payment date, based on the
+     * This method scans through an amortization table and returns the NEXT payment date, based on the
      * dates of proposed payment date as stored in the amortization table¡
      *  
      *  @param  array       $investmentSliceId      id of model Investmentslice
