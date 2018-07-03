@@ -371,7 +371,7 @@ print_r($tempArray);
     
     /** 
      * This method scans through an amortization table and returns the NEXT payment date, based on the
-     * dates of proposed payment date as stored in the amortization table¡
+     * dates of proposed payment dates as stored in the amortization table¡
      *  
      *  @param  array       $investmentSliceId      id of model Investmentslices
      *  @return date

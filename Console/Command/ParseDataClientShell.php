@@ -1433,7 +1433,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
      *  @return boolean               
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-     
+echo __METHOD__ . " " . __LINE__ . " " . "\n";    
         if (isset($transactionData['transactionId'])) {
             $data['transactionId'] = $transactionData['transactionId'];
         }
@@ -1479,16 +1479,16 @@ echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
             $nextPendingInstalmentDate = $modelPtr->getNextPendingPaymentDate($sliceId);
 echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
             if (empty($nextPendingInstalmentDate)) {
-                $nextPendingInstalmentDate = "0000-00-00";
+                $nextPendingInstalmentDate = "9999-12-31";
             } 
 echo __FUNCTION__ . " " . __LINE__ . " nextPendingInstalmentDate = $nextPendingInstalmentDate<br/>\n";               
             $resultData['investment']['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
 $this->print_r2($resultData);
-            echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable and Amortizationpayment tables succesfully updated<br/>\n";              
+            echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable/Amortizationtable and Amortizationpayment tables succesfully updated<br/>\n";              
             return true; 
         }              
         
-        echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference<br/>\n";
+        echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the (global)amortization table with reference $tableDbReference<br/>\n";
         return false;           
     }
 
