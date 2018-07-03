@@ -94,7 +94,8 @@ class Queue2Shell extends AppShell {
         
         foreach ($investors as $investor) {
             $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 
-                                                                            'linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS], 
+                                                                            'linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS,
+                                                                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE],
                                                                             ['id', 'company_id']);
         }       
 

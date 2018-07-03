@@ -224,7 +224,8 @@ class Fileparser {
                 "detail" => "Principal_and_interest_payment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "Mix",
-                "type" => "payment_principalAndInterestPayment"
+                "type" => "payment_principalAndInterestPayment",
+                "chars" => "REPAYMENT"
                 ],
             9 => [
                 "detail" => "Regular_gross_interest_income",
