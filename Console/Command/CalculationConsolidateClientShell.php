@@ -14,8 +14,8 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author
- * @version 0.2
+ * @author Antoine
+ * @version 0.2.0
  * @date 2018-06-18
  * @package
  */
@@ -183,23 +183,23 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
         foreach ($linkedAccountData as $linkedAccount) {           
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
-                $sliceIdTemp = $name[count($name) - 2 ];
+                $sliceIdTemp = $name[count($name) - 2];
                 $loanDataId[] = $sliceIdTemp;
             }
 
             foreach ($loanDataId as $sliceId) {
                 $tempNextScheduledDate = "";
 
-                $result = $this->Investmentslice->find("all", array('conditions' => ['Investmentslice.id' => $sliceId],       
-                                                                     'recursive' => 1)
+                $result = $this->Investmentslice->find("all", ['conditions' => ['Investmentslice.id' => $sliceId],       
+                                                                     'recursive' => 1]
                                                                         );
                 
                 if ($this->Investmentslice->hasChildModel($sliceId, "Amortizationtable")) {
                     $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
                     foreach ($reversedData as $table) {
                         if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                                        $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                                        $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
 
                             $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
                         }
@@ -207,7 +207,6 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                    
                 }
                 else {  
-                    echo "testing globals\n "; 
                     $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $sliceId), 
                                                                       'fields' => array('id', 'globalamortizationtable_id')
                                                     )); 
@@ -228,8 +227,8 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
                     foreach ($reversedData as $table) { 
                         if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                                        $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                                        $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
+                            $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
+                            $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
                                 $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
                         } 
                     }
@@ -255,13 +254,11 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
      * This method scans through *ALL* active loans per P2P of an investor and calculates the number of days of 
      * payment delay. The result is written in the investment model object.
      *  
-     *  @param  $array      Array which holds global data of the P2P
-     *  @return boolean
+     * @param  $array      Array which holds global data of the P2P
+     * @return boolean
      */
     public function consolidatePaymentDelay(&$linkedAccountData) { 
-
         $timeStart = time();
-
 
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
             $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
@@ -274,9 +271,9 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
 echo "finishDate = "  . $linkedAccount['finishDate'] . "\n"; 
 
-                $todayYear = substr($linkedAccount['finishDate'], 0, 4); 
-                $todayMonth = substr($linkedAccount['finishDate'], 4, 2);
-                $todayDay = substr($linkedAccount['finishDate'], 6 ,2);
+                $todayYear = substr($linkedAccount['finishDate'], 0 , 4); 
+                $todayMonth = substr($linkedAccount['finishDate'], 4 , 2);
+                $todayDay = substr($linkedAccount['finishDate'], 6 , 2);
                 $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
 
                 $todayTimeStamp = strtotime($today);
@@ -293,12 +290,11 @@ echo "todayTimeStamp = $todayTimeStamp\n";
                 if (count($result) < $limit) {                                  // No more results available
                     $controlIndex = 1;
                 }
-
- echo __FUNCTION__ . " " . __LINE__ . "\n";               
+             
                 foreach ($result as $item) {                      
 
 print_r($item);
-                    if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])){           // skip over blank dates
+                    if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])) {           // skip over blank dates
                         continue;
                     }
                     if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "9999-12-31"){           // skip over dummy dates
@@ -333,14 +329,12 @@ print_r($tempArray);
 
     
     /** 
-     * 
      * This method scans through *ALL* active loans per P2P of an investor and writes the field "investment_nextPaymentDate", 
      * based on the data in our amortization tables, in the investment model object.
      *  
      *  @param  $array      Array which holds the id's of Investment Model for which field "investment_nextPaymentDate
      *                      needs to be updated, based on the data available in the amortization tables
      *  @return boolean
-     *
      */
     public function calculateNextPaymentDates(&$linkedAccountData) { 
         $timeStart = time();
@@ -366,7 +360,7 @@ print_r($tempArray);
                 }
             }     
             $this->Investment->saveMany($nextDates, array('validate' => true));            
-            unset ($nextDates);
+            unset($nextDates);
         }
   
         $timeStop = time();
@@ -377,7 +371,7 @@ print_r($tempArray);
     
     /** 
      * This method scans through an amortization table and returns the NEXT payment date, based on the
-     * dates of proposed payment date as stored in the amortization table¡
+     * dates of proposed payment dates as stored in the amortization table¡
      *  
      *  @param  array       $investmentSliceId      id of model Investmentslices
      *  @return date
