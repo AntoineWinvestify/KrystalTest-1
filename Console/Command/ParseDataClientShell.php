@@ -1479,7 +1479,7 @@ echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
             $nextPendingInstalmentDate = $modelPtr->getNextPendingPaymentDate($sliceId);
 echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
             if (empty($nextPendingInstalmentDate)) {
-                $nextPendingInstalmentDate = "0000-00-00";
+                $nextPendingInstalmentDate = "9999-12-31";
             } 
 echo __FUNCTION__ . " " . __LINE__ . " nextPendingInstalmentDate = $nextPendingInstalmentDate<br/>\n";               
             $resultData['investment']['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB

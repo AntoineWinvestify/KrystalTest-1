@@ -301,7 +301,7 @@ print_r($item);
                     if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])){           // skip over blank dates
                         continue;
                     }
-                    if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "0000-00-00"){           // skip over dummy dates
+                    if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "9999-12-31"){           // skip over dummy dates
                         continue;
                     }                    
                     $dateTimeForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
