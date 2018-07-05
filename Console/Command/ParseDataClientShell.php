@@ -344,14 +344,16 @@ class ParseDataClientShell extends GearmanClientShell {
                     }
 
                     //Sort and put transaction that create an investment first
-                    if (($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
-                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
-                            || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE")) {
-                        $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
-                        $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
-                        $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
-                        break;
-                    }      
+                    if(isset($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'])){
+                        if (($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
+                                || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
+                                || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE")) {
+                            $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
+                            $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
+                            $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
+                            break;
+                        }
+                    }
                 }
                  
                 //Sort and put transaction without loan id last

@@ -126,7 +126,10 @@ class CollectDataClientShell extends GearmanClientShell {
                                 $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
                             $this->getStartDate($linkedaccount, $job['Queue2']['id']);
-                            
+                            if ($this->queueInfo[$job['Queue2']['id']]['originExecution'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                                $this->queueInfo[$job['Queue2']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
+                            }
+
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
@@ -217,6 +220,7 @@ class CollectDataClientShell extends GearmanClientShell {
      * @param array $linkedaccount Array that contains everything about the linkedaccount
      */
     public function getStartDate($linkedaccount, $queueId) {
+
         //We set null startDate
         $this->queueInfo[$queueId]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
         $startDate = date("Ymd", strtotime($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']));
