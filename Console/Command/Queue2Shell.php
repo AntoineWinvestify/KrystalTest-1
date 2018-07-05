@@ -121,5 +121,17 @@ class Queue2Shell extends AppShell {
             }
         }
     }
+    
+    public function cronDeleteEmptyTracing() {
+        $path = "/var/www/clients/client4/web4/home/winadmin4antonio/checkIfScriptIsRunning/";
+        $files = scandir($path);
+        unset($files[0]);
+        unset($files[1]);
+        foreach($files as $file){
+            if(filesize($path . $file) <= 9500){
+                unlink($path . $file);
+            }
+        }
+    }
 
 }
