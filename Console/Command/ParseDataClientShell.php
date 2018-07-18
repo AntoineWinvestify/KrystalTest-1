@@ -456,6 +456,9 @@ class ParseDataClientShell extends GearmanClientShell {
         unset($tempDatabase);
 
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
+            if($dateKey <= $startDate){
+                continue;
+            }
             echo __FUNCTION__ . " " . __LINE__ . "\ndateKey = $dateKey \n";
                     
             // Copy the last userinvestmentdata for any missing dates in the transaction records sequence

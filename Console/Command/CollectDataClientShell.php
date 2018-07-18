@@ -188,7 +188,7 @@ class CollectDataClientShell extends GearmanClientShell {
                 }
 
                 $this->GearmanClient->runTasks();
-
+                
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }

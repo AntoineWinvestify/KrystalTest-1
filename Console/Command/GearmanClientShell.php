@@ -333,7 +333,7 @@ class GearmanClientShell extends AppShell {
      * @param array $this->userResult This array is a variable class where we save the completion status of a pfp
      *                                The variable is created as: this->userResult[$queueId][$linkedaccountId]
      */
-    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {       
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
             $globalDestruction = false;
             unset($this->queueInfo[$queueId]['companiesInFlow']);
