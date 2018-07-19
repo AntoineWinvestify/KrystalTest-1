@@ -232,14 +232,16 @@ class Queue2 extends AppModel {
         $result = $this->find("all", array(
                                 "conditions" => $conditions,
                                 "order" => $order,
-                                "limit" => $limit
                             ));
-
+        shuffle($result);
+        for($i = 0;$i < $limit; $i++){
+            $returnResult[$i] = $result[$i];
+        }
         if (empty($result)) {
             return;
         }
 
-        return $result;
+        return $returnResult;
     }
     
     /**

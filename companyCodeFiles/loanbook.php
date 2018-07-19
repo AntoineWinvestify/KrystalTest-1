@@ -1478,8 +1478,9 @@ class loanbook extends p2pCompany {
                     break;
                 }
             case 9:
-                echo 'Stop';
+                echo 'Flow 1 ended';
                 if (!$this->verifyFileIsCorrect()) {
+                    echo 'error';
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 return $this->tempArray;

@@ -80,17 +80,11 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $investmentList = $this->Investment->getData(array('linkedaccount_id' => $linkedaccount['Linkedaccount']['id']), array('investment_loanId'));
             $this->newComp[$i]->setTableStructure($structure);
             $this->newComp[$i]->setInvestmentList($investmentList);
-            
+            $this->newComp[$i]->$queueCurlFunction();
+
             $i++;
         }
-        $companyNumber = 0;
-  //      $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_START = " . microtime());
-        //We start at the same time the queue on every company
-        foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->$queueCurlFunction();
-            $companyNumber++;
-        }
-        
+
         $this->queueCurls->addListener('complete', array($this, 'multiCurlQueue'));
 
         //This is the queue. It is working until there are requests
@@ -101,7 +95,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
 
   //      $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
         
-        $lengthTempArray = count($this->tempArray);
+        $lengthTempArray = count($this->tempArray);        
         $statusCollect = [];
         $errors = null;
         for ($i = 0; $i < $lengthTempArray; $i++) {
