@@ -1850,7 +1850,11 @@ class p2pCompany {
 
         if (empty($dateMin)) {
             $dateMin = "20090101";
-        }
+        } /*else{
+            $dateMin = $dateMin + 1;
+            echo $dateMin;
+            exit;
+        }*/
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if ($this->numberOfFiles == 0) {
             $this->dateInitPeriod = date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period

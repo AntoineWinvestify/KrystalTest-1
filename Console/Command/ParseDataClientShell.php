@@ -229,7 +229,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         // if an error is found then all the files related to the actions are to be
                         // deleted including the directory structure.
                         if (!empty($platformResult['error'])) {         // report error
-                            $this->Applicationerror = ClassRegistry::init('applicationerror');
+                            $this->Applicationerror = ClassRegistry::init('Applicationerror');
                             $this->Applicationerror->saveAppError("ERROR ", json_encode($platformResult['error']), 0, 0, 0);
                             // Delete all files for this user for this regular update
                             // break
@@ -1216,7 +1216,13 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
         }
 
-
+        
+    if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && empty($platformData['parsingResultTransactions'])){
+        $linkedaccountId = $platformData['linkedaccountId'];
+        $finishDate = $platformData['finishDate'];
+        $startDate = $platformData['startDate'];
+        $this->copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate);
+    }
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";
         // Control Variables shall only be checked if PFP supports up to date xls files
@@ -1629,6 +1635,30 @@ print_r($result);
         
     }   
     
-    
-    
+    /**
+     * Insert userinvestmentdate when we don't have transaction in regular update.
+     * Work with multiple empty days.
+     * @param type $linkedaccountId Link account id
+     * @param type $finishDate Actual Date
+     * @param type $startDate Lastaccess date
+     */
+    public function copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate) {   
+        echo $finishDate . " and " . $startDate;
+        $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+        $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
+        unset($tempDatabase['Userinvestmentdata']['id']);
+        $date = new DateTime($finishDate);                                  // The date of the last userinvestment
+        $date2 = new DateTime($startDate);
+        $date2->modify('+1 day');                                            // that will be stored in databas
+        while($date2 < $date){
+            echo "dates " . $date2 . "<" . $date . "     ";
+            $userinvestmentdataDate = $date2->format('Y-m-d');
+            $this->Userinvestmentdata->create();
+            $tempDatabase['Userinvestmentdata']['date'] = $userinvestmentdataDate;
+            $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+            $this->Userinvestmentdata->save($tempDatabase, $validate = true);
+            $date2->modify('+1 day');
+        }
+    }
+
 }
