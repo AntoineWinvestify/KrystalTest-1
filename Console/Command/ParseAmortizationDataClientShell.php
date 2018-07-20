@@ -42,7 +42,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW3B";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-        $workerFunction = "parseamortizationtables";
+        $workerFunction = "parseAm";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
