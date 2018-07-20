@@ -36,8 +36,8 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
      */
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
-        $this->GearmanWorker->addFunction('multicurlAmortization', array($this, 'getAmortizationDataMulticurl'));
-        $this->GearmanWorker->addFunction('parserFileAmortization', array($this, 'getAmortizationDataParserFile'));
+        $this->GearmanWorker->addFunction('multicurlAm', array($this, 'getAmortizationDataMulticurl'));
+        $this->GearmanWorker->addFunction('parserFileAm', array($this, 'getAmortizationDataParserFile'));
         echo __CLASS__  . ": " . "Starting to listen to data from its Client\n"; 
         while( $this->GearmanWorker->work() );
     }
