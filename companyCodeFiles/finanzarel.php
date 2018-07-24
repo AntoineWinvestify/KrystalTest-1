@@ -1180,7 +1180,7 @@ class finanzarel extends p2pCompany {
     
     protected  $compareHeaderConfigParam = [ 'separatorChar' => ";",
                                                   'chunkInit' => 1,
-                                                  'chunkSize' => 1 ];
+                                                  'chunkSize' => 2 ];
 
     
     

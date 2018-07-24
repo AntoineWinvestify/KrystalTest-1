@@ -1866,13 +1866,12 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $data = $this->convertExcelMultiSheetByParts($file, $inputType);
             echo "HEADER IS: ";
             print_r($data);
-
             return $data;
         } else { //Simple sheet
             $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
             echo "HEADER IS: ";
-            print_r(array_filter($data[1]));
-            return $data[1];
+            print_r(array_filter($data));
+            return $data;
         }
     }
       

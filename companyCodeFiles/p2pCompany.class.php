@@ -172,7 +172,7 @@ class p2pCompany {
     protected $callbackAmortizationTable;
    
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
-                                        "chunkSize" => 1,     
+                                        "chunkSize" => 2,     
                                         );
     
     //Number of days for each company download. Only some pfp uses it.
@@ -2875,8 +2875,12 @@ FRAGMENT
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
         echo "our config: ";
         print_r($this->headerComparation);
-        $data = array_filter($data);
-
+        echo "Have content(1 no, 2 yes): " . count($data);
+        if(count($data) === 1){
+            return WIN_ERROR_FLOW_EMPTY_FILE;
+        }
+        
+        $data = array_filter($data[1]);
         if (!empty(array_diff($this->headerComparation, $data)) || !empty(array_diff($data, $this->headerComparation)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
             $date = date("Ymd");
             $fileErrorDir = $pathError . $this->companyName . DS . $this->userReference . DS . $date . DS;

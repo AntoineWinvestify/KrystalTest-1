@@ -739,8 +739,8 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3104;
-        $this->maxEmptySize = 3222;
+        //$this->minEmptySize = 3104;
+        //$this->maxEmptySize = 3400;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
@@ -951,21 +951,24 @@ class mintos extends p2pCompany {
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if (Configure::read('debug')) {
                     echo 'File size:     ' . $size;
                 }
                
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                } */
                 
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
@@ -1027,21 +1030,24 @@ class mintos extends p2pCompany {
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if (Configure::read('debug')) {
                     echo 'File size:     ' . $size;
                 }
       
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                }*/
                    
                 $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
@@ -1073,17 +1079,20 @@ class mintos extends p2pCompany {
                     echo 'File size:     ' . $size;
                 }
 
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                }*/
                 
                 $this->idForSwitch++;     
             case 9:
