@@ -1870,7 +1870,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         } else { //Simple sheet
             $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
             echo "HEADER IS: ";
-            print_r(array_filter($data));
+            foreach($data as $rowData){
+                print_r(array_filter($rowData));
+            }
             return $data;
         }
     }
