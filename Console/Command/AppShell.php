@@ -398,4 +398,8 @@ class AppShell extends Shell {
         return [$runtimeParameters][0][0]['Runtimeconfiguration'];
     }
     
+    public function killShellCommand($processName){
+        exec("pkill -f $processName");
+    }
+    
 }

@@ -306,9 +306,11 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
                 }
+                $this->killShellCommand("parseDataWorker");
                 exit;
             }
         }
+        $this->killShellCommand("parseDataWorker");
     }
 
     /**
@@ -932,7 +934,6 @@ class ParseDataClientShell extends GearmanClientShell {
                                 //                  }
 //print_r($database['investment']);
                                 echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
-                                //                      exit;
                             }
                         }
                     }
@@ -967,10 +968,6 @@ class ParseDataClientShell extends GearmanClientShell {
                     if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED || $database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_CANCELLED) {
                         $platformData['workingNewLoans'][] = $database['investment']['investment_loanId'];
                     }
-                    /*if ($database['investment']['investment_loanId'] == "06-139593001") {
-                      print_r($database['investment']);
-                      exit;
-                    }*/
                     echo __FUNCTION__ . " " . __LINE__ . " printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;

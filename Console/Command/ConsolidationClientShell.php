@@ -215,11 +215,13 @@ class ConsolidationClientShell extends GearmanClientShell {
                 sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
+                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";  
+                $this->killShellCommand("consolidationWorker");
                 exit;
             }
             $numberOfIteration++;
         }
+        $this->killShellCommand("consolidationWorker");
     }
     
     /**

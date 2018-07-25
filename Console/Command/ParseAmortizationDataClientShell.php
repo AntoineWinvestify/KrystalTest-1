@@ -141,10 +141,12 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
-                }                     
+                }
+                $this->killShellCommand("parseAmortizationDataWorker");
                 exit;
             }
         }
+        $this->killShellCommand("parseAmortizationDataWorker");
     }
     
     /**
