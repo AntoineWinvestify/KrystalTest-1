@@ -423,7 +423,7 @@ class ParseDataClientShell extends GearmanClientShell {
         unset($database['globaltotalsdata']);
 
         // Copy the last userinvestmentdata for the "missing" dates before we start analyzing transaction records 
-        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
+        /*if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $dateKeys = array_keys($platformData['parsingResultTransactions']);
             $firstnewTransactionDate = $dateKeys[0];
 
@@ -454,15 +454,18 @@ class ParseDataClientShell extends GearmanClientShell {
                 }
             }
         }
+        unset($tempDatabase);*/
 
-        unset($tempDatabase);
-
+        echo __LINE__ . " Start memory usage " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
+        
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
             if($dateKey <= $startDate){
                 continue;
             }
             echo __FUNCTION__ . " " . __LINE__ . "\ndateKey = $dateKey \n";
+            echo " Memory usage at start of $dateKey " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
 
+            
             // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
             if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
                 $date1 = new DateTime($oldDateKey);
@@ -813,6 +816,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
 
 
+                        echo __LINE__ . " Memory usage before transactionData of $dateKey " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
                         foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
                             if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                                 $transactionDataKey = $transaction;
