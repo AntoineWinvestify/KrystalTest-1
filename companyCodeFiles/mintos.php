@@ -1075,27 +1075,36 @@ class mintos extends p2pCompany {
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                if (Configure::read('debug')) {
-                    echo 'File size:     ' . $size;
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
                 }
 
-                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
-                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
-                    $headerError = $this->compareHeader();
-                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
-                        return $this->getError(__LINE__, __FILE__, $headerError);
-                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        return $this->getError(__LINE__, __FILE__, $headerError);
-                    }
-                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
-                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                    }
-                /*} else {
-                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                }*/
                 
                 $this->idForSwitch++;     
             case 9:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for mintos files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                }
                 $this->idForSwitch++;          
                 $this->getCompanyWebpageMultiCurl();
                 break; 
