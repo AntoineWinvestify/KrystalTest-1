@@ -119,7 +119,6 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');    
         
         $platformData = json_decode($job->workload(), true);
-print_r($platformData);        
         $urlReturnData = [];
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
@@ -181,7 +180,7 @@ print_r($platformData);
                 }
 
                 if (count($filesByType) === 1) {
-echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
+                    echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
                     $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
                 } 
                 else if (count($filesByType) > 1) {
@@ -241,10 +240,10 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                 }
             } 
             
-print_r($totalParsingresultInvestments);   
-print_r($totalParsingresultExpiredInvestments); 
-print_r($totalParsingresultTransactions);
-print_r($totalParsingresultControlVariables);
+            /*print_r($totalParsingresultInvestments);   
+            print_r($totalParsingresultExpiredInvestments); 
+            print_r($totalParsingresultTransactions);
+            print_r($totalParsingresultControlVariables);*/
 
             
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -306,7 +305,7 @@ print_r($totalParsingresultControlVariables);
                                         $info['investment_loanId'] = $loanKey;
                                         $info['internalName'] = "investment_activeStateChange";
                                         $returnData[$linkedAccountKey]['parsingResultTransactions'][$key][$loanKey][] = $info;
-        echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
+                                        echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
                                         unset($data['listOfReservedInvestments'][$loanKey]);
                                         continue;
                                     }
@@ -325,13 +324,13 @@ print_r($totalParsingresultControlVariables);
                                                 }
                                             }
                                         }
-        echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
+                                        echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
                                         unset($data['listOfReservedInvestments'][$loanKey]);
                                         continue;
                                     }
                                 }
                                 if ($totalParsingresultInvestments[$loanKey]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-    echo __FUNCTION__ . " " . __LINE__ . " Loan $loanKey detected with state WAITINGTOBEFORMALIZED\n";                                
+                                    echo __FUNCTION__ . " " . __LINE__ . " Loan $loanKey detected with state WAITINGTOBEFORMALIZED\n";                                
                                     unset($data['listOfReservedInvestments'][$loanKey]);
                                     continue;
                                 } 
@@ -349,12 +348,12 @@ print_r($totalParsingresultControlVariables);
 
 
                         if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
-                            echo "some error occurred in PFP, but we will mark all Ghosts";
+                            //echo "some error occurred in PFP, but we will mark all Ghosts";
                         }
                         foreach ($data['listOfReservedInvestments'] as $loanIdKey => $loanAmount) {
                             foreach ($foundArrays as $key => $levels) {
                                 if ($returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]][$levels[2]]['amount'] == $loanAmount) {
-                                    echo "Entered to change loanReference \n";
+                                    //echo "Entered to change loanReference \n";
                                     $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$loanIdKey][$levels[2]] = $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]][$levels[2]];
                                     $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$loanIdKey][0]['investment_loanId'] = $loanIdKey;
                                     unset($returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]]); 
@@ -374,7 +373,7 @@ print_r($totalParsingresultControlVariables);
             ////
         }
         $data['tempArray'] = $returnData;
-        $data['tempUrlArray'] = $urlReturnData;
+        //$data['tempUrlArray'] = $urlReturnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
@@ -387,10 +386,47 @@ print_r($totalParsingresultControlVariables);
         $timeStop = time();
         echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
 
-        foreach($data['tempArray'] as $linkAccountId => $dateArray){
+        foreach($data['tempArray'] as $linkAccountId => $dateArray){     
+            $partialPath = Configure::read('dashboard2Files');
+            $path = $partialPath . $data['tempArray'][$linkAccountId]["userReference"] . DS . $data['tempArray'][$linkAccountId]["finishDate"] . DS . $linkAccountId . DS . $data['tempArray'][$linkAccountId]["pfp"] ;
+            $data['tempArray'][$linkAccountId]["path"] = $path;
+
             ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);
-        }
-           
+            
+            $investmentJson = json_encode($data['tempArray'][$linkAccountId]['parsingResultInvestments']);
+            $this->saveStringToFile($path, "parsedInvestments.json",$investmentJson);
+            unset($data['tempArray'][$linkAccountId]['parsingResultInvestments']);
+            $data['tempArray'][$linkAccountId]['parsingResultInvestmentsPath'] = $path . DS . "parsedInvestments.json";
+            
+            $expiredInvestmentJson = json_encode($data['tempArray'][$linkAccountId]['parsingResultExpiredInvestments']);
+            $this->saveStringToFile($path, "parsedExpired.json", $expiredInvestmentJson);
+            unset($data['tempArray'][$linkAccountId]['parsingResultExpiredInvestments']);
+            $data['tempArray'][$linkAccountId]['parsingResultExpiredInvestmentsPath'] = $path . DS . "parsedExpired.json";
+            
+            $max = WIN_MAX_TRANSACTIONS;                                                             //Number of max dates in a transaction file.                            
+            $i = 0;
+            $fileNumber = 1;
+            foreach($data['tempArray'][$linkAccountId]["parsingResultTransactions"] as $date => $info){
+                $tempParsingResultTransactions[$date] = $info;
+                unset($data['tempArray'][$linkAccountId]["parsingResultTransactions"][$date]);
+                $i++;      
+                if($i >= $max){
+                    $tempParsingResultTransactionsJson = json_encode($tempParsingResultTransactions);
+                    $this->saveStringToFile($path, "parsedTransaction_" .  $fileNumber . ".json", $tempParsingResultTransactionsJson);
+                    $data['tempArray'][$linkAccountId]['parsingResultTransactionsPath'][] = $path . DS . "parsedTransaction_" .  $fileNumber . ".json";
+                    unset($tempParsingResultTransactions);
+                    $fileNumber++;
+                    $i = 0;
+                }
+            }
+            if(!empty($tempParsingResultTransactions)){
+                $tempParsingResultTransactionsJson = json_encode($tempParsingResultTransactions);
+                $this->saveStringToFile($path, "parsedTransaction_" .  $fileNumber . ".json", $tempParsingResultTransactionsJson);
+                $data['tempArray'][$linkAccountId]['parsingResultTransactionsPath'][] = $path . DS . "parsedTransaction_" .  $fileNumber . ".json";
+                unset($tempParsingResultTransactions);
+            }
+            unset($data['tempArray'][$linkAccountId]["parsingResultTransactions"]);
+        } 
         return json_encode($data);
     }
     
@@ -712,6 +748,17 @@ print_r($totalParsingresultControlVariables);
             $tempArrayFiles[$tempNumber[1]][$tempNumber[2]] = $filePath;
         }
         return $tempArrayFiles;
+    }
+    
+    /**
+     * 
+     * @param type $path
+     * @param type $stringToSave
+     */
+    public function saveStringToFile ($path, $name, $data){
+        $file = fopen($path . DS . $name, "w+");
+        fwrite($file, $data);
+        fclose($file);      
     }
     
 }

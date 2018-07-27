@@ -223,7 +223,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
-                foreach ($this->tempArray as $queueIdKey => $result) {
+                foreach ($this->tempArray as $queueIdKey => $result) { 
                     foreach ($result as $platformKey => $platformResult) {
                         // First check for application level errors
                         // if an error is found then all the files related to the actions are to be
@@ -329,6 +329,18 @@ class ParseDataClientShell extends GearmanClientShell {
      */
     public function mapData(&$platformData) {
         //We need this to put ACTIVE concept first, Twino has payment concept first and that cause zombie loan problems
+        $file = fopen($platformData["parsingResultInvestmentsPath"], "r");
+        $platformData['parsingResultInvestments'] = json_decode(fread($file, filesize($platformData["parsingResultInvestmentsPath"])), true);
+        fclose($file);
+        $file = fopen($platformData["parsingResultExpiredInvestmentsPath"], "r");
+        $platformData['parsingResultExpiredInvestments'] = json_decode(fread($file, filesize($platformData["parsingResultExpiredInvestmentsPath"])), true);
+        fclose($file);
+       
+        foreach($platformData['parsingResultTransactionsPath'] as $filePath){
+        $file = fopen($filePath, "r");
+        $platformData['parsingResultTransactions'] = json_decode(fread($file, filesize($filePath)), true);
+        fclose($file);
+ 
         $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
             foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
@@ -1216,7 +1228,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
             unset($platformData['parsingResultTransactions'][$dateKey]);                    //Clean the transactions of that day to liberate memory
         }
-
+    }
 
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $linkedaccountId = $platformData['linkedaccountId'];
