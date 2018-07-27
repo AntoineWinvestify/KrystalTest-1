@@ -1214,6 +1214,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
             $tempUserInvestmentDataItem = array('id' => $userInvestmentDataId,
                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
+            unset($platformData['parsingResultTransactions'][$dateKey]);                    //Clean the transactions of that day to liberate memory
         }
 
 
