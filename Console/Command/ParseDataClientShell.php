@@ -341,7 +341,7 @@ class ParseDataClientShell extends GearmanClientShell {
         $file = fopen($filePath, "r");
         $platformData['parsingResultTransactions'] = json_decode(fread($file, filesize($filePath)), true);
         fclose($file);
- 
+        
         $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
             foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
@@ -471,7 +471,9 @@ class ParseDataClientShell extends GearmanClientShell {
         echo __LINE__ . " Start memory usage " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
         
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
-            if($dateKey <= $startDate){
+            $dateValue = date_create($dateKey);
+            $dateTmp = date_format($dateValue,"Ymd");
+            if($dateTmp <= $startDate){
                 continue;
             }
             echo __FUNCTION__ . " " . __LINE__ . "\ndateKey = $dateKey \n";
