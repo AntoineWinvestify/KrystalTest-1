@@ -334,8 +334,9 @@ class ParseDataClientShell extends GearmanClientShell {
         fclose($file);
         $file = fopen($platformData["parsingResultExpiredInvestmentsPath"], "r");
         $platformData['parsingResultExpiredInvestments'] = json_decode(fread($file, filesize($platformData["parsingResultExpiredInvestmentsPath"])), true);
-        fclose($file);
-       
+        fclose($file);   
+        $calculationClassHandle = new UserDataShell();
+        
         foreach($platformData['parsingResultTransactionsPath'] as $filePath){
         $file = fopen($filePath, "r");
         $platformData['parsingResultTransactions'] = json_decode(fread($file, filesize($filePath)), true);
@@ -381,7 +382,6 @@ class ParseDataClientShell extends GearmanClientShell {
         }
 
         $timeStart = time();
-        $calculationClassHandle = new UserDataShell();
         $investmentId = null;
         $linkedaccountId = $platformData['linkedaccountId'];
         $userReference = $platformData['userReference'];
