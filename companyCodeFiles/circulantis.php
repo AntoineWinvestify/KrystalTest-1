@@ -112,8 +112,8 @@ class circulantis extends p2pCompany {
                         "Traspaso" => "Cash_withdrawal",
                         "OperaciÃ³n realizada" => "Primary_market_investment_preactive",
                         "OperaciÃ³n formalizada" => "Primary_market_investment_active_verification",
-                        "OperaciÃ³n cobrada" => "Capital_repayment"
-                        //"OperaciÃ³n cobrada parcialmente" => "Capital_repayment",
+                        "OperaciÃ³n cobrada" => "Principal_and_interest_payment",
+                        "OperaciÃ³n cobrada parcialmente" => "Partial_principal_and_interest_payment"
                     ],
                 ],
                 "functionName" => "getComplexTransactionDetail",
