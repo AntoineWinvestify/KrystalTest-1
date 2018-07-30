@@ -18,7 +18,8 @@
  * @version 0.1
  * @date 2016-08-25
  * @package
- *
+ */
+/*
 
   2016-08-25	  version 0.1
   function linkAccount									[OK]
@@ -83,9 +84,10 @@ function deleteLinkedAccount() {
         $linkedaccountFilterConditions = array('investor_id' => $investorId,
             'id' => $_REQUEST['index']);
 
-        $this->Linkedaccount->deleteLinkedaccount($linkedaccountFilterConditions, $multiple = false); // Delete 1 account
+        $this->Linkedaccount->deleteLinkedaccount($linkedaccountFilterConditions); // Delete 1 account
 
-        $linkedaccountFilterConditions = array('investor_id' => $investorId);
+        $linkedaccountFilterConditions = array('investor_id' => $investorId, 
+                                    'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
 
         $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
 
@@ -239,7 +241,8 @@ function linkAccount() {
             $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
             $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
 
-            $linkedaccountFilterConditions = array('investor_id' => $investorId);
+            $linkedaccountFilterConditions = array('investor_id' => $investorId, 
+                                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
             $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
             $newComp->deleteCookiesFile();
             $this->set('linkedAccountResult', $linkedAccountResult);
@@ -259,7 +262,8 @@ function linkAccount() {
                 $companyFilterConditions = array('id >' => 0);  // Load ALL company data as array
                 $companyResults = $this->Company->getCompanyDataList($companyFilterConditions);
 
-                $linkedaccountFilterConditions = array('investor_id' => $investorId);
+                $linkedaccountFilterConditions = array('investor_id' => $investorId, 
+                                                'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                 $linkedAccountResult = $this->Linkedaccount->getLinkedaccountDataList($linkedaccountFilterConditions);
 
                 $this->set('linkedAccountResult', $linkedAccountResult);
@@ -330,7 +334,8 @@ function linkAccount() {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');    // Load the "Company" model
 
         $investorId = $this->Auth->user('Investor.id');
-        $conditions = array('investor_id' => $this->Auth->user('Investor.id'));
+        $conditions = array('investor_id' => $this->Auth->user('Investor.id'), 
+                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
 
         $linkedAccountResult = $this->Linkedaccount->find("all", $params = array('recursive' => -1,
             'conditions' => $conditions)
@@ -395,10 +400,10 @@ function linkAccount() {
             //If we can login, change the password
             if($userLogin){
                 $this->Linkedaccount->changePasswordLinkaccount($linkaccountId, $newPass);
-                $this->set('chagePasswordResponse', '1');
+                $this->set('changePasswordResponse', '1');
             } 
             else {
-                $this->set('chagePasswordResponse', '0');
+                $this->set('changePasswordResponse', '0');
             }
         }
     }

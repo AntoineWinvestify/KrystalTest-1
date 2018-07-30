@@ -37,7 +37,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
         $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo  __CLASS__ . ": " . "Starting to listen to data from its Client\n";
         while( $this->GearmanWorker->work() );
     }
     
@@ -80,17 +80,11 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $investmentList = $this->Investment->getData(array('linkedaccount_id' => $linkedaccount['Linkedaccount']['id']), array('investment_loanId'));
             $this->newComp[$i]->setTableStructure($structure);
             $this->newComp[$i]->setInvestmentList($investmentList);
-            
+            $this->newComp[$i]->$queueCurlFunction();
+
             $i++;
         }
-        $companyNumber = 0;
-        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_START = " . microtime());
-        //We start at the same time the queue on every company
-        foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->$queueCurlFunction();
-            $companyNumber++;
-        }
-        
+
         $this->queueCurls->addListener('complete', array($this, 'multiCurlQueue'));
 
         //This is the queue. It is working until there are requests
@@ -99,9 +93,9 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->queueCurls->socketSelect();
         }
 
-        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
+  //      $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
         
-        $lengthTempArray = count($this->tempArray);
+        $lengthTempArray = count($this->tempArray);        
         $statusCollect = [];
         $errors = null;
         for ($i = 0; $i < $lengthTempArray; $i++) {
@@ -116,7 +110,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $data['statusCollect'] = $statusCollect;
         $data['errors'] = $errors;
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+  //          $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
             print_r($data);
         }
         return json_encode($data);

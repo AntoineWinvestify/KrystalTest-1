@@ -19,7 +19,8 @@
 * @version 0.1
 * @date 2012-02-12
 * @package
-*
+*/
+/*
 
 
 2017-10-18		version 0.1
@@ -45,6 +46,7 @@ class Dashboardoverviewdata extends AppModel {
 
     /**
      * Get data of the last global Overview of an investor.
+     * 
      * @param string $investorId             investor database id.
      * @return array Last Dashboardoverviewdata rows for the user
      */

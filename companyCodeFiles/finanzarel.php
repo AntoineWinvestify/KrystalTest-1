@@ -1,19 +1,18 @@
 <?php
 
 /**
- * +--------------------------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | Copyright (C) 2016, http://www.winvestify.com                   	  	|
- * +--------------------------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or 	|
- * | (at your option) any later version.                                      		|
- * | This file is distributed in the hope that it will be useful   		    	|
+ * | it under the terms of the GNU General Public License as published by       |
+ * | the Free Software Foundation; either version 2 of the License, or          |
+ * | (at your option) any later version.                                      	|
+ * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the      	|
- * | GNU General Public License for more details.        			              	|
- * +---------------------------------------------------------------------------------------------------------------+
- *
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the              	|
+ * | GNU General Public License for more details.        			|
+ * +----------------------------------------------------------------------------+
  *
  * @author
  * @version 0.5
@@ -54,8 +53,8 @@
 class finanzarel extends p2pCompany {
 
     protected $pInstanceGlobal = '';
-    protected $credentialsGlobal = array();
-    protected $requestFiles = array();
+    protected $credentialsGlobal = [];
+    protected $requestFiles = [];
     protected $tempRequest = [];
     
     protected $dashboard2ConfigurationParameters = [
@@ -80,8 +79,8 @@ class finanzarel extends p2pCompany {
                 ],
                 2 => [
                     "from" => ["investment_outstandingPrincipal"],              //From are all the values we take the values
-                    "to" => ["investment_outstandingPrincipal"],              //To are all the values we modify the values
-                    "sign" => "negative"                                         //Sign could be positive or negative
+                    "to" => ["investment_outstandingPrincipal"],                //To are all the values we modify the values
+                    "sign" => "negative"                                        //Sign could be positive or negative
                                                                                 //If it is positive, the + will be + and the - will be -
                                                                                 //If it is negative, the + will be - and the - will be +
                 ]
@@ -433,7 +432,7 @@ class finanzarel extends p2pCompany {
             
             "E" => [  
                 [
-                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -505,7 +504,7 @@ class finanzarel extends p2pCompany {
             ],
             "E" => [  
                 [
-                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -574,7 +573,7 @@ class finanzarel extends p2pCompany {
             
             "E" => [  
                 [
-                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -633,7 +632,7 @@ class finanzarel extends p2pCompany {
         ],
         [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "B" => [
                 [
@@ -654,7 +653,7 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             "C" => [
-                "name" => "investment_debtor",                           // Winvestify standardized name  OK
+                "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
             "D" => [
                 "name" => "investment_riskRating",
@@ -664,7 +663,7 @@ class finanzarel extends p2pCompany {
             ],
             "F" => [  
                 [
-                    "type" => "investment_fullLoanAmount",                // Winvestify standardized name
+                    "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
 				"input2" => "",
                                 "input3" => ",",
@@ -695,9 +694,9 @@ class finanzarel extends p2pCompany {
             ],
             "K" =>  [
                 [
-                    "type" => "investment_nominalInterestRate",                              // Winvestify standardized name   OK
+                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [                                            // trick to get the complete cell data as purpose
-                                "input2" => "",                                // May contain trailing spaces
+                                "input2" => "",                                 // May contain trailing spaces
                                 "input3" => "&",
                             ],
                     "functionName" => "extractDataFromString",
@@ -716,7 +715,7 @@ class finanzarel extends p2pCompany {
             ],
             "O" => [
                 [
-                    "type" => "investment_nextPaymentDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_nextPaymentDate",                     // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -724,7 +723,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ],
                 [
-                    "type" => "investment_dueDate",                           // Winvestify standardized name  OK
+                    "type" => "investment_dueDate",                             // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "D/M/y",
 
@@ -787,7 +786,7 @@ class finanzarel extends p2pCompany {
 
         protected $parserValuesAmortizationTable2 = [
             "A" =>  [
-                "name" => "investment_loanId"                                          // Winvestify standardized name
+                "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
             "H" => [
                 [
@@ -871,20 +870,20 @@ class finanzarel extends p2pCompany {
         "fileConfigParam" => [
             "type" => "joinTogether",
             "function" => "joinTwoDimensionArrayTogether",
-            "sortParameter" => array("date","investment_loanId")
+            "sortParameter" => ["date","investment_loanId"]
         ],
         0 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["date","investment_loanId"],                    // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => array("date","investment_loanId"),               // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["date","investment_loanId"],                    // used to "sort" the array and use $sortParameter(s) as prime index.
             'changeCronologicalOrder' => 1,                                     // 1 = inverse the order of the elements in the transactions array
             'callback' => [
                 "cleanTempArray" => [
@@ -901,8 +900,8 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-                            'sortParameter' => array("date","investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
-            //'changeCronologicalOrder' => 1,                 // 1 = inverse the order of the elements in the transactions array
+                            'sortParameter' => ["date","investment_loanId"],    // used to "sort" the array and use $sortParameter(s) as prime index.
+            //'changeCronologicalOrder' => 1,                                   // 1 = inverse the order of the elements in the transactions array
         ]
     ];
     
@@ -910,20 +909,20 @@ class finanzarel extends p2pCompany {
         "fileConfigParam" => [
             "type" => "joinTogether",
             "function" => "joinOneDimensionArrayTogether",
-            "sortParameter" => array("investment_loanId")
+            "sortParameter" => ["investment_loanId"]
         ],
         0 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'debugEnd' => true,
-            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"]                            // Used to "sort" the array and use $sortParameter as prime index.
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId"),                      // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"],                           // Used to "sort" the array and use $sortParameter as prime index.
             'callback' => [
                 "cleanTempArray" => [
                     "findValueInArray" => [
@@ -939,7 +938,7 @@ class finanzarel extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["investment_loanId"],                           // used to "sort" the array and use $sortParameter(s) as prime index.
         ]
     ];
     
@@ -947,36 +946,36 @@ class finanzarel extends p2pCompany {
         "fileConfigParam" => [
             "type" => "joinTogether",
             "function" => "joinOneDimensionArrayTogether",
-            "sortParameter" => array("investment_loanId")
+            "sortParameter" => ["investment_loanId"]
         ],
         0 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
             'debugEnd' => true,
-            'sortParameter' => array("investment_loanId")                       // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"]                            // Used to "sort" the array and use $sortParameter as prime index.
         ],
         1 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId"),                      // Used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => ["investment_loanId"],                           // Used to "sort" the array and use $sortParameter as prime index.
         ],
         2 => [
             'offsetStart' => 1,
             'offsetEnd'     => 1,
             'separatorChar' => ";",
-            'sortParameter' => array("investment_loanId"),   // used to "sort" the array and use $sortParameter(s) as prime index.
+            'sortParameter' => ["investment_loanId"],                           // used to "sort" the array and use $sortParameter(s) as prime index.
         ]
     ];
     
-    protected $amortizationConfigParms = array(
+    protected $amortizationConfigParms = [
         [
             'offsetStart' => 1,
             'offsetEnd' => 0,
-            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
         ]
-    );
+    ];
     
     protected $valuesControlVariables = [
         [
@@ -1004,7 +1003,7 @@ class finanzarel extends p2pCompany {
             ]
         ], 
             
-        "activeInvestments" => [
+ /*       "activeInvestments" => [
             [
                 "type" => "activeInvestments",                                  // Winvestify standardized name  OK
                 "inputData" => [
@@ -1014,7 +1013,7 @@ class finanzarel extends p2pCompany {
                 ],
                 "functionName" => "handleNumber",
             ]
-        ],
+        ],*/
    
         "outstandingPrincipal" => [
             [
@@ -1067,7 +1066,7 @@ class finanzarel extends p2pCompany {
             'cleanArrayByKey' => [
                 "value" => "valuesToDeleteForExpiredLoans"                      //Second, we use the array to delete all the duplicate keys
             ],
-            "cleanTempArrayByLevels" => [                                               //We must clean the array of previous dates of 2016-01-01
+            "cleanTempArrayByLevels" => [                                       //We must clean the array of previous dates of 2016-01-01
                 "findValueInArray" => [                                         //We need to clean the array
                     "key" => "investment_issueDate",
                     "function" => "verifyPreviousDateIsLess",              
@@ -1092,7 +1091,7 @@ class finanzarel extends p2pCompany {
             /************************************/
             /**HEADERS FOR STRUCTURE COMPARATION**/
             /************************************/
-    protected  $investmentHeader = array (
+    protected  $investmentHeader =  [
                                     "A" => "Subasta",
                                     "B" => "Deudor/Emisor",
                                     "C" => "Rating",
@@ -1108,9 +1107,9 @@ class finanzarel extends p2pCompany {
                                     "M" => "Fecha de vencimiento",
                                     "N" => "Estado",
                                     "O" => "AmortizacionPendiente",
-                                    "P" => " ");
+                                    "P" => " "];
 
-    protected $investment2Header = array(
+    protected $investment2Header = [
                                     "A" => "Subasta",
                                     "B" => "Deudor",
                                     "C" => "Tipo",
@@ -1120,9 +1119,9 @@ class finanzarel extends p2pCompany {
                                     "G" => "Precio de compra",
                                     "H" => "Estado",
                                     "I" => "Pendiente",
-                                    "J" => " ");
+                                    "J" => " "];
     
-    protected $expiredLoansHeader = array(
+    protected $expiredLoansHeader = [
                                     "A" => "Subasta",
                                     "B" => "Resultado",
                                     "C" => "Deudor/Emisor",
@@ -1137,9 +1136,20 @@ class finanzarel extends p2pCompany {
                                     "L" => "ImporteOferta",
                                     "M" => "Mi oferta(precio)",
                                     "N" => "Plusval?a",
-                                    "O" => "Fecha de vencimiento");
+                                    "O" => "Fecha de vencimiento"];
     
-    protected $transactionHeader = array(    
+    protected $transactionHeader = [    
+                                "A" => "Id",
+                                "B" => "A?o",
+                                "C" => "Mes",        
+                                "D" => "Trimestre",
+                                "E" => "Fecha",
+                                "F" => "Subasta",
+                                "G" => "Descripcion",
+                                "H" => "Importe",
+                                "I" => "Saldo"];
+    
+    protected $transaction2Header = [
                                  "A" => "Id",
                                  "B" => "A?o",
                                  "C" => "Mes",
@@ -1148,22 +1158,11 @@ class finanzarel extends p2pCompany {
                                  "F" => "Subasta",
                                  "G" => "Descripcion",
                                  "H" => "Importe",
-                                 "I" => "Saldo");
-    
-    protected $transaction2Header = array(
-                                 "A" => "Id",
-                                 "B" => "A?o",
-                                 "C" => "Mes",
-                                 "D" => "Trimestre",
-                                 "E" => "Fecha",
-                                 "F" => "Subasta",
-                                 "G" => "Descripcion",
-                                 "H" => "Importe",
-                                 "I" => "Saldo");
+                                 "I" => "Saldo"];
     
 
     
-    protected $transaction3Header = array(
+    protected $transaction3Header = [
                                 "A" => "Id",
                                 "B" => "Deudor/Emisor",
                                 "C" => "Rating  ?",
@@ -1177,11 +1176,11 @@ class finanzarel extends p2pCompany {
                                 "K" => "Mi oferta(precio)",
                                 "L" => "Plusval?aEsperada",
                                 "M" => "TiempoRestante"
-                                );
+                                ];
     
-    protected  $compareHeaderConfigParam = array( 'separatorChar' => ";",
+    protected  $compareHeaderConfigParam = [ 'separatorChar' => ";",
                                                   'chunkInit' => 1,
-                                                  'chunkSize' => 1 );
+                                                  'chunkSize' => 2 ];
 
     
     
@@ -1392,7 +1391,7 @@ class finanzarel extends p2pCompany {
                 //Get control variables
                 $controlVariables = $this->getElements($dom, 'span', 'class', 't-MediaList-badge');
                 $controlVariables = array_merge($controlVariables, $this->getElements($dom, 'p', 'class', 't-MediaList-desc'));
-                $controlVariablesArray = array();
+                $controlVariablesArray = [];
                 foreach ($controlVariables as $controlVariable){
                     $controlVariablesArray[] = $controlVariable->nodeValue;
                 }
@@ -1423,20 +1422,20 @@ class finanzarel extends p2pCompany {
                 }
                 $url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
+                $referer = strtr($referer, [
                     '{$p_flow_step_id}' => 1,
                     '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
+                        ]);
                 if (count($this->request) === 3) {
                     $this->tempRequest = array_shift($this->request);
                 }
                 //$credentials = array_shift($this->urlSequence);
-                $credentialsFile = array(
+                $credentialsFile = [
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->request[0]);
+                        'p_request' => $this->request[0]];
                 print_r($credentialsFile);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->investmentHeader;
@@ -1447,7 +1446,7 @@ class finanzarel extends p2pCompany {
                 //How we get fix Finanzarel
                 //https://chrismckee.co.uk/curl-http-417-expectation-failed/
                 //https://stackoverflow.com/questions/3755786/php-curl-post-request-and-error-417
-                $headers = array('Expect:');
+                $headers = ['Expect:'];
                 //array_shift($this->urlSequence);         
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);
@@ -1475,20 +1474,20 @@ class finanzarel extends p2pCompany {
                 $this->numFileExpiredLoan++;
                 $this->url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $this->referer = strtr($referer, array(
+                $this->referer = strtr($referer, [
                             '{$p_flow_step_id}' => 1,
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
+                        ]);
                 //$credentials = array_shift($this->urlSequence);
-                $credentialsFile = array(
+                $credentialsFile = [
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->request[1]);
+                        'p_request' => $this->request[1]];
                 $this->fileName =  $this->nameFileExpiredLoan . "3." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
-                $headers = array('Expect:');
+                $headers = ['Expect:'];
                 
                 if (!empty($this->tempRequest)) {
                     $this->idForSwitch++;                   
@@ -1515,16 +1514,16 @@ class finanzarel extends p2pCompany {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 //$credentials = array_shift($this->urlSequence);
-                $credentialsFile = array(
+                $credentialsFile = [
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->tempRequest);
+                        'p_request' => $this->tempRequest];
                 $this->numFileTransaction = 3;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->headerComparation = $this->transaction3Header;
-                $headers = array('Expect:');
+                $headers = ['Expect:'];
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
                 break;
@@ -1590,17 +1589,17 @@ class finanzarel extends p2pCompany {
                                    
                 $url = array_shift($this->urlSequence);
                 echo "The url of last is : ".$url;
-                $url = strtr($url, array(
+                $url = strtr($url, [
                             '{$p_instance}' => $this->credentialsGlobal['p_instance'],
                             '{$credentialCashflow}' => $this->credentialCashflow[0]
-                        ));
+                        ]);
                 echo "now the url is " . $url;
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
+                $referer = strtr($referer, [
                             '{$p_flow_step_id}' => 11,
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
-                $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
+                        ]);
+                $headers = ['Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/];
                 $this->numFileTransaction = 1;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->headerComparation = $this->transactionHeader;
@@ -1626,17 +1625,17 @@ class finanzarel extends p2pCompany {
                
                 $url = array_shift($this->urlSequence);
                 echo "The url of last is : ".$url;
-                $url = strtr($url, array(
+                $url = strtr($url, [
                             '{$p_instance}' => $this->credentialsGlobal['p_instance'],
                             '{$credentialCashflow}' => $this->credentialCashflow[1]
-                        ));
+                        ]);
                 echo "now the url is " . $url;
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
+                $referer = strtr($referer, [
                             '{$p_flow_step_id}' => 11,
                             '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
-                $headers = array('Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/);
+                        ]);
+                $headers = ['Expect:'/* 'Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*//*;q=0.8"', 'Accept-Language: "en-US,en;q=0.5"', 'Accept-Encoding: "gzip, deflate, br"'*/];
                 $this->numFileTransaction = 2;
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->headerComparation = $this->transaction2Header;
@@ -1664,22 +1663,22 @@ class finanzarel extends p2pCompany {
                
                 $url =  array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
-                $referer = strtr($referer, array(
+                $referer = strtr($referer, [
                     '{$p_flow_step_id}' => 1,
                     '{$p_instance}' => $this->credentialsGlobal['p_instance']
-                        ));
-                $credentialsFile = array(
+                        ]);
+                $credentialsFile = [
                         'p_flow_id' => $this->credentialsGlobal['p_flow_id'],
                         'p_flow_step_id' => 11, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->requestInvestment2);
+                        'p_request' => $this->requestInvestment2];
                 print_r($credentialsFile);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->investment2Header;
                 $this->numFileInvestment++;
 
-                $headers = array('Expect:');
+                $headers = ['Expect:'];
                 //array_shift($this->urlSequence);         
                 $this->idForSwitch++;
                 $this->getPFPFileMulticurl($url,$referer, $credentialsFile, $headers, $this->fileName);                 

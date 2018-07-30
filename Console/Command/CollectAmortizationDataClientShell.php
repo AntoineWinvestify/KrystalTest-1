@@ -71,21 +71,24 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $pathToJsonFile = $dir->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
                     foreach ($pathToJsonFile as $key => $path) {
                         $tempName = explode("/", $path);
+                        print_r($tempName);
                         if (Configure::read('debug')) {
-                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");
-                            print_r($tempName);
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");                            
                         }
+                        
                         $linkedAccountId = $tempName[count($tempName) - 3];
                         if (!in_array($linkedAccountId, $queueInfo['companiesInFlow'])) {
                             continue;
                         }
-                        $file = new File($path);
+                        $file = new File($path);                  
                         $jsonLoanIds = $file->read(true, 'r');
                         $loanIds = json_decode($jsonLoanIds, true);
+                        $finalLoanIds = $loanIds;
+
                         $linkAccountIds[] = $linkedAccountId;
-                        $loanIdsPerCompany[$linkedAccountId] = $loanIds;
+                        $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
-                    $filterConditions = array('id' => $linkAccountIds);
+                    $filterConditions = array('id' => $linkAccountIds); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     //foreach ($queueInfo['loanIds'] as $key => $loanId) {
                     /*foreach ($loanIds as $key => $loanId) {
@@ -152,12 +155,12 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                 sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
+                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";
+                $this->killShellCommand("collectAmortizationDataWorker");
                 exit;
             }
         }
-        
-        
+        $this->killShellCommand("collectAmortizationDataWorker");       
     }
     
     

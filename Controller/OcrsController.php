@@ -374,7 +374,8 @@ class ocrsController extends AppController {
 
             //Selected companies(SENT)(Not show)
             $registeredList = $this->Ocr->getRegisterSentCompanies($id);
-            $filter = array('investor_id' => $id);
+            $filter = array('investor_id' => $id, 
+                   'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
 
             //Linked companies(Not show)
             $linkedList = $this->Linkedaccount->getLinkedaccountIdList($filter);

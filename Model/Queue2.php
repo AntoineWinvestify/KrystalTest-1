@@ -1,6 +1,5 @@
 <?php
 /**
-/**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
  * +----------------------------------------------------------------------------+
@@ -15,25 +14,22 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author Antoine de Poorter
+
  * @version 0.1
- * @date 2017-01-11
+ * @author Antoine de Poorter
+ * @date 2018-05-16
  * @package
- *
+ */
+
+/*
+2017-01-11	version 0.1
 
 
-2017-01-11		version 0.1
-
-
-
-
+2018-05-16      version 0.2
+aftersave method with new event for sending information to user via SMS
 
 
 Pending:
-
-
-
-
 
 
 
@@ -65,86 +61,83 @@ class Queue2 extends AppModel {
 
 
 
-/*
-*
-*	Put a new request into the queue
-*	@param	queueReference	array 			the reference, as given by the user of the queue, to an item.
-*	@param	queueType		int		LIFO, FIFO, CIRCULAR
-*	@param	action			varchar		url string of the action to be perfomed
-*										
-*	@return boolean			true		queueItem created
-*					false		undefined error, item NOT created
-*						
-*/
-public function addToQueue($queueReference, $queueType, $queueAction) {
+    /**
+     *	Put a new request into the queue
+     * 
+     *	@param	queueReference	array 		the reference, as given by the user of the queue, to an item.
+     *	@param	queueType	int		LIFO, FIFO, CIRCULAR
+     *	@param	action		varchar		url string of the action to be perfomed 
+     *										
+     *	@return boolean		true		queueItem created
+     *				false		undefined error, item NOT created
+     * NOT USED CAN BE DELETED						
+     */
+    public function addToQueueREMOVE($queueReference, $queueType, $queueAction) {
 	$data = array("queue2_userReference" => $queueReference,
 				  "queue2_action"   => $queueAction,
 				  "queue2_type"     => FIFO,
 				  "queue2_status"   => WAITING_FOR_EXECUTION,
-				 );
+                     );
 	
 	if ($this->save($data, $validate = true)) {
-		return true;
+            return true;
 	}
-	else {
-		return false;
-	}
-}
+        return false;
+    }
 
     /**
      * Put a new request into the queue for Dashboard 2.0
+     * 
      * @param array $queueReference The reference, as given by the user of the queue, to an item
      * @param json $queueInfo It is the information about the queue request
      * @param int $queueStatus It is the status to init the process of collecting information about the user's companies
      * @param int $queueId It is the queueId of the request
      * @param int $queueType LIFO, FIFO, CIRCULAR
      * @return boolean true queueItem created
-     *                 false undefined error, item NOT created
+     *                 false undefined error, item has NOT been created
      */
     public function addToQueueDashboard2($queueReference , $queueInfo= null, $queueStatus = WIN_QUEUE_STATUS_START_COLLECTING_DATA, $queueId = null, $queueType = FIFO) {
         
-        $data = array(
-            "id" => $queueId,
-            "queue2_userReference" => $queueReference,
-            "queue2_info" => $queueInfo,
-            "queue2_type" => $queueType,
-            "queue2_status" => $queueStatus,
-        );
+            $data = array(
+                "id" => $queueId,
+                "queue2_userReference" => $queueReference,
+                "queue2_info" => $queueInfo,
+                "queue2_type" => $queueType,
+                "queue2_status" => $queueStatus,
+            );
 
-        if ($this->save($data, $validate = true)) {
-            return true;
-        } else {
-            return false;
+            if ($this->save($data, $validate = true)) {
+                return true;
+            } else {
+                return false;
+            }
         }
+
+    /**
+     *  Removes all requests with value queueReference and which are not (yet) executing from the queue.
+     * 
+     *  @param	queueReference	varchar	the reference, as given by the user of the queue, to an item
+     *	@return boolean		true	reference deleted
+     *				false	reference not found					
+     */
+    public function removeFromQueue($queueReference) {
+
+
+
     }
 
-    /*
-*
-*	Removes all requests with value queueReference and which are not (yet) executing from the queue.
-*	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item
-*	@return boolean		true		reference deleted
-*				false		reference not found
-*						
-*/
-public function removeFromQueue($queueReference) {
-	
-	
-	
-}
 
 
 
 
-
-/*
-*
-*	Check if an item exists in the queue, with status 'IDLE', 'WAITING_FOR_EXECUTION' or 'EXECUTING'	
-*	@param	queueReference	varchar		the reference, as given by the user of the queue, to an item
-*	@return boolean			true		one or more items found with requested reference
-*							false		reference not found
-*
-*/
-public function checkQueue($queueReference) {
+    /**
+     *	Check if an item exists in the queue, with status 'IDLE', 'WAITING_FOR_EXECUTION' or 'EXECUTING'	
+     * 
+     *	@param	queueReference	varchar	the reference, as given by the user of the queue, to an item
+     *	@return boolean			true		one or more items found with requested reference
+     *					false		reference not found
+     */
+    public function checkQueue($queueReference) {
 	$result = $this->find("first", array("recursive" => -1,
 			"conditions" => array("queue2_userReference" => $queueReference,
 			"queue2_status"  => WAITING_FOR_EXECUTION),
@@ -152,23 +145,20 @@ public function checkQueue($queueReference) {
 	if (empty($result)) {
 		return false;
 	}
-	else {
-		return true;
-	}
-}
+	return true;
+    }
 
 
 
 
 
-/*
-*
-*	Get the next request from the queue for executing purposes
-*	@return queueReference	array		Array holding the relevant information of the item in the queue
-*				empty 		queue is empty
-*							
-*/ 
-public function getNextFromQueue($queuetype) {
+    /**
+     *	Get the next request from the queue for executing purposes
+     * 
+     *	@return queueReference	array	Array holding the relevant information of the item in the queue
+     *				empty 	queue is empty						
+     */ 
+    public function getNextFromQueue($queuetype) {
 	// check queue type
 	switch ($queuetype) {
 		case FIFO:
@@ -192,26 +182,23 @@ public function getNextFromQueue($queuetype) {
 	$this->id = $result['Queue2']['id'];	
 	$this->save(array("queue2_status" => EXECUTING));
 	return $result;
-}
+    }
 
 
+    /**
+     *	Callback Function
+     *	Generates the "created" field
+     *
+     */
+    public function beforeSave1($options = array()) {
 
-
-
-/**
-*
-*	Callback Function
-*	Generates the "created" field
-*
-*/
-public function beforeSave1($options = array()) {
-
-    $this->data[$this->alias]['created'] = date("Y-m-d H:i:s", time());
-    return true;
-}
+        $this->data[$this->alias]['created'] = date("Y-m-d H:i:s", time());
+        return true;
+    }
     
     /**
      * Function to get queue request by status
+     * 
      * @param int $queuetype It is the type of the queue
      * @param int $status It is the status of the queue
      * @param array $info It is a json with info data about the queue
@@ -243,31 +230,80 @@ public function beforeSave1($options = array()) {
         $conditions["queue2_status"] = $status;
         print_r($conditions);
         $result = $this->find("all", array(
-                    "conditions" => $conditions,
-                    "order" => $order,
-                    "limit" => $limit
-                ));
-
+                                "conditions" => $conditions,
+                                "order" => $order,
+                            ));
+        shuffle($result);
+        for($i = 0;$i < $limit; $i++){
+            $returnResult[$i] = $result[$i];
+        }
         if (empty($result)) {
             return;
         }
 
-//        print_r($result);
-        return $result;
+        return $returnResult;
     }
     
     /**
      * Function to retrieve the date of the last time the user get the data
+     * 
      * @param string $userReference It is the user's internal id
      * @return array It is the information of the user
      */
     public function calculateDate($userReference) {
         $conditions["queue2_userReference"] = $userReference;
         $result = $this->find("all", array(
-                    "conditions" => $conditions,
-                    'order' => array('id DESC'),
-                    "limit" => 2
-                ));
+                            "conditions" => $conditions,
+                            'order' => array('id DESC'),
+                            "limit" => 2)
+                        );
         return $result;
     }
+    
+    /**
+     *
+     * 	Rules are defined for what should happen when a database record is created or updated.
+     * 	
+     */
+    function afterSave($created, $options = array()) {
+
+        if (isset($this->data['Queue2']['queue2_status'])) {                    // A job in Queue2 has finished
+            if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED) { 
+
+                // queue2info is always present
+                $queue2_infoDecoded = json_decode($this->data['Queue2']['queue2_info'], true);
+                $originExecution = $queue2_infoDecoded['originExecution'];
+               
+                if ($originExecution == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                    $filterConditions = array("queue2_info" => $this->data['Queue2']['queue2_info'], true);
+                    $result = $this->find("first", array(
+                                        "conditions" => $filterConditions,
+                                        ));
+                    
+                    // Lets personalize the message to the investor a little bit, add the company name 
+                    $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+                    
+                    $linkedAccountId = $queue2_infoDecoded['companiesInFlow'];
+                    $linkedAccountData = $this->Linkedaccount->getLinkedaccountDataList(['id' => $linkedAccountId]); 
+                    $this->Company = ClassRegistry::init('Company');
+                    $data = $this->Company->getData( ['id' => $linkedAccountData[0]['Linkedaccount']['company_id'] ]);
+
+                    $companyName = $data[0]['Company']['company_name'];
+                
+                    // Generate an event
+                    $event = new CakeEvent("accountLinkingFullyFinished", $this, 
+                                            array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
+                                                'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
+                                                                           __('has been succesfully linked and analyzed and will be monitored from now on.') . " " .
+                                                                           __('Your data is now available in your Winvestify Dashboard') 
+                                                ));
+
+                    $this->getEventManager()->dispatch($event);
+                }
+            }
+        }
+    }   
+    
+
 }
+ 

@@ -50,7 +50,6 @@ class UserDataShell extends AppShell {
      * @param  array       array with the control variables as provided by platform
      * @return integer     0 OK
      *                     integer: Error Number
-     * 
      */
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
              
@@ -200,6 +199,9 @@ class UserDataShell extends AppShell {
         }
         if (isset($resultData['payment']['payment_tempCamp'])) {
             $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
+        }
+        if (isset($resultData['payment']['payment_secondaryMarketSell'])) {
+            $result = bcsub($result, $resultData['payment']['payment_secondaryMarketSell'], 16);
         }
         return $result;
     }
@@ -398,7 +400,6 @@ class UserDataShell extends AppShell {
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
         print_r($resultData);
-        echo '/////////';
         if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
             $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
@@ -421,7 +422,6 @@ class UserDataShell extends AppShell {
      * @return type
      */    
     public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
-        echo "----------------->  BBBBBBBBB\n";
         print_r($transactionData);
         return $transactionData['investment']['investment_myInvestment'];
     }
@@ -495,7 +495,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
-     * 36
      */
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
         echo "PRINCIPAL BUYBACK, amount =  " . $transactionData['amount'];
@@ -508,7 +507,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
-     * 46
      */
     public function calculateDelayedInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -520,7 +518,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
-     * 66
      */
 
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
@@ -533,7 +530,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
 
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
@@ -546,7 +542,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -566,7 +561,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB 
      *  @return int         number of active loans
-     * 
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
         $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
@@ -681,7 +675,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data$resultData
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 55
      */
     public function calculatePlatformBankCharges(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -732,7 +725,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
      */
     public function calculateCostSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -756,7 +748,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 26
      */
     public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -770,7 +761,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      don't care
-     *
      */
     public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
                 
@@ -786,7 +776,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_latePaymentFeeIncome']);    
@@ -823,7 +812,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_interestIncomeBuyback']);
@@ -835,7 +823,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_regularGrossInterestIncome']);    
@@ -848,7 +835,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalMyInvestmentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_myInvestment']);
@@ -861,7 +847,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalSecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_secondaryMarketInvestment']);    
@@ -873,7 +858,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalCostSecondaryMarketPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_costSecondaryMarket']);     
@@ -1026,6 +1010,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculatePrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        if(isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || !empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])){
+            $resultData['payment']['payment_partialPrincipalAndInterestPayment'] = $resultData['payment']['payment_partialPrincipalAndInterestPayment'] + $transactionData['amount'];
+            return;
+        }
         return $transactionData['amount'];
     }
     
@@ -1036,6 +1024,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculatePartialPrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        if(isset($resultData['payment']['payment_principalAndInterestPayment']) || !empty($resultData['payment']['payment_principalAndInterestPayment'])){
+            $resultData['payment']['payment_principalAndInterestPayment'] = $resultData['payment']['payment_principalAndInterestPayment'] + $transactionData['amount'];
+            return;
+        }
         return $transactionData['amount'];
     }
     
@@ -1155,10 +1147,10 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
    
     /**
      *  Calculates the sum of the payment concept "PartialPrincipalRepayment" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalPartialPrincipalRepaymentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_partialPrincipalRepayment']);    
@@ -1170,7 +1162,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalDelayedInterestIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_delayedInterestIncome']);    
@@ -1182,7 +1173,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_commissionPaid']);    
@@ -1194,7 +1184,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotaltaxVATPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_taxVAT']);    
@@ -1207,7 +1196,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
     public function calculateCommissionPaid(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -1220,7 +1208,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
     public function calculateGlobalTotalWrittenOffPerDay(&$transactionData, &$resultData) {
         //$result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
@@ -1288,7 +1275,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_currencyExchangeFee']);  
@@ -1300,7 +1286,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalCurrencyExchangeTransactionPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_currencyExchangeTransaction']);  
@@ -1312,7 +1297,6 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalIncomeWithholdingTaxPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_incomeWithholdingTax']);  
@@ -1568,6 +1552,10 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
     function calculatePlatformRecoveries(&$transactionData, &$resultData) {
         //$result = $resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'];
         //$result = bcadd($result, $transactionData['amount'], 16);
+        return $transactionData['amount'];
+    }
+    
+    function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
  

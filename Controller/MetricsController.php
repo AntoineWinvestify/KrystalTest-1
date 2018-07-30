@@ -1,7 +1,7 @@
 <?php
 /*
 * +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://beyond-language-skills.com                 |
+* | Copyright (C) 2017, http://www.winvestify.com                         |
 * +-----------------------------------------------------------------------+
 * | This file is free software; you can redistribute it and/or modify     |
 * | it under the terms of the GNU General Public License as published by  |
@@ -23,7 +23,7 @@
 *
 
 2016-11-02	  version 2016_0.1
-function cronCollectGlobalMetrics										[Ok, tested]
+function cronCollectGlobalMetrics						[Ok, tested]
 
 
 
@@ -48,10 +48,10 @@ function beforeFilter() {
 
 	parent::beforeFilter();
 //	$this->Security->requireAuth();
-	$this->set('parentController', strtolower($this->name));						// Required for AJAX callback
-	$this->set('parentAction', strtolower($this->name) . "Ajax");					// Generic AJAX callback function
+	$this->set('parentController', strtolower($this->name));		// Required for AJAX callback
+	$this->set('parentAction', strtolower($this->name) . "Ajax");		// Generic AJAX callback function
 
-	$this->Auth->allow('cronCollectGlobalMetrics');    								// allow these actions without logon	
+	$this->Auth->allow('cronCollectGlobalMetrics');    			// allow these actions without logon	
 		
 }
 

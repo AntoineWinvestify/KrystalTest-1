@@ -323,7 +323,8 @@ class MarketplaceShell extends AppShell {
 //	***************************************************************************
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
-        $filterConditions = array('investor_id' => $investorId);
+        $filterConditions = array('investor_id' => $investorId,
+                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
         $linkedaccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
         $platformsZeroYield = 0;
         $index = 0;
@@ -614,7 +615,8 @@ class MarketplaceShell extends AppShell {
 //	***************************************************************************
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
-        $filterConditions = array('investor_id' => $investorId);
+        $filterConditions = array('investor_id' => $investorId,
+                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
         $linkedaccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
 
         $index = 0;

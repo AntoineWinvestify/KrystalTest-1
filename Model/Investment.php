@@ -1,5 +1,4 @@
 <?php
-
 /**
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2017, https://www.winvestify.com                        |
@@ -21,9 +20,8 @@
  * @version 0.1
  * @date 2017-10-18
  * @package
- *
-
-
+ */
+/*
   holds the logic of an individual investment
 
   2017-10-18		version 0.1
@@ -37,8 +35,8 @@
   Pending:
 
 
-
  */
+
 class Investment extends AppModel {
 
     var $name = 'Investment';
@@ -188,23 +186,22 @@ var $validate = array(
     }
 
 
-    /** NOT YET TESTED
-     * 
-     *  Reads the references of the all the investmentslices of an investment
+    /** 
+     *  Reads the investmentslices of an investment. Currently the system can only handle 1 slice per investment
      * 
      *  @param  bigint  database reference of Investment, i.e. investmentId
      *  @return array   slices (database references) and sliceIdentifier of each slice
      */
-    public function getInvestmentSlices ($investmentId) {
-//	$this->Behaviors->load('Containable');
-//	$this->contain('Investmentslice');  	
+    public function getInvestmentSlices ($investmentId) {	
+        
+        $this->Behaviors->load('Containable');
+	$this->contain('Investmentslice');  	
 
-        $slices = $this->Investmentslice->find("all", array("conditions" => array("investment_id" => $investmentId),
-                                            "fields" => array("id", "investmentslice_identifier"),                                   
-                                            "recursive" => 0,
-                                          )); 
+        $slices = $this->find("first", array("conditions" => array("id" => $investmentId),                                   
+                                            "recursive" => 1,
+                                          ));
 
-        return $slices['Investmentslice'];        
+        return $slices['Investmentslice']; 
     }  
     
 }

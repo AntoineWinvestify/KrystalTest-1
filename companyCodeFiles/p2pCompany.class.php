@@ -172,7 +172,7 @@ class p2pCompany {
     protected $callbackAmortizationTable;
    
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
-                                        "chunkSize" => 1,     
+                                        "chunkSize" => 2,     
                                         );
     
     //Number of days for each company download. Only some pfp uses it.
@@ -1850,7 +1850,11 @@ class p2pCompany {
 
         if (empty($dateMin)) {
             $dateMin = "20090101";
-        }
+        } /*else{
+            $dateMin = $dateMin + 1;
+            echo $dateMin;
+            exit;
+        }*/
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if ($this->numberOfFiles == 0) {
             $this->dateInitPeriod = date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
@@ -2871,7 +2875,12 @@ FRAGMENT
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
         echo "our config: ";
         print_r($this->headerComparation);
-
+        echo "Have content(1 no, 2 yes): " . count($data);
+        if(count($data) === 1){
+            return WIN_ERROR_FLOW_EMPTY_FILE;
+        }
+        
+        $data = array_filter($data[1]);
         if (!empty(array_diff($this->headerComparation, $data)) || !empty(array_diff($data, $this->headerComparation)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
             $date = date("Ymd");
             $fileErrorDir = $pathError . $this->companyName . DS . $this->userReference . DS . $date . DS;
@@ -2945,8 +2954,8 @@ FRAGMENT
 
         if (!empty($this->tempArray['errorTables'])) {
             $path = $this->getFolderPFPFile();
-            $oldFilePath = $path . DS . "oldLoanIds.json";
-            $filePath = $path . DS . "loanIds.json";
+            $oldFilePath = $path . DS . "goodLoanIds.json";
+            $badLoansPath = $path . DS . "badLoanIds.json";
 
             if (!empty($this->tempArray['correctTables'])) {
                 $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
@@ -2956,9 +2965,9 @@ FRAGMENT
             }
 
             unlink($filePath);
-            $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+            $idsJsonFile = fopen($badLoansPath, "w"); //badLoanIds must be replaced, we can delete this info
             $jsonIds = json_encode($this->tempArray['errorTables']);
-            fwrite($idsJsonFile, $jsonIds);
+            fwrite($badLoansPath, $jsonIds);
             fclose($idsJsonFile);
         }
     }

@@ -714,6 +714,7 @@ if ($result) {
                                                 'name' => 'iban',
                                                 'id' => 'ContentPlaceHolder_iban',
                                                 'label' => false,
+                                                'type' => "text",
                                                 'placeholder' => __('IBAN'),
                                                 'class' => $class,
                                                 'value' => $ocr[0]['Ocr']['investor_iban'],

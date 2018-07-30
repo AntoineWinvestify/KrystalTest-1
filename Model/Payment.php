@@ -20,8 +20,8 @@
 * @version 0.1
 * @date 2017-11-08
 * @package
-*
-
+*/
+/*
 
 2017-11-08		version 0.1
 initial version
@@ -62,12 +62,6 @@ var $validate = array(
 
 
 
-
-
-
-    /*
-     * **** CALLBACK FUNCTIONS *****
-     */
 
     /*
      * 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * AppShell file
  *
@@ -12,8 +11,8 @@
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ * @copyright     Copyright (c) Winvestify Asset Management S.L.
+ * @link          http://www.winvestify.com
  * @since         CakePHP(tm) v 2.0
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
@@ -28,18 +27,31 @@ require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
  * @package       app.Console.Command
  */
 class AppShell extends Shell {
+    var $runTimeParameters;
+   
+    function __construct() {
+        parent::__construct();
+        Configure::load('p2pGestor.php', 'default');
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
+
+        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php'); 
+        $runtime = new Winvestify();
+        $this->runTimeParameters = $runtime->readRunTimeParameters(); 
+    }
+    
+    
     
     public function startup() {
-        Configure::load('p2pGestor.php', 'default');
+
+        
+
     }
 
     /**
-     *
      * 	Creates a new instance of class with name company, like zank, or comunitae....
      *
-     * 	@param 		int 	$companyCodeFile		Name of "company"
-     * 	@return 	object 	instance of class "company"
-     *
+     * 	@param 	int 	$companyCodeFile Name of "company"
+     * 	@return object 	instance of class "company"
      */
     function companyClass($companyCodeFile) {
         $dir = Configure::read('companySpecificPhpCodeBaseDir');
@@ -59,7 +71,7 @@ class AppShell extends Shell {
 
 
     /**
-     * Read the names in directory $dir of the files (FDQN) that fulfill the $typeOfFiles bitmap
+     * Read the names of the files (FDQN) in directory $dir that fulfill the $typeOfFiles bitmap
      *
      * @param string $dir           Directory in which to search
      * @param int $typeOfFiles      bitmap of constants of Type Of File:
@@ -87,7 +99,8 @@ class AppShell extends Shell {
 
     
     /**
-     * Checks if an element with value $element exists in a two dimensional array
+     * Check if an element with value $element exists in a two dimensional array
+     * 
      * @param type $element
      * @param type $array
      *
@@ -133,8 +146,6 @@ class AppShell extends Shell {
             WIN_FLOW_EXPIRED_LOAN_FILE => "expiredLoan"
             );
 
- 
-        
         $requiredFileType = array();
         foreach ($knownFileTypesNames as $keyKnownFileTypeName => $knownFileTypeName) {
             $temp = $keyKnownFileTypeName & $typeOfFiles;
@@ -161,34 +172,21 @@ class AppShell extends Shell {
     }
     
     /**
-     * Function to get the extension of a file
+     * Get the extension of a file
+     * 
      * @param string $filePath FQDN of the file to analyze
      * @return string It is the extension of the file
      */
     public function getExtensionFile($file) {
         $file = new File($file);
-        $extension = $file->ext();
++        $extension = $file->ext();
         return $extension;
     }
-    
-    /** CAN BE DELETED, IT IS NOT USED AND 
-     * Function to get the loanId from the file name of one amortization table
-     * @param string $filePath It is the path to the file
-     * @return string It is the loanId
-     */
-    public function getLoanIdFromFile($filePath) {
-        $file = new File($filePath, false);
-        $name = $file->name();
-        $nameSplit = explode("_", $name);
-        $loanId = $nameSplit[1];
-        echo "loanId = $loanId\n";
-        print_r($nameSplit);
-        exit;
-        return $loanId;
-    }
         
+    
     /** 
      * Function to get the loanId from the file name of an amortization table
+     * 
      * @param   string  $filePath   It is the full path to the file
      * @return  array               [0] contains investmentslice_id
      *                              [1] contains the loanId
@@ -208,7 +206,6 @@ class AppShell extends Shell {
      *
      * @param int $linkedaccount_id    linkedaccount reference
      * @return array
-     *
      */
     public function getListActiveInvestments($linkedaccount_id) {
         $this->Investment = ClassRegistry::init('Investment');
@@ -234,13 +231,12 @@ class AppShell extends Shell {
      * @param int $linkedaccount_id    linkedaccount reference
      * @param   int $status          The status of the investment
      * @return array
-     *
      */
     public function getLoanIdListOfInvestments($linkedaccount_id, $status) {
         $this->Investment = ClassRegistry::init('Investment');
         $filterConditions = array(
             'linkedaccount_id' => $linkedaccount_id,
-            "investment_statusOfloan" => $status,
+            'investment_statusOfloan' => $status,
         );
 
         $investmentListResult = $this->Investment->find("all", array("recursive" => -1,
@@ -259,7 +255,6 @@ class AppShell extends Shell {
      * @param int $linkedaccount_id    linkedaccount reference
      * @param   int $status          The status of the investment
      * @return array
-     *
      */
     public function getLoanIdListOfInvestmentsWithReservedFunds($linkedaccount_id, $status) {
         $this->Investment = ClassRegistry::init('Investment');
@@ -276,12 +271,13 @@ class AppShell extends Shell {
     }    
     
     /**
-    * Returns every date between two dates as an array
-    * @param string $startDate the start of the date range
-    * @param string $endDate the end of the date range
-    * @param string $format DateTime format, default is Y-m-d
-    * @return array returns every date between $startDate and $endDate, formatted as "Y-m-d"
-    */
+     * Returns every date between two dates as an array
+     * 
+     * @param string $startDate the start of the date range
+     * @param string $endDate the end of the date range
+     * @param string $format DateTime format, default is Y-m-d
+     * @return array returns every date between $startDate and $endDate, formatted as "Y-m-d"
+     */
     function createDateRange($startDate, $endDate, $format = "Ymd") {
         $begin = new DateTime($startDate);
         $end = new DateTime($endDate);
@@ -300,9 +296,9 @@ class AppShell extends Shell {
     
     /**
      * Gets the latest (=last entry in DB) data of a model table
+     * 
      * @param string    $model
      * @param array     $filterConditions
-     *
      * @return array with data
      *          or false if $elements do not exist in two dimensional array
      */
@@ -337,11 +333,12 @@ class AppShell extends Shell {
         echo $output . "\n\n";
         if (strpos($output, $scriptName . " initClient") === false) {
             $command = __DIR__ . DS . ".." . DS . "cake " . $scriptName . " initClient";
-            echo "Not found, init client";
-            shell_exec($command);
+            echo "Client is not running so init the client\n";
+            $output = shell_exec($command);
+            echo $output . "\n\n";
         }
         else {
-            echo "Found client";
+            echo "The Client is already running, so execute DIE";
             echo "\n DIE \n";
             die;
         }
@@ -375,7 +372,6 @@ class AppShell extends Shell {
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save($excelName);
         echo "FILE $excelName has been written\n";
-
     }    
     
 
@@ -389,6 +385,21 @@ class AppShell extends Shell {
         $data = json_decode($fileString, true);
         return $data;
     }
+ 
     
+    /**
+     * Read the runtime parameters
+     * 
+     * @return array   list of all defined runtime parameters               
+     */    
+    public function readRunTimeParameters() {
+        $this->Runtimeconfiguration = ClassRegistry::init('Runtimeconfiguration');      
+        $runtimeParameters = $this->Runtimeconfiguration->getData(null, $field = "*");
+        return [$runtimeParameters][0][0]['Runtimeconfiguration'];
+    }
+    
+    public function killShellCommand($processName){
+        exec("pkill -f $processName");
+    }
     
 }

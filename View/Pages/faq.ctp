@@ -19,7 +19,7 @@
  * @date 2017-08-23
  * @package
  * 
- * Winvestify Frequently Asqued Questions
+ * Winvestify Frequently Asked Questions
  * 
  */
 ?>

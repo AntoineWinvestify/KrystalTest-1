@@ -15,7 +15,7 @@
  * +----------------------------------------------------------------------------+
  *
  *
- * @author 
+ * @author Antoine
  * @version 0.5
  * @date
  * @package
@@ -74,7 +74,7 @@ class GearmanClientShell extends AppShell {
         $this->gearmanErrors[$data[0]]['global']['typeOfError'] = "GLOBAL ERROR on flow " . $this->flowName ;
         $this->gearmanErrors[$data[0]]['global']['detailedErrorInformation'] = "GLOBAL ERROR on " . $this->flowName
                 . " with type of error: " . constant("WIN_ERROR_" . $this->flowName) . " AND subtype " . WIN_ERROR_FLOW_GEARMAN_FAIL ;
-        $this->gearmanErrors[$data[0]]['global']['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
+        $this->gearmanErrors[$data[0]]['global']['EId'] = constant("WIN_ERROR_" . $this->flowName);
         $this->gearmanErrors[$data[0]]['global']['subtypeErrorId'] = WIN_ERROR_FLOW_GEARMAN_FAIL;
         print_r($this->userResult);
         echo "ID Unique: " . $task->unique() . "\n";
@@ -128,7 +128,7 @@ class GearmanClientShell extends AppShell {
         $dataWorker = json_decode($task->data(), true);
         
         if (!empty($dataWorker['statusCollect'])) {
-             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Collecting status from worker \n");
+            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Collecting status from worker \n");
             foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
                 $this->userResult[$data[0]][$linkaccountId] = $status;
                 $this->gearmanErrors[$data[0]][$linkaccountId] = $dataWorker['errors'][$linkaccountId];
@@ -137,7 +137,7 @@ class GearmanClientShell extends AppShell {
         if (!empty($dataWorker['tempArray'])) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
             $this->tempArray[$data[0]] = $dataWorker['tempArray'];
-        }
+        }  
         if (!empty($dataWorker['tempUrlArray'])) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "saving tempArray into global variable \n");
             foreach ($dataWorker['tempUrlArray'] as $linkaccountId => $tempUrl) {
@@ -145,8 +145,6 @@ class GearmanClientShell extends AppShell {
                 $this->tempArray[$data[0]][$linkaccountId] = $dataTempArray;
             }
         }
-//        print_r($this->userResult);
-//        print_r($this->userReference);
         echo "ID Unique: " . $task->unique() . "\n";
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
@@ -297,7 +295,7 @@ class GearmanClientShell extends AppShell {
     }    
     
     /**
-     * Function to save an application error produce on a Gearman Worker
+     * Function to save an application error produced on a Gearman Worker
      * @param array $error It contains all the information about the error
      *              $error['line'] It is the line where the error happened
      *              $error['file'] It is the file where the error happened
@@ -335,7 +333,7 @@ class GearmanClientShell extends AppShell {
      * @param array $this->userResult This array is a variable class where we save the completion status of a pfp
      *                                The variable is created as: this->userResult[$queueId][$linkedaccountId]
      */
-    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {       
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
             $globalDestruction = false;
             unset($this->queueInfo[$queueId]['companiesInFlow']);

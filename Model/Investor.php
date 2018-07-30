@@ -1,5 +1,4 @@
 <?php
-
 /**
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2017, http://www.winvestify.com                         |
@@ -16,7 +15,12 @@
   // | Author: Antoine de Poorter                                            |
   // +-----------------------------------------------------------------------+
   //
-
+* @author Antoine de Poorter
+* @version 0.7
+* @date 2017-17-10
+* @package
+*/
+/*
   2016-10-18	  version 0.1
   function updateAccountCreationStatus						[Not OK, Not tested]
 
@@ -173,11 +177,9 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Generates a GUID for an image
      * 	
-     * 	@return array  array with a GUIDs
-     * 			
+     * 	@return array  array with a GUIDs		
      */
     public function getGUID() {
         if (function_exists('com_create_guid')) {
@@ -199,8 +201,8 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Reads the status of the account of an investor
+     * 
      * 	@param 		int	$investorReference  The database handler of the investor
      * 	@param 		bitmap	$statusBit          The "status characteristic" to be checked of the current account
      *                                                   The definition of the bitmap is defined in database table
@@ -217,8 +219,8 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Updates the status of the account of an investor
+     * 
      * 	@param 		int	$investorReference	The database handler of the investor
      * 	@param 		bitmap	$addStatusBit		A new characteristic to be added to the current account creation status
      * 							The definition of the bitmap is defined in database table
@@ -244,8 +246,8 @@ class Investor extends AppModel {
     }
 
     /** NOT YET FINISHED
-     *
      * 	De-activates a user. The corresponding data in "user" and "investor" is marked as 'deleted'
+     * 
      * 	@param 		int	$investor_Identity
      * 	@return 	boolean	true	All OK
      * 				false	Error occured
@@ -265,12 +267,11 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Decreases the number of linkedaccounts of an investor
+     * 
      * 	@param 		int		$investorReference	The database handler of the investor
      * 	@return 	boolean	true	All OK
-     * 				false	Error occured
-     * 						
+     * 				false	Error occured					
      */
     function decreaseLinkedAccounts($investorId) {
         $this->id = $investorId;
@@ -283,12 +284,11 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Increases the number of linkedaccounts of an investor
+     * 
      * 	@param 		int		$investorId	Identifier of the investor
      * 	@return 	boolean	true	All OK, data has been saved
-     * 				false	Error occured
-     * 						
+     * 				false	Error occured				
      */
     function increaseLinkedAccounts($investorId) {
         $this->id = $investorId;
@@ -301,7 +301,8 @@ class Investor extends AppModel {
     }
 
     /**
-     * Read the cheack data
+     * Read the check data
+     * 
      * @param type $investorId
      * @return type
      */
@@ -311,13 +312,11 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Checks if current stored investment information of the user is recent enough
      * 	
      * 	@param 		int		$investorId	Database reference of the investor
      * 	@return 	boolean	true	New information is to be collected for this investor
-     * 				false	Existing information is OK
-     * 						
+     * 				false	Existing information is OK					
      */
     function investmentInformationUpdate($investorId) {
 
@@ -354,11 +353,10 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Translates the unique userReference to the database reference
+     * 
      * 	@param 		string	$investorReference Unique Identifier of the investor
-     * 	@return 	int	$investorId The database reference of the investor
-     * 					
+     * 	@return 	int	$investorId The database reference of the investor				
      */
     function investorReference2Id($investorReference) {
         $resultInvestor = $this->find("first", array("fields" => array("id"),
@@ -407,8 +405,6 @@ class Investor extends AppModel {
             }
         }
 
-
-
         $this->set($infoInvestor);
         if ($this->validates()) {  //validation ok     
             $this->save($infoInvestor);
@@ -423,6 +419,7 @@ class Investor extends AppModel {
 
     /**
      * Get all data of a investor
+     * 
      * @param type $id
      * @return type
      */
@@ -437,6 +434,7 @@ class Investor extends AppModel {
 
     /**
      * Get the investor Identity by investor.id
+     * 
      * @param int $id It is the investor's id
      * @return array $info It is all the investor's data
      */
@@ -473,6 +471,7 @@ class Investor extends AppModel {
 
     /**
      * Get investor id
+     * 
      * @param type $userid
      * @return type
      */
@@ -484,6 +483,7 @@ class Investor extends AppModel {
 
     /**
      * Get investor user_id
+     * 
      * @param type $userid
      * @return type
      */
@@ -499,6 +499,7 @@ class Investor extends AppModel {
 
     /**
      * Get investor identification code
+     * 
      * @param type $userid
      * @return type
      */
@@ -510,6 +511,7 @@ class Investor extends AppModel {
 
     /**
      * Get investor dni
+     * 
      * @param type $userid
      * @return type
      */
@@ -521,6 +523,7 @@ class Investor extends AppModel {
 
     /**
      * Create a check line in the checks table for the user
+     * 
      * @param type $id  id of related User table
      * @return boolean
      */
@@ -552,6 +555,7 @@ class Investor extends AppModel {
 
     /**
      * Update the check data
+     * 
      * @param type $checks
      * @param type $investorId
      * @return int
@@ -727,13 +731,11 @@ class Investor extends AppModel {
     }
 
     /**
-     *
      * 	Get information of all investors according to the conditions as defined
      *  in $filterConditions.
      * 
      * 	@param 		string	$filterConditions     conditions of the investor
-     * 	@return 	array	data of the investor
-     * 					
+     * 	@return 	array	data of the investor	
      */
     public function getInvestorData($filterConditions) {
 
@@ -801,7 +803,7 @@ class Investor extends AppModel {
      * 	Rules are defined for what should happen when a database record is created or updated.
      * 	
      */
-    function beforeSave($created, $options = array()) {
+    function beforeSave($options = array()) {
 
 // Store telephone number without spaces
         if (!empty($this->data['Investor']['investor_dateOfBirth'])) {

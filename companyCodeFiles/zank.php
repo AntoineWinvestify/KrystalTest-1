@@ -1,18 +1,18 @@
 <?php
 
 /**
- * +-----------------------------------------------------------------------------+
- * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
+ * | Copyright (C) 2018, http://www.winvestify.com                   	  	|
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
  * | the Free Software Foundation; either version 2 of the License, or 		|
  * | (at your option) any later version.                                      	|
  * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  *
  *
  * @author 
@@ -140,7 +140,7 @@ class zank extends p2pCompany {
                             ],
                     "functionName" => "extractDataFromString",
                 ],
-                [
+                /*[
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate  
                                                                                 // format ["concept string platform", "concept string Winvestify"]
@@ -148,7 +148,7 @@ class zank extends p2pCompany {
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
                                     2 => ["inversion" => "Primary_market_investment_preactive"],
-                        //            3 => ["inversion" => "Disinvestment"],  
+                                    3 => ["inversion" => "Disinvestment"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
                                     6 => ["recargo" => "Delayed_interest_income"],
@@ -157,7 +157,7 @@ class zank extends p2pCompany {
                                 ]                    
                             ],
                     "functionName" => "getTransactionDetail",
-                ]
+                ]*/
             ],
             "C" => [
                 
@@ -1902,8 +1902,7 @@ class zank extends p2pCompany {
                 //Change account
                 $this->credentials['_username'] = $this->user;
                 $this->credentials['_password'] = $this->password;
-                //$this->credentials['_username'] = "Klauskuk@gmail.com";
-                //$this->credentials['_password'] = "P2Pes2017";
+
                 // get login page
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -2028,7 +2027,7 @@ class zank extends p2pCompany {
                 }
                 foreach ($tables as $table) {
                     echo "Read table: ";
-                    if ($table->getAttribute('id') == 'parte' || $table->getAttribute('id') == 'todo') {
+                    if ($table->getAttribute('id') == 'parte' /*|| $table->getAttribute('id') == 'todo'*/) {
                         $AmortizationTable = new DOMDocument();
                         $clone = $table->cloneNode(TRUE); //Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
@@ -2044,6 +2043,7 @@ class zank extends p2pCompany {
                         }
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                     }
+                    
                 }
                 if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
@@ -2255,7 +2255,7 @@ class zank extends p2pCompany {
      * 
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
-     */
+     */ 
     public function translateInvestmentMarket($inputData) {
         
     }

@@ -1,7 +1,7 @@
 <?php
 /**
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2017, https://www.winvestify.com                        |
+// | Copyright (C) 2018, https://www.winvestify.com                        |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -18,12 +18,12 @@
 *
 * @author Antoine de Poorter
 * @version 0.1
-* @date 2017-10-18
+* @date 2018-04-04
 * @package
 *
 
 
-2017-10-18		version 0.1
+2018-04-04		version 0.1
 initial version
 
 
@@ -42,7 +42,7 @@ Pending:
 
 class Amortizationtable extends AppModel
 {
-	var $name= 'Amortizationtable';
+    var $name= 'Amortizationtable';
 
 
     /**
@@ -63,8 +63,12 @@ class Amortizationtable extends AppModel
         ),
     );    
     
-   
-
+   public $belongsTo = array(
+       'Investmentslice' => array(
+            'className' => 'Investmentslice',
+            'foreignKey' => 'investmentslice_id'
+        )
+   );
     
     /**
      * Function to save the amortization table of a pfp 
@@ -79,7 +83,7 @@ class Amortizationtable extends AppModel
         $amortizationtable = [];
         $investmentsliceIds = [];
 
-// connect amortization table to the correct Investmentslice model        
+        // connect amortization table to the correct Investmentslice model        
         foreach ($amortizationData as $loanId => $loanData) {
             foreach ($loanData as $value) {
                 $loanIdInformation = explode("_", $loanId);
@@ -93,108 +97,133 @@ class Amortizationtable extends AppModel
         $this->saveMany($amortizationtable, array('validate' => true,
                                                 'callbacks' => "before",
                                                 ));
+   
+        foreach ($investmentsliceIds as $investmentsliceId) {
+            $conditions = array("id" => $investmentsliceId);       
+            $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
+                                                                           'fields' => array("id", "investment_id"),
+                                                                           'conditions' => $conditions
+                                        ));
 
-// update mark in investment model stating that amortizationtable is available        
- //       $index = 0;
- //       $controlIndex = 0;
- //       $limit = WIN_DATABASE_READOUT_LIMIT;       
-    //    do {    
-            foreach ($investmentsliceIds as $investmentsliceId) {
-                $conditions = array("id" => $investmentsliceId);       
-                $result = $this->Investmentslice->find('first', $params = array('recursive' => -1,
-                                                                               'fields' => array("id", "investment_id"),
-                                                                               'conditions' => $conditions
-                                            ));
-
- //               if (count($result) < $limit) {          // No more results available
- //                   $controlIndex = 1;
- //               }
-                
-                $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
-                                   'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
-                $investmentIds[] = $tempArray;
-            }
-    //        $index++;
-    //    }
-    //    while($controlIndex < 1); 
-            
+            $tempArray = array("id" => $result['Investmentslice']['investment_id'], 
+                               'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE  );
+            $investmentIds[] = $tempArray;
+        }
+    
         $this->Investment->saveMany($investmentIds, array('validate' => true));      
-    return true;
+        return true;
     }
 
-
-    
- 
-    
-     /** 
-     *  Updates the amortization table of an investment slice and creates the corresponding payment 
-     * 
-     *  @param  bigint  $loanId             The unique loanId 
+   
+    /** 
+     *  Updates the amortization table of an investment slice and creates the corresponding payment.
+     *
+     *  @param  int     $companyId          The company_id of the PFP
+     *  @param  bigint  $investmentId             The investment_id of the investment 
      *  @param  bigint  $sliceIdentifier    Identifier of the investmentSlice to update
      *  @param  array   $data               Array with the payment data
-     *  @return array   boolean  
-     *
+     *  @return array   boolean             true Table has been updated
      */
-    public function addPayment($loanId, $sliceIdentifier, $data)  {
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($loanId);
-print_r($investmentSlice);
-print_r($data);           
+    public function addPayment($companyId, $investmentId, $sliceIdentifier, $data)  {
+        echo "Entering addPayment<br/>";
+$this->print_r2($investmentId);
+$this->print_r2($sliceIdentifier);
+$this->print_r2($data);           
+     $this->Investment = ClassRegistry::init('Investment');
 echo __FUNCTION__ . " " . __LINE__ . "\n";
         // support for partial payment is not fully implemented
-        $data['newPaymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
-// Should be using the hasOne or hasMany relationship between Investment model and Investmentslice model
-        $slices = $this->Investment->getInvestmentSlices($loanId);
-print_r($slices);
-        // get internal database reference
-// Should be using the hasOne or hasMany relationship between Investment model and Investmentslice model
-        foreach ($slices as $slice) {                                           // Initially we will find only 1 slice
-            echo __FUNCTION__ . " " . __LINE__ . " sliceIdentifier = $sliceIdentifier to be compared with " . $slice['investmentslice_identifier'] . "\n";
+        $data['paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+        
+        $slices = $this->Investment->getInvestmentSlices($investmentId);
+        if (Configure::read('debug')) {
+            $this->print_r2($slices);
+        }
+
+        // get internal database reference, initially only 1 slice will be found
+        foreach ($slices as $slice) {    
             if ($slice['investmentslice_identifier'] == $sliceIdentifier) {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $sliceDbreference = $slice['id'];
-                echo "REFERENCE = $sliceDbreference\n";
                 break;
             }
         }
 
-        // support for partial payment is not fully implemented
-        $filterConditions = array('amortizationtable_paymentStatus' => WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED);
-        $amortizationTable = $this->Investmentslice->getAmortizationTable($sliceDbreference, $filterConditions);    // all entries of table which are not yet fully paid 
-      //  if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ . " sliceDbreference = $sliceDbreference\n";
-            print_r($amortizationTable);
-        //}
-        $tableDbReference = $amortizationTable[0]['Amortizationtable']['id'];                                   
+        $amortizationTable = $this->readFullAmortizationTable($sliceDbreference);
         
-        $payment['amortizationtable_id'] = $tableDbReference;
-        $payment['amortizationpayment_paymentDate'] = $data['paymentDate'];
-        $payment['amortizationpayment_capitalAndInterestPayment'] = $data['capitalAndInterestPayment'];
-        $payment['amortizationpayment_interest'] = $data['interest'];
-        $payment['amortizationpayment_capitalRepayment'] = $data['capitalRepayment'];               
-        if (isset($data['commission'])) {
-            $payment['amortizationpayment_commission'] = $data['commission'];
-        }       
-        if (isset($data['latePaymentFee'])) {
-            $payment['amortizationpayment_latePaymentFee'] = $data['latePaymentFee'];
-        }  
- echo __FUNCTION__ . " " . __LINE__ . "\n";       
-        if ($this->Amortizationpayment->save($paymentData, array('validate' => true))) {
-            $amortizationId = $this->Amortizationpayment->id;
-            $tableData['id'] = $tableDbReference;
-            $tableData['newPaymentStatus'] = $data['paymentStatus'];
-            if ($this->Amortizationtable->save($tableData, array('validate' => true))) {           
+        foreach ($amortizationTable as $table) {
+            // look for the FIRST record which is *still* unpaid
+            if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {                 
+                $tableDbReference = $table['id'];                 
+                break;
+            }
+        }
+                        
+        if (empty($tableDbReference)) {
+            return false;
+        }    
+  
+        $paymentData['amortizationpayment_paymentDate'] = $data['paymentDate'];
+
+        if (isset($data['capitalAndInterestPayment'])) {
+            $paymentData['amortizationpayment_capitalAndInterestPayment'] = $data['capitalAndInterestPayment'];
+        }
+        if (isset($data['interest'])) {       
+            $paymentData['amortizationpayment_interest'] = $data['interest'];
+        }
+        if (isset($data['capitalRepayment'])) {
+            $paymentData['amortizationpayment_capitalRepayment'] = $data['capitalRepayment']; 
+        }
+        
+        $paymentData['amortizationtable_id'] = $tableDbReference;
+        
+        if ($this->Amortizationpayment->save( $paymentData, array('validate' => true))) {     // update the amortizationTable
+            $amortizationPaymentId = $this->Amortizationpayment->id;       
+            $tableData = ['id' => $tableDbReference, 
+                          'amortizationtable_paymentStatus' => $data['paymentStatus'],
+                          'amortizationtable_paymentDate'   => $data['paymentDate']
+                         ];
+            
+            if ($this->save($tableData, array('validate' => true))) { 
                 return true;
             }
             else {
-                $this->Amortizationpayment->delete($tableDbReference);
-                return false;
+                $this->delete($amortizationPaymentId);                          // Do a rollback of the previous save operation
             }
         } 
-        else {
-            return false;
-        }
+        return false;        
     }   
+    
+    /** 
+     *  Reads a next pending payment data according to the number of instalment that have been paid (or better: are still pending)
+     *
+     *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
+     *  @return date of next pending instalment. Empty if all instalment have been paid
+     */
+    public function getNextPendingPaymentDate($sliceId) {
+        $amortizationTable = $this->readFullAmortizationTable($sliceId);
 
+        foreach ($amortizationTable as $table) {         
+            // look for the FIRST record which is *still* unpaid
+            if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED) {                 
+                return $table['amortizationtable_scheduledDate'];                 
+            }  
+        }                                 
+        return;                                                                 // ALL INSTALMENTS HAVE BEEN PAID
+    } 
+
+    
+    /** 
+     *  Reads a complete amortization table
+     *
+     *  @param  bigint  $sliceId            The database Id of a investmentslice Model object (id)
+     *  @return array   Amortizationtable   The complete amortization table. It contains *only* numeric indexes for the tables,
+     */
+    public function readFullAmortizationTable($sliceId) {
+        $amortizationTable = $this->find("all", $params = [ 'recursive' => -1,
+                                                            'conditions' => ['investmentslice_id' => $sliceId] ]
+                                        );
+       
+        $amortizationTableNormalized = Hash::extract($amortizationTable, '{n}.Amortizationtable');       
+        return $amortizationTableNormalized;
+    }    
     
 }

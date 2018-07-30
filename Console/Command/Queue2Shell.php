@@ -1,16 +1,15 @@
 <?php
-
 /**
- * +-----------------------------------------------------------------------------+
- * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
+ * | Copyright (C) 2017, https://www.winvestify.com                   	  	|
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
  * | the Free Software Foundation; either version 2 of the License, or 		|
  * | (at your option) any later version.                                      	|
  * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
  * +-----------------------------------------------------------------------------+
  *
@@ -19,7 +18,8 @@
  * @version 0.1
  * @date 2018-02-13
  * @package
- *
+ */
+/*
  *
  *  Shell for cron methods of queues2
  *
@@ -47,8 +47,9 @@ class Queue2Shell extends AppShell {
         $this->Company = ClassRegistry::init('Company');
 
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
-
-        $companiesWithPreprocess = $this->Company->getData(['company_typeAccessPreprocess !=' => null], ['id']);                //if company_typeAccessPreprocess isnt null, the company must have preprocess
+        
+        //if company_typeAccessPreprocess isnt null, the company must have preprocess
+        $companiesWithPreprocess = $this->Company->getData(['company_typeAccessPreprocess !=' => null], ['id']);                
         foreach ($companiesWithPreprocess as $companyWithPreprocess) {
             $hasPreprocess[] = $companyWithPreprocess['Company']['id'];
         }
@@ -80,7 +81,7 @@ class Queue2Shell extends AppShell {
     }
 
     /**
-     * Put a new request into the queue for Dashboard 2.0
+     * Put a new request into the queue for Dashboard 2.0 in case of a regular update
      * 
      */
     public function cronAddToQueue2() {
@@ -90,10 +91,13 @@ class Queue2Shell extends AppShell {
         $this->Queue2 = ClassRegistry::init('Queue2');
 
         $investors = $this->Investor->getData(null, ['id', 'investor_identity']);
-
+        
         foreach ($investors as $investor) {
-            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS], ['id', 'company_id']);
-        }
+            $linkaccounts[$investor['Investor']['investor_identity']] = $this->Linkedaccount->getData(['investor_id' => $investor['Investor']['id'], 
+                                                                            'linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS,
+                                                                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE],
+                                                                            ['id', 'company_id']);
+        }       
 
         foreach ($linkaccounts as $investorIdentity => $linkaccount) {
             foreach ($linkaccount as $linkedPfp) {
@@ -114,6 +118,18 @@ class Queue2Shell extends AppShell {
                 $this->Queue2->create();
                 $this->Queue2->save($data);
                 $inFlow = '';
+            }
+        }
+    }
+    
+    public function cronDeleteEmptyTracing() {
+        $path = "/var/www/clients/client4/web4/home/winadmin4antonio/checkIfScriptIsRunning/";
+        $files = scandir($path);
+        unset($files[0]);
+        unset($files[1]);
+        foreach($files as $file){
+            if(filesize($path . $file) <= 9500){
+                unlink($path . $file);
             }
         }
     }

@@ -20,7 +20,8 @@
 * @version 0.1
 * @date 2017-10-18
 * @package
-*
+*/
+/*
 
 
 2017-10-18		version 0.1
@@ -31,10 +32,6 @@ initial version
 
 
 Pending:
-
-
-
-
 
 
 
@@ -66,8 +63,6 @@ class Investmentslice extends AppModel
         'Amortizationtable' => array(
             'className' => 'Amortizationtable',
             'foreignKey' => 'investmentslice_id',
-            'fields' => '',
-            'order' => '',
         ),
     );   
     
@@ -79,7 +74,6 @@ class Investmentslice extends AppModel
      *  @param          string  $sliceIdentifier        Unique identifier of the slice
      *  @param          date    $date                   Date of creation
      * 	@return 	bigint                          Database Id of the slice   
-     * 			
      */
     public function getNewSlice ($investmentId, $sliceIdentifier, $date) {
 
@@ -102,10 +96,9 @@ class Investmentslice extends AppModel
      * Reads the date of the next [expected] payment
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
-     * 	@return 	bigint                          Database Id of the slice   
-     * 			
+     * 	@return 	bigint                          Database Id of the slice   		
      */
-    public function getNextPaymentDate ($investmentId) {
+    public function getNextPaymentDate11 ($investmentId) {
 
         $this->create();
 	$this->Behaviors->load('Containable');
@@ -128,10 +121,9 @@ class Investmentslice extends AppModel
      * Reads the amount of the next [expected] payment
      *        
      * 	@param 		bigint 	$investmentId    	Link to the corresponding Investment table
-     * 	@return 	bigint                          Database Id of the slice   
-     * 			
+     * 	@return 	bigint                          Database Id of the slice   			
      */
-    public function getNextPaymentAmount ($investmentId) {
+    public function getNextPaymentAmount111 ($investmentId) {
         $this->create();
 	$this->Behaviors->load('Containable');
 	$this->contain('Amortizationtable');  	
@@ -148,10 +140,6 @@ class Investmentslice extends AppModel
     }    
 
 
-
-
-
-
     /** NOT YET TESTED
      *  Reads the amortization table of an investment slice. The entries are sorted according 
      *  to its scheduled repayment date
@@ -160,7 +148,7 @@ class Investmentslice extends AppModel
      *  @param  $filterConditions   filter conditions which apply to the amortization data
      *  @return array  Amortizationtable 
      */
-    public function getAmortizationTable($slice, $filterConditions) {
+    public function getAmortizationTable111($slice, $filterConditions) {
         
         $conditions = array_merge(array("id" => $slice), $filterConditions);
 echo __FUNCTION__ . " " . __LINE__ . "\n";
@@ -176,14 +164,14 @@ print_r($result);
     
 
     
-    /** NOT YET TESTED
-     *  Deletes the *amortization table* of an investment slice. The sliceIdentifier model 
-     *  IS NOT DELETED, 
+    /** NOT YET TESTED, WIP
+     *  Deletes the amortization table of an investment slice. The sliceIdentifier model 
+     *  IS NOT DELETED, This can only (?) be done for individual amortization tables
      * 
      *  @param  bigint  Database reference of model investmentslice
      *  @return array   boolean     
      */
-    public function DeleteAmortizationTable($slice)  {       
+    public function DeleteAmortizationTable1111($slice)  {       
         $conditions = array('investmentslice_id' => $slice);
 echo __FUNCTION . " " . __LINE__ . "\n";
 print_r($conditions); 
@@ -191,10 +179,5 @@ print_r($conditions);
         return $result;
     } 
 
-
-
-
-
-    
 
 }

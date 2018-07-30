@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2018, http://www.winvestify.com                   	  	|
@@ -17,10 +16,10 @@
  *
  * @author
  * @version 0.5
- * @date 2018-03-05
+ * @date 2018-06-11
  * @package
- *
- * This client deals with parsing of the files that have been downloaded
+ */
+/* This client deals with parsing of the files that have been downloaded
  * from the PFP's. Once the data has been parsed by the Worker, the Client starts analyzing
  * the data and writes the data-elements to the corresponding database tables.
  * Encountered errors are stored in the database table "applicationerrors".
@@ -45,6 +44,8 @@
  * 2018-03-05           version 0.5
  * function repaymentReceived updated. 
  * 
+ * 2018-05-02           version 0.6
+ * Read critical runtime configuration from Database and not from p2pConfig.php
  * 
  * 
  *
@@ -57,55 +58,71 @@ App::import('Shell', 'UserData');
 
 class ParseDataClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Roundingerrorcompensation');
+    public $uses = array('Queue2', 'Paymenttotal', 'Investment', 'Investmentslice', 'Globaltotalsdata', 'Userinvestmentdata', 'Amortizationtable', 'Globalamortizationtable', 'Roundingerrorcompensation');
     protected $variablesConfig;
+    protected $companyData;
 
-// Only used for defining a stable testbed definition
-    public function resetTestEnvironment() {
- //       return;
-        echo "Deleting Investment\n";
-        $this->Investment->deleteAll(array('Investment.id >' => 0), false);
+    
+    /**
+     * 
+     * Check in which environment the code is running and take appropriate actions
+     * 
+     */
+    public function checkRunTimeEnvironment() {
 
-        echo "Deleting Paymenttotal\n";
-        $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
+        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
 
-        echo "Deleting Payment\n";
-        $this->Payment = ClassRegistry::init('Payment');
-        $this->Payment->deleteAll(array('Payment.id >' => 0), false);
+        switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
+            case WIN_LOCAL_TEST_ENVIRONMENT:
+            case WIN_REMOTE_TEST_ENVIRONMENT:
+                echo "Deleting Investment\n";
+                $this->Investment->deleteAll(array('Investment.id >' => 0), false);
 
-        echo "Deleting Userinvestmentdata\n";
-        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-        $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
+                echo "Deleting Paymenttotal\n";
+                $this->Paymenttotal->deleteAll(array('Paymenttotal.id >' => 0), false);
 
-        echo "Deleting Globalcashflowdata\n";
-        $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
-        $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
+                echo "Deleting Payment\n";
+                $this->Payment = ClassRegistry::init('Payment');
+                $this->Payment->deleteAll(array('Payment.id >' => 0), false);
 
-        echo "Deleting Globaltotalsdata\n";
-        $this->Globaltotalsdata = ClassRegistry::init('Globaltotalsdata');
-        $this->Globaltotalsdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
+                echo "Deleting Userinvestmentdata\n";
+                $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+                $this->Userinvestmentdata->deleteAll(array('Userinvestmentdata.id >' => 0), false);
 
-        echo "Deleting Investmentslice\n";
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');
-        $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
+                echo "Deleting Globalcashflowdata\n";
+                $this->Globalcashflowdata = ClassRegistry::init('Globalcashflowdata');
+                $this->Globalcashflowdata->deleteAll(array('Globalcashflowdata.id >' => 0), false);
 
-        echo "Deleting AmortizationTable\n";
-        $this->AmortizationTable = ClassRegistry::init('Amortizationtable');
-        $this->AmortizationTable->deleteAll(array('Amortizationtable.id >' => 0), false);
+                echo "Deleting Globaltotalsdata\n";
+                $this->Globaltotalsdata = ClassRegistry::init('Globaltotalsdata');
+                $this->Globaltotalsdata->deleteAll(array('Globaltotalsdata.id >' => 0), false);
 
-        echo "Deleting Dashboardoverview table\n";
-        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
-        $this->Dashboardoverviewdata->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);
+                echo "Deleting Investmentslice\n";
+                $this->Investmentslice = ClassRegistry::init('Investmentslice');
+                $this->Investmentslice->deleteAll(array('Investmentslice.id >' => 0), false);
 
-        echo "Deleting Roundingerrorcompensation table\n";
-        $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
-        $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);
+                echo "Deleting AmortizationTable\n";
+                $this->AmortizationTable = ClassRegistry::init('Amortizationtable');
+                $this->AmortizationTable->deleteAll(array('Amortizationtable.id >' => 0), false);
+
+                echo "Deleting Dashboardoverview table\n";
+                $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+                $this->Dashboardoverviewdata->deleteAll(array('Dashboardoverviewdata.id >' => 0), false);
+
+                echo "Deleting Roundingerrorcompensation table\n";
+                $this->Roundingerrorcompensation = ClassRegistry::init('Roundingerrorcompensation');
+                $this->Roundingerrorcompensation->deleteAll(array('Roundingerrorcompensation.id >' => 0), false);
+                break;
+            case WIN_LIVE_ENVIRONMENT:
+                break;
+            default:
+        }
         return;
     }
 
     public function initClient() {
 
-        $this->resetTestEnvironment();      // Temporary function
+        $this->checkRunTimeEnvironment();
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
@@ -206,13 +223,13 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
                 }
-                foreach ($this->tempArray as $queueIdKey => $result) {
+                foreach ($this->tempArray as $queueIdKey => $result) { 
                     foreach ($result as $platformKey => $platformResult) {
                         // First check for application level errors
                         // if an error is found then all the files related to the actions are to be
                         // deleted including the directory structure.
                         if (!empty($platformResult['error'])) {         // report error
-                            $this->Applicationerror = ClassRegistry::init('applicationerror');
+                            $this->Applicationerror = ClassRegistry::init('Applicationerror');
                             $this->Applicationerror->saveAppError("ERROR ", json_encode($platformResult['error']), 0, 0, 0);
                             // Delete all files for this user for this regular update
                             // break
@@ -228,10 +245,34 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($mapResult == true) {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
-                            if (!empty($newLoans)) {
-                                echo "WRITING LOANIDS\n";
-                                //          $controlVariableFile =  $platformData['controlVariableFile'];
-                                file_put_contents($baseDirectory . "loanIds.json", json_encode(($newLoans)));
+
+                            // Check if some loanIds from yesterday exist that could NOT be collected
+                            $tempName = explode("/", $baseDirectory);
+                            $this->print_r2($tempName);
+                            $elementsInPath = count($tempName);
+
+                            $yesterdayTimeStamp = strtotime('-1 day', strtotime ($tempName[$elementsInPath - 4])) ;                        
+                            $yesterday = date ("Ymd", $yesterdayTimeStamp );
+
+                            $tempName[$elementsInPath - 4] = $yesterday;
+                            $tempName[$elementsInPath - 1] = "badLoanIds.json";
+                            $yesterdayPath = implode($tempName, "/");
+
+                            $fileYesterday = new File($yesterdayPath);
+                            $jsonLoanIdsYesterday = $fileYesterday->read(true, 'r');
+                            $loanIdsYesterday = json_decode($jsonLoanIdsYesterday, true);
+
+                            if(!empty($loanIdsYesterday)){
+                                echo "merging two arrays\n";
+                                $finalLoanIds = $newLoans + $loanIdsYesterday;
+                            }
+                            else {
+                                $finalLoanIds = $newLoans;
+                            }
+
+                            if (!empty($finalLoanIds)) {
+                                echo "Writing the file 'LoanIds.json'\n";
+                                file_put_contents($baseDirectory . "loanIds.json", json_encode(($finalLoanIds)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                             }
                             else {
@@ -265,9 +306,11 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
                 }
+                $this->killShellCommand("parseDataWorker");
                 exit;
             }
         }
+        $this->killShellCommand("parseDataWorker");
     }
 
     /**
@@ -276,53 +319,78 @@ class ParseDataClientShell extends GearmanClientShell {
      * An 'userinvestmentdatas' table is generated for each day, i.e. even if no activity exists. This is only
      * done for the regular backups, not for the initial account linking procedure
      * 
+     * The principal data is available in various sub-arrays which are to be written
+     * (before checking if it is a duplicate) to the corresponding database table.
+     *     platform - (1-n)loanId - (1-n) concepts  
+     * 
      *  @param  $array          Array which holds the data (per PFP) as received from the Worker
      *  @return boolean true
      *                  false
-     *
-     * the principal data is available in various sub-arrays which are to be written
-     * (before checking if it is a duplicate) to the corresponding database table.
-     *     platform - (1-n)loanId - (1-n) concepts
      */
     public function mapData(&$platformData) {
-               
-            //We need this to put ACTIVE concept first, twino have payment concept first and that cause zombie loan problems
+        //We need this to put ACTIVE concept first, Twino has payment concept first and that cause zombie loan problems
+        $file = fopen($platformData["parsingResultInvestmentsPath"], "r");
+        $platformData['parsingResultInvestments'] = json_decode(fread($file, filesize($platformData["parsingResultInvestmentsPath"])), true);
+        fclose($file);
+        $file = fopen($platformData["parsingResultExpiredInvestmentsPath"], "r");
+        $platformData['parsingResultExpiredInvestments'] = json_decode(fread($file, filesize($platformData["parsingResultExpiredInvestmentsPath"])), true);
+        fclose($file);   
+        $calculationClassHandle = new UserDataShell();
+        
+        foreach($platformData['parsingResultTransactionsPath'] as $filePath){
+        $file = fopen($filePath, "r");
+        $platformData['parsingResultTransactions'] = json_decode(fread($file, filesize($filePath)), true);
+        fclose($file);
+        
+        $sortedGlobalId = array();
         foreach ($platformData['parsingResultTransactions'] as $date => $value) {
             foreach ($platformData['parsingResultTransactions'][$date] as $loanId => $value2) {
                 foreach ($platformData['parsingResultTransactions'][$date][$loanId] as $transaction => $value3) {
 
+                    //Loan id filter
                     if (Configure::read('flow2Filter')) {
                         $wantedInvestments = WANTEDINVESTMENT;
-                        if (!in_array( $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
-                            //print_r($wantedInvestments);
-                            //print_r($platformData['parsingResultTransactions'][$date][$loanId][$transaction]);
+                        if (!in_array($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['investment_loanId'], $wantedInvestments)) {
                             unset($platformData['parsingResultTransactions'][$date][$loanId]);
-                            
-                           if (empty($platformData['parsingResultTransactions'][$date])) {
+                            if (empty($platformData['parsingResultTransactions'][$date])) {
                                 unset($platformData['parsingResultTransactions'][$date]);
                             }
                         }
                     }
-                    
-                    if ($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE") {
-                        $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
-                        $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
-                        $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
-                        break;
+
+                    //Sort and put transaction that create an investment first
+                    if(isset($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'])){
+                        if (($platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == 'ACTIVE' 
+                                || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "ACTIVE_VERIFICATION" 
+                                || $platformData['parsingResultTransactions'][$date][$loanId][$transaction]['conceptChars'] == "PREACTIVE")) {
+                            $temp = $platformData['parsingResultTransactions'][$date][$loanId][0];
+                            $platformData['parsingResultTransactions'][$date][$loanId][0] = $platformData['parsingResultTransactions'][$date][$loanId][$transaction];
+                            $platformData['parsingResultTransactions'][$date][$loanId][$transaction] = $temp;
+                            break;
+                        }
                     }
+                }
+
+                //Sort and put transaction without loan id last
+                if (strpos($loanId, 'global') !== false && !in_array($loanId, $sortedGlobalId)) {
+                    $noLoanIdTransaction = $platformData['parsingResultTransactions'][$date][$loanId];
+                    unset($platformData['parsingResultTransactions'][$date][$loanId]);
+                    $platformData['parsingResultTransactions'][$date][$loanId] = $noLoanIdTransaction;
+                    $sortedGlobalId[] = $loanId;
                 }
             }
         }
-                    
- 
-        
+
         $timeStart = time();
-        $calculationClassHandle = new UserDataShell();
         $investmentId = null;
         $linkedaccountId = $platformData['linkedaccountId'];
         $userReference = $platformData['userReference'];
         $startDate = $platformData['startDate'];
         $finishDate = $platformData['finishDate'];
+
+        $this->Company = ClassRegistry::init('Company');
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $platformData['pfp'] ]); 
+
         $amortizationTablesNotNeeded = array();
         $collectTablesIndex = 0;
         //       $returnData[$linkedAccountKey]['parsingResultControlVariables'];
@@ -367,7 +435,7 @@ class ParseDataClientShell extends GearmanClientShell {
         unset($database['globaltotalsdata']);
 
         // Copy the last userinvestmentdata for the "missing" dates before we start analyzing transaction records 
-        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
+        /*if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $dateKeys = array_keys($platformData['parsingResultTransactions']);
             $firstnewTransactionDate = $dateKeys[0];
 
@@ -398,12 +466,20 @@ class ParseDataClientShell extends GearmanClientShell {
                 }
             }
         }
+        unset($tempDatabase);*/
 
-        unset($tempDatabase);
-
+        echo __LINE__ . " Start memory usage " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
+        
         foreach ($platformData['parsingResultTransactions'] as $dateKey => $dates) {            // these are all the transactions, PER day
+            $dateValue = date_create($dateKey);
+            $dateTmp = date_format($dateValue,"Ymd");
+            if($dateTmp <= $startDate){
+                continue;
+            }
             echo __FUNCTION__ . " " . __LINE__ . "\ndateKey = $dateKey \n";
-                    
+            echo " Memory usage at start of $dateKey " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
+
+            
             // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
             if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
                 $date1 = new DateTime($oldDateKey);
@@ -444,14 +520,15 @@ class ParseDataClientShell extends GearmanClientShell {
             $database['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
             $database['Userinvestmentdata']['userinvestmentdata_investorIdentity'] = $userReference;
             $database['Userinvestmentdata']['date'] = $dateKey;
-            
+
             $investmentLoanIdsPerDay = [];
-            
-            foreach ($dates as $keyDateTransaction => $dateTransaction) { 
+
+
+            foreach ($dates as $keyDateTransaction => $dateTransaction) {
                 $keyDateTransactionNames = explode("_", $keyDateTransaction);
                 if ($keyDateTransactionNames[0] !== "global") {
                     foreach ($dateTransaction as $keyTransactionDate => $transaction) {
-                        if (stripos("investment_myInvestment", $transaction['interName']) !== false) {
+                        if (strpos($transaction['internalName'], "myInvestment") !== false) {
                             if (!in_array($transaction['investment_loanId'], $investmentLoanIdsPerDay)) {
                                 $investmentLoanIdsPerDay[] = $transaction['investment_loanId'];
                             }
@@ -489,6 +566,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     break;
                             }
                             $dateTransaction[0]['investment_loanId'] = $ghostInvestment[0]['investment_loanId'];  // Now everything continues in a normal way
+                            unset($keyDateTransaction);
                         }
                     }
                 }
@@ -497,7 +575,7 @@ class ParseDataClientShell extends GearmanClientShell {
                 // special procedure for platform related transactions, i.e. when we don't have a real loanId
                 $dateTransactionNames = explode("_", $dateTransaction[0]['investment_loanId']);
 
-                if ($dateTransactionNames[0] == "global") {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
+                if ($dateTransactionNames[0] == "global" || strpos($keyDateTransaction, "global") !== false) {                // --------> ANALYZING GLOBAL, PLATFORM SPECIFIC DATA
                     
                     
                     // cycle through all individual fields of the transaction record
@@ -507,7 +585,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             $transactionDataKey = $transaction;
                         }
                         $tempResult = $this->in_multiarray($transactionDataKey, $this->variablesConfig);
-                        
+
                         if (!empty($tempResult)) {
                             unset($result);
                             $functionToCall = $tempResult['function'];
@@ -559,7 +637,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         //$loanStatus = WIN_LOANSTATUS_FINISHED;
                     }
 
-                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) && 
+                    if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) &&
                             ($dateTransaction[0]["internalName"] == "investment_myInvestment" 
                             || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" 
                             || $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification"
@@ -602,7 +680,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
 
-                        
+
                         //CODE POSSIBLE TO REMOVE
                         //WE DON'T NEED TO ADD THE MARK OF WIN_AMORTIZATIONTABLES_NOT_AVAILABLE BECAUSE BY DEFAULT AN INVESTMENT DOESN'T HAVE
                         switch ($database['investment']['investment_statusOfLoan']) {
@@ -625,8 +703,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
                             "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan",
                             "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState",
-                            "investment_loanId"),
-                                array('date DESC'));
+                            "investment_loanId"), array('date DESC'));
 
                         $investmentId = $tempInvestmentData[0]['Investment']['id'];
                         if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
@@ -657,7 +734,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             $database['investment']['investment_totalLoanCost'] = $tempInvestmentData[0]['Investment']['investment_totalLoanCost'];
                             $database['investment']['investment_technicalStateTemp'] = $tempInvestmentData[0]['Investment']['investment_technicalStateTemp'];
                             $database['investment']['investment_reservedFunds'] = $tempInvestmentData[0]['Investment']['investment_reservedFunds'];
-                    //        $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
+                            $database['investment']['investment_sliceIdentifier'] = $tempInvestmentData[0]['Investment']['investment_sliceIdentifier'];
                             $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
                             $database['investment']['id'] = $investmentId;
                             $database['investment']['investment_loanId'] = $tempInvestmentData[0]['Investment']['investment_loanId'];
@@ -673,7 +750,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             foreach ($conceptChars as $itemKey => $item) {
                                 $conceptChars[$itemKey] = trim($item);
                             }
-                            
+
                             if (in_array("RETAKE_INVESTMENT_DATA", $conceptChars)) {
                                 $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
                                 foreach ($investmentListToCheck as $investmentDataKey => $investmentData) {
@@ -693,37 +770,38 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
                                 $getAmortizationTable = true;
                             }
-                            
+
                             //THIS STATE DOESN'T HAVE AN AMORTIZATION TABLE
                             if (in_array("ACTIVE_VERIFICATION", $conceptChars)) {
                                 $database['investment']['investment_tempState'] = WIN_LOANSTATUS_VERIFYACTIVE;
                                 echo "PRE ACTIVE INVESTMENT PRINT =====>>>>> " . WIN_LOANSTATUS_VERIFYACTIVE . " \n";
                                 $getAmortizationTable = true;
                             }
-                            
+
                             if (isset($getAmortizationTable) && $getAmortizationTable) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
 
                                 // Check if sliceIdentifier has already been defined in $slicesAmortizationTablesToCollect,
-                                // if not then reate a new array with the data available so far, sliceIdentifier and loanId
+                                // if not then create a new array with the data available so far, sliceIdentifier and loanId
                                 $isNewTable = YES;
-                                
+
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
                                     if ($tableToCollect['sliceIdentifier'] == $sliceIdentifier) {
                                         $isNewTable = NO;
                                         break;
                                     }
                                 }
-                                
+
                                 if ($isNewTable == YES) {
                                     echo __FILE__ . " " . __LINE__ .  "get new Amortization Table for loanId " . $transactionData['investment_loanId'] . "\n";
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
                                     unset($getAmortizationTable);
+                                    // ADPO                      $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $;
                                 }
                             }
-                            
+
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
@@ -752,6 +830,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
 
 
+                        echo __LINE__ . " Memory usage before transactionData of $dateKey " .  memory_get_usage() . " *-*-*-*-*-*-*-*\n";
                         foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
                             if ($transactionDataKey == "internalName") {                        // 'dirty trick' to keep it simple
                                 $transactionDataKey = $transaction;
@@ -782,7 +861,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                             if ($tempResult['charAcc'] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
                                                 echo "ADDING $result to existing result " . $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] . "\n";
 
-                                                    $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
+                                                $database[$dataInformationInternalIndex[0]][$dataInformationInternalIndex[1]] = bcadd($database[$dbTable][$dbVariableName], $result, 16);
 
                                             }
                                             else {
@@ -790,7 +869,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                                 $database[$dbTable][$dbVariableName] = $result;
                                             }
                                         }
-                                    } 
+                                    }
 
                                     // update the field userinvestmentdata_cashInPlatform   
                                     $cashflowOperation = $tempResult['cashflowOperation'];
@@ -842,10 +921,11 @@ class ParseDataClientShell extends GearmanClientShell {
                                     $collectTablesIndex++;
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['loanId'] = $transactionData['investment_loanId'];    // For later processing
                                     $slicesAmortizationTablesToCollect[$collectTablesIndex]['sliceIdentifier'] = $sliceIdentifier;
+                                    //ADPO             $slicesAmortizationTablesToCollect[$collectTablesIndex]['date'] = $sliceIdentifier;
                                 }
                             }
-                            
-                            
+
+
                             if ((in_array("REMOVE_AM_TABLE", $conceptChars))) {
                                 $sliceIdentifier = $this->getSliceIdentifier($transactionData, $database);
                                 foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
@@ -872,7 +952,6 @@ class ParseDataClientShell extends GearmanClientShell {
                                 //                  }
 //print_r($database['investment']);
                                 echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
-                                //                      exit;
                             }
                         }
                     }
@@ -892,7 +971,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 }
                                 $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                             }
-                            else {                           
+                            else {
                                 $database[$varName[0]][$varName[1]] = $result;
                             }
                         }
@@ -901,23 +980,19 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                         if (empty($database[$varName[0]])) {   //Dont rewrite investment value with 0
                             unset($database[$varName[0]]);
-                        }                          
+                        }
                     }
-                    
+
                     if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED || $database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_CANCELLED) {
                         $platformData['workingNewLoans'][] = $database['investment']['investment_loanId'];
                     }
-                    /*if ($database['investment']['investment_loanId'] == "06-139593001") {
-                        print_r($database['investment']);
-                        exit;
-                    }*/
                     echo __FUNCTION__ . " " . __LINE__ . " printing relevant part of database\n";
 
                     $database['investment']['linkedaccount_id'] = $linkedaccountId;
-                    echo "probando reserved funds \n";
-print_r($database);
-echo "Writing conceptChars array\n";                    
-print_r($conceptChars);
+                    echo "testing reserved funds \n";
+                    print_r($database);
+                    echo "Writing conceptChars array\n";
+                    print_r($conceptChars);
                     if (isset($database['investment']['investment_amortizationTableAvailable'])) {     // Write payment data in amortization table
                         if ($database['investment']['investment_amortizationTableAvailable'] == WIN_AMORTIZATIONTABLES_AVAILABLE) {
                             if (in_array("REPAYMENT", $conceptChars)) {
@@ -962,19 +1037,19 @@ print_r($conceptChars);
                             }
                         }
                     }
-                    
+
                     $dateToDeleteAfter1 = new DateTime(date($finishDate));
                     $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
 
-                    if ($dateKey >= $lastDateToCalculate) {
+                    if ($dateKey == $lastDateToCalculate) {
                         $tempBackupCopyId = $this->copyInvestment($investmentId);
 echo __FUNCTION__ . " " . __LINE__ ." Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";                        
 echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKey, and backupCopyId = " .  $tempBackupCopyId ."\n";
 
                         $this->Investment->save(array ("id" => $investmentId,
-                                                       "investment_backupCopyId" => $tempBackupCopyId,
-                                                        "date" => $dateKey
-                                ));
+                            "investment_backupCopyId" => $tempBackupCopyId,
+                            "date" => $dateKey
+                        ));
                     }
 
                     echo 'save payment';
@@ -1019,16 +1094,16 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                     }
                 }
                 $internalVariablesToHandle = array(10001,
-                                                    10006, 10007, 10008,
-                                                    10009, 10010, 10011,
-                                                    10012, 10013, 10016,
-                                                    10017, 10018, 10019,
-                                                    10020, 10021, 10022,
-                                                    10023, 10024);
+                    10006, 10007, 10008,
+                    10009, 10010, 10011,
+                    10012, 10013, 10016,
+                    10017, 10018, 10019,
+                    10020, 10021, 10022,
+                    10023, 10024);
                 foreach ($internalVariablesToHandle as $keyItem => $item) {
                     $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                     $functionToCall = $this->variablesConfig[$item]['function'];
-                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);                 
+                    $result = $calculationClassHandle->$functionToCall($transactionData, $database);
                     echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $functionToCall and Executing Calc. specific variables=>: orig. amount = " . $database[$varName[0]][$varName[1]] . " and new result = $result" . "\n";
 
                     if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
@@ -1070,7 +1145,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                 $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                 $functionToCall = $this->variablesConfig[$item]['function'];
                 echo "Calling the function: $functionToCall and index = $keyItem\n";
-                $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);                
+                $database[$varName[0]][$varName[1]] = $calculationClassHandle->$functionToCall($transactionData, $database);
                 echo "inputs are " . $varName[0] . " and " . $varName[1] . "\n";
                 echo $database[$varName[0]][$varName[1]];
             }
@@ -1133,9 +1208,9 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                 'conditions' => $filterConditions));
 
             $controlVariables['outstandingPrincipal'] = $database['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'];  // Holds the *last* calculated value so far
-            $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];      // Holds the *last* calculated valueso far
-            $controlVariables['activeInvestments'] = $activeInvestments; // Holds the last calculated valueso far
-
+            $controlVariables['myWallet'] = $database['Userinvestmentdata']['userinvestmentdata_cashInPlatform'];         // Holds the *last* calculated valueso far
+            $controlVariables['activeInvestments'] = $activeInvestments;                                                  // Holds the last calculated values so far
+            $controlVariables['reservedFunds'] = $database['Userinvestmentdata']['userinvestmentdata_reservedAssets'];    // Holds the *last* calculated valueso far
             print_r($database['Userinvestmentdata']);
 
             $backupCopyUserinvestmentdataId = $database['Userinvestmentdata']['id'];
@@ -1153,104 +1228,125 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
             $tempUserInvestmentDataItem = array('id' => $userInvestmentDataId,
                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
+            unset($platformData['parsingResultTransactions'][$dateKey]);                    //Clean the transactions of that day to liberate memory
         }
+    }
 
-
+        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
+            $linkedaccountId = $platformData['linkedaccountId'];
+            $finishDate = $platformData['finishDate'];
+            $startDate = $platformData['startDate'];
+            $this->copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate);
+        }
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";
+        // Control Variables shall only be checked if PFP supports up to date xls files
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] &&  WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {            
+            $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
+            if ($controlVariablesCheck > 0) {                                   // mismatch detected
+                $this->Applicationerror = ClassRegistry::init('Applicationerror');
 
-        $controlVariablesCheck = $calculationClassHandle->consolidatePlatformControlVariables($platformData['parsingResultControlVariables'], $controlVariables);
-        if ($controlVariablesCheck > 0) { // mismatch detected
-            echo "FLOW 2 DID NOT PASS CONTROL VARIABLES CHECK \n";
-            $errorData['line'] = __LINE__;
-            $errorData['file'] = __FILE__;
-            $errorData['urlsequenceUrl'] = "";
-            $errorData['subtypeErrorId'] = $controlVariablesCheck;              // It is the subtype of the error
-            $errorData['typeOfError'] = "Error" ;  // It is the type of error, like ERROR, WARNING, INFORMATION
-        
-            $detailedErrorInfo['internalControlVariableValues'] = $platformData['parsingResultControlVariables'];
-            $detailedErrorInfo['externalControlVariableValues'] = $controlVariables;         
-            
-            $errorData['detailedErrorInformation'] = json_encode($detailedErrorInfo);      // It is the detailed information of the error
-            $errorData['typeErrorId'];                                          // It is the principal id of the error           
-            $this->saveGearmanError($errorData);
+                echo "FLOW 2 DID NOT PASS CONTROL VARIABLES CHECK, application Error email will be generated \n";
+
+                $detailedErrorInfo['internalControlVariableValues'] = $platformData['parsingResultControlVariables'];
+                $detailedErrorInfo['externalControlVariableValues'] = $controlVariables;
+                $detailedErrorInfo['userReference'] = $platformData['userReference'];
+                $detailedErrorInfo['startDate'] = $platformData['startDate'];
+                $detailedErrorInfo['finishDate'] = $platformData['finishDate'];
+                $this->Applicationerror->saveAppError("Error", 
+                                                        json_encode($detailedErrorInfo),  
+                                                        __LINE__, 
+                                                        __FILE__, 
+                                                        " ",
+                                                        $controlVariablesCheck,
+                                                        " "
+                );
+            }
+        }
+        else {
+            if (Configure::read('debug')) {
+                echo "Checking of Control Variables omitted because PFP does support it\n";
+            }
         }
 
 // Remove the part of the data that concerns the "present" day, example linking account is done at 18h on 2018-02-22. 
-// Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. for control variables we need the very latest information
-        echo __FUNCTION__ . " " . __LINE__ . " Determine if a records needs to be deleted";
+// Field yield etc we need to cut at midnight, 22 feb at 00:00 hours. but for control variables we need the very latest information
+// All the database objects generated for the "present" day shall be deleted
+        echo __FUNCTION__ . " " . __LINE__ . " Determine if a record needs to be deleted";
         $dateToDeleteAfter = new DateTime(date($finishDate));
         $lastDateToCalculate = $dateToDeleteAfter->format('Y-m-d');
-echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
-        if ($dateKey >= $lastDateToCalculate) {           // clean up
+        echo "\nlastDateToCalculate = $lastDateToCalculate, and dateKey = $dateKey \n";
+        if ($dateKey == $lastDateToCalculate) {           // clean up
             // get all ids of investments records which have a backup
             echo "\n get all ids of the investments records which have a backup\n";
             $filter = array("investment_backupCopyId >" => 0,
-                                    "linkedaccount_id" => $linkedaccountId);
+                "linkedaccount_id" => $linkedaccountId);
             $field = array("id", "investment_backupCopyId");
-echo __FILE__ . " " . __LINE__ . " showing filter\n";
-print_r($filter);            
+            echo __FILE__ . " " . __LINE__ . " showing filter\n";
+            print_r($filter);
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
-            
-//echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
-//print_r($results);
+
+            echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
+            print_r($results);
 
             foreach ($results as $result) {
                 $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
-                
+
                 // check if the investment has the same date as the date of account linking, if so delete the record
-                $filter = array ('id' => $result['Investment']['id'],
-                                'date >=' => $dateKey);
-                
+                $filter = array('id' => $result['Investment']['id'],
+                    'date' => $lastDateToCalculate);
+
                 $investmentData = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
                 print_r($investmentData);
-                if (!empty($investmentData)) {                  
+                if (!empty($investmentData)) {
                     $this->Investment->delete($result['Investment']['id'], $cascade = false);
                 }
-                
-                $filterConditions = array ("date" => $lastDateToCalculate,
-                                  "investment_id" => $result['Investment']['id']);
-echo __FILE__ . " " . __LINE__ . " \n";
-print_r($filterConditions);
-                /*if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+
+                $filterConditions = array("date" => $lastDateToCalculate,
+                    "investment_id" => $result['Investment']['id']);
+                echo __FILE__ . " " . __LINE__ . " \n";
+                print_r($filterConditions);
+                if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
                 }
                 if ($this->Paymenttotal->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
-                    echo __FILE__ . " " . __LINE__ . " PaymentTotal deleted  \n";                    
+                    echo __FILE__ . " " . __LINE__ . " PaymentTotal deleted  \n";
                 }
                 if ($this->Investmentslice->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
-                    echo __FILE__ . " " . __LINE__ . " Investmentslice deleted \n";                    
+                    echo __FILE__ . " " . __LINE__ . " Investmentslice deleted \n";
                 }
                 if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
-                    echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";                     
-                }*/
+                    echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";
+                }
             }
-echo __FILE__ . " " . __LINE__ . " \n";
-            /*$filterConditions = array ("date >" => $lastDateToCalculate,
-                      "userinvestmentdata_id" => $backupCopyUserinvestmentdataId);
-print_r($filterConditions);         
+            // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
+            echo __FILE__ . " " . __LINE__ . " \n";
+            $filterConditions = array("date" => $lastDateToCalculate,
+                "userinvestmentdata_id" => $backupCopyUserinvestmentdataId
+            );
+            print_r($filterConditions);
             if ($this->Globalcashflowdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
-                echo __FILE__ . " " . __LINE__ . " Globalcashflowdata deleted \n";                 
+                echo __FILE__ . " " . __LINE__ . " Globalcashflowdata deleted \n";
             }
             if ($this->Globaltotalsdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
-                echo __FILE__ . " " . __LINE__ . " Globaltotalsdata deleted \n";                  
+                echo __FILE__ . " " . __LINE__ . " Globaltotalsdata deleted \n";
             }
-            $filterConditions = array ("date >=" => $lastDateToCalculate,
-                                        "id" => $backupCopyUserinvestmentdataId);
-echo __FILE__ . " " . __LINE__ . " \n";            
-print_r($filterConditions);            
+            // *Maximum* only one userinvestmentdata object shall be deleted
+            $filterConditions = array("id" => $backupCopyUserinvestmentdataId);
+            echo __FILE__ . " " . __LINE__ . " \n";
+            print_r($filterConditions);
             if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
-                echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";                 
-            }*/
-echo __FILE__ . " " . __LINE__ . " \n";       
-            // Also remove any "assigned" loanIds/sliceIds for download
+                echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";
+            }
+            echo __FILE__ . " " . __LINE__ . " \n";
+            // Also remove any "assigned" loanIds/sliceIds for download with the date of "finishDate"
             foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
-                if ($tableToCollect['date'] >= $dateKey) {
+                if ($tableToCollect['date'] == $lastDateToCalculate) {
                     unset($slicesAmortizationTablesToCollect[$tableCollectKey]);
                 }
-            }            
+            }
         }
- 
+
 // All transactions have been analyzed. So consolidate the data of the total platform.
 // Define which amortization tables shall be collected but remove the unnecessary ones 
         foreach ($slicesAmortizationTablesToCollect as $tableCollectKey => $tableToCollect) {
@@ -1271,14 +1367,24 @@ echo __FILE__ . " " . __LINE__ . " \n";
         unset($tempDatabase);
         // Make sure that we have an entry in Userinvestmentdata for 'yesterday'                                                                                                                             as required for yield calculation     
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
-            $date = new DateTime(date($finishDate));
-            $lastDateToCalculate = $date->format('Y-m-d');
-            if ($dateKey < $lastDateToCalculate) {
+            //     $date = new DateTime(date($finishDate));
+            //   $lastDateToCalculate = $date->format('Y-m-d');
+            //     $lastDateToStore = $date->format('Y-m-d');                        // The date of the last userinvestment 
+            // that will be stored in database
+            //       $this->date = date("Ymd", strtotime("-1 day"));
+
+
+            $date = new DateTime($finishDate);                                  // The date of the last userinvestment
+            $date->modify('-1 day');                                            // that will be stored in databas
+            $lastDateToStore = $date->format('Y-m-d');
+
+
+            if ($dateKey < $lastDateToStore) {
                 $filterConditions = array("linkedaccount_id" => $linkedaccountId);
                 $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
 
                 $this->Userinvestmentdata->create();
-                $tempDatabase['Userinvestmentdata']['date'] = $lastDateToCalculate;
+                $tempDatabase['Userinvestmentdata']['date'] = $lastDateToStore;
                 $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
                 $this->Userinvestmentdata->save($tempDatabase, $validate = true);
                 if (Configure::read('debug')) {
@@ -1288,7 +1394,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
         }
 
 
-        // Copy the userinvestmentdata for all missing days
+        // Copy the userinvestmentdata for all 'missing days'. This is only applicable in case of non-daily regular update
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $date = new DateTime($dateKey);
             $date->modify('+1 day');
@@ -1327,73 +1433,92 @@ echo __FILE__ . " " . __LINE__ . " \n";
      *  @param bigInt   $investmentId       The database 'id' of the 'Investment' table
      *  @param string   $sliceIdentifier    The identifier of the new slice  
      *  @param  date    $date               The calculated date when the record is linked
-     *  @return bigInt                      The database reference of the 'Investmentslice' model
-     *                  
+     *  @return bigInt                      The database reference of the 'Investmentslice' model                 
      */
     public function linkNewSlice($investmentId, $sliceIdentifier, $date) {
         $id = $this->Investmentslice->getNewSlice($investmentId, $sliceIdentifier, $date);
         return $id;
     }
 
-    /** 
+    /**
      * PARTIAL PAYMENTS ARE NOT YET TAKEN INTO CONSIDERATION 
-     * It is possible that during the same day various amortization payments are processed by the platform. 
-     * This would mean that one or more payments are with delay.
+     * (It is possible that during the same day various amortization payments are processed by the platform. 
+     * This would mean that probably one or more payments are with delay.
      * Currently I can only deal with 1 amortization payment per loan per day.
      * Cannot deal with MINTOS as I have seen that various amortization payments can be received
-     * This method must be executed after the analysis of each transaction
+     * This method must be executed after the analysis of each transaction. The transaction reference (=transactionId) must also 
+     * be provided (if it exists))
      * 
-     *  Updates the amortization table of an loan when a repayment is detected.
-     *  This method is executed AFTER (?) all the transactions for the loan have been processed by the main flow.
-     *  In this way the system can also take into account concepts like commission, late payment fee etc. etc. BUT IS THIS NEEDED
-     *  This method is NOT used during the account linking procedure
+     * Updates the amortization table of an loan when a repayment is detected.
+     * This method is executed at the end of each transaction for a loan that has been processed by the main flow.
+     * Concepts like commission, late payment fee etc. etc. cannot be taken into consideration.
+     * This method is NOT used during the account linking procedure
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return 
-     *                  
+     *  @return boolean               
      */
     public function repaymentReceived(&$transactionData, &$resultData) {
-echo __FUNCTION__ . " " . __LINE__ . " \n";
+        echo __METHOD__ . " " . __LINE__ . " " . "\n";
+        if (isset($transactionData['transactionId'])) {
+            $data['transactionId'] = $transactionData['transactionId'];
+        }
+
         if ($resultData['payment']['payment_principalAndInterestPayment'] <> 0) {
-            echo __FUNCTION__ . " " . __LINE__ . " \n";
-            $data['capitalAndInterestPayment'] = $resultData['payment_principalAndInterestPayment'];
+            $data['capitalAndInterestPayment'] = $resultData['payment']['payment_principalAndInterestPayment'];
             if ($resultData['payment']['payment_capitalRepayment'] <> 0) {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $data['capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
                 $data['interest'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             }
             else {
-                echo __FUNCTION__ . " " . __LINE__ . " \n";
                 $data['capitalRepayment'] = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
                 $data['interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
             }
-        } 
+        }
         else {
-            echo __FUNCTION__ . " " . __LINE__ . " \n";
             $data['capitalRepayment'] = $resultData['payment']['payment_capitalRepayment'];
             $data['interest'] = $resultData['payment']['payment_regularGrossInterestIncome'];
         }
         $data['paymentDate'] = $transactionData['date'];
-              
-        // support for partial payment is not fully implemented
-        $data['paymentStatus'] = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
-echo __FUNCTION__ . " " . __LINE__ . " \n";
+        $this->print_r2($data);
+
         $sliceIdentifier = $this->getSliceIdentifier($transactionData, $resultData);
-        
-        print_r($data);
-        if ($this->Amortizationtable->addPayment($resultData['investment']['investment_loanId'], $sliceIdentifier, $data)) {
-            echo __FUNCTION__ . " " . __LINE__ . " Amortization table succesfully updated\n";
+        $sliceId = $this->translateSliceIdentifierToSliceId($sliceIdentifier, $resultData['investment']['id']);
+
+        echo __FUNCTION__ . " " . __LINE__ . " sliceId = $sliceId<br/>\n";
+
+
+        if ($this->Investmentslice->hasChildModel($sliceId, "Amortizationtable")) {
+            echo __FUNCTION__ . " " . __LINE__ . " Amortizationtable Model found<br/>\n";
+            $modelPtr = $this->Amortizationtable;
         }
         else {
-            echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the amortization table with reference $tableDbReference\n";
+            echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable Model found<br/>\n";
+            $modelPtr = $this->Globalamortizationtable;
         }
-echo "Exiting on " . __FUNCTION__ . " " . __LINE__ . "\n";
-exit;
-        return;
+
+        if ($modelPtr->addPayment($this->companyData[0]['Company']['id'], 
+                                                 $resultData['investment']['id'], 
+                                                 $sliceIdentifier, $data)) {
+            echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
+            // Write the date of the first unpaid instalment
+            $nextPendingInstalmentDate = $modelPtr->getNextPendingPaymentDate($sliceId);
+            echo __FUNCTION__ . " " . __LINE__ . " <br/>\n";
+            if (empty($nextPendingInstalmentDate)) {
+                $nextPendingInstalmentDate = "9999-12-31";
+            }
+            echo __FUNCTION__ . " " . __LINE__ . " nextPendingInstalmentDate = $nextPendingInstalmentDate<br/>\n";
+            $resultData['investment']['investment_dateForPaymentDelayCalculation'] = $nextPendingInstalmentDate;     // write to "in memory database BEFORE this is written to DB
+            $this->print_r2($resultData);
+            echo __FUNCTION__ . " " . __LINE__ . " Globalamortizationtable/Amortizationtable and Amortizationpayment tables succesfully updated<br/>\n";
+            return true;
+        }
+
+        echo __FUNCTION__ . " " . __LINE__ . " Error detected while updating the (global)amortization table with reference $tableDbReference<br/>\n";
+        return false;
     }
 
-    /**teti
+    /**
      *  Searches in the investments and expired_investment arrays for an *investment* initiated on 
      *  the date as defined in the dateTransaction array. Also the amount is checked
      *  and investments without the mark: "InvestmentAlreadyDetected"
@@ -1401,10 +1526,9 @@ exit;
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return array
-     *                  
+     *  @return array               
      */
-    function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments, &$investmentLoanIdsPerDay) {
+    public function searchInvestmentArrays($transaction, &$investments, &$expiredInvestments, &$investmentLoanIdsPerDay) {
         echo "looking for a lost investment in Zank";
         print_r($investmentLoanIdsPerDay);
         foreach ($investments as $investmentKey => $investment) {
@@ -1425,7 +1549,7 @@ exit;
             if (($transaction['date']) == $expiredInvestment[0]['investment_myInvestmentDate']) {
                 if (($transaction['amount']) == $expiredInvestment[0]['investment_myInvestment']) {
                     if (!in_array($expiredInvestments[$investmentKey][0]['investment_loanId'], $investmentLoanIdsPerDay)) {
-                        echo "Found in expried \n";
+                        echo "Found in expired \n";
                         $investmentLoanIdsPerDay[] = $expiredInvestments[$investmentKey][0]['investment_loanId'];
                         return $expiredInvestment;
                     }
@@ -1443,23 +1567,22 @@ exit;
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to the DB
-     *  @return string  sliceIndentifier
-     *                  
+     *  @return string  sliceIndentifier               
      */
     public function getSliceIdentifier(&$transactionData, &$resultData) {
 
         if (isset($transactionData['sliceIdentifier'])) {                       // For P2P's that can have more then 1 slice per investment, like FinBee
-echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from transaction record\n";
+            echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from transaction record\n";
             $sliceIdentifier = $transactionData['sliceIdentifier'];
         }
-        
+
         if (isset($resultData['investment']['investment_sliceIdentifier'])) {
-echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from investment record\n";
+            echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier obtained from investment record\n";
             $sliceIdentifier = $resultData['investment']['investment_sliceIdentifier'];
         }
 
         if (empty($sliceIdentifier)) {                                          // Take the default one
-echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its loanId\n";
+            echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its loanId<br/>\n";
             $sliceIdentifier = $transactionData['investment_loanId'];
         }
 
@@ -1471,21 +1594,20 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its l
      * 
      *  @param  bigint   database id of database record to restore FROM
      *  @param  bigint   database id of database record to restore TO
-     *  @return string  sliceIndentifier
-     *                  
+     *  @return string  sliceIndentifier                  
      */
     public function restoreInvestment($restoreFromInvestmentId, $restoreToInvestmentId) {
         // copy the complete record
 //echo __FUNCTION__ . " " . __LINE__ . " restore an investmentRecord\n";
 //echo "restoreFromInvestmentId = $restoreFromInvestmentId and restoreToInvestmentId = $restoreToInvestmentId\n";
         $result = $this->Investment->find("first", array("conditions" => array("id" => $restoreFromInvestmentId),
-                                                        "recursive" => -1));
-        
+            "recursive" => -1));
+
         $this->Investment->create();
-        $result['investment_backupCopyId'] = 0;
+        $result['investment_ backupCopyId'] = 0;
         $result['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
-        $this->Investment->delete($restoreFromInvestmentId, $cascade = false);  
+        $this->Investment->delete($restoreFromInvestmentId, $cascade = false);
     }
 
     /**
@@ -1493,21 +1615,94 @@ echo __FUNCTION__ . " " . __LINE__ . "sliceIdentifier is the default, i.e. its l
      * 
      *  @param  array   array with the current transaction data
      *  @param  array   array with all data so far calculated and to be written to DB
-     *  @return bigint  id of new investment record
-     *                  
+     *  @return bigint  id of new investment record                
      */
     public function copyInvestment($investmentId) {
-echo __FUNCTION__ . " " . __LINE__ . " create a copy of investmentRecord of record $investmentId\n";
+        echo __FUNCTION__ . " " . __LINE__ . " create a copy of investmentRecord of record $investmentId\n";
         $result = $this->Investment->find("first", array("conditions" => array("id" => $investmentId),
-                                                         "recursive" => -1));
+            "recursive" => -1));
 //echo __FUNCTION__ . " " . __LINE__ . " original result = \n";
-print_r($result); 
+        print_r($result);
         $result['Investment']['investment_backupCopyId'] = 0;
         unset($result['Investment']['id']);                                     // save it as a "new" investment
-print_r($result); 
+        print_r($result);
         $this->Investment->create();
         $this->Investment->save($result, $validate = true);
         return $this->Investment->id;
+    }
+
+    
+    
+    /**
+     *  Creates a copy of a investment database table
+     * 
+     *  @param bigint   $sliceIdentifier
+     *  @param bigint   $investmentId
+     *  @return bigint  database id of the investment slice              
+     */
+    public function translateSliceIdentifierToSliceId($sliceIdentifier, $investmentId) {
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        $result = $this->Investmentslice->find("first", array("conditions" => ["investment_id" => $investmentId,
+                "investmentslice_identifier" => $sliceIdentifier],
+            "recursive" => -1));
+        echo __FUNCTION__ . " " . __LINE__ . " sliceId = " . $result['Investmentslice']['id'] . "<br/>\n";
+        return $result['Investmentslice']['id'];
+    }
+
+    /**
+     * Insert userinvestmentdate when we don't have transaction in regular update.
+     * Work with multiple empty days.
+     * @param type $linkedaccountId Link account id
+     * @param type $finishDate Actual Date
+     * @param type $startDate Lastaccess date
+     */
+    public function copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate) {
+
+        $finish = new DateTime($finishDate);                                      //The date of the last userinvestment
+        $start = new DateTime($startDate);                                      //that will be stored in databas
+        $searchDate = $start->format('Y-m-d');                              
+        
+        echo $finishDate . " and " . $startDate;
+        $filterConditions = array("linkedaccount_id" => $linkedaccountId, "date >=" => $searchDate);
+        $userinvestmentdataList = $this->Userinvestmentdata->getData($filterConditions, null ,"date DESC");
+        print_r($userinvestmentdataList);
+        
+        //We read the userinvestmentdata each day until we find a userinvestment that day or a previous day, if we find it in the same day, we advance the day and do nothing,
+        //If we find a userinvestmentdata a previous day, we copy that data and advance the day.
+        while ($start < $finish) {       
+            foreach ($userinvestmentdataList as $key => $userinvestmentdata) {
+                $userinvestmentdataDate = $start->format('Y-m-d');
+                echo "Compare " . $userinvestmentdataDate . " and " . $userinvestmentdata["Userinvestmentdata"]["date"];
+                if ($userinvestmentdataDate == $userinvestmentdata["Userinvestmentdata"]["date"]) {
+                    echo " A user investment Data already exist in " . $userinvestmentdataDate . ". Reading next day."  . "\n";
+                    $start->modify('+1 day');
+                    break;
+                }
+                else if($userinvestmentdataDate > $userinvestmentdata["Userinvestmentdata"]["date"]){
+                    echo " Userinvestmentdata doesn't exist in " . $userinvestmentdataDate  . "\n";
+                    //save userinvestmentdata
+                    $tempuserinvestmentdata = $userinvestmentdata;
+                    unset($tempuserinvestmentdata["Userinvestmentdata"]['id']);
+                    $tempuserinvestmentdata["Userinvestmentdata"]['date'] = $userinvestmentdataDate;
+                    $tempuserinvestmentdata['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+                    $this->Userinvestmentdata->create();
+                    $this->Userinvestmentdata->save($tempuserinvestmentdata, $validate = true);
+                    unset($tempuserinvestmentdata);
+                    $start->modify('+1 day');
+                    break;
+                }
+            }
+        }
+        /*
+
+         * 
+         * echo "dates " . $date2 . "<" . $date . "     ";
+          $userinvestmentdataDate = $date2->format('Y-m-d');
+          $this->Userinvestmentdata->create();
+          $tempDatabase['Userinvestmentdata']['date'] = $userinvestmentdataDate;
+          $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+          $this->Userinvestmentdata->save($tempDatabase, $validate = true);
+          $date2->modify('+1 day'); */
     }
 
 }

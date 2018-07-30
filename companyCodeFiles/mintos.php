@@ -1,6 +1,4 @@
-
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -21,7 +19,9 @@
  * @version 0.7
  * @date 2017-08-16
  * @package
- *
+ */
+
+/**
  * 2017-08-23 version_0.2
  * link account
  *
@@ -122,8 +122,8 @@ class mintos extends p2pCompany {
                                             12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], 
                                             13 => ["Default interest income" => "Late_payment_fee_income"],         
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                  //          15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
-                                  //          16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
+                                  //        15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+                                  //        16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
                                             17 => ["Cashback bonus" => "Incentives_and_bonus"],                                    
                                             18 => ["Incoming currency exchange transaction" => "Incoming_currency_exchange_transaction"],
                                             19 => ["Outgoing currency exchange transaction" => "Outgoing_currency_exchange_transaction"],                           
@@ -131,6 +131,7 @@ class mintos extends p2pCompany {
                                             21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
                                             23 => ["Affiliate bonus" => "Incentives_and_bonus"],
+                                            24 => ["Investment share buyer pays to a seller. "  => "Sell_secondary_market"],
                                         ],
                                 ],
                     "functionName" => "getTransactionDetail",
@@ -177,6 +178,8 @@ class mintos extends p2pCompany {
                                             21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
                                             23 => ["Affiliate bonus" => "Incentives_and_bonus"],
+                                            24 => ["Investment share buyer pays to a seller. "  => "Sell_secondary_market"],
+
                                         ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
@@ -736,8 +739,8 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3106;
-        $this->maxEmptySize = 3112;
+        //$this->minEmptySize = 3104;
+        //$this->maxEmptySize = 3400;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
@@ -948,21 +951,24 @@ class mintos extends p2pCompany {
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if (Configure::read('debug')) {
                     echo 'File size:     ' . $size;
                 }
-
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+               
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                } */
                 
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
@@ -1024,20 +1030,24 @@ class mintos extends p2pCompany {
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if (Configure::read('debug')) {
                     echo 'File size:     ' . $size;
                 }
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+      
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                }*/
                    
                 $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
@@ -1065,24 +1075,36 @@ class mintos extends p2pCompany {
                     echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                if (Configure::read('debug')) {
-                    echo 'File size:     ' . $size;
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
                 }
 
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
-                    $headerError = $this->compareHeader();
-                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
-                        return $this->getError(__LINE__, __FILE__, $headerError);
-                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        return $this->getError(__LINE__, __FILE__, $headerError);
-                    }
-                } else {
-                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
                 
                 $this->idForSwitch++;     
             case 9:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for mintos files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                }
                 $this->idForSwitch++;          
                 $this->getCompanyWebpageMultiCurl();
                 break; 
@@ -1398,7 +1420,7 @@ class mintos extends p2pCompany {
                 $type = WIN_AMORTIZATIONMETHOD_PARTIAL;
                 break;
             case "INTEREST-ONLY":
-                $type = WIN_AMORTIZATIONMETHOD_INTERESTONLY;
+                $type = WIN_AMORTIZATIONMETHOD_INTEREST_ONLY;
                 break;
             case "BULLET":
                 $type = WIN_AMORTIZATIONMETHOD_BULLET;
