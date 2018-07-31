@@ -1229,15 +1229,12 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                 'userinvestmentdata_numberActiveInvestments' => $activeInvestments);
             $this->Userinvestmentdata->save($tempUserInvestmentDataItem, $validate = true);
             unset($platformData['parsingResultTransactions'][$dateKey]);                    //Clean the transactions of that day to liberate memory
+            
+            
         }
     }
 
-        if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
-            $linkedaccountId = $platformData['linkedaccountId'];
-            $finishDate = $platformData['finishDate'];
-            $startDate = $platformData['startDate'];
-            $this->copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate);
-        }
+        
 // Deal with the control variables     
         echo __FILE__ . " " . __LINE__ . " Consolidation Phase 2, checking control variables\n";
         // Control Variables shall only be checked if PFP supports up to date xls files
@@ -1393,9 +1390,15 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
             }
         }
 
-
         // Copy the userinvestmentdata for all 'missing days'. This is only applicable in case of non-daily regular update
         if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
+            $linkedaccountId = $platformData['linkedaccountId'];
+            $finishDate = $platformData['finishDate'];
+            $startDate = $platformData['startDate'];
+            $this->copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate);
+        }
+
+        /*if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
             $date = new DateTime($dateKey);
             $date->modify('+1 day');
             $actualDate = $date->format($finishDate);
@@ -1418,7 +1421,7 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                 $date->modify('+1 day');
                 $actualDate = $date->format('Y-m-d');
             }
-        }
+        }*/
 
 
         $timeStop = time();
@@ -1683,6 +1686,8 @@ echo __FUNCTION__ . " " . __LINE__ ." Create a backup copy for dateKey = $dateKe
                     //save userinvestmentdata
                     $tempuserinvestmentdata = $userinvestmentdata;
                     unset($tempuserinvestmentdata["Userinvestmentdata"]['id']);
+                    unset($tempuserinvestmentdata["Userinvestmentdata"]['created']);
+                    unset($tempuserinvestmentdata["Userinvestmentdata"]['modified']);
                     $tempuserinvestmentdata["Userinvestmentdata"]['date'] = $userinvestmentdataDate;
                     $tempuserinvestmentdata['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
                     $this->Userinvestmentdata->create();
