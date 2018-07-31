@@ -214,12 +214,12 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                     foreach ($lists as $list) {
                         $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
 
-                        $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
+                        $result2 = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
                                                                                           'fields' => ['id', 'globalamortizationtable_scheduledDate',
                                                                                                        'globalamortizationtable_paymentStatus'],
                                                                                           'recursive' => -1
                                                                                            ));  
-                        $globalTable[] = $result;
+                        $globalTable[] = $result2;
                     }
                 
                     $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable');                     
