@@ -174,9 +174,8 @@ class p2pCompany {
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
                                         "chunkSize" => 2,     
                                         );
-    
     //Number of days for each company download. Only some pfp uses it.
-    protected $period = 365;
+    protected $period = 165;
 
     /**
      *
@@ -1787,6 +1786,16 @@ class p2pCompany {
             //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
 
+        if ($this->config['returnTransfer'] == true) {
+                // Return the actual result of the curl result instead of success code
+             $request->getOptions()
+                ->set(CURLOPT_RETURNTRANSFER, true);
+        } 
+        else{
+            $request->getOptions()
+                ->set(CURLOPT_RETURNTRANSFER, false);
+        }
+        
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
@@ -1821,8 +1830,7 @@ class p2pCompany {
                 ->set(CURLOPT_FAILONERROR, true)
                 ->set(CURLOPT_REFERER, $referer)
                 //->set(CURLOPT_VERBOSE, 1)
-                // Return the actual result of the curl result instead of success code
-                ->set(CURLOPT_RETURNTRANSFER, false)
+
                 ->set(CURLOPT_FILE, $this->fp)
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)

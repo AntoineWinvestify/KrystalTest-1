@@ -144,7 +144,80 @@ class circulantis extends p2pCompany {
              // "G" => "invertido",
              /* "H" => "total" */
     ];
-    protected $valuesInvestment = [// All types/names will be defined as associative index in array
+    protected $valuesTransaction2 = [
+         "A" => [
+            [
+                "type" => "original_concept", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "", // May contain trailing spaces
+                    "input3" => "ID Puja",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_sliceId", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "ID Puja: ", // May contain trailing spaces
+                    "input3" => ",",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_loanId", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "ID Subasta: ", // May contain trailing spaces
+                    "input3" => ",",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+        ],
+        "B" => [
+            [
+                "type" => "transactionDetail", // Winvestify standardized name   OK
+                "inputData" => [// List of all concepts that the platform can generate format ["concept string platform", "concept string Winvestify"]
+                    "input2" => "#current.original_concept",
+                    "input3" => [
+                        "Alta en Circulantis" => "Cash_deposit",
+                        "Traspaso" => "Cash_deposit",
+                        "Traspaso" => "Cash_withdrawal",
+                        "OperaciÃ³n realizada" => "Primary_market_investment_preactive",
+                        "OperaciÃ³n formalizada" => "Primary_market_investment_active_verification",
+                        "OperaciÃ³n cobrada" => "Principal_and_interest_payment",
+                        "OperaciÃ³n cobrada parcialmente" => "Partial_principal_and_interest_payment"
+                    ],
+                ],
+                "functionName" => "getComplexTransactionDetail",
+            ]
+        ],
+        "C" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],
+        "D" => [
+            [
+                "type" => "date", // Winvestify standardized name 
+                "inputData" => [
+                    "input2" => "d/m/Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+            /* "E" => "disponible",
+              "F" => "ofertado",*/
+             // "G" => "invertido",
+             /* "H" => "total" */
+    ];
+    protected $valuesInvestment2 = [// All types/names will be defined as associative index in array
         [
             "A" => [
                 "name" => "investment_debtor"                              // Winvestify standardized name  OK
@@ -1238,22 +1311,15 @@ class circulantis extends p2pCompany {
                 //echo "INVERSOR_PANEL" . $str;	
                 break;
             case 4:
+
                 $dom = new DOMDocument;
-                libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
-
                 //Control varibles
                 $tables = $this->getElements($dom, 'table', 'class', 'table table-striped');
-                $this->verifyNodeHasElements($tables);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
+
                 $trs = $tables[0]->getElementsByTagName('tr');
-                $this->verifyNodeHasElements($trs);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
+
                 //Table doesnt have id
                 $loanReferenceId = array();
                 $tempArray["global"]["activeInvestment"] = 0;
@@ -1267,10 +1333,7 @@ class circulantis extends p2pCompany {
                 }
 
                 $fondos = $this->getElements($dom, 'ul', 'class', 'distribucion_fondos');
-                $this->verifyNodeHasElements($fondos);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
+ 
                 $li1 = $fondos[0]->getElementsByTagName('li');
                 $li2 = $this->getElements($fondos[1], 'li', 'class', 'fondos_fi');
                 $tempArray["global"]["outstandingPrincipal"] = $li2[0]->nodeValue;
@@ -1306,9 +1369,8 @@ class circulantis extends p2pCompany {
                     //$finishedInvestment[$key]['J'] = $td[9]->nodeValue;
                 }
 
-                $this->fileName = $this->$nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->saveFilePFP($this->fileName, json_encode($finishedInvestment));
-
                 $dayStart = 1;
                 $monthStart = 1;
                 $yearStart = 2013;
@@ -1320,7 +1382,7 @@ class circulantis extends p2pCompany {
                 $this->downloadUrl = array_shift($this->urlSequence);
                 $this->investmentCredentials = array_shift($this->urlSequence);
                 $this->transactionCredentials = array_shift($this->urlSequence);
-                $this->headers = array_shift($this->urlSequence);
+                $this->headers = json_decode(array_shift($this->urlSequence),true);
                 $this->transactionCredentials2 = array("filtrofechas" => 1,
                     "desde_d" => $dayStart,
                     "desde_m" => $monthStart,
@@ -1330,7 +1392,13 @@ class circulantis extends p2pCompany {
                     "hasta_y" => $yearFinish);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->investmentHeader;
+                $this->config['postMessage'] = true;
+                $this->config['returnTransfer'] = true;
+                $this->returnTransfer = true;
+               //$investmentDownload = $this->downloadUrl . "?exportdata=1&item=operacionesvigentes";
                 $this->idForSwitch++;
+ //--data 'exportdata=1&item=operacionesvigentes'
+//["Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8", "Accept-Encoding: gzip, deflate, br", "Accept-Language: es-ES,es;q=0.9", "Cache-Control: max-age=0", "Connection: keep-alive", "Content-Length: 23", "Content-Type: application/x-www-form-urlencoded", "Host: circulantis.com", "Origin: https://circulantis.com", "Referer: https://circulantis.com/mi-cuenta/panel-inversor?exportdata=1&item=operacionesvigentes", "Upgrade-Insecure-Requests: 1"]
                 $this->getPFPFileMulticurl($this->downloadUrl, $this->downloadUrl, $this->investmentCredentials, $this->headers, $this->fileName);
                 break;
             case 5:
@@ -1348,7 +1416,6 @@ class circulantis extends p2pCompany {
                 } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 }
-
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($this->downloadUrl, $this->transactionCredentials2);
                 break;
