@@ -1301,32 +1301,6 @@ class ParseDataClientShell extends GearmanClientShell {
             $this->copyLastUserinvestmentdata($linkedaccountId, $finishDate, $startDate);
         }
 
-        /* if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
-          $date = new DateTime($dateKey);
-          $date->modify('+1 day');
-          $actualDate = $date->format($finishDate);
-
-          while ($actualDate <= $lastDateToCalculate) {
-          if (empty($tempDatabase)) {
-          $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-          $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
-          unset($tempDatabase['Userinvestmentdata']['id']);
-          }
-          $this->Userinvestmentdata->create();
-          $tempDatabase['Userinvestmentdata']['date'] = $actualDate;
-          $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
-          $this->Userinvestmentdata->save($tempDatabase, $validate = true);
-          if (Configure::read('debug')) {
-          echo __FUNCTION__ . " " . __LINE__ . " Saving a new Userinvestmentdata for date = $lastDateToCalculate, after the main loop\n";
-          }
-          $tempActualDate = $actualDate;
-          $date = new DateTime($tempActualDate);
-          $date->modify('+1 day');
-          $actualDate = $date->format('Y-m-d');
-          }
-          } */
-
-
         $timeStop = time();
         echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
 //print_r($platformData['amortizationTablesOfNewLoans']);
