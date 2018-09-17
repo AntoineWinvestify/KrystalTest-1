@@ -411,13 +411,13 @@ class mintos extends p2pCompany {
                     "type" => "investment_currency",                            // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
                 ],
-                [
+                /*[
                     "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "#current.investment_originalState",  // set to "ACTIVE"
                                 ],
                     "functionName" => "getDefaultValue",
-                ],
+                ],*/
                 [
                     "type" => "investment_typeOfInvestment",                    // Winvestify standardized name  OK
                     "inputData" => [
@@ -579,13 +579,13 @@ class mintos extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
-                [
+                /*[
                     "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "#current.investment_originalState",                            
                                 ],
                     "functionName" => "getDefaultValue",
-                ],
+                ],*/
             ],
             "V" =>  [
                 [
@@ -692,7 +692,7 @@ class mintos extends p2pCompany {
                 "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
                 "investment_loanType" => "translateLoanType",
                 "investment_amortizationMethod" => "translateAmortizationMethod",  
-                "investment_statusOfLoan" => "translateOriginalLoanState"
+                //"investment_statusOfLoan" => "translateOriginalLoanState"
             ]
         ],
         "expiredLoan" => [
@@ -700,7 +700,7 @@ class mintos extends p2pCompany {
                 "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
                 "investment_loanType" => "translateLoanType",
                 "investment_amortizationMethod" => "translateAmortizationMethod",  
-                "investment_statusOfLoan" => "translateOriginalLoanState"
+                //"investment_statusOfLoan" => "translateOriginalLoanState"
             ]
         ]
     ];
@@ -1487,7 +1487,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific originalLoanState
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
-    public function translateOriginalLoanState($inputData) {
+    /*public function translateOriginalLoanState($inputData) {
 
         switch ($inputData) {
             case "Current":
@@ -1519,7 +1519,7 @@ class mintos extends p2pCompany {
                 break;   
         }   
         return $result; 
-    }       
+    }*/       
   
  
     function structureRevisionAmortizationTable($node1, $node2){

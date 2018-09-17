@@ -334,8 +334,7 @@ class AppShell extends Shell {
         if (strpos($output, $scriptName . " initClient") === false) {
             $command = __DIR__ . DS . ".." . DS . "cake " . $scriptName . " initClient";
             echo "Client is not running so init the client\n";
-            $output = shell_exec($command);
-            echo $output . "\n\n";
+            exec($command);
         }
         else {
             echo "The Client is already running, so execute DIE";

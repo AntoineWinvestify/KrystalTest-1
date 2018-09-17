@@ -556,14 +556,18 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
 
                         if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) &&
-                                ($dateTransaction[0]["internalName"] == "investment_myInvestment" || $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" || $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification" || $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" )) {          // check if loanId is new
+                                ($dateTransaction[0]["internalName"] == "investment_myInvestment" || 
+                                $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" || 
+                                $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification" || 
+                                $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" ||
+                                $dateTransaction[0]["internalName"] == "payment_capitalRepayment"
+                            )) {          // check if loanId is new                            
                             $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                             echo "FOUND in Newloans\n";
                             if ($arrayIndex !== false) {        // Deleting the array from new loans list
-                                //unset($platformData['workingNewLoans'][$arrayIndex]);
                                 foreach ($platformData['workingNewLoans'] as $loanKey => $newLoan) {
                                     if ($newLoan == $dateTransaction[0]['investment_loanId']) {
-                                        unset($platformData['workingNewLoans'][$loanKey]);
+                                        unset($platformData['workingNewLoans'][$loanKey]);    
                                     }
                                 }
                             }
@@ -617,7 +621,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 "investment_totalLoancost", "investment_totalPlatformCost", "investment_myInvestment", "investment_technicalStateTemp",
                                 "investment_secondaryMarketInvestment", "investment_paidInstalments", "investment_statusOfLoan",
                                 "investment_sliceIdentifier", "investment_amortizationTableAvailable", "investment_reservedFunds", "investment_tempState",
-                                "investment_loanId"), array('date DESC'));
+                                "investment_loanId","date"), array('date DESC'));
 
                             $investmentId = $tempInvestmentData[0]['Investment']['id'];
                             if (empty($investmentId)) {     // This is a so-called Zombie Loan. It exists in transaction records, but not in the investment list
@@ -652,6 +656,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $database['investment']['investment_amortizationTableAvailable'] = $tempInvestmentData[0]['Investment']['investment_amortizationTableAvailable'];
                                 $database['investment']['id'] = $investmentId;
                                 $database['investment']['investment_loanId'] = $tempInvestmentData[0]['Investment']['investment_loanId'];
+                                $database['investment']['date'] = $tempInvestmentData[0]['Investment']['date'];
                             }
                         }
 
@@ -896,7 +901,8 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
 
-                        if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED || $database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_CANCELLED) {
+                        if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED || 
+                                $database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_CANCELLED) {
                             $platformData['workingNewLoans'][] = $database['investment']['investment_loanId'];
                         }
                         echo __FUNCTION__ . " " . __LINE__ . " printing relevant part of database\n";
@@ -920,7 +926,9 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                             $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
                         }
-                        $database['investment']['date'] = $dateKey;
+                        if(empty($database['investment']['date'])){
+                            $database['investment']['date'] = $dateKey;
+                        }               
                         if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                             $resultCreate = $this->Investment->createInvestment($database['investment']);
