@@ -627,10 +627,10 @@ statusOfLoan can have the following values:
 // Determine properly if the outstandingPrincipal is within the precision limit. NOTE THAT the
 // outstanding principal can be negative. In that case I don't count them 
         
-        if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
+        if (bccomp(abs($resultData['investment']['investment_outstandingPrincipal']), $precision, 16) < 0) {
             $tempOutstandingPrincipal = 0;
         }
-        
+
         if ($resultData['investment']['investment_tempState'] === WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
             return "PREACTIVE";
         }

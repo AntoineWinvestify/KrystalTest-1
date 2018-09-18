@@ -165,7 +165,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                     //We need the companies that are not in progress in order to calculate the Dashboardoverview data
                     $data['companiesNothingInProgress'] = $this->Linkedaccount->getLinkAccountsWithNothingInProcess($job['Queue2']['queue2_userReference']);
                     $data["companies"] = $queueInfo['companiesInFlow'];
-                    $this->userLinkaccountIds[$job['Queue2']['id']] = $queueInfo['companiesInFlow'];;
+                    $this->userLinkaccountIds[$job['Queue2']['id']] = $queueInfo['companiesInFlow'];
                     $data["queue_userReference"] = $job['Queue2']['queue2_userReference'];
                     $data["queue_id"] = $job['Queue2']['id'];
                     $data["date"] = $queueInfo['date'];
