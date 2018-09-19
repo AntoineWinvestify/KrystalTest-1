@@ -311,7 +311,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
             $dataMergeByDate[$dateYear] = $this->mergeArraysByKey($values[$dateYear], $variables);
             //$dataFormula = $this->winFormulas->doOperationByType($dataFormula, current($value), $variableFormula['operation']);
         }
-        
+
         if ($typeOfFormula === WIN_FORMULAS_NET_ANNUAL_RETURN) {
             foreach ($dataMergeByDate as $keyDate => $dataByDate) {
                 $returnData['investor'][$data["queue_userReference"]][$nameFunction][$keyDate] = round($this->financialClass->XIRR($dataByDate['values'], $dataByDate['dates']),16);

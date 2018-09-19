@@ -20,8 +20,7 @@
  * @date 2017-10-13
  * @package
  */
-
-App::import('Shell','GearmanClient');
+App::import('Shell', 'GearmanClient');
 
 /**
  * Description of ConsolidationClientShell
@@ -29,7 +28,7 @@ App::import('Shell','GearmanClient');
  * @author antoiba
  */
 class ConsolidationClientShell extends GearmanClientShell {
-    
+
     protected $services = [
         'netAnnualReturnXirr' => [],
         'netAnnualTotalFundsReturnXirr' => [],
@@ -37,22 +36,20 @@ class ConsolidationClientShell extends GearmanClientShell {
         'netReturn' => [],
         'netReturnPastYear' => []
     ];
-    
     protected $netAnnualReturnXirr = [
-        'service' => 'calculateNetAnnualReturnXirr',                            //Service is the function that is needed to call in the worker to calculate this variable
-        'gearmanFunction' => 'getFormulaCalculate',                             //This is the gearman function that will be call in order to initiate the service
-        'database' => [                                                         //This is the information to save the variable in DB
-            'platform' => [                                                     //platform is the variable to save the data by company
-                'table' => 'userinvestmentdata',                                                //Table is the table where is going to save the data
-                'variable' => 'userinvestmentdata_netAnnualReturnPast12Months',                 //Variable is the name of the service where is going to save the data
+        'service' => 'calculateNetAnnualReturnXirr', //Service is the function that is needed to call in the worker to calculate this variable
+        'gearmanFunction' => 'getFormulaCalculate', //This is the gearman function that will be call in order to initiate the service
+        'database' => [//This is the information to save the variable in DB
+            'platform' => [//platform is the variable to save the data by company
+                'table' => 'userinvestmentdata', //Table is the table where is going to save the data
+                'variable' => 'userinvestmentdata_netAnnualReturnPast12Months', //Variable is the name of the service where is going to save the data
                 'model' => 'Userinvestmentdata'                                                 //Model is the model to initiate
             ],
-            'dashboardOverview' => [                                            //dashboardOverview is the variable to save the data by investor
-                'variable' => 'dashboardoverviewdata_netAnnualReturnPast12Months',              //Variable is the name of the service where is going to save the data
+            'dashboardOverview' => [//dashboardOverview is the variable to save the data by investor
+                'variable' => 'dashboardoverviewdata_netAnnualReturnPast12Months', //Variable is the name of the service where is going to save the data
             ]
         ]
     ];
-    
     protected $netAnnualTotalFundsReturnXirr = [
         'service' => 'calculateNetAnnualTotalFundsReturnXirr',
         'gearmanFunction' => 'getFormulaCalculate',
@@ -65,10 +62,8 @@ class ConsolidationClientShell extends GearmanClientShell {
             'dashboardOverview' => [
                 'variable' => 'dashboardoverviewdata_netAnnualTotalFundsReturn',
             ]
-            
         ]
     ];
-    
     protected $netAnnualReturnPastYearXirr = [
         'service' => 'calculateNetAnnualReturnPastYearXirr',
         'gearmanFunction' => 'getFormulaCalculate',
@@ -81,10 +76,8 @@ class ConsolidationClientShell extends GearmanClientShell {
             'dashboardOverview' => [
                 'variable' => 'dashboardoverviewdata_netAnnualReturnPastYear',
             ]
-            
         ]
     ];
-    
     protected $netReturn = [
         'service' => 'calculateNetReturn',
         'gearmanFunction' => 'getFormulaCalculate',
@@ -97,10 +90,8 @@ class ConsolidationClientShell extends GearmanClientShell {
             'dashboardOverview' => [
                 'variable' => 'dashboardoverviewdata_netReturnPast12Months',
             ]
-            
         ]
     ];
-    
     protected $netReturnPastYear = [
         'service' => 'calculateNetReturnPastYear',
         'gearmanFunction' => 'getFormulaCalculate',
@@ -113,12 +104,10 @@ class ConsolidationClientShell extends GearmanClientShell {
             'dashboardOverview' => [
                 'variable' => 'dashboardoverviewdata_netReturnPastYear',
             ]
-            
         ]
     ];
-    
     protected $dashboardOverviewData = [];
-    
+
     /**
      * Function to init the process to recollect all the user investment data
      *  @param integer $this->args[0]|$queueStatus It is the status we need to use on the search on DB
@@ -137,25 +126,23 @@ class ConsolidationClientShell extends GearmanClientShell {
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 4 Client\n";
         }
-        
+
         $inActivityCounter++;                                           // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         //$this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         //$this->date = date("Ymd");
         $numberOfIteration = 0;
-        while ($numberOfIteration == 0){
-            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_START_CONSOLIDATION),
-                                                  WIN_QUEUE_STATUS_START_CONSOLIDATION,
-                                                $jobsInParallel);
+        while ($numberOfIteration == 0) {
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_START_CONSOLIDATION), WIN_QUEUE_STATUS_START_CONSOLIDATION, $jobsInParallel);
             echo "Pending jobs in queue:    ";
             print_r($pendingJobs);
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Checking if jobs are available for this Client\n";
             }
-            
+
             if (!empty($pendingJobs)) {
-                
+
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done\n";
                 }
@@ -170,52 +157,95 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $data["queue_id"] = $job['Queue2']['id'];
                     $data["date"] = $queueInfo['date'];
                     $data["originExecution"] = $queueInfo['originExecution'];
+                    $data["startDate"] = $queueInfo['startDate'];
+
                     //Now, we get all the variables Services, in the future it must be from database
                     if (empty($queueInfo['services'])) {
                         $this->getAllServices();
                     }
-                    //$this->getConsolidationWorkerFunction();
-                    foreach ($this->services as $nameServiceKey => $service) {
-                        $data['service'] = $service;
-                        if (Configure::read('debug')) {
-                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
-                            print_r($data["companies"]);
-                            echo "userReference ". $data["queue_userReference"] . "\n";
-                            echo "queueId " . $data["queue_id"] . "\n";
-                            echo "the date is " . $data["date"] . "\n";
-                            echo "All information \n";
-                            print_r($data);
+                    if ($data["originExecution"] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {
+                        $finishDateOriginal = $data["date"];
+                        $startDateOriginal = "20991230";
+                        foreach ($data["startDate"] as $dateValue) {
+                            if ($dateValue < $startDateOriginal) {
+                                $startDateOriginal = $dateValue;
+                            }
                         }
-                        $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" .  $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference']);
+                        $startDate = new DateTime($startDateOriginal);
+                        $finishDate = new DateTime($finishDateOriginal);
+                        $finishDate->modify('-1 day');
+
+                        for ($startDate; $startDate < $finishDate; $startDate->modify('+1 day')) {
+                            echo "----Actual date ---------------------" . $startDate->format('Ymd');
+                            echo "----Finish Day ---------------------" . $finishDate->format('Ymd');
+                            foreach ($data["startDate"] as $key => $dateValue) {
+                                $data["startDate"][$key] = $startDate->format('Ymd');
+                            }
+                            $newDate = new DateTime($startDate->format('Ymd'));
+                            $newDate->modify('+2 day');
+                            $data["date"] = $newDate->format('Ymd');
+                            unset($newDate);
+                            echo " fecha enviada ";
+                            print_r($data["date"]);
+                            foreach ($this->services as $nameServiceKey => $service) {
+                                $data['service'] = $service;
+                                if (Configure::read('debug')) {
+                                    $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+                                    print_r($data["companies"]);
+                                    echo "userReference " . $data["queue_userReference"] . "\n";
+                                    echo "queueId " . $data["queue_id"] . "\n";
+                                    echo "the date is " . $data["date"] . "\n";
+                                    echo "All information \n";
+                                    print_r($data);
+                                }
+                                $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" . $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference']);
+                                if (Configure::read('debug')) {
+                                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
+                                }
+                            }
+
+                            $this->GearmanClient->runTasks();
+                            if (Configure::read('debug')) {
+                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
+                            }
+                            $this->saveConsolidationFields($data["date"]);
+                            $this->verifyStatus(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, "Data successfuly downloaded", WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED);
+                        }
+                    }
+                    else {
+                        foreach ($this->services as $nameServiceKey => $service) {
+                            $data['service'] = $service;
+                            if (Configure::read('debug')) {
+                                $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Showing data sent to worker \n");
+                                print_r($data["companies"]);
+                                echo "userReference " . $data["queue_userReference"] . "\n";
+                                echo "queueId " . $data["queue_id"] . "\n";
+                                echo "the date is " . $data["date"] . "\n";
+                                echo "All information \n";
+                                print_r($data);
+                            }
+                            $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" . $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference']);
+                            if (Configure::read('debug')) {
+                                echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
+                            }
+                        }
+
+                        $this->GearmanClient->runTasks();
+                        if (Configure::read('debug')) {
+                            echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
+                        }
+                        $this->saveConsolidationFields($data["date"]);
+                        $this->verifyStatus(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, "Data successfuly downloaded", WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED);
                     }
                 }
-                
-                
-                
-                if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
-                }
-
-                $this->GearmanClient->runTasks();
-                print_r($this->tempArray);
-                print_r($this->gearmanErrors);
-                print_r($this->userResult);
-                // ######################################################################################################
-                if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n";
-                }
-                $this->saveConsolidationFields();
-                
-                $this->verifyStatus(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, "Data successfuly downloaded", WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED);
-
             }
             else {
                 $inActivityCounter++;
-                echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";                
-                sleep (WIN_SLEEP_DURATION); 
+                echo __METHOD__ . " " . __LINE__ . " Nothing in queue, so sleeping \n";
+                sleep(WIN_SLEEP_DURATION);
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";  
+                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";
                 $this->killShellCommand("consolidationWorker");
                 exit;
             }
@@ -223,11 +253,13 @@ class ConsolidationClientShell extends GearmanClientShell {
         }
         $this->killShellCommand("consolidationWorker");
     }
-    
+
     /**
      * Function to save all the amortization tables on DB per user and per linkaccount
      */
-    public function saveConsolidationFields() {
+    public function saveConsolidationFields($dateSendString) {
+        $dateSend = new DateTime($dateSendString);
+        $dateSend->modify('-1 day');
         $this->Investor = ClassRegistry::init('Investor');
         $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
         foreach ($this->tempArray as $queueKey => $tempArray) {
@@ -239,18 +271,23 @@ class ConsolidationClientShell extends GearmanClientShell {
                     //We search for the array by investorIdentity as per serviceValue (for example, NAR, NARPastYear...)
                     foreach ($tempArrayByCompany[$keyInvestorIdentity] as $key => $serviceValues) {
                         //If the serviceValues is an array, it is the NARPastyear, for now, we only need the last year so we get with an array_shift
-                         if (is_array($serviceValues)) {
+                        if (is_array($serviceValues)) {
                             $serviceValues = array_shift($serviceValues);
                         }
                         $dashboardOverviewData[$this->services[$key]['database']['dashboardOverview']['variable']] = $serviceValues;
+                        print_r($tempArrayByCompany);
                     }
                     $investorId = $this->Investor->getData(
-                                                        ['investor_identity' => $keyInvestorIdentity],
-                                                        ['id']
-                                                    );
-                    $dashboardOverviewData['date'] = date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']));
+                            ['investor_identity' => $keyInvestorIdentity], ['id']
+                    );
+                    $dashboardOverviewData['date'] = $dateSend->format('Ymd');
                     $dashboardOverviewData['investor_id'] = $investorId[0]['Investor']['id'];
+                    echo 'saving';
+                    print_r($dashboardOverviewData);
+                    $this->Dashboardoverviewdata->create();
                     $this->Dashboardoverviewdata->save($dashboardOverviewData);
+                    unset($dashboardOverviewData);
+
                     continue;
                 }
                 //If it is not investor, we are going to save the values by linkedacccountId
@@ -261,20 +298,21 @@ class ConsolidationClientShell extends GearmanClientShell {
                     }
                     //print_r($this->services);
                     $model = ClassRegistry::init($this->services[$key]['database']['platform']['model']);
-                    $dateTime = date("Y-m-d", strtotime($this->queueInfo[$queueKey]['date']));
+                    $dateTime = $dateSend->format('Ymd');
                     $conditions = array(
-                        'date <=' => $dateTime,                                 //We get the last entry taking into account the date we initiate the flow1
+                        'date <=' => $dateTime, //We get the last entry taking into account the date we initiate the flow1
                         'linkedaccount_id' => $linkedaccountId);
-                    $id = $model->getData($conditions,['id'],'id DESC',null,'first');
+                    $id = $model->getData($conditions, ['id'], 'id DESC', null, 'first');
                     $model->id = $id;
                     $model->saveField($this->services[$key]['database']['platform']['variable'], $serviceValues);
                 }
             }
         }
+
         //After save all the service, we change the lastAccess of the account as the date of the flow1 started
         foreach ($this->userResult as $queueId => $userResult) {
-            $date = $this->queueInfo[$queueId]['date'];
-            $lastAccess = date("Y-m-d", strtotime($date-1));
+            $date = $dateSend->format('Ymd');
+            $lastAccess = date("Y-m-d", strtotime($date - 1));
             foreach ($this->queueInfo[$queueId]['companiesInFlow'] as $linkaccountId) {
                 $this->Linkedaccount->id = $linkaccountId;
                 $this->Linkedaccount->saveField('linkedaccount_lastAccessed', $lastAccess);
@@ -282,7 +320,7 @@ class ConsolidationClientShell extends GearmanClientShell {
             }
         }
     }
-    
+
     /**
      * Function to get all the services that are needed to calculate in the flow4
      * Services:
@@ -298,7 +336,7 @@ class ConsolidationClientShell extends GearmanClientShell {
             $this->services[$keyServices] = $this->$keyServices;
         }
     }
-    
+
     /**
      * Function that runs after a task was complete on the Gearman Worker
      * @param GearmanTask $task It is a Gearman::Client's representation of a task done.
@@ -311,7 +349,7 @@ class ConsolidationClientShell extends GearmanClientShell {
      *                  $data["errors"] If the statusCollect is 0, the error is saved on it
      *                  $data["tempArray"] The information to save on database by linkaccount id
      */
-    public function verifyCompleteTask (GearmanTask $task) {
+    public function verifyCompleteTask(GearmanTask $task) {
         echo "Received data from Worker \n";
         $data = explode(".-;", $task->unique());
         if (empty($this->userReference[$data[0]])) {
@@ -341,7 +379,7 @@ class ConsolidationClientShell extends GearmanClientShell {
             foreach ($dataWorker['tempArray'] as $linkaccountId => $dataArray) {
                 if (empty($this->tempArray[$data[0]][$linkaccountId])) {
                     $this->tempArray[$data[0]][$linkaccountId] = $dataArray;
-                } 
+                }
                 else if ($linkaccountId == 'investor') {
                     $keyDataArray = key($dataArray[$data[2]]);
                     $this->tempArray[$data[0]][$linkaccountId][$data[2]][$keyDataArray] = $dataArray[$data[2]][$keyDataArray];
@@ -351,7 +389,6 @@ class ConsolidationClientShell extends GearmanClientShell {
                     $this->tempArray[$data[0]][$linkaccountId][$keyDataArray] = $dataArray[$keyDataArray];
                 }
             }
-            
         }
 //        print_r($this->userResult);
 //        print_r($this->userReference);
@@ -359,7 +396,7 @@ class ConsolidationClientShell extends GearmanClientShell {
 //        echo "COMPLETE: " . $task->jobHandle() . ", " . $task->data() . "\n";
         echo GEARMAN_SUCCESS;
     }
-    
+
     /**
      * Function to verify that the job was successful per user and per company
      * @param int $status It is the Id of the next queue status
@@ -369,7 +406,7 @@ class ConsolidationClientShell extends GearmanClientShell {
      * @param array $this->userResult This array is a variable class where we save the completion status of a pfp
      *                                The variable is created as: this->userResult[$queueId][$linkedaccountId]
      */
-    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {       
+    public function verifyStatus($status, $message, $restartStatus, $errorStatus) {
         foreach ($this->userResult as $queueId => $userResult) {
             $globalDestruction = false;
             unset($this->queueInfo[$queueId]['companiesInFlow']);
@@ -390,10 +427,10 @@ class ConsolidationClientShell extends GearmanClientShell {
                             foreach ($resultFunctionStatus as $keyDate => $dateResult) {
                                 if (!$dateResult) {
                                     $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
-                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . 
-                                            $this->flowName . " and linkAccountId " . $linkaccountId ;
+                                    $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " .
+                                            $this->flowName . " and linkAccountId " . $linkaccountId;
                                     $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                                            . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] . 
+                                            . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] .
                                             " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['subtypeErrorId'];
                                     $this->saveGearmanError($this->gearmanErrors[$queueId]['investor'][$keyUserReference][$keyFunction][$keyDate]);
                                 }
@@ -402,12 +439,12 @@ class ConsolidationClientShell extends GearmanClientShell {
                         else if (!$resultFunctionStatus) {
                             //$this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
                             $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
-                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName . 
+                            $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName .
                                     " and linkAccountId " . $linkaccountId .
-                                    " " .  $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]["typeOfError"];
+                                    " " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]["typeOfError"];
                             $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                                    . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] . 
-                                    " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['subtypeErrorId'] . 
+                                    . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['typeErrorId'] .
+                                    " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]['subtypeErrorId'] .
                                     " with " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]["detailedErrorInformation"];
                             print_r($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
                             $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction]);
@@ -421,28 +458,28 @@ class ConsolidationClientShell extends GearmanClientShell {
                         foreach ($result[$keyFunction] as $keyDate => $dateResult) {
                             if (!$dateResult) {
                                 $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
-                                $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['typeOfError'] = "ERROR on flow " . $this->flowName . 
-                                        " and linkAccountId " . $linkaccountId ;
+                                $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['typeOfError'] = "ERROR on flow " . $this->flowName .
+                                        " and linkAccountId " . $linkaccountId;
                                 $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                                        . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['typeErrorId'] . 
-                                        " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['subtypeErrorId'] ;
+                                        . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['typeErrorId'] .
+                                        " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]['subtypeErrorId'];
                                 $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyFunction][$keyDate]);
                             }
                         }
                     }
                     if (!$result[$keyFunction]) {
                         $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
-                        $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName . 
-                                " and linkAccountId " . $linkaccountId . 
-                                " " .  $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]["typeOfError"];
+                        $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['typeOfError'] = "ERROR on flow " . $this->flowName .
+                                " and linkAccountId " . $linkaccountId .
+                                " " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]["typeOfError"];
                         $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['typeErrorId'] . 
-                                " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['subtypeErrorId'] . 
+                                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['typeErrorId'] .
+                                " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]['subtypeErrorId'] .
                                 " with " . $this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]["detailedErrorInformation"];
                         $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId][$keyFunction]);
                     }
                 }
-                $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId; 
+                $this->queueInfo[$queueId]['companiesInFlow'][] = $linkaccountId;
             }
             /*
              * When there is a globalDestruction, all content of the files are deleted
@@ -456,28 +493,27 @@ class ConsolidationClientShell extends GearmanClientShell {
                 }
             }
             if (!empty($this->queueInfo[$queueId]['companiesInFlow'])) {
-                    $this->Queue2->id = $queueId;
+                $this->Queue2->id = $queueId;
                 if (!$globalDestruction) {
                     $newState = $status;
                     $this->queueInfo[$queueId]['numberTries'] = 0;
                     if (Configure::read('debug')) {
                         echo __FUNCTION__ . " " . __LINE__ . ": " . $message;
                     }
-                } 
+                }
                 else {
                     $data = $this->getFailStatus($queueId, $restartStatus, $errorStatus);
                     $newState = $data["newStatus"];
                     $this->queueInfo[$queueId]["numberTries"] = $data["numberTries"];
                 }
                 $this->Queue2->save(array(
-                            'queue2_status' => $newState,
-                            'queue2_info' => json_encode($this->queueInfo[$queueId])
-                        ),
-                        $validate = true
+                    'queue2_status' => $newState,
+                    'queue2_info' => json_encode($this->queueInfo[$queueId])
+                        ), $validate = true
                 );
             }
             //$statusProcess = $this->consolidationResult($userResult, $queueId);
         }
     }
-    
+
 }
