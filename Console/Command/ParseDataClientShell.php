@@ -1281,24 +1281,38 @@ class ParseDataClientShell extends GearmanClientShell {
             // that will be stored in database
             //       $this->date = date("Ymd", strtotime("-1 day"));
 
-
             $date = new DateTime($finishDate);                                  // The date of the last userinvestment
             $date->modify('-1 day');                                            // that will be stored in databas
             $lastDateToStore = $date->format('Y-m-d');
+            $linkedaccountId = $platformData['linkedaccountId'];
 
-
-            if ($dateKey < $lastDateToStore) {
-                $filterConditions = array("linkedaccount_id" => $linkedaccountId);
-                $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
-
+            $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+            $LastUserinvestmentdata = $this->Userinvestmentdata->getData($filterConditions, null, "date DESC", null, "first");
+            print_r($LastUserinvestmentdata);
+            if ($LastUserinvestmentdata['Userinvestmentdata']['date'] < $lastDateToStore) {
+                $tempUserinvestmentdata = $LastUserinvestmentdata;
+                unset($tempUserinvestmentdata['Userinvestmentdata']['id']);
+                unset($tempUserinvestmentdata['Userinvestmentdata']['created']);
+                unset($tempUserinvestmentdata['Userinvestmentdata']['modified']);
+                $tempUserinvestmentdata['Userinvestmentdata']['date'] = $lastDateToStore;
                 $this->Userinvestmentdata->create();
-                $tempDatabase['Userinvestmentdata']['date'] = $lastDateToStore;
-                $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
-                $this->Userinvestmentdata->save($tempDatabase, $validate = true);
+                $this->Userinvestmentdata->save($tempUserinvestmentdata, $validate = true);
                 if (Configure::read('debug')) {
                     echo __FUNCTION__ . " " . __LINE__ . " Saving a new Userinvestmentdata for date = $lastDateToCalculate, after the main loop\n";
                 }
             }
+            /*if ($dateKey < $lastDateToStore) {
+              $filterConditions = array("linkedaccount_id" => $linkedaccountId);
+              $tempDatabase = $this->getLatestTotals("Userinvestmentdata", $filterConditions);
+
+              $this->Userinvestmentdata->create();
+              $tempDatabase['Userinvestmentdata']['date'] = $lastDateToStore;
+              $tempDatabase['Userinvestmentdata']['linkedaccount_id'] = $linkedaccountId;
+              $this->Userinvestmentdata->save($tempDatabase, $validate = true);
+              if (Configure::read('debug')) {
+              echo __FUNCTION__ . " " . __LINE__ . " Saving a new Userinvestmentdata for date = $lastDateToCalculate, after the main loop\n";
+              }
+              }*/
         }
 
         // Copy the userinvestmentdata for all 'missing days'. This is only applicable in case of non-daily regular update

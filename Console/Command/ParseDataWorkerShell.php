@@ -407,6 +407,9 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
             $i = 0;
             $fileNumber = 1;
             foreach($data['tempArray'][$linkAccountId]["parsingResultTransactions"] as $date => $info){
+                if(new DateTime($date) > new DateTime($returnData[$linkedAccountKey]['finishDate'])){
+                    continue;
+                }
                 $tempParsingResultTransactions[$date] = $info;
                 unset($data['tempArray'][$linkAccountId]["parsingResultTransactions"][$date]);
                 $i++;      

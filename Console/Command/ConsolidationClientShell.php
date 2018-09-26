@@ -312,7 +312,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         //After save all the service, we change the lastAccess of the account as the date of the flow1 started
         foreach ($this->userResult as $queueId => $userResult) {
             $date = $dateSend->format('Ymd');
-            $lastAccess = date("Y-m-d", strtotime($date - 1));
+            $lastAccess = date("Y-m-d", strtotime($date));
             foreach ($this->queueInfo[$queueId]['companiesInFlow'] as $linkaccountId) {
                 $this->Linkedaccount->id = $linkaccountId;
                 $this->Linkedaccount->saveField('linkedaccount_lastAccessed', $lastAccess);

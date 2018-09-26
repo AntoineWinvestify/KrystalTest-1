@@ -56,7 +56,7 @@ class twino extends p2pCompany {
 // 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
 
         protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.0001',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
     ];
         
