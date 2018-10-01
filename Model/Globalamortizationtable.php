@@ -66,11 +66,11 @@ class Globalamortizationtable extends AppModel
                     'className' => 'Investmentslice',
                     'joinTable' => 'globalamortizationtables_investmentslices',
                     'foreignKey' => 'globalamortizationtable_id',
-                    'associationForeignKey' => 'investmentslice_id',   
-                    'unique' => true,
+                    'associationForeignKey' => 'investmentslice_id',
                  )
-        
-    );   
+    );
+
+ 
 
   
     
@@ -93,12 +93,12 @@ class Globalamortizationtable extends AppModel
         $existingListExtended = $this->find("all", array(
                                         'conditions' => array('globalamortizationtable_companyId' => $companyId), 
                                         'recursive' => -1,
-                                        'fields' => array('id', 'globalamortizationtable_loanId'),
-                                        'group' => array('globalamortizationtable_loanId'), 
+                                        'fields' => array('any_value(id)', 'Globalamortizationtable.globalamortizationtable_loanId'),
+                                        'group' => array('Globalamortizationtable.globalamortizationtable_loanId'),
                                     ));
 
         $existingLoanIdsList = Hash::extract($existingListExtended, '{n}.Globalamortizationtable.globalamortizationtable_loanId');
-
+        
  // if actual amortizationtable is not in list then add it to DB
         foreach ($amortizationData as $loanId => $loanData) {
             unset($globalAmortizationtable);
@@ -135,7 +135,7 @@ class Globalamortizationtable extends AppModel
             
             foreach ($amortizationTableIndexes as $index) {
                 $tempTable['globalamortizationtable_id'] = $index; 
-                $tempTable['investmentslice_id'] = $sliceId;       
+                $tempTable['investmentslice_id'] = $sliceId; 
                 $combinedTable[] = $tempTable;    
             }  
  

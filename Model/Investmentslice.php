@@ -64,8 +64,18 @@ class Investmentslice extends AppModel
             'className' => 'Amortizationtable',
             'foreignKey' => 'investmentslice_id',
         ),
-    );   
+    );
     
+    public $hasAndBelongsToMany = array(
+        'Globalamortizationtable' =>
+                array(
+                    'className' => 'Globalamortizationtable',
+                    'joinTable' => 'globalamortizationtables_investmentslices',
+                    'foreignKey' => 'investmentslice_id',
+                    'associationForeignKey' => 'globalamortizationtable_id',
+                 )
+
+    );
     
     /**
      * Creates a new slice for a loan.

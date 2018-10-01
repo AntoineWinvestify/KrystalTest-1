@@ -215,22 +215,22 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                         $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
 
                         $result2 = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
-                                                                                          'fields' => ['id', 'globalamortizationtable_scheduledDate',
-                                                                                                       'globalamortizationtable_paymentStatus'],
-                                                                                          'recursive' => -1
-                                                                                           ));  
+                                                                                        'fields' => ['id', 'globalamortizationtable_scheduledDate',
+                                                                                                    'globalamortizationtable_paymentStatus'],
+                                                                                        'recursive' => -1
+                        ));
                         $globalTable[] = $result2;
                     }
                 
                     $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable');                     
                     $reversedData =  array_reverse($amortizationTable);         // prepare to search backwards in amortization table
-
+                    unset($globalTable);
                     foreach ($reversedData as $table) { 
                         if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
                             $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
                             $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
                                 $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
-                        } 
+                        }
                     }
                 }
  
@@ -257,75 +257,74 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
      * @param  $array      Array which holds global data of the P2P
      * @return boolean
      */
-    public function consolidatePaymentDelay(&$linkedAccountData) { 
+    public function consolidatePaymentDelay(&$linkedAccountData) {
         $timeStart = time();
 
         foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
-            $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
-                                                      'linkedaccount_id'  => $linkedAccountKey
-                                              ));
+            $conditions = array("AND" => array(array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE),
+                    'linkedaccount_id' => $linkedAccountKey
+            ));
             $index = 0;
             $controlIndex = 0;
             $limit = WIN_DATABASE_READOUT_LIMIT;
             $investment = array();
 
-echo "finishDate = "  . $linkedAccount['finishDate'] . "\n"; 
+            echo "finishDate = " . $linkedAccount['finishDate'] . "\n";
 
-                $todayYear = substr($linkedAccount['finishDate'], 0 , 4); 
-                $todayMonth = substr($linkedAccount['finishDate'], 4 , 2);
-                $todayDay = substr($linkedAccount['finishDate'], 6 , 2);
-                $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
+            $todayYear = substr($linkedAccount['finishDate'], 0, 4);
+            $todayMonth = substr($linkedAccount['finishDate'], 4, 2);
+            $todayDay = substr($linkedAccount['finishDate'], 6, 2);
+            $today = $todayYear . "-" . $todayMonth . "-" . $todayDay;
 
-                $todayTimeStamp = strtotime($today);
-echo "todayTimeStamp = $todayTimeStamp\n";
-            
+            $todayTimeStamp = strtotime($today);
+            echo "todayTimeStamp = $todayTimeStamp\n";
+
             do {
                 $result = $this->Investment->find("all", ['conditions' => $conditions,
-                                                            'fields'    => ['id', 'investment_dateForPaymentDelayCalculation'],
-                                                            'recursive'  => -1,
-                                                            'limit' => $limit,
-                                                            'offset' => $index * $limit]
-                                                 );
-                  
+                    'fields' => ['id', 'investment_dateForPaymentDelayCalculation'],
+                    'recursive' => -1,
+                    'limit' => $limit,
+                    'offset' => $index * $limit]
+                );
+
                 if (count($result) < $limit) {                                  // No more results available
                     $controlIndex = 1;
                 }
-             
-                foreach ($result as $item) {                      
 
-print_r($item);
+                foreach ($result as $item) {
+
+                    print_r($item);
                     if (empty($item['Investment']['investment_dateForPaymentDelayCalculation'])) {           // skip over blank dates
                         continue;
                     }
-                    if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "9999-12-31"){           // skip over dummy dates
+                    if ($item['Investment']['investment_dateForPaymentDelayCalculation'] == "9999-12-31") {           // skip over dummy dates
                         continue;
-                    }                    
+                    }
                     $dateTimeForPaymentDelayCalculation = strtotime($item['Investment']['investment_dateForPaymentDelayCalculation']);
-                   
+
                     $tempArray['id'] = $item['Investment']['id'];
-                    if ($dateTimeForPaymentDelayCalculation < $todayTimeStamp) {                     
-echo "Difference in seconds = " . abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) . "\n";
+                    if ($dateTimeForPaymentDelayCalculation < $todayTimeStamp) {
+                        echo "Difference in seconds = " . abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) . "\n";
                         $tempArray['investment_paymentStatus'] = ceil(abs($todayTimeStamp - $dateTimeForPaymentDelayCalculation) / 86400);
                     }
                     else {
                         $tempArray['investment_paymentStatus'] = 0;
                     }
-                   
-echo __FUNCTION__ . " " . __LINE__ . "\n";
-print_r($tempArray);
+
+                    echo __FUNCTION__ . " " . __LINE__ . "\n";
+                    print_r($tempArray);
                     $investment[] = $tempArray;
                 }
                 $index++;
-            } 
-            while($controlIndex < 1);
-                $this->Investment->saveMany($investment, array('validate' => true));
+            } while ($controlIndex < 1);
+            $this->Investment->saveMany($investment, array('validate' => true));
         }
-        
+
         $timeStop = time();
-        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) . "\n";
 
         return true;
-    }  
+    }
 
     
     /** 
@@ -351,7 +350,7 @@ print_r($tempArray);
                                                                     'recursive' => 1,
                                                                     'fields' => array('id')
                                                       ));
-            
+
             foreach ($investmentResults as $result) {             
                 if (isset($result['Investmentslice'][0]['id'])) {
                     $nextPaymentDate = $this->getNextPaymentDateForLoanSlice($result['Investmentslice'][0]['id']); 
@@ -375,43 +374,50 @@ print_r($tempArray);
      *  
      *  @param  array       $investmentSliceId      id of model Investmentslices
      *  @return date
-     */   
-    public function getNextPaymentDateForLoanSlice($investmentSliceId) { 
+     */
+    public function getNextPaymentDateForLoanSlice($investmentSliceId) {
 
         $scheduledDate = "9999-12-31";
 
-        if ($this->Investmentslice->hasChildModel($investmentSliceId, "Amortizationtable")) {  
-            $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId), 
-                                                                      'fields' => array('id', 'amortizationtable_scheduledDate')
-                                                    )); 
+        if ($this->Investmentslice->hasChildModel($investmentSliceId, "Amortizationtable")) {
+            $globalTable = $this->Amortizationtable->find("all", array('conditions' => array('investmentslice_id' => $investmentSliceId),
+                'fields' => array('id', 'amortizationtable_scheduledDate')
+            ));
             $amortizationTable = Hash::extract($globalTable, '{n}.Amortizationtable.amortizationtable_scheduledDate');
         }
-        else {                       
-            $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $investmentSliceId), 
-                                                                      'fields' => array('id', 'globalamortizationtable_id')
-                                                    )); 
-            
+        else {
+            $this->Investmentslice->GlobalamortizationtablesInvestmentslice->bindModel(
+                    array('belongsTo' => array(
+                            'Globalamortizationtable' => array(
+                                'foreignKey' => globalamortizationtable_id,
+                                'className' => 'Globalamortizationtable'
+                            )
+                        )
+                    )
+            );
+            $lists = $this->Investmentslice->GlobalamortizationtablesInvestmentslice->find("all", array('conditions' => array('GlobalamortizationtablesInvestmentslice.investmentslice_id' => $investmentSliceId),
+                'recursive' => 1));
+
+
             foreach ($lists as $list) {
-                $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
-                $result = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
-                                                                                  'fields' => array('id', 'globalamortizationtable_scheduledDate' )));  
-                $globalTable[] = $result;
+                $globalTable[] = $list['Globalamortizationtable'];
             }
-            $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable.globalamortizationtable_scheduledDate');
+            print_r($lists);
+            $amortizationTable = Hash::extract($globalTable, '{n}.globalamortizationtable_scheduledDate');
         }
- 
+
         // scan through tables from "new" to "old"
         $reversedAmortizationTable = array_reverse($amortizationTable);
 
-        foreach ($reversedAmortizationTable as $paymentSchedule) { 
+        foreach ($reversedAmortizationTable as $paymentSchedule) {
             if ($this->today < $paymentSchedule) {
-                $scheduledDate = $paymentSchedule;   
+                $scheduledDate = $paymentSchedule;
             }
             else {
                 break;
             }
         }
         return $scheduledDate;
-    }    
-    
+    }
+
 }
