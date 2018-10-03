@@ -154,6 +154,9 @@ class twino extends p2pCompany {
             ]
         ]
     ];
+    
+    
+    
 // Not finished
     protected $valuesInvestment = [// All types/names will be defined as associative index in array
         [
@@ -176,10 +179,10 @@ class twino extends p2pCompany {
             "D" => [
                 "name" => "investment_riskRating",
             ],
-            "E" => [
+            "F" => [
                 "name" => "investment_originalState",
             ],
-            "F" => [
+            "G" => [
                 [
                     "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
                     "inputData" => [
@@ -189,9 +192,6 @@ class twino extends p2pCompany {
                     ],
                     "functionName" => "handleNumber",
                 ]
-            ],
-            "G" => [
-                "name" => "investment_expectedAnnualYield"
             ],
             //"H" => ASK ANTOINE Remaining Term
             "I" => [
@@ -226,7 +226,7 @@ class twino extends p2pCompany {
             "O" => [
                 "name" => "investment_outstandingPrincipalFromP2P"
             ],
-            "P" => [
+            "U" => [
                 "name" => "investment_forSale"
             ]
         ]
@@ -253,10 +253,10 @@ class twino extends p2pCompany {
             "D" => [
                 "name" => "investment_riskRating",
             ],
-            "E" => [
+            "F" => [
                 "name" => "investment_originalState",
             ],
-            "F" => [
+            "G" => [
                 [
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [           
@@ -266,9 +266,6 @@ class twino extends p2pCompany {
                     ],
                     "functionName" => "handleNumber",
                 ]
-            ],
-            "G" => [
-                "name" => "investment_expectedAnnualYield"
             ],
             //"H" => ASK ANTOINE Remaining Term
             "I" => [
@@ -303,7 +300,7 @@ class twino extends p2pCompany {
             "O" => [
                 "name" => "investment_outstandingPrincipalFromP2P"
             ],
-            "P" => [
+            "U" => [
                 "name" => "investment_forSale"
             ]
         ]
@@ -419,7 +416,7 @@ class twino extends p2pCompany {
     
     protected $transactionConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart' => 4,
             'offsetEnd'     => 0,
             'sortParameter' => ["date","investment_loanId"]                     // used to "sort" the array and use $sortParameter(s) as prime index.               
         ]
@@ -427,7 +424,7 @@ class twino extends p2pCompany {
     
     protected $investmentConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart' => 4,
             'offsetEnd'     => 0,
             'sortParameter' => array("investment_loanId")                       // used to "sort" the array and use $sortParameter as prime index.
        ]
@@ -435,11 +432,15 @@ class twino extends p2pCompany {
     
     protected $expiredLoanConfigParms = [
         [
-            'offsetStart' => 1,
+            'offsetStart' => 4,
             'offsetEnd'     => 0,
             'sortParameter' => ["investment_loanId"]                            // used to "sort" the array and use $sortParameter as prime index.
        ]
     ]; 
+    
+     protected $compareHeaderConfigParam = array( "chunkInit" => 3,
+                                        "chunkSize" => 2,     
+                                        );
     
     protected $amortizationConfigParms = ['OffsetStart' => 1,
         'offsetEnd' => 0,
@@ -454,13 +455,16 @@ class twino extends p2pCompany {
             ]
         ]
     ];
-    protected $investmentHeader = ['A' => "Country",
+
+
+    protected $investmentHeader = [
+        'A' => "Country",
         'B' => "No.",
         'C' => "Date of investment",
         'D' => "Risk class",
-        'E' => "Status",
-        'F' => "Rate",
-        'G' => "Expected return",
+        'E' => "Currency Exposure",
+        'F' => "Status",
+        'G' => "Rate",
         'H' => "Remaining Term",
         'I' => "Agreement Term",
         'J' => "Extended",
@@ -468,24 +472,36 @@ class twino extends p2pCompany {
         'L' => "Repaid principal, €",
         'M' => "Bought shares, €",
         'N' => "Interest income, €",
-        'O' => "Loan balance, €",
-        'P' => "For sale, €"];
+        'O' => "Current Loan balance, €",
+        'P' => "Local currency",
+        'Q' => "Current currency fluctuation",
+        'R' => "Loan Balance, local currency",
+        'S' => "Initial exchange rate",
+        'T' => "Current exchange rate",
+        'U' => "For sale, €"
+    ];
     
+
     protected $transactionHeader = [
         'A' => "Processing Date",
         'B' => "Booking Date",
         'C' => "Type",
         'D' => "Description",
         'E' => "Loan Number",
-        'F' => "amount"];
+        'F' => "Amount, EUR",
+        'G' => "Amount, local currency",
+        'H' => "Local currency",
+        'I' => "Exchange rate"
+    ];
     
-    protected $expiredLoansHeader = ['A' => "Country",
+    protected $expiredLoansHeader = [   
+        'A' => "Country",
         'B' => "No.",
         'C' => "Date of investment",
         'D' => "Risk class",
-        'E' => "Status",
-        'F' => "Rate",
-        'G' => "Expected return",
+        'E' => "Currency Exposure",
+        'F' => "Status",
+        'G' => "Rate",
         'H' => "Remaining Term",
         'I' => "Agreement Term",
         'J' => "Extended",
@@ -493,8 +509,14 @@ class twino extends p2pCompany {
         'L' => "Repaid principal, €",
         'M' => "Bought shares, €",
         'N' => "Interest income, €",
-        'O' => "Loan balance, €",
-        'P' => "For sale, €"];
+        'O' => "Current Loan balance, €",
+        'P' => "Local currency",
+        'Q' => "Current currency fluctuation",
+        'R' => "Loan Balance, local currency",
+        'S' => "Initial exchange rate",
+        'T' => "Current exchange rate",
+        'U' => "For sale, €"
+        ];
        
 
     function __construct() {

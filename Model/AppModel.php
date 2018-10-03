@@ -298,8 +298,8 @@ class AppModel extends Model {
                                            'conditions' => array('id' => $currentInstance)
                                         ));       
 
+        
         $count = count($result[$model]);
-
         if ($count <> 0) {            
             return true;
         }       

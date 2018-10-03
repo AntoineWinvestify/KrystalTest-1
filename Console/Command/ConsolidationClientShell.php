@@ -433,7 +433,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                                             . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['typeErrorId'] .
                                             " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId][$keyUserReference][$keyFunction][$keyDate]['subtypeErrorId'];
                                     $this->saveGearmanError($this->gearmanErrors[$queueId]['investor'][$keyUserReference][$keyFunction][$keyDate]);
-                                }
+                                }     
                             }
                         }
                         else if (!$resultFunctionStatus) {
