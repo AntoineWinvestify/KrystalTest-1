@@ -93,7 +93,7 @@ class Globalamortizationtable extends AppModel
         $existingListExtended = $this->find("all", array(
                                         'conditions' => array('globalamortizationtable_companyId' => $companyId), 
                                         'recursive' => -1,
-                                        'fields' => array('any_value(id)', 'Globalamortizationtable.globalamortizationtable_loanId'),
+                                        'fields' => array('id', 'Globalamortizationtable.globalamortizationtable_loanId'),
                                         'group' => array('Globalamortizationtable.globalamortizationtable_loanId'),
                                     ));
 

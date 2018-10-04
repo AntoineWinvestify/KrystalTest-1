@@ -554,14 +554,15 @@ class ParseDataClientShell extends GearmanClientShell {
                             $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                             //$loanStatus = WIN_LOANSTATUS_FINISHED;
                         }
-
-                        if (in_array($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']) &&
+                        $platformData['workingNewLoans'] = array_map('trim', $platformData['workingNewLoans']);
+                        //THIS CONDITIONS CREATE A NEW LOAN
+                        if (in_array(trim($dateTransaction[0]['investment_loanId']), $platformData['workingNewLoans']) &&
                                 ($dateTransaction[0]["internalName"] == "investment_myInvestment" || 
                                 $dateTransaction[0]["internalName"] == "payment_secondaryMarketInvestment" || 
                                 $dateTransaction[0]["internalName"] == "investment_myInvestmentActiveVerification" || 
                                 $dateTransaction[0]["internalName"] == "investment_myInvestmentPreactive" ||
                                 $dateTransaction[0]["internalName"] == "payment_capitalRepayment"
-                            )) {          // check if loanId is new                            
+                            )) {          // check if loanId is new    
                             $arrayIndex = array_search($dateTransaction[0]['investment_loanId'], $platformData['workingNewLoans']);
                             echo "FOUND in Newloans\n";
                             if ($arrayIndex !== false) {        // Deleting the array from new loans list
