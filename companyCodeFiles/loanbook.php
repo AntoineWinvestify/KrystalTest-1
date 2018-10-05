@@ -1368,6 +1368,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
+        
                 foreach ($divs as $key => $div) {
                     // echo 'Entro ' . $key;
                     //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
@@ -1376,10 +1377,10 @@ class loanbook extends p2pCompany {
                             //$str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));                            
                             $stringProcessed = $this->handleInvestmentString(mb_convert_encoding($div->nodeValue, "utf8", "auto"));
 
-                            $this->loanArray[$this->j]['A'] = $stringProcessed[3]; //Loan Id
-                            $this->loanArray[$this->j]['B'] = $stringProcessed[1]; //Loan Purpose
-                            $this->loanArray[$this->j]['C'] = $stringProcessed[0]; //Loan Price target
-                            $this->loanArray[$this->j]['D'] = $stringProcessed[2]; //Loan Location
+                            $this->loanArray[$this->j]['A'] = trim($stringProcessed[3]); //Loan Id
+                            $this->loanArray[$this->j]['B'] = trim($stringProcessed[1]); //Loan Purpose
+                            $this->loanArray[$this->j]['C'] = trim($stringProcessed[0]); //Loan Price target
+                            $this->loanArray[$this->j]['D'] = trim($stringProcessed[2]); //Loan Location
 
                             break;
                         case 8:
