@@ -159,8 +159,8 @@ class GearmanClientShell extends AppShell {
      * @return boolean It's true if the deleted was successful
      */
     public function deleteFolderByDateAndLinkaccountId($queueId, $linkAccountId) {
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
+        $configPath = Configure::read();
+        $partialPath = $configPath['investorFiles'];
         $flow = constant("WIN_ERROR_" . $this->flowName);
         $date = date("Ymd", strtotime($this->date));
         $path = $this->userReference[$queueId] . DS . $date . DS . $linkAccountId;
