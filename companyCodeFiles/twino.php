@@ -264,7 +264,7 @@ class twino extends p2pCompany {
                         "input3" => 2,
                         "input4" => "."
                     ],
-                    "functionName" => "getAmount",
+                    "functionName" => "handleNumber",
                 ]
             ],
             //"H" => ASK ANTOINE Remaining Term
