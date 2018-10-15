@@ -547,20 +547,13 @@ class ParseDataClientShell extends GearmanClientShell {
                             echo "THIS IS AN ACTIVE LOAN\n";
                             $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
                             //$loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
-                        }
-                            
-                        if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
+                        } else if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
                             echo "THIS IS AN ALREADY EXPIRED LOAN\n";
                             $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                             //$loanStatus = WIN_LOANSTATUS_FINISHED;
                         }
                         $platformData['workingNewLoans'] = array_map('trim', $platformData['workingNewLoans']);
-                        /*print_r($dateTransaction);
-                        echo $dateTransaction[1]["internalName"] == "payment_capitalRepayment";
-                        echo " ------ ";
-                        echo in_array(trim($dateTransaction[0]['investment_loanId']), $platformData['workingNewLoans']);
-                        print_r($platformData['workingNewLoans']);
-                        exit;*/
+
                         //THIS CONDITIONS CREATE A NEW LOAN
                         if (in_array(trim($dateTransaction[0]['investment_loanId']), $platformData['workingNewLoans']) &&
                                 ($dateTransaction[0]["internalName"] == "investment_myInvestment" || 
@@ -955,7 +948,6 @@ class ParseDataClientShell extends GearmanClientShell {
                         else {
                             $database['investment']['id'] = $investmentId;
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
-                            print_r($database);
                             $result = $this->Investment->save($database['investment']);
                             if ($result) {
                                 echo "Saving existing loan with investmentId = $investmentId, Done\n";
