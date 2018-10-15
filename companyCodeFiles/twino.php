@@ -451,10 +451,12 @@ class twino extends p2pCompany {
                                         "chunkSize" => 2,     
                                         );
     
-    protected $amortizationConfigParms = ['OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"                                  // used to "sort" the array and use $sortParameter as prime index.
+    protected $amortizationConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
+        ]
     ];
     
     protected $callbacks = [
