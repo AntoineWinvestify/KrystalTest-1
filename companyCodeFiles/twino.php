@@ -56,7 +56,7 @@ class twino extends p2pCompany {
 // 8/3/2017 18:52	8/3/2017 0:00	REPAYMENT	PRINCIPAL	06-337436001	5.2947
 
         protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.0001',                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.001',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
     ];
         
@@ -347,6 +347,15 @@ class twino extends p2pCompany {
             ],
         ]
     ];
+    
+    protected $valuesExpiredLoan2 = [// All types/names will be defined as associative index in array
+        [
+            "B" => [
+                "name" => "investment_loanId",
+            ]
+        ]
+    ];
+    
     protected $valuesAmortizationTable = [
         
         0 => [
@@ -416,7 +425,7 @@ class twino extends p2pCompany {
     
     protected $transactionConfigParms = [
         [
-            'offsetStart' => 4,
+            'offsetStart' => 3,
             'offsetEnd'     => 0,
             'sortParameter' => ["date","investment_loanId"]                     // used to "sort" the array and use $sortParameter(s) as prime index.               
         ]
@@ -424,7 +433,7 @@ class twino extends p2pCompany {
     
     protected $investmentConfigParms = [
         [
-            'offsetStart' => 4,
+            'offsetStart' => 3,
             'offsetEnd'     => 0,
             'sortParameter' => array("investment_loanId")                       // used to "sort" the array and use $sortParameter as prime index.
        ]
@@ -432,7 +441,7 @@ class twino extends p2pCompany {
     
     protected $expiredLoanConfigParms = [
         [
-            'offsetStart' => 4,
+            'offsetStart' => 3,
             'offsetEnd'     => 0,
             'sortParameter' => ["investment_loanId"]                            // used to "sort" the array and use $sortParameter as prime index.
        ]
@@ -442,10 +451,12 @@ class twino extends p2pCompany {
                                         "chunkSize" => 2,     
                                         );
     
-    protected $amortizationConfigParms = ['OffsetStart' => 1,
-        'offsetEnd' => 0,
-        //       'separatorChar' => ";",
-        'sortParameter' => "investment_loanId"                                  // used to "sort" the array and use $sortParameter as prime index.
+    protected $amortizationConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
+        ]
     ];
     
     protected $callbacks = [
@@ -773,6 +784,7 @@ class twino extends p2pCompany {
                 $dateFinish = date('Y,m,d', strtotime($this->dateFinishPeriod));
                 $dateInitArray = explode(",", $dateInit);
                 $dateFinishArray = explode(",", $dateFinish);
+
                 $credentialsFile = '{"page":1,"pageSize":20,"sortDirection":"DESC","sortField":"created","processingDateFrom":[{$year1},{$month1},{$day1}],"processingDateTo":[{$year2},{$month2},{$day2}],"transactionTypeList":[{"transactionType":"REPAYMENT"},{"transactionType":"EARLY_FULL_REPAYMENT"},{"transactionType":"BUY_SHARES","positive":false},{"transactionType":"BUY_SHARES","positive":true},{"transactionType":"FUNDING","positive":true},{"transactionType":"FUNDING","positive":false},{"transactionType":"EXTENSION"},{"transactionType":"ACCRUED_INTEREST"},{"transactionType":"BUYBACK"},{"transactionType":"SCHEDULE"},{"transactionType":"RECOVERY"},{"transactionType":"REPURCHASE"},{"transactionType":"LOSS_ON_WRITEOFF"},{"transactionType":"WRITEOFF"},{"transactionType":"CURRENCY_FLUCTUATION"},{"transactionType":"BUY_OUT"}],"accountTypeList":[]}';
                 $credentialsFile = strtr($credentialsFile, ['{$year1}' => (int) $dateInitArray[0]]);
                 $credentialsFile = strtr($credentialsFile, ['{$year2}' => (int) $dateFinishArray[0]]);
@@ -881,13 +893,20 @@ class twino extends p2pCompany {
     function collectAmortizationTablesParserFile($str = null) {
         echo 'Start /n/n/n';
         $this->loanTotalIds = $this->loanIds;
-        $this->myParser = new Fileparser();                                                                             //Call the parser
-        $folder = $this->getFolderPFPFile();
-        $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
+        
+        $this->myParser = new Fileparser(); //Call the parser
         $this->myParser->setConfig($this->investmentConfigParms[0]);//Set the config 
+        $folder = $this->getFolderPFPFile();
+        
+        $file = $folder . DS . $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;  //Get the pfp folder and file name
         echo 'Analyze ' . $this->typeFileInvestment . " " . $file;
         $info = $this->myParser->analyzeFile($file, $this->valuesInvestment2[0], $this->typeFileInvestment);             //Parse the file
         
+        $file = $folder . DS . "expiredLoans." . $this->typeFileInvestment;  //Get the pfp folder and file name
+        echo 'Analyze ' . $this->typeFileInvestment . " " . $file;   
+        $infoExpired = $this->myParser->analyzeFile($file, $this->valuesExpiredLoan2[0], $this->typeFileInvestment);             //Parse the file
+        fclose($file);
+
         foreach ($info as $key => $value) {
             if (!in_array($key, $this->loanIds)) {
                 //echo $key . " dont found, dont compare \n";
@@ -931,11 +950,22 @@ class twino extends p2pCompany {
             $this->tempArray['tables'][$key] = $this->arrayToTableConversion($table); //Get the html table from the array
             unset($table);
         }
+
+        foreach ($this->tempArray['errorTables'] as $key => $errorTable) {
+            foreach ($infoExpired as $loanID => $moreData) {
+                if ($errorTable == $loanID) {
+                    echo "$errorTable is not a error table, deleting from error and adding to finishedToday";
+                    $this->tempArray['finishedToday'][$key] = $loanID;
+                    unset($this->tempArray['errorTables'][$key]);
+                    break;
+                }
+            }
+        }
         print_r($this->tempArray);
         return $this->tempArray;
-        
-        
-        
+
+
+
         //OLD METOD
        /* switch ($this->idForSwitch) {
             /////////////LOGIN

@@ -2960,12 +2960,15 @@ FRAGMENT
         print_r($this->tempArray['correctTables']);
         echo "bads";
         print_r($this->tempArray['errorTables']);
+        echo 'Ended Today';
+        print_r($this->tempArray['finishedToday']);
+
+        $path = $this->getFolderPFPFile();
+
 
         if (!empty($this->tempArray['errorTables'])) {
-            $path = $this->getFolderPFPFile();
             $oldFilePath = $path . DS . "goodLoanIds.json";
             $badLoansPath = $path . DS . "badLoanIds.json";
-
             if (!empty($this->tempArray['correctTables'])) {
                 $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
                 $jsonIds = json_encode($this->tempArray['correctTables']);
@@ -2973,16 +2976,22 @@ FRAGMENT
                 fclose($idsJsonFile);
             }
 
-            unlink($filePath);
             $idsJsonFile = fopen($badLoansPath, "w"); //badLoanIds must be replaced, we can delete this info
             $jsonIds = json_encode($this->tempArray['errorTables']);
             fwrite($badLoansPath, $jsonIds);
             fclose($idsJsonFile);
         }
+
+        if (!empty($this->tempArray['finishedToday'])) {
+            $finishedToday = $path . DS . "finishedToday.json";
+            echo "writing finished loans";
+            $idsJsonFile = fopen($finishedToday, "w");
+            $jsonIds = json_encode($this->tempArray['finishedToday']);
+            fwrite($idsJsonFile, $jsonIds);
+            fclose($idsJsonFile);
+        }
     }
 
-  
-    
     /** 
      * Read ControlVariables configuration file
      *     
