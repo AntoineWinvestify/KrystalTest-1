@@ -406,31 +406,33 @@ class circulantis extends p2pCompany {
     protected $compareHeaderConfigParam = array(
         'separatorChar' => ";",
         'chunkInit' => 1,
-        'chunkSize' => 1
+        'chunkSize' => 2
     );
     protected $investmentHeader = array(
         'A' => 'NOMBRE EMISOR/DEUDOR',
         'B' => 'RATING',
-        'C' => 'IMPORTE â‚¬',
+        'C' => 'IMPORTE €',
         'D' => 'INTERES %',
         'E' => 'VENCIMIENTO',
         'F' => 'ESTADO',
         'G' => 'FONDOS INVERTIDOS %',
-        'H' => 'IMPORTE COBRO â‚¬',
+        'H' => 'IMPORTE COBRO €',
         'I' => 'ID SUBASTA',
         'J' => 'ID PUJA',
-        'F' => 'FECHA INICIO SUBASTA',
+        'K' => 'FECHA INICIO SUBASTA'
     );
+    
     protected $transactionHeader = array(
         'A' => 'MOVIMIENTO',
         'B' => 'REFERENCIA',
-        'C' => 'IMPORTE â‚¬',
+        'C' => 'IMPORTE €',
         'D' => 'FECHA',
-        'E' => 'DISPONIBLE â‚¬',
-        'F' => 'OFERTADO â‚¬',
-        'G' => 'INVERTIDO â‚¬',
-        'H' => 'TOTAL â‚¬',
+        'E' => 'DISPONIBLE €',
+        'F' => 'OFERTADO €',
+        'G' => 'INVERTIDO €',
+        'H' => 'TOTAL €',
     );
+
 
     function __construct() {
         $this->typeFileTransaction = "csv";
@@ -1440,6 +1442,9 @@ class circulantis extends p2pCompany {
                 } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 }
+                $this->numFileTransaction++;
+                $this->fileName2 = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                copy ($this->getFolderPFPFile() . DS . $this->fileName , $this->getFolderPFPFile() . DS . $this->fileName2);
                 return $tempArray["global"];
         }
     }

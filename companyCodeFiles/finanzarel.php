@@ -299,7 +299,7 @@ class finanzarel extends p2pCompany {
                 [
                     "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
-				"input2" => "",
+				"input2" => ".",
                                 "input3" => ",",
                                 "input4" => 2
                                 ],
@@ -338,20 +338,11 @@ class finanzarel extends p2pCompany {
                 ]       
             ],
             "J" =>  [
-                /*[
-                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name
-                    "inputData" => [
-				"input2" => ".",
-                                "input3" => ",",
-                                "input4" => 2
-                                ],
-                    "functionName" => "getAmount",
-                ]*/
                 [
                     "type" => "investment_nominalInterestRate",
                     "inputData" => [
                         "input2" => "100",
-                        "input3" => 0,
+                        "input3" => 2,
                         "input4" => ","
                     ],
                     "functionName" => "handleNumber",
@@ -694,12 +685,13 @@ class finanzarel extends p2pCompany {
             ],
             "K" =>  [
                 [
-                    "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-                    "inputData" => [                                            // trick to get the complete cell data as purpose
-                                "input2" => "",                                 // May contain trailing spaces
-                                "input3" => "&",
-                            ],
-                    "functionName" => "extractDataFromString",
+                    "type" => "investment_nominalInterestRate",
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
                 ]
             ],
             "M" => [
@@ -1300,7 +1292,7 @@ class finanzarel extends p2pCompany {
             case 0:
                 $this->baseUrl = array_shift($this->urlSequence);
                 echo $this->idForSwitch . HTML_ENDOFLINE;
-                $this->idForSwitch++;
+                $this->idForSwitch++;                
                 $this->getCompanyWebpageMultiCurl();
                 break;
             case 1:
@@ -1416,11 +1408,15 @@ class finanzarel extends p2pCompany {
                 foreach ($as as $key => $a) {
                     //echo $key . " => " . $a->getAttribute('href') . "   " . $a->nodeValue .  HTML_ENDOFLINE;
                     if (trim($a->nodeValue) == 'Descargar en csv') {
-                        $this->request[] = explode("'", $a->getAttribute('href'))[1];
-                        
+                        $this->request[] = "PLUGIN=" . explode('"', $a->getAttribute('href'))[1]; //$a->getAttribute('href');
+                        $this->widget[] = explode('"', $a->getAttribute('href'))[5];
                     }
                 }
-                $url =  array_shift($this->urlSequence);
+                echo "request and widget";
+                print_r($this->request);
+                print_r($this->widget);
+
+                $url = array_shift($this->urlSequence);
                 $referer = array_shift($this->urlSequence);
                 $referer = strtr($referer, [
                     '{$p_flow_step_id}' => 1,
@@ -1435,7 +1431,9 @@ class finanzarel extends p2pCompany {
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->request[0]];
+                        'p_widget_action' => $this->widget[0],
+                        'p_request' => $this->request[0],
+                    ];
                 print_r($credentialsFile);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->investmentHeader;
@@ -1484,6 +1482,7 @@ class finanzarel extends p2pCompany {
                         'p_flow_step_id' => 1, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
+                        'p_widget_action' => $this->widget[1],
                         'p_request' => $this->request[1]];
                 $this->fileName =  $this->nameFileExpiredLoan . "3." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
@@ -1495,7 +1494,8 @@ class finanzarel extends p2pCompany {
                 else {
                     $this->from = 4;
                     $this->idForSwitch = 6;
-                }
+                }          
+                $this->idForSwitch++;
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
                 break;
             case 5:
@@ -1524,7 +1524,7 @@ class finanzarel extends p2pCompany {
                 $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
                 $this->headerComparation = $this->transaction3Header;
                 $headers = ['Expect:'];
-                $this->idForSwitch++;
+
                 $this->getPFPFileMulticurl($this->url,$this->referer, $credentialsFile, $headers, $this->fileName);
                 break;
             case 6:
@@ -1583,7 +1583,8 @@ class finanzarel extends p2pCompany {
                 }
                 foreach ($as as $key => $a) {
                     if (trim($a->nodeValue) == 'Descargar') {
-                        $this->requestInvestment2 = explode("'", $a->getAttribute('href'))[1];   
+                        $this->requestInvestment2 = "PLUGIN=" . explode('"', $a->getAttribute('href'))[1];                       
+                        $this->widget2 = explode('"', $a->getAttribute('href'))[5];
                     }
                 }
                                    
@@ -1672,7 +1673,9 @@ class finanzarel extends p2pCompany {
                         'p_flow_step_id' => 11, 
                         'p_instance' => $this->credentialsGlobal['p_instance'],  
                         'p_debug' => '',
-                        'p_request' => $this->requestInvestment2];
+                        'p_widget_action' =>$this->widget2,
+                        'p_request' => $this->requestInvestment2
+                        ];
                 print_r($credentialsFile);
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->investment2Header;
@@ -1729,7 +1732,7 @@ class finanzarel extends p2pCompany {
             exit;
         }
         echo 'Login ok';
-
+        
         //echo $this->pInstanceGlobal;
 
         $url = array_shift($this->urlSequence); //Load the page that contains the file url
