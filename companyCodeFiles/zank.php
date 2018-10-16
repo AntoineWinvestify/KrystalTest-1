@@ -2173,7 +2173,7 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_INVESTMENT_TYPE_MANUALINVESTMENT;
-        $inputData = mb_strtoupper($inputData, "UTF-8");
+        $inputData =mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_INVESTMENT_TYPE_AUTOMATEDINVESTMENT;

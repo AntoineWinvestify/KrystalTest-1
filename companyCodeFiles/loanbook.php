@@ -1800,14 +1800,20 @@ class loanbook extends p2pCompany {
      */
     public function translateAmortizationPaymentStatus($inputData) {
         $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PENDIENTE":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
                 break;
             case "INCIDENCIAS":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
-                break;                     
+                break;
+            case "":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;
+            default:
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+                break;
         }
         return $data;        
     }
@@ -1902,7 +1908,7 @@ class loanbook extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PRÉSTAMO":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
@@ -1933,7 +1939,7 @@ class loanbook extends p2pCompany {
      * @return type
      */
     public function translateOriginalLoanState($inputData) {
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "GREEN":
                 $type = 0;

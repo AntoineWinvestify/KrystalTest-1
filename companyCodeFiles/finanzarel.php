@@ -1853,7 +1853,7 @@ class finanzarel extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData){
             case "FACTURA":
                 $type = WIN_TYPEOFLOAN_PERSONAL;
@@ -2043,7 +2043,7 @@ class finanzarel extends p2pCompany {
      */
     public function translateAmortizationPaymentStatus($inputData) {      
         $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "RETRASADA-30D":
                 $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;

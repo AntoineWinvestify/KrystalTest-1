@@ -1378,7 +1378,7 @@ class mintos extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData){
             case "MORTGAGE LOAN":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
@@ -1416,7 +1416,7 @@ class mintos extends p2pCompany {
      */
     public function translateAmortizationMethod($inputData) {
         $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData){
             case "FULL":
                 $type = WIN_AMORTIZATIONMETHOD_FULL;
@@ -1472,7 +1472,7 @@ class mintos extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         $data = WIN_BUYBACKGUARANTEE_NOT_PROVIDED;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "YES":
                 $data = WIN_BUYBACKGUARANTEE_PROVIDED;
@@ -1555,7 +1555,7 @@ class mintos extends p2pCompany {
      */
     public function translateAmortizationPaymentStatus($inputData) {
         $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
 
         switch ($inputData) {
             case "PAID AFTER THE DUE DATE":
