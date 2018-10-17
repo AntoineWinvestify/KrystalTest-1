@@ -1523,20 +1523,10 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str = null) { //Queue_info example {"loanIds":{"704":["472"]}}
+    function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
-                /*
-                  FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
-
-                  csrf		539d6241ffbb10437f4fe6e27552bfe9
-                  password	cede_4040
-                  signin		Login
-                  username	antoine.de.poorter@gmail.com
-                 */
                 $this->loanTotalIds = $this->loanIds;
-               /* $this->loanKeys = array_keys($this->loanIds);
-                $this->loanIds = array_values($this->loanIds);*/
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
@@ -1549,16 +1539,11 @@ class loanbook extends p2pCompany {
                 $credentials['password'] = $this->password;
                 $credentials['signin'] = "Login";
                 $dom = new DOMDocument;
-                //echo $str;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
                 $forms = $dom->getElementsByTagName('form');
-                /* $this->verifyNodeHasElements($forms);
-                  if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
                 $index = 0;
                 foreach ($forms as $form) {
                     $index = $index + 1;
@@ -1587,9 +1572,6 @@ class loanbook extends p2pCompany {
 
                 $resultMiLoanbook = false; // Could not login, credential error
                 $uls = $dom->getElementsByTagName('ul');
-                /* if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
                 foreach ($uls as $ul) {
 
                     $as = $ul->getElementsByTagName('a');
@@ -1623,13 +1605,6 @@ class loanbook extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
-                /*if (empty($this->tempUrl['investmentUrl'])) {
-                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
-                }
-                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
-                echo "the table url is: " . $url;
-                $this->i++;*/
                 $this->fileName = 'FuturePaymentsList.xlsx';
                 $this->idForSwitch++;
                 $url = array_shift($this->urlSequence);
@@ -1669,54 +1644,6 @@ class loanbook extends p2pCompany {
                 }
                 print_r($this->tempArray);
                 return $this->tempArray;
-               /* $dom = new DOMDocument;
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                echo "Read table: ";
-                $tables = $dom->getElementsByTagName('table');
-                foreach ($tables as $table) {
-                    if ($table->getAttribute('id') == 'paymentsTable') {
-                        $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clone the table
-                        //Mod the dom clone
-                        $is = $clone->getElementsByTagName('i');
-                        foreach ($is as $key => $status) {
-                            //echo "search status";
-                            //echo $status->getAttribute('class');
-                            if ($status->getAttribute('class') == 'fa fa-circle') {
-                                //echo 'Finded';
-                                //echo $status->getAttribute('title');
-                                $clone->getElementsByTagName('i')->item($key)->nodeValue = $status->getAttribute('title');
-                            }
-                        }
-
-                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
-                        $AmortizationTableString = $AmortizationTable->saveHTML();
-                        //Compare structure
-                        $revision = $this->structureRevisionAmortizationTable($AmortizationTableString, $this->tableStructure);
-                        if ($revision) {
-                            echo "Comparation ok";
-                            $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
-                            $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
-                        }
-                        else {
-                            echo 'Comparation Not ok';
-                            $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
-                        }
-                        //$this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
-                        //echo $AmortizationTableString;
-                    }
-                }
-                if ($this->i < $this->maxLoans) {
-                    $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
-                    break;
-                }
-                else {
-                    //$this->verifyErrorAmortizationTable();
-                    return $this->tempArray;
-                    break;
-                }*/
         }
     }
 
