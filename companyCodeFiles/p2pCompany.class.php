@@ -1815,7 +1815,6 @@ class p2pCompany {
         if ($credentials) {
             //set data to be posted
             $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_POSTFIELDS, $credentials);
         }
 
