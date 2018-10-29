@@ -267,7 +267,7 @@ class Fileparser {
                 "detail" => "Compensation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensationPositive"    
+                "type" => "payment_platformCompensationPositive"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -393,7 +393,7 @@ class Fileparser {
                 "detail" => "Compensation_negative",  
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensationNegative",
+                "type" => "payment_platformCompensationNegative",
                 ],
             38 => [     // This is the "normal case" for disinvestments WITH a loan id (LoanBook)
                 "detail" => "Disinvestment_primary_market", 
@@ -472,6 +472,18 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "payment_secondaryMarketSell",
             ],
+            49 =>[
+                "detail" => "Default_interest_income_rebuy",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "DefaultInterestIncomeRebuy",
+            ],
+            /*50 =>[
+                "detail" => "Secondary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_secondaryMarketSell",
+            ],*/
 
 
         

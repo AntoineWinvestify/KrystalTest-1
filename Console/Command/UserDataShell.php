@@ -780,6 +780,23 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_latePaymentFeeIncome']);    
     }   
+    public function calculateGlobalTotalDelayedInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_delayedInterestIncomeBuyback']);    
+    }   
+    public function calculateGlobalTotalIncomeSecondaryMarket(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_incomeSecondaryMarket']);    
+    }    
+    public function calculateGlobalTotalLoanIncentivesAndBonusPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_loanIncentivesAndBonus']);    
+    }   
+    
+    
+    public function calculateGlobalTotalDefaultInterestIncome(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome']));   
+    }
+    public function calculateGlobalTotalDefaultInterestIncomeRebuy(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_defaultInterestIncomeRebuy'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncomeRebuy']));    
+    }
     
     /**
      *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
@@ -1277,9 +1294,9 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @return string      accumulated amount
      */
     public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
-        return($resultData['payment']['payment_currencyExchangeFee']);  
+        return(bcadd($resultData['payment']['payment_currencyExchangeFee'],$resultData['globalcashflowdata']['globalcashflowdata_currencyExchangeFee']));  
     }
-    
+
     /**
      *  Calculates the sum of the payment concept "Currency Exchange Transaction" that happened during a day
      * 
@@ -1556,6 +1573,9 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
     }
     
     function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    function calculateGenericAmountReturn(&$transactionData, &$resultData){
         return $transactionData['amount'];
     }
  

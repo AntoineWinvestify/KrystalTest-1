@@ -107,7 +107,7 @@ class mintos extends p2pCompany {
                             ],
                     "functionName" => "extractDataFromString",
                 ],
-                [
+                /*[
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate
                                                                                 // format ["concept string platform", "concept string Winvestify"]
@@ -139,7 +139,7 @@ class mintos extends p2pCompany {
                                         ],
                                 ],
                     "functionName" => "getTransactionDetail",
-                ]
+                ]*/
             ],
             "D" => [
                 [
@@ -167,13 +167,13 @@ class mintos extends p2pCompany {
                                             5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
                                             6 => ["Interest income" => "Regular_gross_interest_income"],       //
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
-                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
-                                            11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],                   
-                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
+                                            10 => ["Default interest income on rebuy Rebuy" => "Default_interest_income_rebuy"],
+                                            11 => ["Default interest income" => "Default_interest_income"],                 
+                                            12 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                             
+                                            13 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
+                                            14 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer                                    
+                                            15 => ["Client withdrawal" => "Cash_withdrawal"],
  //                                           15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
  //                                           16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
                                             18 => ["Incoming currency exchange transaction" => "Incoming_currency_exchange_transaction"],
@@ -183,6 +183,7 @@ class mintos extends p2pCompany {
                                             22 => ["Cashback bonus" => "Incentives_and_bonus"],
                                             23 => ["Affiliate bonus" => "Incentives_and_bonus"],
                                             24 => ["Investment share buyer pays to a seller. "  => "Sell_secondary_market"],
+                                            
 
                                         ]                    
                                 ],
@@ -302,11 +303,11 @@ class mintos extends p2pCompany {
                     "functionName" => "handleNumber",
                 ]
             ],
-            "M" =>  [
+            /*"M" =>  [
                 "name" => "investment_numberOfInstalments"                      // Winvestify standardized name. This is, 
                                                                                 // at time of investing, the number of
                                                                                 // instalments.
-             ],
+             ],*/
             "N" =>  [
                 "name" => "investment_paidInstalments"                          // Winvestify standardized name OK
                 ],
@@ -721,10 +722,10 @@ class mintos extends p2pCompany {
      
       protected $expiredLoansHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
             'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 
-            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Remaining Term', 'L' => 'Payments Received', 'M' => 'Status', 
+            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Initial Term', 'L' => 'Payments Received', 'M' => 'Status', 
             'N' => 'Buyback Guarantee', 'O' => 'My Investments', 'P' => 'Date of Investment' , 'Q' => 'Received Payments', 
             'R' => 'Outstanding Principal', 'S' => 'Amount in Secondary Market', 'T' => 'Price', 'U' => 'Discount/Premium', 
-            'V' => 'Currency', 'W' => 'Finished');
+            'V' => 'Currency', 'W' => 'Finished', 'X' => 'Rebuy reasons');
       
     protected $transactionHeader = array(
         'A' => 'Transaction ID', 
