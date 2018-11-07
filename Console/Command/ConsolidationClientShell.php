@@ -422,8 +422,6 @@ class ConsolidationClientShell extends GearmanClientShell {
                     break;
                 }
                 if ($linkaccountId == 'investor') {
-                                                echo 'entraaaaa';
-        exit;
                     $keyUserReference = key($result);
                     foreach ($result[$keyUserReference] as $keyFunction => $resultFunctionStatus) {
                         if (is_array($resultFunctionStatus)) {

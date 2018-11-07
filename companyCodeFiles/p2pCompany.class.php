@@ -2880,10 +2880,11 @@ FRAGMENT
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
-        echo "our config: ";
-        print_r($this->headerComparation);
-        echo "Have content(1 no, 2 yes//// Twino 3 no, 4 Yes): " . count($data);       
-       
+        if (Configure::read('debug')) {
+            echo "our config: ";
+            print_r($this->headerComparation);
+            echo "Have content(1 no, 2 yes//// Twino 3 no, 4 Yes): " . count($data);       
+        }
         if(count($data) === $this->compareHeaderConfigParam['chunkInit']){
             return WIN_ERROR_FLOW_EMPTY_FILE;
         }
@@ -2905,7 +2906,9 @@ FRAGMENT
                 return $this->compareSimple();                                  //Single sheet
             }
         }
-        echo "OK";
+        if (Configure::read('debug')) {
+            echo "OK";
+        }
         return false;
     }
 

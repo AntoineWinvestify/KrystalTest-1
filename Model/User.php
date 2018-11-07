@@ -146,7 +146,7 @@ class User extends AppModel {
         if ($this->save($data, $validation = true)) {   // OK
             $userId = $this->id;
             $data = array('user_id' => $userId,
-                'investor_identity' => $this->createInvestorReference(), // unique systemwide reference
+                'investor_identity' => $this->createInvestorReference($telephone, $username), // unique systemwide reference
                 'investor_tempCode' => $this->createReference(),
                 'investor_privacyPolicy' => 1,
                 'investor_receivePublicityInformation' => 1,

@@ -62,7 +62,7 @@ class TestsController extends AppController {
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2"));
+            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest"));
     }
 
     public function pruebaYield() {
@@ -71,6 +71,19 @@ class TestsController extends AppController {
         }
     }
 
+    
+    function hashTest(){
+    
+        $telephone= 615091091;
+        $username = "eduardo@winvestify.com";
+        
+        $hashTelephone = hash("crc32", $telephone);
+        $hashUsername = hash("crc32", $username);     
+        $uuid = $hashTelephone . $hashUsername; 
+        echo strlen($uuid);
+        echo "    " . $uuid;     
+    }
+    
     function memoryTest3() {
         $timeInit = microtime(true);
         foreach ($this->pruebaYield() as $y) {
