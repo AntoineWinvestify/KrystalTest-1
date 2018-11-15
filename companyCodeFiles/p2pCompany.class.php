@@ -2955,6 +2955,8 @@ FRAGMENT
     /**
      * Function to create a new loanIds.json with the amortizationTables that failed
      * and rename the old file loanIds to oldIdsLoan
+     * 
+     * This code help us with tracing errors in flow 3a, doesn't have other function.
      */
     public function verifyErrorAmortizationTable() {
 

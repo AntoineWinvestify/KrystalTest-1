@@ -246,37 +246,39 @@ class ParseDataClientShell extends GearmanClientShell {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
 
-                            // Check if some loanIds from yesterday exist that could NOT be collected
-                            $tempName = explode("/", $baseDirectory);
-                            $this->print_r2($tempName);
-                            $elementsInPath = count($tempName);
+                            //Search all active investment without amortization table
+                            $filterConditions = array('investment_statusOfLoan' => array(WIN_LOANSTATUS_ACTIVE, WIN_LOANSTATUS_VERIFYACTIVE), 'investment_amortizationTableAvailable !=' => WIN_AMORTIZATIONTABLES_AVAILABLE);
+                            $investmentIdList = $this->Investment->getData($filterConditions, array('id','investment_loanId'));
 
-                            $yesterdayTimeStamp = strtotime('-1 day', strtotime($tempName[$elementsInPath - 4]));
-                            $yesterday = date("Ymd", $yesterdayTimeStamp);
+                            //Search the slice id of that investments
+                            foreach($investmentIdList as $list){
+                                $idList[] = $list['Investment']['id'];
+                            }
+                            $filterConditions = array('investment_id' => $idList);
+                            $sliceList = $this->Investmentslice->getData($filterConditions, array('id', 'investmentslice_identifier'));
+                            foreach($sliceList as $list){
+                                $loanIdsWithoutTable[$list['Investmentslice']['id']] = $list['Investmentslice']['investmentslice_identifier'];
+                            }
 
-                            $tempName[$elementsInPath - 4] = $yesterday;
-                            $tempName[$elementsInPath - 1] = "badLoanIds.json";
-                            $yesterdayPath = implode($tempName, "/");
-
-                            $fileYesterday = new File($yesterdayPath);
-                            $jsonLoanIdsYesterday = $fileYesterday->read(true, 'r');
-                            $loanIdsYesterday = json_decode($jsonLoanIdsYesterday, true);
-
-                            if (!empty($loanIdsYesterday)) {
+                            if (!empty($loanIdsWithoutTable) && !empty($newLoans)) {
                                 echo "merging two arrays\n";
-                                $finalLoanIds = $newLoans + $loanIdsYesterday;
+                                $finalLoanIds = $newLoans + $loanIdsWithoutTable;
                             }
-                            else {
+                            else if(!empty($newLoans)){
                                 $finalLoanIds = $newLoans;
+                            } else if(!empty($loanIdsWithoutTable)){
+                                $finalLoanIds = $loanIdsWithoutTable;
                             }
-
+                                                                           
                             if (!empty($finalLoanIds)) {
                                 echo "Writing the file 'LoanIds.json'\n";
                                 file_put_contents($baseDirectory . "loanIds.json", json_encode(($finalLoanIds)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                             }
                             else {
-                                $newFlowState = WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION;
+                                if($newFlowState != WIN_QUEUE_STATUS_DATA_EXTRACTED){
+                                    $newFlowState = WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION;
+                                }
                             }
                         }
                         else {
