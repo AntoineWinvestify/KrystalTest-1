@@ -244,22 +244,27 @@ class ParseDataClientShell extends GearmanClientShell {
 
                         if ($mapResult == true) {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
+                            unset($newLoans);
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
 
                             //Search all active investment without amortization table
-                            $filterConditions = array('investment_statusOfLoan' => array(WIN_LOANSTATUS_ACTIVE, WIN_LOANSTATUS_VERIFYACTIVE), 'investment_amortizationTableAvailable !=' => WIN_AMORTIZATIONTABLES_AVAILABLE);
+                            $filterConditions = array('linkedaccount_id' => $platformKey, 'investment_statusOfLoan' => array(WIN_LOANSTATUS_ACTIVE, WIN_LOANSTATUS_VERIFYACTIVE), 'investment_amortizationTableAvailable !=' => WIN_AMORTIZATIONTABLES_AVAILABLE);
                             $investmentIdList = $this->Investment->getData($filterConditions, array('id','investment_loanId'));
 
                             //Search the slice id of that investments
+                            unset($idList);
                             foreach($investmentIdList as $list){
                                 $idList[] = $list['Investment']['id'];
                             }
                             $filterConditions = array('investment_id' => $idList);
+                            unset($sliceList);
                             $sliceList = $this->Investmentslice->getData($filterConditions, array('id', 'investmentslice_identifier'));
+                            unset($loanIdsWithoutTable);
                             foreach($sliceList as $list){
                                 $loanIdsWithoutTable[$list['Investmentslice']['id']] = $list['Investmentslice']['investmentslice_identifier'];
                             }
 
+                            unset($finalLoanIds);
                             if (!empty($loanIdsWithoutTable) && !empty($newLoans)) {
                                 echo "merging two arrays\n";
                                 $finalLoanIds = $newLoans + $loanIdsWithoutTable;

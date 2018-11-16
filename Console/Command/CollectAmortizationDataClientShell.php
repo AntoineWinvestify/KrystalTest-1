@@ -137,13 +137,13 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             echo "Type of access for company" . $typeAccessKey . "\n";
                             echo "All information \n";
                             print_r($data);
-                        }
+                        }                       
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
-                    }
+                        }
                 }
 
                 $this->GearmanClient->runTasks();
-                
+
                 // ######################################################################################################           
                 foreach ($pendingJobs as $jobToDeleteSlice) {
                     $queue2JsonDecoded = json_decode($jobToDeleteSlice['Queue2']["queue2_info"], true);
