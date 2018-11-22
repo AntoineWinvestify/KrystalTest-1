@@ -108,7 +108,6 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
        
        $data['statusCollect'] = $statusCollect;
        $data['errors'] = $errors;
-       print_r($data);
        return json_encode($data);
     }
 
@@ -151,8 +150,8 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
                
        $data['statusCollect'] = $statusCollect;
        $data['errors'] = $errors;
-
        return json_encode($data);
+       
     }
     
     

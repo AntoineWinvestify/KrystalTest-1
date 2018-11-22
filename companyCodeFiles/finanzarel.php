@@ -484,16 +484,16 @@ class finanzarel extends p2pCompany {
             "A" =>  [
                 "name" => "investment_loanId"                                   // Winvestify standardized name
             ],
-            "B" => [
+            "C" => [
                 "name" => "investment_debtor",                                  // Winvestify standardized name  OK
             ],
-            "C" => [
+            "D" => [
                 "name" => "investment_riskRating",
             ], 
-            "D" =>  [
+            "E" =>  [
                 "name" => "investment_typeOfInvestment"
             ],
-            "E" => [  
+            "G" => [  
                 [
                     "type" => "investment_fullLoanAmount",                      // Winvestify standardized name
                     "inputData" => [
@@ -504,9 +504,9 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
             ], 
-            "F" => [
+           /* "F" => [
                 "name" => "investment_originalDuration"
-            ],
+            ],*/
             "I" =>  [
                 [
                     "type" => "investment_nominalInterestRate",
@@ -519,7 +519,7 @@ class finanzarel extends p2pCompany {
                 ]
             ],
             //FAKE CELL, IT IS A DEFAULT VALUE
-            "J" => [
+            "B" => [
                 [
                     "type" => "investment_statusOfLoan",                        
                     "inputData" => [                                            
@@ -528,7 +528,7 @@ class finanzarel extends p2pCompany {
                     "functionName" => "getDefaultValue",
                 ],
             ],
-            "K" => [
+            "L" => [
                 [
                     "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
                     "inputData" => [

@@ -175,7 +175,7 @@ class GearmanWorkerShell extends AppShell {
      * @param integer $code It is the code of the error
      */
     public function error_handler($code) {
-        if ($code != E_WARNING && $code != E_NOTICE) {
+        if ($code != E_WARNING && $code != E_NOTICE & $code != E_DEPRECATED) {
             echo "\n error code : " . $code . "\n";
             $this->job->sendFail();
         }
