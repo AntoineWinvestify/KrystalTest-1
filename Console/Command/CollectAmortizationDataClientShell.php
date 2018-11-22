@@ -88,7 +88,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         $linkAccountIds[] = $linkedAccountId;
                         $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
-                    $filterConditions = array('id' => $linkAccountIds); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
+                    $filterConditions = array('id' => $queueInfo['companiesInFlow']); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     //foreach ($queueInfo['loanIds'] as $key => $loanId) {
                     /*foreach ($loanIds as $key => $loanId) {
