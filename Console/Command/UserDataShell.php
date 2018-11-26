@@ -1452,7 +1452,7 @@ echo "Value = $value\n";
 print_r($modelTo);
 
             $resultData[$modelTo[0]][$variable["to"][0]] = bcadd($resultData[$modelTo[0]][$variable["to"][0]], $value, 16);
-print_r($resultData); 
+print_r($resultData);
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "From"] = $variable["from"][0];
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "To"] = $variable["to"][0];
             $resultData['roundingerrorcompensation']['roundingerrorcompensation_roundingError' . $i] = $value;

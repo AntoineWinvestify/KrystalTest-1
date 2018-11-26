@@ -93,9 +93,14 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                         $dirs = new Folder($subDirectory);
 
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
-                        $tempPfpName = explode("/", $allFiles[0]);
-
-                        $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        if (!empty($allFiles)) {
+                            $tempPfpName = explode("/", $allFiles[0]);
+                            $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        } else {
+                            $allOtherFiles = $dirs->findRecursive(".*");
+                            $tempPfpName = explode("/", $allOtherFiles[0]);
+                            $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        }
                         echo "Pfp = " . $pfp . "\n";
 
                         $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
@@ -106,20 +111,22 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             'pfp' => $pfp,
                             'userReference' => $job['Queue2']['queue2_userReference'],
                             'files' => $allFiles
-                                );
-                        
+                        );
                         echo "PARAM TOTAL";
-                        if (in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
-                            break;
+                        /* if (in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
+                          break;
+                          } */
+                        print_r($subDirectory);
+                        if(file_exists($subDirectory . "/" . $pfp)){
+                            $parametersFile = $subDirectory . "/" . $pfp . "/flow3aTransferClientToWorker.json";
                         }
                     }
-                    $parametersFile = $subDirectory . "/" . $pfp . "/flow3aTransferClientToWorker.json";
                     file_put_contents($parametersFile, json_encode($params));
                     echo "file = $parametersFile";
-                    $this->GearmanClient->addTask($workerFunction, $parametersFile, null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
+                    $this->GearmanClient->addTask($workerFunction, $parametersFile, null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);               
                 }
                 $this->GearmanClient->runTasks();
- 
+                
                 
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
