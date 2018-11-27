@@ -619,6 +619,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     break;
                             }
                             $database['investment']['investment_isNew'] = true;
+
                         }
                         else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
                             echo "Updating loan in the shadow DB table\n";
@@ -934,9 +935,26 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                             $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
                         }
+
+                        
+                        $dateToDeleteAfter1 = new DateTime(date($finishDate));
+                        $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
+                        if ($dateKey == $lastDateToCalculate) {
+                            $tempBackupCopyId = $this->copyInvestment($investmentId);
+                            echo __FUNCTION__ . " " . __LINE__ . " Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";
+                            echo __FUNCTION__ . " " . __LINE__ . " Create a backup copy for dateKey = $dateKey, and backupCopyId = " . $tempBackupCopyId . "\n";
+
+                            $this->Investment->save(array("id" => $investmentId,
+                                "investment_backupCopyId" => $tempBackupCopyId,
+                            ));
+                        }
+                        
+                        
                         if(empty($database['investment']['date'])){
                             $database['investment']['date'] = $dateKey;
-                        }               
+                        }              
+
+                        
                         if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                             $resultCreate = $this->Investment->createInvestment($database['investment']);
@@ -953,6 +971,7 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                         else {
+                             
                             $database['investment']['id'] = $investmentId;
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
                             $result = $this->Investment->save($database['investment']);
@@ -966,19 +985,8 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
 
-                        $dateToDeleteAfter1 = new DateTime(date($finishDate));
-                        $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
 
-                        if ($dateKey == $lastDateToCalculate) {
-                            $tempBackupCopyId = $this->copyInvestment($investmentId);
-                            echo __FUNCTION__ . " " . __LINE__ . " Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";
-                            echo __FUNCTION__ . " " . __LINE__ . " Create a backup copy for dateKey = $dateKey, and backupCopyId = " . $tempBackupCopyId . "\n";
 
-                            $this->Investment->save(array("id" => $investmentId,
-                                "investment_backupCopyId" => $tempBackupCopyId,
-                                "date" => $dateKey
-                            ));
-                        }
 
                         echo 'save payment';
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
@@ -1204,8 +1212,9 @@ class ParseDataClientShell extends GearmanClientShell {
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
 
             echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
-            print_r($results);
 
+            
+            //Backup investment only
             foreach ($results as $result) {
                 $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
 
@@ -1218,11 +1227,16 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (!empty($investmentData)) {
                     $this->Investment->delete($result['Investment']['id'], $cascade = false);
                 }
-
-                $filterConditions = array("date" => $lastDateToCalculate,
-                    "investment_id" => $result['Investment']['id']);
+            }
+            
+            
+                //Delete data from today.
+                $filterConditions = array("date" => $lastDateToCalculate);
                 echo __FILE__ . " " . __LINE__ . " \n";
                 print_r($filterConditions);
+                if ($this->Investment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                    echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
+                }
                 if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
                 }
@@ -1235,7 +1249,8 @@ class ParseDataClientShell extends GearmanClientShell {
                 if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";
                 }
-            }
+                
+                
             // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
             echo __FILE__ . " " . __LINE__ . " \n";
             $filterConditions = array("date" => $lastDateToCalculate,
@@ -1560,8 +1575,8 @@ class ParseDataClientShell extends GearmanClientShell {
             "recursive" => -1));
 
         $this->Investment->create();
-        $result['investment_ backupCopyId'] = 0;
-        $result['id'] = $restoreToInvestmentId;
+        $result['Investment']['investment_ backupCopyId'] = 0;
+        $result['Investment']['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
         $this->Investment->delete($restoreFromInvestmentId, $cascade = false);
     }
