@@ -73,19 +73,13 @@ class DeleteDataShell extends AppShell {
 
         $this->getFiltersToDelete($investorId, $linkaccountsId);
 
-        /*//Stop the process if a queue for that linkaccount is running
-        $this->Queue2 = ClassRegistry::init('Queue2');
-        $queueList = $this->Queue2->getData(array('queue2_status !=' => array(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED)));
-        foreach ($queueList as $queueInfo) {
-            $queueInfoArray = json_decode($queueInfo['Queue2']['queue2_info'], true);
-            $companiesInFlow = $queueInfoArray['companiesInFlow'];
-            foreach ($this->LinkAccountFilter['linkedaccount_id'] as $linkaccountId) {
-                if (in_array($linkaccountId, $companiesInFlow)) {
-                    echo $linkaccountId . " is in a queue unfinished proccess, you can't delete the data";
-                    exit;
-                }
-            }
-        }*/
+        //Stop the proccess if a linkaccount doen't belong to the investor
+        if (!empty($linkaccountsId)) {
+            $this->checkLinkaccountId($investorId, $linkaccountsId);
+        }
+
+        //Stop the process if a queue for that linkaccount is running
+        $this->checkQueue2();
 
         echo "Deleting Amortizationpayment\n";
         $this->Amortizationpayment->deleteAll($this->AmortizationTableFilter, false);
@@ -158,9 +152,38 @@ class DeleteDataShell extends AppShell {
             $IdArray[] = $id['AmortizationTable'] ['id'];
         }
         $this->AmortizationTableFilter = array('amortizationtable_id' => $IdArray);
-        
-        /*print_r( $this->InvestmentFilter);
-        exit;*/
+
+        /* print_r( $this->InvestmentFilter);
+          exit; */
+    }
+
+    public function checkLinkaccountId($investorId, $linkaccountsId) {
+        $Prefilter = array('investor_id' => $investorId);                       //Find all linkaccount of the investor       
+        $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
+        foreach ($Idlist as $id) {
+            $IdArray[] = $id['Linkedaccount'] ['id'];
+        }
+        foreach ($linkaccountsId as $id) {
+            if (!in_array($id, $IdArray)) {
+                echo "The linkaccount $id doesn't belong to the investor $investorId";
+                exit;
+            }
+        }
+    }
+
+    public function checkQueue2() {
+        $this->Queue2 = ClassRegistry::init('Queue2');
+        $queueList = $this->Queue2->getData(array('queue2_status !=' => array(WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED)));
+        foreach ($queueList as $queueInfo) {
+            $queueInfoArray = json_decode($queueInfo['Queue2']['queue2_info'], true);
+            $companiesInFlow = $queueInfoArray['companiesInFlow'];
+            foreach ($this->LinkAccountFilter['linkedaccount_id'] as $linkaccountId) {
+                if (in_array($linkaccountId, $companiesInFlow)) {
+                    echo $linkaccountId . " is in a queue unfinished proccess, you can't delete the data";
+                    exit;
+                }
+            }
+        }
     }
 
     /**
