@@ -2056,7 +2056,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator = ".") {
         $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
         if($separator === "."){
            $cleanInput =  str_replace(",", "", $cleanInput);

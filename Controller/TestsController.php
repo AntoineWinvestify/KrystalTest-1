@@ -62,7 +62,9 @@ class TestsController extends AppController {
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff", "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest"));
+            "testDateDiff","deleteFromUser",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
+            "memoryTest2", "hashTest"));
     }
 
     public function pruebaYield() {
@@ -72,6 +74,16 @@ class TestsController extends AppController {
     }
 
     
+    public function deleteFromUser($investorId = null, $linkaccountsId = null) {
+
+
+            $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
+            $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
+            print_r($Idlist);
+            /*foreach($Idlist[''] as $id){*/
+ 
+    
+            }
     function hashTest(){
     
         $telephone= 615091091;

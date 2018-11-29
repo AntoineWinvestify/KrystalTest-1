@@ -651,6 +651,7 @@ class mintos extends p2pCompany {
                 "inputData" => [
                     "input2" => "1",
                     "input3" => "0",
+                    "input4" => ".",
                 ],
                 "functionName" => "handleNumber",
             ]
