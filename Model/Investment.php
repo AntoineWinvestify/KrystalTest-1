@@ -38,7 +38,7 @@
  */
 
 class Investment extends AppModel {
-
+    
     var $name = 'Investment';
     public $hasMany = array(
         'Payment' => array(
