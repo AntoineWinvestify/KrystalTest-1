@@ -1896,7 +1896,7 @@ class zank extends p2pCompany {
                 $this->loanKeys = array_keys($this->loanIds);
                 $this->loanIds = array_values($this->loanIds);
                 
-                if(empty($this->loanTotalIds) || $this->loanIds){
+                if(empty($this->loanTotalIds) || empty($this->loanIds)){
                     return array();
                 }
                 $this->idForSwitch++;
