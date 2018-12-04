@@ -1895,6 +1895,10 @@ class zank extends p2pCompany {
                 $this->loanTotalIds = $this->loanIds;
                 $this->loanKeys = array_keys($this->loanIds);
                 $this->loanIds = array_values($this->loanIds);
+                
+                if(empty($this->loanTotalIds) || $this->loanIds){
+                    return array();
+                }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
                 break;
