@@ -20,17 +20,16 @@
  * @date
  * @package
  */
-
-App::import('Shell','GearmanWorker');
+App::import('Shell', 'GearmanWorker');
 
 /**
  * Class CollectAmortizationDataWorker to collect all the amortization tables
  *
  */
 class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
-    
+
     public $uses = array('Marketplace', 'Company', 'Urlsequence');
-    
+
     /**
      * Function main that init when start the shell class
      */
@@ -38,10 +37,10 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlAm', array($this, 'getAmortizationDataMulticurl'));
         $this->GearmanWorker->addFunction('parserFileAm', array($this, 'getAmortizationDataParserFile'));
-        echo __CLASS__  . ": " . "Starting to listen to data from its Client\n"; 
-        while( $this->GearmanWorker->work() );
+        echo __CLASS__ . ": " . "Starting to listen to data from its Client\n";
+        while ($this->GearmanWorker->work());
     }
-    
+
     /**
      * Function to initiate the process to save the amortization tables of a company
      * @param object $job It is the object of Gearmanjob that contains
@@ -55,7 +54,11 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
      * @return json Json containing all the status collect and errors by link account id
      */
     public function getAmortizationDataMulticurl($job) {
-        $data = json_decode($job->workload(),true);
+
+        $statusCollect = [];
+        $errors = null;
+
+        $data = json_decode($job->workload(), true);
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         $this->Structure = ClassRegistry::init('Structure');
         $this->queueCurlFunction = "collectAmortizationTablesParallel";
@@ -64,11 +67,14 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
         $this->queueCurls = new \cURL\RequestsQueue;
         //If we use setQueueCurls in every class of the companies to set this queueCurls it will be the same?
         $i = 0;
-        foreach ($data["companies"] as $linkedaccount) {
+        foreach ($data["companies"] as $pfpLinkedaccountId => $linkedaccount) {
             $this->initCompanyClass($data, $i, $linkedaccount, WIN_DOWNLOAD_AMORTIZATION_TABLES_SEQUENCE);
             $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_AMORTIZATION_TABLE);
             $this->newComp[$i]->setTableStructure($structure);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
+            if (empty($data['loanIds'][$pfpLinkedaccountId])) {
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+            }
             $i++;
         }
         $companyNumber = 0;
@@ -78,61 +84,64 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             $this->newComp[$companyNumber]->$queueCurlFunction();
             $companyNumber++;
         }
-        
+
         //This function is in GearmanWorkerShell
         $this->queueCurls->addListener('complete', array($this, 'multiCurlQueue'));
 
-       //This is the queue. It is working until there are requests
-       while ($this->queueCurls->socketPerform()) {
-           echo '*';
-           $this->queueCurls->socketSelect();
-       }
-       
-       $lengthTempArray = count($this->tempArray);
-       $statusCollect = [];
-       $errors = null;
-       for ($i = 0; $i < $lengthTempArray; $i++) {
-           if (empty($this->tempArray[$i]['global']['error'])) {
-               if (!empty($this->tempArray[$i]['errorTables'])) {
-                   $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
+        //This is the queue. It is working until there are requests
+        while ($this->queueCurls->socketPerform()) {
+            echo '*';
+            $this->queueCurls->socketSelect();
+        }
+
+        $lengthTempArray = count($this->tempArray);
+        for ($i = 0; $i < $lengthTempArray; $i++) {
+            if (empty($this->tempArray[$i]['global']['error'])) {
+                if (!empty($this->tempArray[$i]['errorTables'])) {
+                    $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
                }
                else {
-                   $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
-               }
+                    $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+                }
            }
            else {
-               $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_ERROR;
-               $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
-           }
-       }
-       
-       $data['statusCollect'] = $statusCollect;
-       $data['errors'] = $errors;
-       return json_encode($data);
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_ERROR;
+                $errors[$this->newComp[$i]->getLinkAccountId()] = $this->tempArray[$i]['global']['error'];
+            }
+        }
+
+        $data['statusCollect'] = $statusCollect;
+        $data['errors'] = $errors;
+        return json_encode($data);
     }
 
-    public function getAmortizationDataParserFile($job){
-        $data = json_decode($job->workload(),true);
+    public function getAmortizationDataParserFile($job) {
+
+        $statusCollect = [];
+        $errors = null;
+
+        $data = json_decode($job->workload(), true);
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         $this->Structure = ClassRegistry::init('Structure');
         $this->queueFunction = "collectAmortizationTablesParserFile";
         print_r($data);
         $queueFunction = $this->queueFunction;
-        
+
         echo "MICROTIME_START = " . microtime() . "<br>";
         $i = 0;
-        foreach ($data["companies"] as $linkedaccount) {
+        foreach ($data["companies"] as $pfpLinkedaccountId => $linkedaccount) {
             $this->initCompanyClass($data, $i, $linkedaccount, null);
             $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_AMORTIZATION_TABLE);
             $this->newComp[$i]->setTableStructure($structure);
             $this->newComp[$i]->setLoanIds($data["loanIds"][$i]);
+            if (empty($data['loanIds'][$pfpLinkedaccountId])) {
+                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+            }
             $this->tempArray = $this->newComp[$i]->$queueFunction();
             $this->newComp[$i]->saveAmortizationTable();
             $this->newComp[$i]->verifyErrorAmortizationTable();
-            
-            $statusCollect = [];
-            $errors = null;
-           
+
+
             //if (empty($this->tempArray[$i]['global']['error'])) {
             if (!empty($this->tempArray['errorTables'])) {
                 $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
@@ -147,13 +156,13 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
 
             $i++;
         }
-               
-       $data['statusCollect'] = $statusCollect;
-       $data['errors'] = $errors;
-       return json_encode($data);
+
+        $data['statusCollect'] = $statusCollect;
+        $data['errors'] = $errors;
+        return json_encode($data);
        
     }
-    
+
     
     
 }
