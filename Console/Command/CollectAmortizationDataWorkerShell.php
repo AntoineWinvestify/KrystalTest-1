@@ -137,16 +137,16 @@ class CollectAmortizationDataWorkerShell extends GearmanWorkerShell {
             if (empty($data['loanIds'][$pfpLinkedaccountId])) {
                 $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
             }
-            $this->tempArray = $this->newComp[$i]->$queueFunction();
-            $this->newComp[$i]->saveAmortizationTable();
-            $this->newComp[$i]->verifyErrorAmortizationTable();
-
-
-            //if (empty($this->tempArray[$i]['global']['error'])) {
-            if (!empty($this->tempArray['errorTables'])) {
-                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
-            } else {
-                $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+            else {
+                $this->tempArray = $this->newComp[$i]->$queueFunction();
+                $this->newComp[$i]->saveAmortizationTable();
+                $this->newComp[$i]->verifyErrorAmortizationTable();           
+                //if (empty($this->tempArray[$i]['global']['error'])) {
+                if (!empty($this->tempArray['errorTables'])) {
+                    $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_WARNING;
+                } else {
+                    $statusCollect[$this->newComp[$i]->getLinkAccountId()] = WIN_STATUS_COLLECT_CORRECT;
+                }
             }
             /* }
               else {
