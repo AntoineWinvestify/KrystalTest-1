@@ -596,5 +596,28 @@ Configure::write('debug', 2);
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
     }
+  
+    
+     /**
+      * Formats the error information into the error object for the API-V1
+      * 
+      * @param string $errorName Short one word description of error
+      * @param string $errorMessage The message in clear language which may be displayed to the user
+      * @param array $validationErrors This is an array with all the error messages per variable 
+      * @return array 
+      */   
+    public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
+        
+        foreach ($validationErrors as $key => $item) {
+            $tempArray['field'] = $key;
+            $tempArray['issue'] = $item[0];
+            $errorDetails[] = $tempArray;
+        }
+
+        $errorArray['error_name'] = $errorName;
+        $errorArray['error_message'] = $errorMessage;
+        $errorArray['error_details'] = $errorDetails;
+        return ($errorArray);    
+    }
     
 }

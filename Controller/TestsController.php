@@ -1,6 +1,4 @@
-
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://beyond-language-skills.com                 |
@@ -42,12 +40,65 @@ App::uses('File', 'Utility');
 //App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
-
+ 
 /* use PhpOffice\PhpSpreadsheet\IOFactory;
   use PhpOffice\PhpSpreadsheet\Cell; */
 
 class TestsController extends AppController {
 
+    var $reservedKeywordsOriginal = [
+                        'GLOBALDASHBOARD_NET_ANNUAL_RETURNS' => 1,
+                        'GLOBALDASHBOARD_CASH' => 2,  
+                        'GLOBALDASHBOARD_KPIS' => 3,  
+                        'GLOBALDASHBOARD_KPI_PLATFORM' => 4,  
+                        'GLOBALDASHBOARD_KPI_YIELD' => 5,
+                        'GLOBALDASHBOARD_KPI_TOTAL_VOLUME' => 6,  
+                        'GLOBALDASHBOARD_KPI_CASH' => 7,
+                        'GLOBALDASHBOARD_KPI_EXPOSURE' => 8,  
+                        'GLOBALDASHBOARD_KPI_CURRENT' => 9,  
+                        'GLOBALDASHBOARD_NET_RETURNS' => 10, 
+                        'GLOBALDASHBOARD_INVESTMENT_INDICATORS' => 11,  
+                        'GLOBALDASHBOARD_NET_EARNINGS' => 12,  
+                        'GLOBALDASHBOARD_PAYMENT_DELAY' =>13,  
+                        'GLOBALDASHBOARD_CURRENT' => 14,  
+                        'COMPANY_TOOLTIP' => 15,  
+                        'DASHBOARD_ACTIVE_INVESTMENTS' => 16,  
+                        'DASHBOARD_NET_DEPOSITS' => 17,  
+                        'DASHBOARD_CASH_DRAG' => 18,  
+                        'DASHBOARD_INVESTED_ASSETS' => 19,  
+                        'DASHBOARD_RESERVED_FUNDS' => 20,  
+                        'DASHBOARD_CASH ' => 21,  
+                        'DASHBOARD_LAST_365_DAYS' => 22,  
+                        'DASHBOARD_LAST_YEAR' => 23,  
+                        'DASHBOARD_TOTAL_FUNDS' => 24,  
+                        'DASHBOARD_NET_ANNUAL_RETURNS' => 25,  
+                        'DASHBOARD_NET_EARNINGS_LAST_365_DAYS' => 26,  
+                        'DASHBOARD_NET_EARNINGS_LAST_YEAR' => 27,  
+                        'DASHBOARD_NET_EARNINGS_TOTAL_FUNDS' => 28,  
+                        'DASHBOARD_PAYMENT_DELAY' => 29,  
+                        'DASHBOARD_CURRENT' => 30,  
+                        'DASHBOARD_EXPOSURE' => 31,  
+                        'PROFILE_NAME' => 32,  
+                        'PROFILE_SURNAMES' => 33,  
+                        'PROFILE_ADDRESS' => 34,  
+                        'PROFILE_POSTCODE' => 35,  
+                        'PROFILE_CITY' => 36,  
+                        'PROFILE_COUNTRY' => 37,  
+                        'PROFILE_IBAN' => 38,  
+                        'PROFILE_ID' => 39,  
+                        'PROFILE_TELEPHONE' => 40,  
+                        'PROFILE_DATE_OF_BIRTH' => 41,  
+                        'PROFILE_COMPANY' => 42,  
+                        'PROFILE_FISCAL_ID' => 43,  
+                        'PROFILE_PASSWORD' => 44,  
+                        'ACCOUNT_LINKING_USERNAME' => 45,  
+                        'ACCOUNT_LINKING_PASSWORD' => 46,  
+                        'ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME' => 47,
+                        'MONITORED' => 48,
+                        'ANALYZING' => 49,
+                        'QUEUED' => 50,
+                        'SUSPENDED' => 51
+                        ];   
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
     var $uses = array('Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
@@ -62,20 +113,219 @@ class TestsController extends AppController {
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff","deleteFromUser",
+            "testDateDiff","deleteFromUser","find",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
-            "memoryTest2", "hashTest"));
+            "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor"));
     }
 
-    public function pruebaYield() {
-        for ($i = 0; $i < 600000; $i++) {
-            yield $i;
-        }
+    /**
+     * 
+     * @param type $listOfFields
+     * 
+     */
+    public function readInvestor($listOfFields) {  
+        
+ $listOfFields = ['name', 'surname', 'dateofBirth', 'telephone'];
+ unset($listOfFields);
+         /*,
+'DNI', 'dateOfBirth', 'telephone',   'address1', 'address2',   
+ 'postCode', 'city', 'country', 'email']*/
+          ;   
+        
+    if (empty($listOfFields)) {
+        // Only show 'public' fields, not internal technical fields
+        $listOfFields =   ['name', 'surname',       
+                            'DNI', 'dateOfBirth', 
+                            'telephone', 'address1', 
+                            'address2', 'postCode', 
+                            'city', 'country', 
+                            'email'];
     }
+
+    foreach ($listOfFields as $field) {
+        $tempField = "Investor.investor_" . $field;
+        $fields[] = $tempField; 
+        $tempField = "Check.check_" . $field;
+        $fields[] = $tempField; 
+    }    
+    
+    Configure::write('debug', 2);        
+    $this->autoRender = false;  
+    $result = $this->Investor->find("all", $params = ['conditions' => ['Investor.id' => 1],
+                                                      'fields' => $fields,
+                                                      'recursive' => 0]);
+
+    pr($result);       
+       
+
+    foreach ($result[0]['Investor'] as $key => $value) {
+        if ($key === 'id') {
+            continue;
+        }
+
+        $underscoreKey = ($key !== 'investor_DNI' ? Inflector::underscore($key): $key);    
+     
+        $json["data"][$key]['display_name'] = $underscoreKey;
+        $json["data"][$key]['value'] = $value;  
+        $rootName = explode("_", $key);
+        $json["data"][$key]['read-only'] = $result[0]['Check']['check_' . $rootName[1]];       
+    }
+
+
+        pr($json);
+        pr(json_encode($json));
+    }   
+    
+    
+    public function recursiveSearchIncoming() {   
+    Configure::write('debug', 2);        
+    $this->autoRender = false;   
+    
+    $jsonString = '{
+  "service_status": "ACTIVE",
+  "data": [
+    {
+      "id": 325938,
+      "service_status": "NOT_ACTIVE",
+      "linkedaccount_status": "ACTIVE",
+      "linkedaccount_visual_state": "ANALYZING",
+      "polling_type": "NOTIFICATION_CHECK",
+      "links": [
+        {
+          "metadata_type_of_document": "DNI_FRONT",
+          "linkedaccount_status": "NON_EXISTENT_VALUE"
+        }
+      ]
+    },
+    {
+      "id": 432456,
+      "metadata_type_of_document": "DNI_BACK",
+      "service_status": "SUSPENDED",
+      "polling_type": "LINKEDACCOUNT_CHECK",
+      "linkedaccount_status": "NOT_ACTIVE",
+      "linkedaccount_visual_state": "QUEUED",
+      "linkedaccount_username": "antoine@gmail.com"
+    },
+    {
+      "id": 432458,
+      "metadata_type_of_document": "BANK_CERTIFICATE",
+      "polling_type": "PMESSAGE_CHECK",
+      "linkedaccount_status": "UNDEFINED",
+      "linkedaccount_visual_state": "MONITORED"
+    }
+  ]
+}';
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);
+    $tempPtr = new jsonNormalize();
+    $tempPtr->normalizeIncomingJson($jsonArray); 
+    pr($jsonArray);   
+    } 
+    
+    
+    public function recursiveSearchOutgoing() {
+        Configure::write('debug', 2);        
+        $this->autoRender = false;
+
+
+    $jsonString = '{
+  "service_status": 10,
+  "data": [
+    {
+      "id": 325938,
+      "service_status": 20,
+      "linkedaccount_status": 1,
+      "linkedaccount_visual_state": 10,
+      "polling_type": 10,
+      "links": [
+        {
+          "metadata_type_of_document": 10,
+          "linkedaccount_status": 10
+        }
+      ]
+    },
+    {
+      "id": 432456,
+      "metadata_type_of_document": 20,
+      "service_status": 30,
+      "polling_type": 10,
+      "linkedaccount_status": 2,
+      "linkedaccount_visual_state": 20,
+      "linkedaccount_username": "antoine@gmail.com"
+    },
+    {
+      "id": 432458,
+      "metadata_type_of_document": 30,
+      "polling_type": 30,
+      "linkedaccount_status": 0,
+      "linkedaccount_visual_state": 30
+    }
+  ]
+}';
+
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);
+    $tempPtr = new jsonNormalize();
+    $tempPtr->normalizeOutgoingJson($jsonArray);  
+    pr($jsonArray);
+    }
+   
+   
+/**
+ * Find a named route in a given array of routes.
+ *
+ * @param  string  $name
+ * @param  array   $routes
+ * @return array
+ */   
+public function findIndex($data)
+{
+   pr($this->testArrayIn);
+   pr($this->testArrayOut);
+
+   
+    $functionArray = ['TestsController','changeArrayValue'];
+    $result = array_walk_recursive($data, $functionArray);
+    
+    debug($data);
+}
+
+
+
+public function changeArrayValue(&$item, $key) {
+
+    if (array_key_exists($key, $this->testArrayOut)) {
+        $item = $this->testArrayOut[$key][$item];
+    }    
+    return;
+}   
+
 
     
-    public function deleteFromUser($investorId = null, $linkaccountsId = null) {
+function search2($array, $key){
+    echo "MM";
+    if( array_key_exists($key, $array) ){
+        print("<br> ----------------- FOUND <u>{$key}</u> with value: {$array[$key]}");
 
+        return array( $key => $array[$key] );
+
+    }
+    else if( !array_key_exists($key, $array) ){
+        foreach ($array as $index   =>  $subarray){
+                if( is_array($subarray) ){
+                    print("<br> ************* <u>{$index}</u> is an ARRAY");
+                    print("<br> ************* RE-SEACHING <u>{$index}</u> FOR : <u>{$key}</u>");
+                    return search2($subarray, $key);
+                }
+        }
+    }
+}    
+    
+    
+   
+
+function deleteFromUser($investorId = null, $linkaccountsId = null) {
+ 
 
             $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
             $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
@@ -923,4 +1173,160 @@ class TestsController extends AppController {
         $this->print_r2($result);
     }
 
+}
+
+
+
+/*
+ * +-----------------------------------------------------------------------+
+ * | Copyright (C) 2018, http://www.winvestify.com                         |
+ * +-----------------------------------------------------------------------+
+ * | This file is free software; you can redistribute it and/or modify     |
+ * | it under the terms of the GNU General Public License as published by  |
+ * | the Free Software Foundation; either version 2 of the License, or     |
+ * | (at your option) any later version.                                   |
+ * | This file is distributed in the hope that it will be useful           |
+ * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
+ * | GNU General Public License for more details.                          |
+ * +-----------------------------------------------------------------------+
+ * | Author: Antoine de Poorter                                            |
+ * +-----------------------------------------------------------------------+
+ *
+ *
+ * @author Antoine de Poorter
+ * @version 0.1
+ * @date 2018-12-04
+ * @package Dashboard2_Api_V1
+ *
+ * This class provides methods to change string values to their corresponding
+ * integer values and vice versa, depending if it is an incoming HTTP message 
+ * or an outgoing HTTP message.
+ * The class modified directly the provided array, i.e. will not return a 
+ * modified copy of the input array
+ * 
+ * 2018-12-04	  version 2018_0.1
+ * 
+ * 
+ */
+class jsonNormalize {
+    // Definitions for preparing the outgoing JSON
+    var $keywordsArrayOut = [
+                    'linkedaccount_visual_state' => 
+                        [ API_QUEUED => WIN_QUEUED , 
+                          API_ANALYZING => WIN_ANALYZING,
+                          API_MONITORED => WIN_MONITORED
+                        ],
+                    'linkedaccount_status' => 
+                        [ API_LINKEDACCOUNT_STATUS_UNDEFINED => WIN_LINKEDACCOUNT_STATUS_UNDEFINED,
+                          API_LINKEDACCOUNT_STATUS_NOT_ACTIVE => WIN_LINKEDACCOUNT_STATUS_NOT_ACTIVE,  
+                          API_LINKEDACCOUNT_STATUS_ACTIVE => WIN_LINKEDACCOUNT_STATUS_ACTIVE
+                        ],           
+                    'metadata_type_of_document' => 
+                        [ API_DNI_FRONT => WIN_DNI_FRONT,
+                          API_DNI_BACK => WIN_DNI_BACK,
+                          API_BANK_CERTIFICATE => WIN_BANK_CERTIFICATE
+                        ],  
+                    'polling_type' =>
+                        [ API_NOTIFICATION_CHECK => WIN_NOTIFICATION_CHECK,
+                          API_LINKEDACCOUNT_CHECK => WIN_LINKEDACCOUNT_CHECK,
+                          API_PMESSAGE_CHECK => WIN_PMESSAGE_CHECK
+                        ],
+                    'service_status' =>   
+                        [ API_SERVICE_STATE_NOT_ACTIVE => WIN_SERVICE_STATE_NOT_ACTIVE,
+                          API_SERVICE_STATE_ACTIVE => WIN_SERVICE_STATE_ACTIVE,
+                          API_SERVICE_STATE_SUSPENDED => WIN_SERVICE_STATE_SUSPENDED
+                        ]          
+                    ];
+
+    // Definitions for dealing with the incoming JSON
+    var $keywordsArrayIn = [
+                    'linkedaccount_visual_state' => 
+                        [ WIN_QUEUED => API_QUEUED, 
+                          WIN_ANALYZING => API_ANALYZING,
+                          WIN_MONITORED => API_MONITORED
+                        ],
+                    'linkedaccount_status' => 
+                        [ WIN_LINKEDACCOUNT_STATUS_UNDEFINED => API_LINKEDACCOUNT_STATUS_UNDEFINED,
+                          WIN_LINKEDACCOUNT_STATUS_NOT_ACTIVE => API_LINKEDACCOUNT_STATUS_NOT_ACTIVE, 
+                          WIN_LINKEDACCOUNT_STATUS_ACTIVE => API_LINKEDACCOUNT_STATUS_ACTIVE
+                        ],       
+                    'metadata_type_of_document' => 
+                        [ WIN_DNI_FRONT => API_DNI_FRONT,
+                          WIN_DNI_BACK => API_DNI_BACK,
+                          WIN_BANK_CERTIFICATE => API_BANK_CERTIFICATE],
+                     'polling_type' =>
+                        [ WIN_NOTIFICATION_CHECK => API_NOTIFICATION_CHECK,
+                          WIN_LINKEDACCOUNT_CHECK => API_LINKEDACCOUNT_CHECK,
+                          WIN_PMESSAGE_CHECK => API_PMESSAGE_CHECK
+                        ],  
+                     'service_status' =>   
+                        [ WIN_SERVICE_STATE_NOT_ACTIVE => API_SERVICE_STATE_NOT_ACTIVE,
+                          WIN_SERVICE_STATE_ACTIVE => API_SERVICE_STATE_ACTIVE,
+                          WIN_SERVICE_STATE_SUSPENDED => API_SERVICE_STATE_SUSPENDED
+                        ]     
+                    ];
+    
+
+    /*
+     * Recursive function for changing the values of an array
+     * 
+     *  @param  $item The array value of the array element to be operated upon
+     *  @param  $key The key of the array element to be operated upon
+     *  @return -
+     */ 
+private function changeArrayValueOut(&$item, $key) {
+
+    if (array_key_exists($key, $this->keywordsArrayOut)) {
+        $item = $this->keywordsArrayOut[$key][$item];
+    }    
+    return;
+}
+
+
+    /**
+     * Recursive function for changing the values of an array
+     * 
+     *  @param  $item The array value of the array element to be operated upon
+     *  @param  $key The key of the array element to be operated upon
+     *  @return -
+     */ 
+private function changeArrayValueIn(&$item, $key) {
+
+    if (array_key_exists($key, $this->keywordsArrayIn)) {
+        $item = $this->keywordsArrayIn[$key][$item];
+    }    
+    return;
+}
+
+
+    /**
+     * Changes the string values of some fields with their corresponding internal 
+     * integer value. This method operates directly on the provided array. 
+     * 
+     *  @param  array The array to operate upon
+     *  @return boolean
+     */
+function normalizeIncomingJson(&$dataArray) {
+
+    $functionArray = ['jsonNormalize','changeArrayValueIn'];
+    $result = array_walk_recursive($dataArray, $functionArray);
+    return $result;        
+    }
+     
+    
+    /**
+     * Changes the integer, internal, values of some fields with their corresponding
+     * string value. This method operates directly on the provided array. 
+     * 
+     *  @param  array The array to operate upon
+     *  @return boolean
+     */   
+function normalizeOutgoingJson(&$dataArray) {
+
+    $functionArray = ['jsonNormalize','changeArrayValueOut'];
+    $result = array_walk_recursive($dataArray, $functionArray);
+    return $result;
+    }   
+    
 }
