@@ -103,6 +103,7 @@ class TestsController extends AppController {
     var $helpers = array('Js', 'Text', 'Session');
     var $uses = array('Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
+    public $components = array('ApiAdapter'); 
 
     function beforeFilter() {
         parent::beforeFilter();
@@ -115,25 +116,28 @@ class TestsController extends AppController {
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff","deleteFromUser","find",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
-            "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor"));
+            "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor"));
     }
 
-    /**
-     * 
+    
+    
+    
+    /** FOR MODEL INVESTOR
+     * Terminates GET investor
+     * @param int $investorId
      * @param type $listOfFields
      * 
      */
-    public function readInvestor($listOfFields) {  
-        
- $listOfFields = ['name', 'surname', 'dateofBirth', 'telephone'];
- unset($listOfFields);
-         /*,
-'DNI', 'dateOfBirth', 'telephone',   'address1', 'address2',   
- 'postCode', 'city', 'country', 'email']*/
-          ;   
-        
+    public function readInvestor($filterCondition, $listOfFields) { 
+    $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
+    //, "Investor.id" => 1]; 
+    Configure::write('debug', 2);        
+    $this->autoRender = false;         
+    $listOfFields = ['name', 'surname', 'dateOfBirth', 'telephone'];
+
+    
     if (empty($listOfFields)) {
-        // Only show 'public' fields, not internal technical fields
+        // Only show by default 'public' fields, not internal technical fields
         $listOfFields =   ['name', 'surname',       
                             'DNI', 'dateOfBirth', 
                             'telephone', 'address1', 
@@ -149,38 +153,160 @@ class TestsController extends AppController {
         $fields[] = $tempField; 
     }    
     
-    Configure::write('debug', 2);        
-    $this->autoRender = false;  
-    $result = $this->Investor->find("all", $params = ['conditions' => ['Investor.id' => 1],
+    $results = $this->Investor->find("all", $params = ['conditions' => $filterCondition,
                                                       'fields' => $fields,
                                                       'recursive' => 0]);
+    $numberOfResults = count($results);
 
-    pr($result);       
-       
+    $i = 0;
+    foreach ($results as $resultItem){
+        foreach ($resultItem['Investor'] as $key => $value) {
+            if ($key === 'id') {
+                continue;
+            }
 
-    foreach ($result[0]['Investor'] as $key => $value) {
-        if ($key === 'id') {
-            continue;
+            $underscoreKey = ($key !== 'investor_DNI' ? Inflector::underscore($key): $key);  
+            if ($numberOfResults == 1) {
+  //          $json["data"][$underscoreKey]['display_name'] = $underscoreKey;     // ?? 
+            $json["data"][$underscoreKey]['value'] = $value;  
+            $rootName = explode("_", $key);
+            $json["data"][$underscoreKey]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];
+            }
+            else {
+//            $json["data"][$i][$underscoreKey]['display_name'] = $underscoreKey; // ??
+            $json["data"][$i][$underscoreKey]['value'] = $value;  
+            $rootName = explode("_", $key);
+            $json["data"][$i][$underscoreKey]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];               
+            } 
         }
+        $i++;
+    } 
+    
+    pr($json);
+    pr(json_encode($json));    
 
-        $underscoreKey = ($key !== 'investor_DNI' ? Inflector::underscore($key): $key);    
-     
-        $json["data"][$key]['display_name'] = $underscoreKey;
-        $json["data"][$key]['value'] = $value;  
-        $rootName = explode("_", $key);
-        $json["data"][$key]['read-only'] = $result[0]['Check']['check_' . $rootName[1]];       
     }
+ 
+    
+    
+    
+    
+    /** FOR MODEL INVESTOR
+     * Terminates GET investor
+     * @param array $fields
+     * @param type $listOfFields
+     * 
+     */
+    public function writeInvestor($fields) { 
+    $fields = [
+                'id' => 1,        
+                'investor_name' => 'A',
+                'investor_surname' => 'BBB',
+                'investor_telephone' => '+3456434533',
+                'investor_DNI' => "X2",
+                'investor_dateOfBirth' => "11/11/2018"
+            ];   
+    
+    $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
+    //, "Investor.id" => 1]; 
+    Configure::write('debug', 2);        
+    $this->autoRender = false;         
+    $listOfFields = ['name', 'surname', 'dateOfBirth', 'telephone'];
 
+    
+    if (empty($listOfFields)) {
+        // Only show by default 'public' fields, not internal technical fields
+        $listOfFields =   ['name', 'surname',       
+                            'DNI', 'dateOfBirth', 
+                            'telephone', 'address1', 
+                            'address2', 'postCode', 
+                            'city', 'country', 
+                            'email'];
+    }
+    
+    
+    $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
+                                'investor_dateOfBirth' => 'investor_date_of_birth',
+                                'investor_city' => 'investor_city',
+                                'linkedaccount_state' => 'linkedaccount_status'
+        
+                              ]; 
+                              
+     
+    echo "Validating";
+    pr($fields);
+    $result = $this->Investor->save($fields, $validates = true);
+    echo "result= ";
+    pr($result);
+    echo "OK";
+    if (!$result) {
+        $validationErrors = $this->Investor->validationErrors;
+        pr($validationErrors);
+        foreach ($validationErrors as $key => $errorItem) {          
+            if (array_key_exists($key, $apiVariableConfigArray)) {
+                $newKey = $apiVariableConfigArray[$key];
+                $validationErrors[$newKey] = $errorItem;
+                unset($validationErrors[$key]);
+            }
+        } 
+        pr($validationErrors);
+    }
+    
+ 
+    
+  
+    
+    
+ $jsonString = '{
+"investor_DNI" : "54286464F",
+"investor_date_of_birth" : "2003-12-05",
+"investor_address1" : "Calle del Rio 23",
+"investor_address2" : "Piso Bajo",
+"investor_city" : "Madrid",
+"investor_country" : "Spain"
+}';
+ $result = json_decode($jsonString, true);
+    pr($result);
+    
 
-        pr($json);
-        pr(json_encode($json));
-    }   
+    
+    
+// For incoming messages
+    foreach ($result as $key => $item) {
+        if ( $newKey = array_search($key, $apiVariableConfigArray)) {
+ //           echo "NEWKEY is $newKey, key = $key and item = $item  <br>";
+            $result[$newKey] = $item;
+            unset($result[$key]);
+        }
+    }
+    
+    pr($result);
+exit;
+    if ($this->Investor->save($saveParameters, $validate = true)) {
+        echo "Save ok<br>";
+    }
+    else {
+        echo "Could not save<br>";
+    }
+    
+    exit;   
+    
+    
+    
+    }     
+    
+    
+    
+    
+    
+    
+    
     
     
     public function recursiveSearchIncoming() {   
     Configure::write('debug', 2);        
     $this->autoRender = false;   
-    
+ 
     $jsonString = '{
   "service_status": "ACTIVE",
   "data": [
@@ -215,10 +341,10 @@ class TestsController extends AppController {
     }
   ]
 }';
+echo "Using a component<br>";     
     $jsonArray = json_decode($jsonString, true);
-    pr($jsonArray);
-    $tempPtr = new jsonNormalize();
-    $tempPtr->normalizeIncomingJson($jsonArray); 
+    pr($jsonArray);    
+    $this->ApiAdapter->normalizeIncomingJson($jsonArray); 
     pr($jsonArray);   
     } 
     
@@ -263,42 +389,14 @@ class TestsController extends AppController {
   ]
 }';
 
-    $jsonArray = json_decode($jsonString, true);
-    pr($jsonArray);
-    $tempPtr = new jsonNormalize();
-    $tempPtr->normalizeOutgoingJson($jsonArray);  
-    pr($jsonArray);
-    }
-   
-   
-/**
- * Find a named route in a given array of routes.
- *
- * @param  string  $name
- * @param  array   $routes
- * @return array
- */   
-public function findIndex($data)
-{
-   pr($this->testArrayIn);
-   pr($this->testArrayOut);
-
-   
-    $functionArray = ['TestsController','changeArrayValue'];
-    $result = array_walk_recursive($data, $functionArray);
     
-    debug($data);
-}
-
-
-
-public function changeArrayValue(&$item, $key) {
-
-    if (array_key_exists($key, $this->testArrayOut)) {
-        $item = $this->testArrayOut[$key][$item];
-    }    
-    return;
-}   
+ echo "Using a component<br>";     
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);    
+    $this->ApiAdapter->normalizeOutgoingJson($jsonArray); 
+    pr($jsonArray);   
+    }   
+    
 
 
     
@@ -1173,160 +1271,4 @@ function deleteFromUser($investorId = null, $linkaccountsId = null) {
         $this->print_r2($result);
     }
 
-}
-
-
-
-/*
- * +-----------------------------------------------------------------------+
- * | Copyright (C) 2018, http://www.winvestify.com                         |
- * +-----------------------------------------------------------------------+
- * | This file is free software; you can redistribute it and/or modify     |
- * | it under the terms of the GNU General Public License as published by  |
- * | the Free Software Foundation; either version 2 of the License, or     |
- * | (at your option) any later version.                                   |
- * | This file is distributed in the hope that it will be useful           |
- * | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
- * | GNU General Public License for more details.                          |
- * +-----------------------------------------------------------------------+
- * | Author: Antoine de Poorter                                            |
- * +-----------------------------------------------------------------------+
- *
- *
- * @author Antoine de Poorter
- * @version 0.1
- * @date 2018-12-04
- * @package Dashboard2_Api_V1
- *
- * This class provides methods to change string values to their corresponding
- * integer values and vice versa, depending if it is an incoming HTTP message 
- * or an outgoing HTTP message.
- * The class modified directly the provided array, i.e. will not return a 
- * modified copy of the input array
- * 
- * 2018-12-04	  version 2018_0.1
- * 
- * 
- */
-class jsonNormalize {
-    // Definitions for preparing the outgoing JSON
-    var $keywordsArrayOut = [
-                    'linkedaccount_visual_state' => 
-                        [ API_QUEUED => WIN_QUEUED , 
-                          API_ANALYZING => WIN_ANALYZING,
-                          API_MONITORED => WIN_MONITORED
-                        ],
-                    'linkedaccount_status' => 
-                        [ API_LINKEDACCOUNT_STATUS_UNDEFINED => WIN_LINKEDACCOUNT_STATUS_UNDEFINED,
-                          API_LINKEDACCOUNT_STATUS_NOT_ACTIVE => WIN_LINKEDACCOUNT_STATUS_NOT_ACTIVE,  
-                          API_LINKEDACCOUNT_STATUS_ACTIVE => WIN_LINKEDACCOUNT_STATUS_ACTIVE
-                        ],           
-                    'metadata_type_of_document' => 
-                        [ API_DNI_FRONT => WIN_DNI_FRONT,
-                          API_DNI_BACK => WIN_DNI_BACK,
-                          API_BANK_CERTIFICATE => WIN_BANK_CERTIFICATE
-                        ],  
-                    'polling_type' =>
-                        [ API_NOTIFICATION_CHECK => WIN_NOTIFICATION_CHECK,
-                          API_LINKEDACCOUNT_CHECK => WIN_LINKEDACCOUNT_CHECK,
-                          API_PMESSAGE_CHECK => WIN_PMESSAGE_CHECK
-                        ],
-                    'service_status' =>   
-                        [ API_SERVICE_STATE_NOT_ACTIVE => WIN_SERVICE_STATE_NOT_ACTIVE,
-                          API_SERVICE_STATE_ACTIVE => WIN_SERVICE_STATE_ACTIVE,
-                          API_SERVICE_STATE_SUSPENDED => WIN_SERVICE_STATE_SUSPENDED
-                        ]          
-                    ];
-
-    // Definitions for dealing with the incoming JSON
-    var $keywordsArrayIn = [
-                    'linkedaccount_visual_state' => 
-                        [ WIN_QUEUED => API_QUEUED, 
-                          WIN_ANALYZING => API_ANALYZING,
-                          WIN_MONITORED => API_MONITORED
-                        ],
-                    'linkedaccount_status' => 
-                        [ WIN_LINKEDACCOUNT_STATUS_UNDEFINED => API_LINKEDACCOUNT_STATUS_UNDEFINED,
-                          WIN_LINKEDACCOUNT_STATUS_NOT_ACTIVE => API_LINKEDACCOUNT_STATUS_NOT_ACTIVE, 
-                          WIN_LINKEDACCOUNT_STATUS_ACTIVE => API_LINKEDACCOUNT_STATUS_ACTIVE
-                        ],       
-                    'metadata_type_of_document' => 
-                        [ WIN_DNI_FRONT => API_DNI_FRONT,
-                          WIN_DNI_BACK => API_DNI_BACK,
-                          WIN_BANK_CERTIFICATE => API_BANK_CERTIFICATE],
-                     'polling_type' =>
-                        [ WIN_NOTIFICATION_CHECK => API_NOTIFICATION_CHECK,
-                          WIN_LINKEDACCOUNT_CHECK => API_LINKEDACCOUNT_CHECK,
-                          WIN_PMESSAGE_CHECK => API_PMESSAGE_CHECK
-                        ],  
-                     'service_status' =>   
-                        [ WIN_SERVICE_STATE_NOT_ACTIVE => API_SERVICE_STATE_NOT_ACTIVE,
-                          WIN_SERVICE_STATE_ACTIVE => API_SERVICE_STATE_ACTIVE,
-                          WIN_SERVICE_STATE_SUSPENDED => API_SERVICE_STATE_SUSPENDED
-                        ]     
-                    ];
-    
-
-    /*
-     * Recursive function for changing the values of an array
-     * 
-     *  @param  $item The array value of the array element to be operated upon
-     *  @param  $key The key of the array element to be operated upon
-     *  @return -
-     */ 
-private function changeArrayValueOut(&$item, $key) {
-
-    if (array_key_exists($key, $this->keywordsArrayOut)) {
-        $item = $this->keywordsArrayOut[$key][$item];
-    }    
-    return;
-}
-
-
-    /**
-     * Recursive function for changing the values of an array
-     * 
-     *  @param  $item The array value of the array element to be operated upon
-     *  @param  $key The key of the array element to be operated upon
-     *  @return -
-     */ 
-private function changeArrayValueIn(&$item, $key) {
-
-    if (array_key_exists($key, $this->keywordsArrayIn)) {
-        $item = $this->keywordsArrayIn[$key][$item];
-    }    
-    return;
-}
-
-
-    /**
-     * Changes the string values of some fields with their corresponding internal 
-     * integer value. This method operates directly on the provided array. 
-     * 
-     *  @param  array The array to operate upon
-     *  @return boolean
-     */
-function normalizeIncomingJson(&$dataArray) {
-
-    $functionArray = ['jsonNormalize','changeArrayValueIn'];
-    $result = array_walk_recursive($dataArray, $functionArray);
-    return $result;        
-    }
-     
-    
-    /**
-     * Changes the integer, internal, values of some fields with their corresponding
-     * string value. This method operates directly on the provided array. 
-     * 
-     *  @param  array The array to operate upon
-     *  @return boolean
-     */   
-function normalizeOutgoingJson(&$dataArray) {
-
-    $functionArray = ['jsonNormalize','changeArrayValueOut'];
-    $result = array_walk_recursive($dataArray, $functionArray);
-    return $result;
-    }   
-    
 }
