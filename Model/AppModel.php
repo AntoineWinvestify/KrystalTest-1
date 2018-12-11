@@ -60,13 +60,12 @@ class AppModel extends Model {
      */
     private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
                                 'investor_dateOfBirth' => 'investor_date_of_birth',
-                                'investor_city' => 'investor_city',
+                                'investor_city' => 'investor_city',  // ONLY translation shall be allowed
                                 'linkedaccount_state' => 'linkedaccount_status',
                                 'check_dateOfBirth' => 'check_date_of_birth'        // Not a realistic value, jsut for testing
                               ];
 
-    
-    /**
+        /**
      * @brief wrapper for transactions
      *
      * Allow you to easily call transactions manually if you need to do saving
@@ -335,18 +334,29 @@ class AppModel extends Model {
      * of the database variables
      * $inputArray elements can be of form 'Model.variableName' or 'variableName'
      * 
+     * NOTE: The format of $inputArray: 
+     *      ['Model.FieldName1 as Model.newFieldName1', 
+     *       'FieldName2 as newFieldName2',
+     *         ...
+     *      ]
+     * is not supported 
+     * 
+     *   id as NEWNAME
      *  @param  array $inputArray  
      *  @return boolean
      */   
-    public function apiFieldListAdapter($inputArray) {
+    public function apiFieldListAdapter(&$inputArray) {
 
         foreach ($inputArray as $key => $item) {
             $explodeResult = explode(".", $item);
- 
             $newItem = (!empty($explodeResult[1]) ? $explodeResult[1] : $explodeResult[0]); 
             $newKey = array_search($newItem, $this->apiVariableConfigArray);
-            if ($newKey) {
-                $inputArray[$key] = $newKey;
+
+            if (!empty($newKey)) {
+                if (!empty($explodeResult[1])) {
+                    $newKey = $explodeResult[0] . "." . $newKey;  
+                }
+               $inputArray[$key] = $newKey;
             }   
         }       
         return true;
@@ -362,12 +372,14 @@ class AppModel extends Model {
      *  @return boolean
      */   
     public function apiVariableNameInAdapter(&$inputArray)  {
-
         foreach ($inputArray as $key => $item) {
             $newKey = array_search($key, $this->apiVariableConfigArray);
-            if ($newKey) {
-                $inputArray[$newKey] = $item;
-                unset($inputArray[$key]);
+            if ($newKey <> $key) {              // more resistent to errors in $this->apiVariableConfigArray
+                if (!empty($newKey)) {
+                    $inputArray[$newKey] = $item;
+                    unset($inputArray[$key]);
+                }
+            
             }
         }       
         return true;

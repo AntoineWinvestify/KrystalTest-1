@@ -130,142 +130,69 @@ class TestsController extends AppController {
      * 
      */
     public function readInvestor($filterCondition, $listOfFields) { 
-    $filterCondition = ['investor_date_of_birth' => "1990-07-20", 'investor_name' => "John11"];
-    //, "Investor.id" => 1]; 
-         
-    $this->Investor-> apiVariableNameInAdapter($filterCondition);
-  
-    
-    
-    $results = $this->Investor->find("all", $params = ['conditions' => $filterCondition,
-                                               //       'fields' => $fields,
-                                                      'recursive' => 1]);
-    pr($results);  
-    
-    $this->Investor-> apiVariableNameOutAdapter($results[0]['Investor']);
-    pr($results);
-    exit;
-    
-    
-    
-    $listOfFields = ['name', 'surname', 'date_of_birth', 'telephone'];
+    $filterCondition = ['investor_date_of_birth' => "1990-07-20", 'investor_city' => "Almeria"];
+echo __FILE__ . " " . __LINE__ . "\n<br>";  
+pr($filterCondition);    
 
+    $this->Investor-> apiVariableNameInAdapter($filterCondition);
     
+echo __FILE__ . " " . __LINE__ . "\n<br>";    
+pr($filterCondition); 
+    
+
     if (empty($listOfFields)) {
         // Only show by default 'public' fields, not internal technical fields
-        $listOfFields =   ['name', 'surname',       
-                            'DNI', 'date_of_birth', 
-                            'telephone', 'address1', 
-                            'address2', 'postCode', 
-                            'city', 'country', 
-                            'email'];
+        $listOfFields =   ['Investor.investor_name', 'Investor.investor_surname', 'Investor.id',       
+                            'Investor.investor_DNI', 'Investor.investor_date_of_birth', 
+                              'Investor.investor_telephone', 
+                             'Check.check_postCode', 'Check.check_name', 'Check.check_surname',
+                             'Check.check_DNI','Check.check_date_of_birth', 'Check.check_telephone'
+            ];
     }
-
-    foreach ($listOfFields as $field) {
-        $tempField = "Investor.investor_" . $field;
-        $fields[] = $tempField; 
-        $tempField = "Check.check_" . $field;
-        $fields[] = $tempField; 
-    }    
    
-    
-    
-    
-    
-    
-    $this->Investor->apiFieldListAdapter($fields);
-   
-    
-    
-    
-    
-    
-    exit;
-    
-    
-    
-    
-    
+  
+    $this->Investor->apiFieldListAdapter($listOfFields);
+echo __FILE__ . " " . __LINE__ . "\n<br>";   
+pr($listOfFields);
+echo __FILE__ . " " . __LINE__ . "\n<br>";     
     $results = $this->Investor->find("all", $params = ['conditions' => $filterCondition,
-                                                      'fields' => $fields,
-                                                      'recursive' => 1]);
+                                                      'fields' => $listOfFields,
+                                                      'recursive' => 0]);
     pr($results);
-    
-    exit;
-    $resultsFinal = $results;
-    $numberOfResults = count($results);
+    $numberOfResults = count($results);    
 
-    $i = 0;
-    foreach ($results as $resultItem){
+  echo __FILE__ . " " . __LINE__ . "\n<br>";    
+    pr($results);
+    $j = 0;
+    foreach ($results as $resultItem) { 
+        $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
+        $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
+        
         foreach ($resultItem['Investor'] as $key => $value) {
             if ($key === 'id') {
                 continue;
-            }
-
-            $underscoreKey = ($key !== 'investor_DNI' ? Inflector::underscore($key): $key);  
+            } 
+            $rootName = explode("_", $key, 2);
+            
             if ($numberOfResults == 1) {
-  //          $json["data"][$underscoreKey]['display_name'] = $underscoreKey;     // ?? 
-            $json["data"][$underscoreKey]['value'] = $value;  
-            $rootName = explode("_", $key);
-            $json["data"][$underscoreKey]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];
+                $json["data"][$key]['value'] = $value;  
+                $json["data"][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
             }
             else {
-//            $json["data"][$i][$underscoreKey]['display_name'] = $underscoreKey; // ??
-            $json["data"][$i][$underscoreKey]['value'] = $value;  
-            $rootName = explode("_", $key);
-            $json["data"][$i][$underscoreKey]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];               
+                $json["data"][$j][$key]['value'] = $value;  
+                $json["data"][$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
             } 
         }
-        $i++;
-    } 
-    
-    pr($json);
-    pr(json_encode($json));    
-
-    
-    
- echo "start test with resultsFinal<br>";   
-    
-    pr($resultsFinal);
-    
- 
-    $functionArray = ['TestsController','changeArrayValueIn'];
-    $result = array_walk_recursive($resultsFinal, $functionArray);    
-    
-    
-    
-    
-    
-    
-    
-    }
- 
-
-    /**
-     * Recursive function for changing the values of an array.
-     * 
-     *  @param  $item The array value of the array element to be operated upon
-     *  @param  $key The key of the array element to be operated upon
-     *  @return -
-     */ 
-    private function changeArrayValueIn(&$item, $key) {
-echo " key = $key and item = $item<br>";
-return;
-        if (array_key_exists($key, $this->keywordsArrayIn)) {
-            $item = $this->keywordsArrayIn[$key][$item];
-        }    
-        return;
+        $j++;
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+pr($json); 
+exit;  
+  
+    }
+ 
+  
     
      
    
@@ -436,9 +363,9 @@ echo "Using a component<br>";
     
     
     public function recursiveSearchOutgoing() {
-        Configure::write('debug', 2);        
-        $this->autoRender = false;
 
+     
+     
 
     $jsonString = '{
   "service_status": 10,
@@ -1357,4 +1284,5 @@ function deleteFromUser($investorId = null, $linkaccountsId = null) {
         $this->print_r2($result);
     }
 
+    
 }

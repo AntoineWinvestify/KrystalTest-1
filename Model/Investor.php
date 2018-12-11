@@ -781,7 +781,6 @@ class Investor extends AppModel {
      *
      */
     public function afterFind($results, $primary = false) {
-
         foreach ($results as $key => $val) {
             if (isset($val['Investor']['investor_dateOfBirth'])) {
                 $results[$key]['Investor']['investor_dateOfBirth'] = $this->formatDateAfterFind(
@@ -795,6 +794,7 @@ class Investor extends AppModel {
                 $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
                         $val['Ocr']['investor_iban']);
             }
+               
         }
         return $results;
     }
@@ -812,7 +812,11 @@ class Investor extends AppModel {
         }
         if (!empty($this->data['Investor']['investor_telephone'])) {
             $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
-        }
+        } 
     }
+
+  
+    
+
 
 }

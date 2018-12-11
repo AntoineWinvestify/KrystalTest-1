@@ -26,7 +26,8 @@
 		"phpoffice/phpspreadsheet": "dev-develop",
                 "smalot/pdfparser": "*",
                 "lib-curl": "*",
-       		"giggsey/libphonenumber-for-php": "^8.8",
+                "brianlmoon/net_gearman": "@dev",
+		"giggsey/libphonenumber-for-php": "^8.8",
                 "php-unoconv/php-unoconv": "~0.2"
 	},
 	"require-dev": {
