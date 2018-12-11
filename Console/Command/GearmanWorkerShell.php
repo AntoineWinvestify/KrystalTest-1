@@ -33,6 +33,16 @@ class GearmanWorkerShell extends AppShell {
     protected $companyId = array();
     protected $queueCurlFunction;
     protected $myParser;  
+    protected $cleanValueControlStop = false;
+    protected $cleanDepthControl = 0;
+    
+    protected $filteredArray;
+    protected $tempKey = array();
+    protected $tempDepth = 0;      // Required to see if the $depth is decreasing    
+    protected $startDate;
+    protected $finishDate;
+    protected $valueToVerify;
+    protected $valuesToDeleteForExpiredLoans;
     
     /**
      * Constructor of the class
@@ -165,7 +175,7 @@ class GearmanWorkerShell extends AppShell {
      * @param integer $code It is the code of the error
      */
     public function error_handler($code) {
-        if ($code != E_WARNING && $code != E_NOTICE) {
+        if ($code != E_WARNING && $code != E_NOTICE & $code != E_DEPRECATED) {
             echo "\n error code : " . $code . "\n";
             $this->job->sendFail();
         }
@@ -212,4 +222,305 @@ class GearmanWorkerShell extends AppShell {
         );
         $this->newComp[$i]->defineConfigParms($configurationParameters);
     }
+    
+    /**
+     * Function to change values depending on callback functions for each company
+     * 
+     * @param array $tempResult It contains the value to change
+     * @param object $companyHandle It is the company instance
+     * @return It nothing if the callback array is empty
+     */
+    public function callbackInit(&$tempResult, $companyHandle, $callbackFunctions) {
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
+        }
+        //$this->getCallbackFunction($valuesFile);
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ ;
+            print_r($callbackFunctions);
+        }
+        if (empty($callbackFunctions)) {
+            return;
+        }
+        
+        foreach ($callbackFunctions as $functionNameKey => $callback) {
+            $this->$functionNameKey($tempResult, $companyHandle, $callback);
+        }
+    }
+    
+    /**
+     * Function to change values depending on callback functions for each company
+     * 
+     * @param array $tempResult It contains the value to change
+     * @param object $companyHandle It is the company instance
+     * @return It nothing if the callback array is empty
+     */
+    public function parserDataCallback(&$tempResult, $companyHandle, $callbackData) {
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
+        }
+        $this->callbacks = $callbackData;
+        //$this->getCallbackFunction($valuesFile);
+        if (Configure::read('debug')) {
+            echo __FUNCTION__ . " " . __LINE__ ;
+            print_r($this->callbacks);
+        }
+        
+        if (empty($this->callbacks)) {
+            return;
+        }
+        
+        //$this->cleanData($tempResult, $callbacks["investment"]["cleanTempArray"]);
+        
+        
+        $this->companyHandle = $companyHandle;
+        array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
+    }
+    
+    /**
+     * Function to iterate through an array when callback is called and change the value if needed
+     * 
+     * @param arrayValue $item It is the value of an array key
+     * @param arrayKey $key It is the key of the array value
+     */
+    public function changeValueIteratingCallback(&$item,$key){
+        foreach ($this->callbacks as $callbackKey => $callback) {
+            if($key == $callbackKey){
+                $valueConverted =  $this->companyHandle->$callback(trim($item));
+                $item = $valueConverted; // Do This!
+           }
+        }
+    }
+    
+    /**
+     * Clean the array of unnecessary values using array_walk_recursive_delete
+     * @param array $tempArray the array to walk recursively
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with functions from which we will clean the array
+     * @return null if config not exist
+     */
+    public function cleanTempArray(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        foreach ($config as $functionNameKey => $values) {
+            $this->array_walk_recursive_delete($tempArray, array($this, $functionNameKey), $values);
+        }
+    }
+    
+    /**
+     * Clean the array of unnecessary values using array_walk_recursive_delete
+     * @param array $tempArray the array to walk recursively
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with functions from which we will clean the array
+     * @return null if config not exist
+     */
+    public function cleanTempArrayByLevels(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        foreach ($config as $functionNameKey => $values) {
+            $this->array_walk_recursive_delete_by_levels($tempArray, array($this, $functionNameKey), $values);
+        }
+    }
+    
+    /**
+     * Remove any elements where the callback returns true
+     * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
+     * 
+     * @param  array    $array    the array to walk
+     * @param  callable $callback callback takes ($value, $key, $userdata)
+     * @param  mixed    $userdata additional data passed to the callback.
+     * @return array
+     */
+    function array_walk_recursive_delete(&$array, callable $callback, $valuesToDelete, $userdata = null) {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->array_walk_recursive_delete($value, $callback, $valuesToDelete, $userdata);
+            }
+            if ($this->cleanValueControlStop && $this->cleanDepthControl < $valuesToDelete['valueDepth']) {
+                unset($array[$key]);
+                $this->cleanDepthControl++;
+                if ($this->cleanDepthControl == $valuesToDelete['valueDepth']) {
+                    $this->cleanDepthControl = 0;
+                    $this->cleanValueControlStop = false;
+                }
+            }
+            else if ($callback($value, $key, $valuesToDelete, $userdata)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+    
+    /**
+     * Remove any elements where the callback returns true by levels
+     * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
+     * 
+     * @param  array    $array    the array to walk
+     * @param  callable $callback callback takes ($value, $key, $userdata)
+     * @param  mixed    $userdata additional data passed to the callback.
+     * @return array
+     */
+    function array_walk_recursive_delete_by_levels(&$array, callable $callback, $valuesToDelete, $userdata = null) {
+        foreach ($array as $key => &$value) {
+            if (is_array($value)) {
+                $value = $this->array_walk_recursive_delete_by_levels($value, $callback, $valuesToDelete, $userdata);
+            }
+            if ($this->cleanValueControlStop && $this->cleanDepthControl < $valuesToDelete['valueDepth']) {
+                print_r($array[$key]);
+                echo "deleting.... \n";
+                unset($array[$key]);
+                $this->cleanDepthControl++;
+                if ($this->cleanDepthControl == $valuesToDelete['valueDepth']) {
+                    $this->cleanDepthControl = 0;
+                    $this->cleanValueControlStop = false;
+                    echo "stopping \n";
+                }
+                break;
+            }
+            else if ($callback($value, $key, $valuesToDelete, $userdata)) {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+   
+    /**
+     * Function to find a value in an array
+     * @param string/integer $value It is the actual value
+     * @param string/integer $key It is the key of the array 
+     * @param array $valuesToDelete They are the values to find and delete
+     * @param mixed $userdata additional data passed to the callback
+     * @return boolean
+     */
+    function findValueInArray($value, $key, $valuesToDelete, $userdata = null) {
+        $result = false;
+        if (is_array($value)) {
+            return empty($value);
+        }
+        if ($key == $valuesToDelete['key']) {
+            foreach ($valuesToDelete['values'] as $valueToDelete) {
+                $functionToCall = $valuesToDelete['function'];
+                if ($this->$functionToCall($value, $valueToDelete)) {
+                    $result = true;
+                    $this->cleanValueControlStop = true;
+                    break;
+                }
+            }
+        }
+        return $result;
+    }
+    
+    /**
+     * Function to verify if two data are equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
+    public function verifyEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value === $valueToVerify) {
+            $result  = true;
+        }
+        return $result;
+    }
+    
+    /**
+     * Function to verify if two data are not equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
+    public function verifyNotEqual($value, $valueToVerify) {
+        $result = false;
+        if ($value !== $valueToVerify) {
+            $result  = true;
+        }
+        return $result;
+    }
+   
+    
+    /**
+     * Clean the array of unnecessary dates
+     * @param array $tempArray the array to clean
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with values to use to delete
+     * @return null if $config not exist or $startDate is empty
+     */
+    public function cleanDatesTempArray(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        if (empty($this->startDate)) {
+            return;
+        }
+        $finishDate = date("Y-m-d", strtotime($this->finishDate . "+1 day"));
+        $rangeDates = $this->createDateRange($this->startDate, $finishDate);
+        array_shift($rangeDates);
+        array_push($rangeDates, $finishDate);
+        foreach ($tempArray as $keyDate => $data) {
+            $date = date("Ymd", strtotime($keyDate));
+            if (!in_array($date, $rangeDates)) {
+                unset($tempArray[$keyDate]);
+            }
+        }
+    }
+    
+    /**
+     * Function to verify if two data are not equal
+     * @param string/integer $value Value from array
+     * @param string/integer $valueToVerify Value to find
+     * @return boolean
+     */
+    public function verifyPreviousVariableIsEqual($value, $valueToVerify) {
+        $result = false;
+        echo "value is $value \n and valueToVerify is" . $this->$valueToVerify . " \n";
+        print_r($value);
+        if ($value !== $this->$valueToVerify) {
+            echo "It is not the same value, so we continue \n";
+            $this->$valueToVerify = $value;
+        }
+        else {
+            if (!in_array($value, $this->valuesToDeleteForExpiredLoans)) {
+                $this->valuesToDeleteForExpiredLoans[] = $value;
+            }
+            echo "It is the same value, delete all \n";
+            $result = true;
+        }
+        return $result;
+    }
+    
+    /**
+     * Function to clean an array with previous keys saved in an array
+     * @param array $tempArray the array to clean
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with values to use to delete
+     * @return type
+     */
+    public function cleanArrayByKey(&$tempResult, $companyHandle, $config) {
+        $variableName = $config['value'];
+        if (empty($this->$variableName)) {
+            return;
+        }
+        $keysToDelete = $this->$variableName;
+        foreach($keysToDelete as $keyToDelete) {
+            unset($tempResult[$keyToDelete]);
+        }
+    }
+    
+    /**
+     * Function to find a smaller date than other to compare 
+     * @param type $value
+     * @param type $valueToVerify
+     * @return boolean
+     */
+    public function verifyPreviousDateIsLess($value, $valueToVerify) {
+        $result = false;
+        if (strtotime($value) < strtotime($valueToVerify)) {
+            $result  = true;
+        }
+        return $result;
+    }
+    
 }

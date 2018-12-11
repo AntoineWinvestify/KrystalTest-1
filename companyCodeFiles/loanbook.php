@@ -119,22 +119,25 @@ class loanbook extends p2pCompany {
                         "input3" => [
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
                             1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"],
+                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_verification"],
+                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
                             4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
                             5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
                             6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            7 => ["Compensación por incidencia administrativa" => "Compensation"],
-                            8 => ["Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment"],
-                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment"],
-                            11 => ["Provisión de Fondos (por TPV)" => "Cash_deposit"]
+                            7 => ["Compensación-Compensación por incidencia administrativa" => "Compensation"],
+                            8 => ["Comisión-Comisión pago por tarjeta" => "Bank_charges"],
+                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
+                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
+                            11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
+                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
+                            13 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"],
+                            14 => ["Impuestos-Retención de Intereses (AEAT)" => "Tax_income_withholding_tax"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
                 ]
             ],
-            "E" => [
+            "F" => [
                 [
                     "type" => "investment_loanId",
                     "inputData" => [
@@ -194,10 +197,15 @@ class loanbook extends p2pCompany {
             "J" => [
                 [
                     "type" => "investment_nominalInterestRate",
-                    "functionName" => "getPercentage",
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
                 ]
-            ],
-            "K" => [
+        ],
+        "K" => [
                 [
                     "type" => "investment_myInvestmentDate",                    // Winvestify standardized date  OK
                     "inputData" => [
@@ -217,9 +225,9 @@ class loanbook extends p2pCompany {
                     "functionName" => "getHash",
                 ],
             ],
-            "N" => [
+            /*"N" => [
                 "name" => "investment_sliceIdentifier"
-            ],
+            ],*/
             "M" => [
                 "name" => "investment_originalDuration"
             ],
@@ -239,28 +247,45 @@ class loanbook extends p2pCompany {
             ]
         ],
         3 => [
-            "name" => "amortizationtable_paymentStatus"
+                [
+                    "type" => "amortizationtable_paymentStatus",                          
+                    "inputData" => [                                            
+                                "input2" => "",                                  
+                                "input3" => "",
+                                "input4" => 0                                   
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],        
+                [
+                    "type" => "amortizationtable_paymentStatusOriginal",    
+                    "inputData" => [                                       
+                                "input2" => "",                        
+                                "input3" => "",
+                                "input4" => 0                             
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
         ],
         4 => [
             [
                 "type" => "amortizationtable_capitalRepayment",                 // Winvestify standardized name  OK
-                "inputData" => [
-                    "input2" => "",
-                    "input3" => ",",
-                    "input4" => 16
-                ],
-                "functionName" => "getAmount",
+                    "inputData" => [
+                        "input2" => "1",
+                        "input3" => "2",
+                        "input4" => ".",
+                    ],
+                    "functionName" => "handleNumber",
             ]
         ],
         5 => [
             [
                 "type" => "amortizationtable_interest",                         // Winvestify standardized name  OK
-                "inputData" => [
-                    "input2" => "",
-                    "input3" => ",",
-                    "input4" => 16
-                ],
-                "functionName" => "getAmount",
+                    "inputData" => [
+                        "input2" => "1",
+                        "input3" => "2",
+                        "input4" => ".",
+                    ],
+                    "functionName" => "handleNumber",
             ]
         ]
     ];
@@ -301,12 +326,34 @@ class loanbook extends p2pCompany {
             ],
         ]
     ];
+    protected $parserFuturePaymentValues = [
+        [
+            "A" => [
+                "name" => "investment_loanId"                                   // Winvestify standardized name
+            ],
+            "B" => [
+                "name" => "DebtorName"
+            ],
+            "C" => [
+                "name" => "Date"
+            ],
+            "D" => [
+                "name" => "Status"
+            ],
+            "E" => [
+                "name" => "Amount"
+            ],
+            "F" => [
+                "name" => "Interest"
+            ],
+        ]      
+    ];
     protected $transactionConfigParms = [
         [
             'offsetStart' => 1,
             'offsetEnd' => 0,
-            'sortParameter' => array("date", "investment_loanId")               // used to "sort" the array and use $sortParameter(s) as prime index.               
-        ]
+            'sortParameter' => array("date", "investment_loanId"),              // used to "sort" the array and use $sortParameter(s) as prime index.               
+            ]
     ];
     protected $investmentConfigParms = [
         [
@@ -318,7 +365,7 @@ class loanbook extends p2pCompany {
     protected $amortizationConfigParms = [
         [
             'offsetStart' => 1,
-            'offsetEnd' => 1,
+            'offsetEnd' => 0,
             'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
@@ -326,6 +373,13 @@ class loanbook extends p2pCompany {
         [
             'offsetStart' => 0,
             'offsetEnd' => 0,
+        ]
+    ];
+        protected $futurePaymentConfigParms = [
+        [
+            'offsetStart' => 1,
+            'offsetEnd' => 1,
+            'sortParameter' => array("investment_loanId")                       // used to "sort" the array and use $sortParameter as prime index.
         ]
     ];
     protected $callbacks = [
@@ -341,12 +395,20 @@ class loanbook extends p2pCompany {
             ]
         ]
     ];
+    
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus",
+        ]
+    ];   
+        
     protected $transactionHeader = array("A" => "Fecha",
         "B" => "Tipo de movimiento",
         "C" => "Descripción",
         "D" => "Importe",
-        "E" => "Referencia",
-        "F" => "Nombre de la Operación",
+        "E" => "Saldo",
+        "F" => "Referencia",
+        "G" => "Nombre de la Operación",
     );
 
     function __construct() {                                                    // Do whatever is needed for this subsclass
@@ -1252,12 +1314,17 @@ class loanbook extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/octet-stream"/*"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"*/){  //Compare mine type for loanbook files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
                 $headerError = $this->compareHeader();
                 if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);               
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1323,7 +1390,7 @@ class loanbook extends p2pCompany {
                 $nodeTop = new DOMDocument();
                 $nodeTop->appendChild($nodeTop->importNode($nodeClone, TRUE)); //Save the node in a dom element
                 $nodeTopString = $nodeTop->saveHTML(); //We need to convert the dom node to string
-                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0], $nodeTopString); //Compare structure with db
+                $topRevision = $this->structureLoanTop($this->arrayLoanStructure[0][0], $nodeTopString); //Compare structure with db
 
                 if (!$topRevision) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
@@ -1334,6 +1401,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
+        
                 foreach ($divs as $key => $div) {
                     // echo 'Entro ' . $key;
                     //echo $key . " is " . trim($div->nodeValue) . SHELL_ENDOFLINE;
@@ -1342,10 +1410,10 @@ class loanbook extends p2pCompany {
                             //$str = explode(",", mb_convert_encoding($div->nodeValue, "utf8", "auto"));                            
                             $stringProcessed = $this->handleInvestmentString(mb_convert_encoding($div->nodeValue, "utf8", "auto"));
 
-                            $this->loanArray[$this->j]['A'] = $stringProcessed[3]; //Loan Id
-                            $this->loanArray[$this->j]['B'] = $stringProcessed[1]; //Loan Purpose
-                            $this->loanArray[$this->j]['C'] = $stringProcessed[0]; //Loan Price target
-                            $this->loanArray[$this->j]['D'] = $stringProcessed[2]; //Loan Location
+                            $this->loanArray[$this->j]['A'] = trim($stringProcessed[3]); //Loan Id
+                            $this->loanArray[$this->j]['B'] = trim($stringProcessed[1]); //Loan Purpose
+                            $this->loanArray[$this->j]['C'] = trim($stringProcessed[0]); //Loan Price target
+                            $this->loanArray[$this->j]['D'] = trim($stringProcessed[2]); //Loan Location
 
                             break;
                         case 8:
@@ -1384,7 +1452,7 @@ class loanbook extends p2pCompany {
                         $nodeTable = new DOMDocument();
                         $nodeTable->appendChild($nodeTable->importNode($nodeClone, TRUE)); //Save the node in a dom element
                         $nodeTableString = $nodeTable->saveHTML(); //We need to convert the dom node to string
-                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[1], $nodeTableString); //Compare structure   with db  
+                        $tableRevision = $this->structureLoanTable($this->arrayLoanStructure[0][1], $nodeTableString); //Compare structure   with db  
 
                         if (!$tableRevision) {
                             return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
@@ -1445,8 +1513,9 @@ class loanbook extends p2pCompany {
                     break;
                 }
             case 9:
-                echo 'Stop';
+                echo 'Flow 1 ended';
                 if (!$this->verifyFileIsCorrect()) {
+                    echo 'error';
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
                 return $this->tempArray;
@@ -1458,20 +1527,10 @@ class loanbook extends p2pCompany {
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables
      */
-    function collectAmortizationTablesParallel($str = null) { //Queue_info example {"loanIds":{"704":["472"]}}
+    function collectAmortizationTablesParallel($str = null) {
         switch ($this->idForSwitch) {
             case 0:
-                /*
-                  FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
-
-                  csrf		539d6241ffbb10437f4fe6e27552bfe9
-                  password	cede_4040
-                  signin		Login
-                  username	antoine.de.poorter@gmail.com
-                 */
                 $this->loanTotalIds = $this->loanIds;
-                $this->loanKeys = array_keys($this->loanIds);
-                $this->loanIds = array_values($this->loanIds);
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // Go to home page of the company
                 break;
@@ -1484,16 +1543,11 @@ class loanbook extends p2pCompany {
                 $credentials['password'] = $this->password;
                 $credentials['signin'] = "Login";
                 $dom = new DOMDocument;
-                //echo $str;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
                 $dom->preserveWhiteSpace = false;
 
                 $forms = $dom->getElementsByTagName('form');
-                /* $this->verifyNodeHasElements($forms);
-                  if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
                 $index = 0;
                 foreach ($forms as $form) {
                     $index = $index + 1;
@@ -1522,9 +1576,6 @@ class loanbook extends p2pCompany {
 
                 $resultMiLoanbook = false; // Could not login, credential error
                 $uls = $dom->getElementsByTagName('ul');
-                /* if (!$this->hasElements) {
-                  return $this->getError(__LINE__, __FILE__);
-                  } */
                 foreach ($uls as $ul) {
 
                     $as = $ul->getElementsByTagName('a');
@@ -1558,66 +1609,45 @@ class loanbook extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();  //str1 load Webpage into a string variable so it can be parsed	
                 break;
             case 4:
-                if (empty($this->tempUrl['investmentUrl'])) {
-                    $this->tempUrl['investmentUrl'] = array_shift($this->urlSequence);
-                }
-                echo "Loan number " . $this->i . " is " . $this->loanIds[$this->i];
-                $url = $this->tempUrl['investmentUrl'] . $this->loanIds[$this->i];
-                echo "the table url is: " . $url;
-                $this->i++;
+                $this->fileName = 'FuturePaymentsList.xlsx';
                 $this->idForSwitch++;
-                $this->getCompanyWebpageMultiCurl($url);  // Read individual investment
+                $url = array_shift($this->urlSequence);
+                print_r($url);
+                $headers = [
+                    "Host: www.loanbook.es",
+                    "Connection: keep-alive",
+                    "Upgrade-Insecure-Requests: 1",
+                    "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+                    "Accept-Encoding: gzip, deflate, br",
+                    "Accept-Language: en-US,en;q=0.9"
+                ];
+
+
+                $this->getPFPFileMulticurl($url, "https://www.loanbook.es/", false, $headers, $this->fileName);
                 break;
 
             case 5:
-                $dom = new DOMDocument;
-                $dom->loadHTML($str);
-                $dom->preserveWhiteSpace = false;
-                echo "Read table: ";
-                $tables = $dom->getElementsByTagName('table');
-                foreach ($tables as $table) {
-                    if ($table->getAttribute('id') == 'paymentsTable') {
-                        $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clone the table
-                        //Mod the dom clone
-                        $is = $clone->getElementsByTagName('i');
-                        foreach ($is as $key => $status) {
-                            //echo "search status";
-                            //echo $status->getAttribute('class');
-                            if ($status->getAttribute('class') == 'fa fa-circle') {
-                                //echo 'Finded';
-                                //echo $status->getAttribute('title');
-                                $clone->getElementsByTagName('i')->item($key)->nodeValue = $status->getAttribute('title');
-                            }
+                
+                $this->myParser = new Fileparser();                                                                             //Call the parser
+                $folder = $this->getFolderPFPFile();
+                $file = $folder . DS . $this->fileName;  //Get the pfp folder and file name
+                $this->myParser->setConfig($this->futurePaymentConfigParms[0]);//Set the config 
+                $info = $this->myParser->analyzeFile($file, $this->parserFuturePaymentValues[0], "xlsx");             //Parse the file
+                
+                echo "All payments: \n";
+                print_r($info);
+                
+                foreach($info as $loanId => $amortizationTable){
+                    foreach($this->loanIds as $sliceId => $loanId2){
+                        if($loanId == $loanId2){
+                            $this->tempArray['tables'][$loanId] = $this->arrayToTableConversion($amortizationTable);
+                            $this->tempArray['correctTables'][$sliceId] = $loanId;
+                            continue;
                         }
-
-                        $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
-                        $AmortizationTableString = $AmortizationTable->saveHTML();
-                        //Compare structure
-                        $revision = $this->structureRevisionAmortizationTable($AmortizationTableString, $this->tableStructure);
-                        if ($revision) {
-                            echo "Comparation ok";
-                            $this->tempArray['tables'][$this->loanIds[$this->i - 1]] = $AmortizationTableString; //Save the html string in temp array
-                            $this->tempArray['correctTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
-                        }
-                        else {
-                            echo 'Comparation Not ok';
-                            $this->tempArray['errorTables'][$this->loanKeys[$this->i - 1]] = $this->loanIds[$this->i - 1];
-                        }
-                        //$this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
-                        //echo $AmortizationTableString;
                     }
                 }
-                if ($this->i < $this->maxLoans) {
-                    $this->idForSwitch = 4;
-                    $this->getCompanyWebpageMultiCurl($this->tempUrl['investmentUrl'] . $this->loanIds[$this->i - 1]);
-                    break;
-                }
-                else {
-                    //$this->verifyErrorAmortizationTable();
-                    return $this->tempArray;
-                    break;
-                }
+                print_r($this->tempArray);
+                return $this->tempArray;
         }
     }
 
@@ -1637,7 +1667,7 @@ class loanbook extends p2pCompany {
           FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
 
           csrf		539d6241ffbb10437f4fe6e27552bfe9
-          password	cede_4044
+          password	xxxxx
           signin		Login
           username	antoine.de.poorter@gmail.com
          */
@@ -1661,7 +1691,6 @@ class loanbook extends p2pCompany {
             foreach ($inputs as $input) {
                 if (!empty($input->getAttribute('name'))) {  // check all hidden input fields, like csrf
                     if ($input->getAttribute('name') == "csrf") {
-                        echo "AAAA" . $credentials[$input->getAttribute('name')] . "<br>";
                         $credentials[$input->getAttribute('name')] = $input->getAttribute('value');
                         break 2;
                     }
@@ -1755,7 +1784,37 @@ class loanbook extends p2pCompany {
             }
         }
     }
-
+    
+    /**
+     * Function to translate the company specific AmortizationPaymentStatus to the Winvestify standardized
+     * concept
+     * 
+     * @param string $inputData     company specific AmortizationPaymentStatus
+     * @return int                  Winvestify standardized AmortizationPaymentStatus
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+        $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+        $inputData = mb_strtoupper(trim($inputData));
+        if(empty($inputData)){
+            exit;
+        }
+        switch ($inputData) {
+            case "SIN INCIDENCIAS":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;
+            case "PAGO RETRASADO":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;
+            case "PENDIENTE DE PAGO":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;
+            default:
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+                break;
+        }
+        return $data;        
+    }
+    
     /**
      * Dom clean for structure revision
      * @param Dom $node1
@@ -1822,7 +1881,7 @@ class loanbook extends p2pCompany {
         $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PAGO ÚNICO":
-                $type = WIN_PATMENTFREQUENCY_ONEPAYMENT;
+                $type = WIN_PAYMENTFREQUENCY_ONE_PAYMENT;
                 break;
             case "TRIMESTRAL":
                 $type = WIN_PAYMENTFREQUENCY_YEAR_CUARTER;
@@ -1846,7 +1905,7 @@ class loanbook extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "PRÉSTAMO":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
@@ -1877,7 +1936,7 @@ class loanbook extends p2pCompany {
      * @return type
      */
     public function translateOriginalLoanState($inputData) {
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "GREEN":
                 $type = 0;
@@ -2006,6 +2065,64 @@ class loanbook extends p2pCompany {
         echo $structureRevision;
 
         return $structureRevision;
+    }
+    
+    /**
+     * Function to manage reserved Funds for Loanbook depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageReservedFunds(&$transactionData, &$resultData, $data = null) {
+        if ($resultData['investment']['investment_isNew']) {
+            unset($resultData['investment']['investment_isNew']);
+            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_WAITINGTOBEFORMALIZED;
+        }
+        else {
+            $resultData['investment']['investment_tempState'] = $resultData['investment']['investment_statusOfLoan'];
+        }
+        $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * Function to manage myInvestment for Loanbook depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageMyInvestment(&$transactionData, &$resultData, $data = null) {
+        if ($resultData['investment']['investment_isNew']) {
+            unset($resultData['investment']['investment_isNew']);
+            $resultData['investment']['investment_myInvestment'] = bcadd(
+                $resultData['investment']['investment_myInvestment'], 
+                $transactionData['amount'], 
+                16);
+        }
+        else {
+            if (isset($resultData['investment']['investment_reservedFunds']) && !empty($resultData['investment']['investment_reservedFunds'])) {
+                $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                        $transactionData['amount'],
+                        16);
+                $resultData['investment']['investment_reservedFunds'] = bcsub(
+                        $resultData['investment']['investment_reservedFunds'],
+                        $transactionData['amount'],
+                        16);
+                $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcadd(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                    $transactionData['amount'],
+                    16);
+            }
+            //We move from reservedFunds to myInvestment
+            $resultData['investment']['investment_myInvestment'] = bcadd(
+                    $resultData['investment']['investment_myInvestment'],
+                    $transactionData['amount'],
+                    16);
+        }
+        return $transactionData['amount'];
     }
 
 }

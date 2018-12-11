@@ -156,13 +156,18 @@ public function loginAction()
 				$this->Session->setFlash(__('Account not activated. contact Winvestify'),
 											'default',array(),	'auth');
 				$this->set("error", true);
+                                
 				return $this->redirect(
 					array('controller' => 'users', 'action' => 'loginRedirect'));
 			}
 
 			$investorId = $this->Auth->user('Investor.id');
+                        $lang = $this->Session->read('Config.language');
+                        $this->Investor->save(array('id' => $investorId, 'investor_language' => $lang));
 			$this->checkUserInvestmentData();
 			$this->User->updateLastAccessed($investorId);
+                        echo $this->Auth->redirectUrl();
+                      
 			return $this->redirect($this->Auth->redirectUrl());
 		}
 		else {
@@ -971,7 +976,8 @@ $this->autoRender = false;
 	$this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 	
         $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0,
-                                                                                            'company_id' => $companyId),
+                                                                                            'company_id' => $companyId,
+                                                                                    'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
                                                             'fields' => array('company_id', 'investor_id', 
                                                             'linkedaccount_username','linkedaccount_password'),
             'recursive' => -1));

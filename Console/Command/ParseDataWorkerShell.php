@@ -35,7 +35,8 @@
  * @version v 0.2
  * @date    2017-10-26
  * @package
- *
+ */
+/*
  *
  * 2017-08-11           version 0.1
  * Basic version
@@ -50,8 +51,6 @@
  * 
  * 
  * TO BE DONE:
- * CHECK THE STRUCTURE OF A XLS/XLSX/CSV FILE BY CHECKING THE NAMES OF THE HEADERS.
- * detecting "unknown concept"
  * Rename the index loanId of a disinvestment record
  *
  */
@@ -62,20 +61,12 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
     protected $callbacks = [];
     protected $companyHandle;
     protected $myParser;
-    protected $cleanValueControlStop = false;
-    protected $cleanDepthControl = 0;
-
-    protected $filteredArray;
-    protected $tempKey = array();
-    protected $tempDepth = 0;      // Required to see if the $depth is decreasing    
-    protected $startDate;
-    protected $finishDate;
     
     public function main() {
         $this->GearmanWorker->addServers('127.0.0.1');
 
         $this->GearmanWorker->addFunction('parseFileFlow', array($this, 'parseFileFlow'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "ParseDataWorker starting to listen to data from its Client\n";
+        echo __CLASS__ . ": " . "ParseDataWorker starting to listen to data from its Client\n";
         
         while($this->GearmanWorker->work());
 
@@ -117,7 +108,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
      */
      
     public function parseFileFlow($job) {
- $timeStart = time();       
+        $timeStart = time();       
         //for debugging error purpose
         $this->job = $job;
         if (Configure::read('debug')) {
@@ -128,6 +119,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
         require_once($winvestifyBaseDirectoryClasses . DS . 'fileparser.php');    
         
         $platformData = json_decode($job->workload(), true);
+        $urlReturnData = [];
         foreach ($platformData as $linkedAccountKey => $data) {
             $platform = $data['pfp'];
             $companyHandle = $this->companyClass($data['pfp']);
@@ -188,7 +180,7 @@ class ParseDataWorkerShell extends GearmanWorkerShell {
                 }
 
                 if (count($filesByType) === 1) {
-echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
+                    echo "\n" . __FILE__. " " . __LINE__ . "\n";                    
                     $tempResult = $this->getSimpleFileData($filesByType[0], $parserConfigFile, $configParameters);
                 } 
                 else if (count($filesByType) > 1) {
@@ -204,6 +196,7 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                         case WIN_FLOW_TRANSACTION_FILE:
                             $this->callbackInit($tempResult, $companyHandle, $callbacks["transactionFile"]);
                             $totalParsingresultTransactions = $tempResult;
+                            ksort($totalParsingresultTransactions);
                             break;                            
                         case WIN_FLOW_EXTENDED_TRANSACTION_FILE:
                         //    $totalParsingresultTransactions = $tempResult;
@@ -247,10 +240,10 @@ echo "\n" . __FILE__. " " . __LINE__ . "\n";
                 }
             } 
             
-print_r($totalParsingresultInvestments);   
-print_r($totalParsingresultExpiredInvestments); 
-print_r($totalParsingresultTransactions);
-print_r($totalParsingresultControlVariables);
+            /*print_r($totalParsingresultInvestments);   
+            print_r($totalParsingresultExpiredInvestments); 
+            print_r($totalParsingresultTransactions);
+            print_r($totalParsingresultControlVariables);*/
 
             
             $returnData[$linkedAccountKey]['parsingResultTransactions'] = $totalParsingresultTransactions;
@@ -298,132 +291,146 @@ print_r($totalParsingresultControlVariables);
             if ($data['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE) {       
 // Detect if a loan has been deleted (i.e. NOT matured) or if it has changed state from "Reserved" to "Active
                 if (isset($data['listOfReservedInvestments']))  { 
-                    foreach ($data['listOfReservedInvestments'] as $loanKey => $loanId) {
-                        $existsInActive = array_key_exists($loanId, $totalParsingresultInvestments);
-                        if ($existsInActive) {
-                            if ($totalParsingresultInvestments[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
-                        //      generate a statechange record, state is changed to "active"
-                                $dateKeys = array_keys($totalParsingresultTransactions);
-                                $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
-                                $totalParsingresultTransactions[$key][$loanId][100]['date'] = $key;
-                                $totalParsingresultTransactions[$key][$loanId][100]['investment_loanId'] = $loanId;
-                                $totalParsingresultTransactions[$key][$loanId][100]['internalName'] = "activeStateChange";
-echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanId\n";
-                                unset($data['listOfReservedInvestments'][$loanKey]);
-                                continue;
+                    if (isset($dashboard2ConfigurationParameters['verifyReservedFunds']) && $dashboard2ConfigurationParameters['verifyReservedFunds']) {
+                        foreach ($data['listOfReservedInvestments'] as $loanKey => $loanAmount) {
+                            $existsInActive = array_key_exists($loanKey, $totalParsingresultInvestments);
+                            if ($existsInActive) {
+                                if ($totalParsingresultInvestments[$loanKey][0]['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
+                            //      generate a statechange record, state is changed to "active"
+                                    //zank
+                                    if ($dashboard2ConfigurationParameters['verifyReservedFunds']['function'] == 'addIntoTransactionAtFinal') {
+                                        $dateKeys = array_keys($totalParsingresultTransactions);
+                                        $key = $dateKeys[count($dateKeys) - 1];                           // Take the last date 
+                                        $info['date'] = $key;
+                                        $info['investment_loanId'] = $loanKey;
+                                        $info['internalName'] = "investment_activeStateChange";
+                                        $returnData[$linkedAccountKey]['parsingResultTransactions'][$key][$loanKey][] = $info;
+                                        echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
+                                        unset($data['listOfReservedInvestments'][$loanKey]);
+                                        continue;
+                                    }
+                                    //finanzarel
+                                    if ($dashboard2ConfigurationParameters['verifyReservedFunds']['function'] == 'replaceInTransaction') {
+                                        foreach ($totalParsingresultTransactions as $keyDate => $transactionPerDay) {
+                                            foreach ($transactionPerDay as $keyLoanId => $transactionPerLoanAndDay) {
+                                                if ($keyLoanId == $loanKey) {
+                                                    $internalNameByLoan = $transactionPerLoanAndDay[0]['internalName'];
+                                                    if (strpos($internalNameByLoan, 'investment_myInvestment') !== false) {
+                                                        $returnData[$linkedAccountKey]['parsingResultTransactions'][$keyDate][$keyLoanId][0]['internalName'] = "investment_activeStateChange";
+                                                        $returnData[$linkedAccountKey]['parsingResultTransactions'][$keyDate][$keyLoanId][0]['conceptChars'] = "RETAKE_INVESTMENT_DATA";
+                                                        $keyOfNewLoans = array_search ($loanKey, $returnData[$linkedAccountKey]['newLoans']);
+                                                        unset($returnData[$linkedAccountKey]['newLoans'][$keyOfNewLoans]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        echo __FUNCTION__ . " " . __LINE__ . " activeStateChange transaction record generated for loanId = $loanKey\n";
+                                        unset($data['listOfReservedInvestments'][$loanKey]);
+                                        continue;
+                                    }
+                                }
+                                if ($totalParsingresultInvestments[$loanKey]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                                    echo __FUNCTION__ . " " . __LINE__ . " Loan $loanKey detected with state WAITINGTOBEFORMALIZED\n";                                
+                                    unset($data['listOfReservedInvestments'][$loanKey]);
+                                    continue;
+                                } 
                             }
-                            if ($totalParsingresultInvestment[$loanId]['investment_statusOfLoan'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
-echo __FUNCTION__ . " " . __LINE__ . " Loan $loanid detected with state WAITINGTOBEFORMALIZED\n";                                
-                                unset($data['listOfReservedInvestments'][$loanKey]);
-                                continue;
+                        }
+                        // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
+                        $temp = new BaseClass();
+                        $temp->array_keys_recursive($returnData[$linkedAccountKey]['parsingResultTransactions'], 4, "internalName", "disinvestmentPrimaryMarket");
+                        $foundArrays = $temp->getlevel();
+                        echo __FUNCTION__ . " " . __LINE__ . " \n";
+                        print_r($foundArrays);
+                        echo "cancel investments ===>";
+                        print_r($data['listOfReservedInvestments']);
+
+
+
+                        if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
+                            //echo "some error occurred in PFP, but we will mark all Ghosts";
+                        }
+                        foreach ($data['listOfReservedInvestments'] as $loanIdKey => $loanAmount) {
+                            foreach ($foundArrays as $key => $levels) {
+                                if ($returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]][$levels[2]]['amount'] == $loanAmount) {
+                                    //echo "Entered to change loanReference \n";
+                                    $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$loanIdKey][$levels[2]] = $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]][$levels[2]];
+                                    $returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$loanIdKey][0]['investment_loanId'] = $loanIdKey;
+                                    unset($returnData[$linkedAccountKey]['parsingResultTransactions'][$levels[0]][$levels[1]]); 
+                                    continue 2;
+                                }    
                             } 
                         }
                     }
-                    // $data['listOfReservedInvestments'] now contains only loanIDs of Ghosts.
-
-                    $this->array_keys_recursive($data['listOfReservedInvestments'], 4, "internalName", "disinvestment");
-                    $foundArrays = $this->getlevel();
- //                   print_r($foundArrays);
-                    if (count($foundArrays) <> count($data['listOfReservedInvestments'])) {
-                        echo "some error occurred in PFP, but we will mark all Ghosts";
-                    }
-
-                    foreach ($foundArrays as $key => $levels) {
-                        $loan = array_pop($data['listOfReservedInvestments']);
-                        $myArray[$levels[0]][$loan][$levels[2]] = $myArray[$levels[0]][$levels[1]][$levels[2]];
-                        $myArray[$levels[0]][$loan][0]['investment_loanId'] = $loan;
-                        unset($myArray[$levels[0]][$loan][0]['amount']);
-                        unset($myArray[$levels[0]][$levels[1]]);                       
-                    } 
                 }     
-            }     
+            }
+            ///// NEW CODE TO PASS RETURNDATA AS A FILE
+            $companyHandle->setLinkAccountId($linkedAccountKey);
+            $companyHandle->setUserReference($data['userReference']);
+            $companyHandle->setDateFinish($this->finishDate);
+            $companyHandle->setCompanyName($data['pfp']);
+            $urlReturnData[$linkedAccountKey] = $companyHandle->saveFilePFP('tempArray.json', json_encode($returnData[$linkedAccountKey]));
+            ////
         }
-        
         $data['tempArray'] = $returnData;
+        //$data['tempUrlArray'] = $urlReturnData;
         if (Configure::read('debug')) {
             echo __FUNCTION__ . " " . __LINE__ . ": " . "Data collected and being returned to Client\n";
         } 
-       
         echo "\nNumber of new loans = " . count($data['tempArray'][$linkedAccountKey]['newLoans']) . "\n";
         echo "Number of expired loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultExpiredInvestments']) . "\n";
         echo "Number of NEW loans = " . count($data['tempArray'][$linkedAccountKey]['parsingResultInvestments']) . "\n";
 
         echo "The size of data to be sent to the Client = " . strlen(json_encode($data)) . " Bytes\n";
-echo "Done\n";
-$timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
+        echo "Done\n";
+        $timeStop = time();
+        echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n"; 
 
+        foreach($data['tempArray'] as $linkAccountId => $dateArray){     
+            $partialPath = Configure::read('dashboard2Files');
+            $path = $partialPath . $data['tempArray'][$linkAccountId]["userReference"] . DS . $data['tempArray'][$linkAccountId]["finishDate"] . DS . $linkAccountId . DS . $data['tempArray'][$linkAccountId]["pfp"] ;
+            $data['tempArray'][$linkAccountId]["path"] = $path;
+
+            ksort($data['tempArray'][$linkAccountId]['parsingResultTransactions']);
+            
+            $investmentJson = json_encode($data['tempArray'][$linkAccountId]['parsingResultInvestments']);
+            $this->saveStringToFile($path, "parsedInvestments.json",$investmentJson);
+            unset($data['tempArray'][$linkAccountId]['parsingResultInvestments']);
+            $data['tempArray'][$linkAccountId]['parsingResultInvestmentsPath'] = $path . DS . "parsedInvestments.json";
+            
+            $expiredInvestmentJson = json_encode($data['tempArray'][$linkAccountId]['parsingResultExpiredInvestments']);
+            $this->saveStringToFile($path, "parsedExpired.json", $expiredInvestmentJson);
+            unset($data['tempArray'][$linkAccountId]['parsingResultExpiredInvestments']);
+            $data['tempArray'][$linkAccountId]['parsingResultExpiredInvestmentsPath'] = $path . DS . "parsedExpired.json";
+            
+            $max = WIN_MAX_TRANSACTIONS;                                                             //Number of max dates in a transaction file.                            
+            $i = 0;
+            $fileNumber = 1;
+            foreach($data['tempArray'][$linkAccountId]["parsingResultTransactions"] as $date => $info){
+                if(new DateTime($date) > new DateTime($returnData[$linkedAccountKey]['finishDate'])){
+                    continue;
+                }
+                $tempParsingResultTransactions[$date] = $info;
+                unset($data['tempArray'][$linkAccountId]["parsingResultTransactions"][$date]);
+                $i++;      
+                if($i >= $max){
+                    $tempParsingResultTransactionsJson = json_encode($tempParsingResultTransactions);
+                    $this->saveStringToFile($path, "parsedTransaction_" .  $fileNumber . ".json", $tempParsingResultTransactionsJson);
+                    $data['tempArray'][$linkAccountId]['parsingResultTransactionsPath'][] = $path . DS . "parsedTransaction_" .  $fileNumber . ".json";
+                    unset($tempParsingResultTransactions);
+                    $fileNumber++;
+                    $i = 0;
+                }
+            }
+            if(!empty($tempParsingResultTransactions)){
+                $tempParsingResultTransactionsJson = json_encode($tempParsingResultTransactions);
+                $this->saveStringToFile($path, "parsedTransaction_" .  $fileNumber . ".json", $tempParsingResultTransactionsJson);
+                $data['tempArray'][$linkAccountId]['parsingResultTransactionsPath'][] = $path . DS . "parsedTransaction_" .  $fileNumber . ".json";
+                unset($tempParsingResultTransactions);
+            }
+            unset($data['tempArray'][$linkAccountId]["parsingResultTransactions"]);
+        } 
         return json_encode($data);
-    }       
-        
-      
-    /**
-     * Function to change values depending on callback functions for each company
-     * 
-     * @param array $tempResult It contains the value to change
-     * @param object $companyHandle It is the company instance
-     * @return It nothing if the callback array is empty
-     */
-    public function callbackInit(&$tempResult, $companyHandle, $callbackFunctions) {
-        if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
-        }
-        //$this->getCallbackFunction($valuesFile);
-        if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ ;
-            print_r($callbackFunctions);
-        }
-        if (empty($callbackFunctions)) {
-            return;
-        }
-        
-        foreach ($callbackFunctions as $functionNameKey => $callback) {
-            $this->$functionNameKey($tempResult, $companyHandle, $callback);
-        }
-    }
-    
-    /**
-     * Function to change values depending on callback functions for each company
-     * 
-     * @param array $tempResult It contains the value to change
-     * @param object $companyHandle It is the company instance
-     * @return It nothing if the callback array is empty
-     */
-    public function parserDataCallback(&$tempResult, $companyHandle, $callbackData) {
-        if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ . ": Dealing with callbacks \n";
-        }
-        $this->callbacks = $callbackData;
-        //$this->getCallbackFunction($valuesFile);
-        if (Configure::read('debug')) {
-            echo __FUNCTION__ . " " . __LINE__ ;
-            print_r($this->callbacks);
-        }
-        
-        if (empty($this->callbacks)) {
-            return;
-        }
-        
-        //$this->cleanData($tempResult, $callbacks["investment"]["cleanTempArray"]);
-        
-        
-        $this->companyHandle = $companyHandle;
-        array_walk_recursive($tempResult,array($this, 'changeValueIteratingCallback'));
-    }
-    
-    /**
-     * Function to iterate through an array when callback is called and change the value if needed
-     * 
-     * @param arrayValue $item It is the value of an array key
-     * @param arrayKey $key It is the key of the array value
-     */
-    public function changeValueIteratingCallback(&$item,$key){
-        foreach ($this->callbacks as $callbackKey => $callback) {
-            if($key == $callbackKey){
-                $valueConverted =  $this->companyHandle->$callback(trim($item));
-                $item = $valueConverted; // Do This!
-           }
-        }
     }
     
     /* NOT YET
@@ -747,104 +754,23 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
     }
     
     /**
-     * Clean the array of unnecessary values using array_walk_recursive_delete
-     * @param array $tempArray the array to walk recursively
-     * @param object $companyHandle It is the company instance
-     * @param array $config Configuration array with functions from which we will clean the array
-     * @return null if config not exist
-     */
-    public function cleanTempArray(&$tempArray, $companyHandle, $config) {
-        if (empty($config)) {
-            return;
-        }
-        foreach ($config as $functionNameKey => $values) {
-            $this->array_walk_recursive_delete($tempArray, array($this, $functionNameKey), $values);
-        }
-    }
-    
-    /**
-     * Remove any elements where the callback returns true
-     * Code from https://akrabat.com/recursively-deleting-elements-from-an-array/
      * 
-     * @param  array    $array    the array to walk
-     * @param  callable $callback callback takes ($value, $key, $userdata)
-     * @param  mixed    $userdata additional data passed to the callback.
-     * @return array
+     * @param type $path
+     * @param type $stringToSave
      */
-    function array_walk_recursive_delete(&$array, callable $callback, $valuesToDelete, $userdata = null) {
-        foreach ($array as $key => &$value) {
-            if (is_array($value)) {
-                $value = $this->array_walk_recursive_delete($value, $callback, $valuesToDelete, $userdata);
-            }
-            if ($this->cleanValueControlStop && $this->cleanDepthControl < $valuesToDelete['valueDepth']) {
-                unset($array[$key]);
-                $this->cleanDepthControl++;
-                if ($this->cleanDepthControl == $valuesToDelete['valueDepth']) {
-                    $this->cleanDepthControl = 0;
-                    $this->cleanValueControlStop = false;
-                }
-            }
-            else if ($callback($value, $key, $valuesToDelete, $userdata)) {
-                unset($array[$key]);
-            }
-        }
-        return $array;
-    }
-   
-    /**
-     * Function to find a value in an array
-     * @param string/integer $value It is the actual value
-     * @param string/integer $key It is the key of the array 
-     * @param array $valuesToDelete They are the values to find and delete
-     * @param mixed $userdata additional data passed to the callback
-     * @return boolean
-     */
-    function findValueInArray($value, $key, $valuesToDelete, $userdata = null) {
-        $result = false;
-        if (is_array($value)) {
-            return empty($value);
-        }
-        if ($key == $valuesToDelete['key']) {
-            foreach ($valuesToDelete['values'] as $valueToDelete) {
-                $functionToCall = $valuesToDelete['function'];
-                if ($this->$functionToCall($value, $valueToDelete)) {
-                    $result = true;
-                    $this->cleanValueControlStop = true;
-                    break;
-                }
-            }
-        }
-        return $result;
+    public function saveStringToFile ($path, $name, $data){
+        $file = fopen($path . DS . $name, "w+");
+        fwrite($file, $data);
+        fclose($file);      
     }
     
-    /**
-     * Function to verify if two data are equal
-     * @param string/integer $value Value from array
-     * @param string/integer $valueToVerify Value to find
-     * @return boolean
-     */
-    public function verifyEqual($value, $valueToVerify) {
-        $result = false;
-        if ($value === $valueToVerify) {
-            $result  = true;
-        }
-        return $result;
-    }
-    
-    /**
-     * Function to verify if two data are not equal
-     * @param string/integer $value Value from array
-     * @param string/integer $valueToVerify Value to find
-     * @return boolean
-     */
-    public function verifyNotEqual($value, $valueToVerify) {
-        $result = false;
-        if ($value !== $valueToVerify) {
-            $result  = true;
-        }
-        return $result;
-    }
-   
+}
+
+class BaseClass {
+    public $filteredArray;
+    public $tempKey = array();
+    public $tempDepth = 0;      // Required to see if the $depth is decreasing
+ 
     /**
      * Recursively extracts arrays from a list of arrays according to filter conditions (name-value of the array fields)
      * 
@@ -888,6 +814,10 @@ echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";
         }
     } 
     
+function getlevel() {
+    return $this->filteredArray;
+  }
+  
     /**
      * Clean the array of unnecessary dates
      * @param array $tempArray the array to clean

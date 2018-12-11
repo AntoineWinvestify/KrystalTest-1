@@ -28,6 +28,7 @@
 class UserDataShell extends AppShell {
 
     public $uses = array('Userinvestmentdata', 'Investment');
+    protected $data = [];
 
     /**
      * Constructor of the class
@@ -49,9 +50,11 @@ class UserDataShell extends AppShell {
      * @param  array       array with the control variables as provided by platform
      * @return integer     0 OK
      *                     integer: Error Number
-     * 
      */
     public function consolidatePlatformControlVariables($externalControlVariables, $internalControlVariables) {
+             
+        $globalPrecision = $resultData['configParms']['globalRoundingParm'];
+        
         $error = 0;
         echo "external values = \n";
         print_r($externalControlVariables);
@@ -60,14 +63,46 @@ class UserDataShell extends AppShell {
         foreach ($externalControlVariables as $variableKey => $variable) {
             switch ($variableKey) {
                 case WIN_CONTROLVARIABLE_MYWALLET:
-                    if ($internalControlVariables['myWallet'] <> $externalControlVariables['myWallet'] ) {
-                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;
+                    $tempResult = bccomp($internalControlVariables['myWallet'], $externalControlVariables['myWallet'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['myWallet'], $externalControlVariables['myWallet'], 16);
                     }
+                    else {
+                        $difference = bcsub($externalControlVariables['myWallet'], $internalControlVariables['myWallet'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_CASH_IN_PLATFORM;  
+                    }                  
                     break;
-                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
-                    if ($internalControlVariables['outstandingPrincipal'] <> $externalControlVariables['outstandingPrincipal'] ) {
-                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;
+                case WIN_CONTROLVARIABLE_RESERVED_FUNDS:
+                    $tempResult = bccomp($internalControlVariables['reservedFunds'], $externalControlVariables['reservedFunds'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['reservedFunds'], $externalControlVariables['reservedFunds'], 16);
                     }
+                    else {
+                        $difference = bcsub($externalControlVariables['reservedFunds'], $internalControlVariables['reservedFunds'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_RESERVED_FUNDS;  
+                    }                                       
+                    break;                    
+                case WIN_CONTROLVARIABLE_OUTSTANDINGPRINCIPAL:
+                    $tempResult = bccomp($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
+                    if ($tempResult == 1) {
+                        $difference = bcsub($internalControlVariables['outstandingPrincipal'], $externalControlVariables['outstandingPrincipal'], 16);
+                    }
+                    else {
+                        $difference = bcsub($externalControlVariables['outstandingPrincipal'], $internalControlVariables['outstandingPrincipal'], 16);
+                    }
+                    $tempDifference = bccomp($difference, $globalPrecision, 16);
+
+                    if (bccomp($difference, $globalPrecision, 16) == 1) {
+                        $error = $error + WIN_ERROR_CONTROLVARIABLE_OUTSTANDING_PRINCIPAL;  
+                    }                                       
                     break;
                 case WIN_CONTROLVARIABLE_ACTIVEINVESTMENT:
                     if ($internalControlVariables['activeInvestments'] <> $externalControlVariables['activeInvestments'] ) {
@@ -127,7 +162,7 @@ class UserDataShell extends AppShell {
         return $sum;
     }
 
-    /** 
+    /** STILL NOT FINISHED
      *  Get the amount which corresponds to the "OutstandingPrincipal" concept. 
      * 
      *  @param  array       array with the current transaction data
@@ -157,13 +192,16 @@ class UserDataShell extends AppShell {
             $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
-            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
+            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
-            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
         }
-        if (isset($resultData['investment']['investment_disinvestment'])) {
-            $result = bcsub($result, $resultData['investment']['investment_disinvestment'], 16);
+        if (isset($resultData['payment']['payment_tempCamp'])) {
+            $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
+        }
+        if (isset($resultData['payment']['payment_secondaryMarketSell'])) {
+            $result = bcsub($result, $resultData['payment']['payment_secondaryMarketSell'], 16);
         }
         return $result;
     }
@@ -361,7 +399,20 @@ class UserDataShell extends AppShell {
      * 12
      */
     public function calculateMyInvestment(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
+        print_r($resultData);
+        if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
+            $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+            $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
+            return;
+        }
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_VERIFYACTIVE) {
+            return $this->data['companyHandle']->manageMyInvestment($transactionData, $resultData);
+        }
+        else {
+            return $transactionData['amount'];
+        }
+        
     }
 
     /**
@@ -371,7 +422,6 @@ class UserDataShell extends AppShell {
      * @return type
      */    
     public function calculateMyInvestmentFromPayment(&$transactionData, &$resultData) {
-        echo "----------------->  BBBBBBBBB\n";
         print_r($transactionData);
         return $transactionData['investment']['investment_myInvestment'];
     }
@@ -412,7 +462,9 @@ class UserDataShell extends AppShell {
     public function calculateCapitalRepayment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-
+    public function calculateCapitalRepaymentCost(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
     /**
      *  Get the amount which corresponds to the "delayedInterestIncome" concept
      * 
@@ -443,7 +495,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
-     * 36
      */
     public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
         echo "PRINCIPAL BUYBACK, amount =  " . $transactionData['amount'];
@@ -456,7 +507,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
-     * 46
      */
     public function calculateDelayedInterestIncomeBuyback(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -468,7 +518,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string
-     * 66
      */
 
     public function calculatePlatformDeposit(&$transactionData, &$resultData) {
@@ -481,7 +530,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
 
     public function calculatePlatformWithdrawal(&$transactionData, &$resultData) {
@@ -494,12 +542,13 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
     public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-      
+    public function calculateRegularGrossInterestCost(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }  
     /**
      *  Calculates the number of active investments. Various investments in the same loan 
      *  are counted as 1 investment
@@ -512,14 +561,13 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB 
      *  @return int         number of active loans
-     * 
      */
     public function calculateNumberOfActiveInvestments(&$transactionData, &$resultData) {
         $resultData['measurements']['state'] = $resultData['measurements']['state'] + 1;
         $tempOutstandingPrincipal = 1;     // Any value other than 0 
 
-        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
-            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        if (isset($this->data['precision'])) {
+            $precision = $this->data['precision'];
         }
 
         if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
@@ -557,22 +605,44 @@ class UserDataShell extends AppShell {
 
 /*
   Technical states description:
-  INITIAL   : investment has started succesfully. No amortization has yet taken place
-  ACTIVE    : one or more amortizations have taken place
-  FINISHED  : the investment has finished, either succesfully or as writtenOff 
+  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED : Investment is still to be formalized
+  INITIAL   : Investment has started succesfully. No amortization has yet taken place
+  ACTIVE    : One or more amortizations have taken place
+  FINISHED  : The investment has finished, either succesfully or as writtenOff 
+  CANCELLED : The investment never materialized, i.e. never went to ACTIVE or INITIAL
+  WRITTEN-OFF : The investment is completely lost
+
+statusOfLoan can have the following values: 
+    WIN_LOANSTATUS_WAITINGTOBEFORMALIZED 
+    WIN_LOANSTATUS_ACTIVE 
+    WIN_LOANSTATUS_FINISHED
+    WIN_LOANSTATUS_CANCELLED  
+    WIN_LOANSTATUS_WRITTEN_OFF 
+    WIN_LOANSTATUS_UNKNOWN
  */
         $tempOutstandingPrincipal = 1;
-        if (isset($resultData['configParms']['outstandingPrincipalRoundingParm'])) {
-            $precision = $resultData['configParms']['outstandingPrincipalRoundingParm'];
+        if (isset($this->data['precision'])) {
+            $precision = $this->data['precision'];
+        }
+// Determine properly if the outstandingPrincipal is within the precision limit. NOTE THAT the
+// outstanding principal can be negative. In that case I don't count them 
+        
+        if (bccomp(abs($resultData['investment']['investment_outstandingPrincipal']), $precision, 16) < 0) {
+            $tempOutstandingPrincipal = 0;
         }
 
-        if (bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0) {
-            $tempOutstandingPrincipal = 0;
-        }       
- 
+        if ($resultData['investment']['investment_tempState'] === WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+            return "PREACTIVE";
+        }
+        
+        if ($resultData['investment']['investment_tempState'] === WIN_LOANSTATUS_CANCELLED) {
+            return "CANCEL";
+        }
+        
 // the following is perhaps not needed
         if ($resultData['investment']['investment_technicalStateTemp'] == 'FINISHED') {
             $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to FINISHED\n";         
             return "FINISHED";             
         }    
         
@@ -581,6 +651,7 @@ class UserDataShell extends AppShell {
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
                 $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsdecrements']++;
                 $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to FINISHED due to 0 outstanding principle\n";   
                 return "FINISHED";              
             }
         }        
@@ -588,10 +659,11 @@ class UserDataShell extends AppShell {
         if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_ACTIVE) {
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
             $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestmentsincrements']++;
-            
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";            
             return "INITIAL";               
         } 
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";         
         return "ACTIVE";                    
     }
     
@@ -600,10 +672,9 @@ class UserDataShell extends AppShell {
     /**
      *  Get the amount which corresponds to the "PlatformbankCharges" concept
      * 
-     *  @param  array       array with the current transaction data
+     *  @param  array       array with the current transaction data$resultData
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 55
      */
     public function calculatePlatformBankCharges(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -638,8 +709,13 @@ class UserDataShell extends AppShell {
      */
     public function calculateTotalOutstandingPrincipal(&$transactionData, &$resultData) {
 //        if (isset($resultData['investment']['investment_outstandingPrincipal)
+              
         $result = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['investment']['investment_outstandingPrincipalOriginal'], 16);
         $result = bcadd($result, $resultData['investment']['investment_outstandingPrincipal'], 16);
+        /*$result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
+        unset($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp']);
+        $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
+        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);*/
         return $result;
     }
 
@@ -649,7 +725,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 47
      */
     public function calculateCostSecondaryMarket(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -673,7 +748,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string
-     * 26
      */
     public function calculateSecondaryMarketInvestment(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -687,7 +761,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      don't care
-     *
      */
     public function calculateGlobalTotalsNOTUSEDPerDay(&$transactionData, &$resultData) {
                 
@@ -703,11 +776,27 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_latePaymentFeeIncome']);    
     }   
+    public function calculateGlobalTotalDelayedInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_delayedInterestIncomeBuyback']);    
+    }   
+    public function calculateGlobalTotalIncomeSecondaryMarket(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_incomeSecondaryMarket']);    
+    }    
+    public function calculateGlobalTotalLoanIncentivesAndBonusPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_loanIncentivesAndBonus']);    
+    }   
+    
+    
+    public function calculateGlobalTotalDefaultInterestIncome(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome']));   
+    }
+    public function calculateGlobalTotalDefaultInterestIncomeRebuy(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_defaultInterestIncomeRebuy'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncomeRebuy']));    
+    }
     
     /**
      *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
@@ -740,7 +829,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_interestIncomeBuyback']);
@@ -752,7 +840,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_regularGrossInterestIncome']);    
@@ -765,7 +852,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalMyInvestmentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_myInvestment']);
@@ -778,7 +864,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalSecondaryMarketInvestmentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_secondaryMarketInvestment']);    
@@ -790,7 +875,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalCostSecondaryMarketPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_costSecondaryMarket']);     
@@ -827,9 +911,39 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a float
      */
     public function calculateDisinvestmentPrimaryMarket(&$transactionData, &$resultData) {
-        return $resultData['investment']['investment_myInvestment'];
-    }   
+        if (isset($resultData['investment']['investment_reservedFunds']) && !empty($resultData['investment']['investment_reservedFunds'])) {
+            echo "enter here disinviestment \n";
+            $resultData['investment']['investment_disinvestment'] = bcadd($resultData['investment']['investment_disinvestment'], $transactionData['amount'], 16);
+            $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+            print_r($resultData);
+            $this->calculateCancellationState($transactionData, $resultData);
+            return $transactionData['amount'];
+        }
+        else if (!isset($resultData['investment']['investment_reservedFunds']) && empty($resultData['investment']['investment_reservedFunds'])) {
+            echo "Before subbbb \n";
+            print_r($resultData);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 
+                    $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'], 
+                    16);
+            $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+            $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'] = bcadd(
+                    $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'],
+                    $transactionData['amount'], 
+                    16);
+            echo "after ssbbbb \n";
+            print_r($resultData);
+            return $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReference'];
+        }
+        else {
+            return $transactionData['amount'];
+        }
+    }
     
+    /*public function calculateDisinvestmentPrimaryMarketWinouthLoanReference(&$transactionData, &$resultData) {
+        $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+        return $transactionData['amount'];
+    }  */
     
     /**
      *  Calculates the new state of a cancelled investment.  It never matured to a real investment, i.e. it 
@@ -840,7 +954,17 @@ class UserDataShell extends AppShell {
      *  @return string      the string representation of a large integer
      */
     public function calculateCancellationState(&$transactionData, &$resultData) {
-        return WIN_LOANSTATUS_CANCELLED;
+        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_CANCELLED;
+        $resultData['investment']['investment.investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;
+        $resultData['investment']['investment_technicalStateTemp'] = "CANCEL";
+        $result = bcadd($resultData['investment']['investment_myInvestment'], $resultData['investment']['investment_reservedFunds'], 16);
+        $resultVerification = bccomp($result, $resultData['investment']['investment_disinvestment'], 16);
+        if ($resultVerification === 1) {
+            echo "loan is still active after disinvestment \n";
+            $resultData['investment']['investment.investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+            $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE;
+            $resultData['investment']['investment_technicalStateTemp'] = "INITIAL";
+        }
     }    
  
     
@@ -853,9 +977,9 @@ class UserDataShell extends AppShell {
      */
     public function calculateBadDebt(&$transactionData, &$resultData) {
         
-        if ($resultData['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_WRITTEN_OFF) {
-            return $resultData['investment']['investment_writtenOff'];
-        }
+//        if ($resultData['investment']['investment_consolidatePlatformControlVariables'] == WIN_LOANSTATUS_WRITTEN_OFF) {
+//            return $resultData['payment']['payment_writtenOff'];
+//        }
         $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
         
         if (isset( $transactionData['amount'])) {           // We take the value as provided in the transaction record by the P2P
@@ -865,6 +989,7 @@ class UserDataShell extends AppShell {
         else {
             $tempOutstandingPrincipal = $resultData['investment']['investment_outstandingPrincipal'];
         }
+        $resultData['investment']['investment_writtenOff'] = $tempOutstandingPrincipal;
         $resultData['investment']['investment_outstandingPrincipal'] = 0;
         return $tempOutstandingPrincipal;
     } 
@@ -902,6 +1027,10 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculatePrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        if(isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || !empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])){
+            $resultData['payment']['payment_partialPrincipalAndInterestPayment'] = $resultData['payment']['payment_partialPrincipalAndInterestPayment'] + $transactionData['amount'];
+            return;
+        }
         return $transactionData['amount'];
     }
     
@@ -912,6 +1041,10 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculatePartialPrincipalAndInterestPayment(&$transactionData, &$resultData) {
+        if(isset($resultData['payment']['payment_principalAndInterestPayment']) || !empty($resultData['payment']['payment_principalAndInterestPayment'])){
+            $resultData['payment']['payment_principalAndInterestPayment'] = $resultData['payment']['payment_principalAndInterestPayment'] + $transactionData['amount'];
+            return;
+        }
         return $transactionData['amount'];
     }
     
@@ -952,22 +1085,29 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";  
         if (!isset($resultData['payment']['payment_principalAndInterestPayment']) || empty($resultData['payment']['payment_principalAndInterestPayment'])) {
             return;
         }
-        
+print_r($transactionData);
+print_r($resultData);        
         if (empty($resultData['payment']['payment_capitalRepayment'])) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";              
             $capitalRepayment = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_capitalRepayment'] = $capitalRepayment;
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $capitalRepayment, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
+echo __FUNCTION__ . " " . __LINE__  . "\n";            
         }
-        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {       
+        else if (empty($resultData['payment']['payment_regularGrossInterestIncome'])) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";  
             $regularGrossInterest = bcsub($resultData['payment']['payment_principalAndInterestPayment'], $resultData['payment']['payment_capitalRepayment'], 16);
             $resultData['payment']['payment_regularGrossInterestIncome'] = $regularGrossInterest;
         }
-        
-        $resultData['payment']['payment_principalAndInterestPayment'] = 0;
+ print_r($transactionData);
+ print_r($resultData);         
+echo __FUNCTION__ . " " . __LINE__  . "\n";         
+        return;
     }
     
     /**
@@ -977,10 +1117,12 @@ class UserDataShell extends AppShell {
      *  @param  array       array with all data so far calculated and to be written to DB
      */
     public function calculateOfPartialCapitalRepaymentOrRegularGrossInterest(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
         if (!isset($resultData['payment']['payment_partialPrincipalAndInterestPayment']) || empty($resultData['payment']['payment_partialPrincipalAndInterestPayment'])) {
             return;
         }
-        
+ print_r($transactionData);
+ print_r($resultData);
         if (empty($resultData['payment']['payment_partialCapitalRepayment'])) {
             $capitalRepayment = bcsub($resultData['payment']['payment_partialPrincipalAndInterestPayment'], $resultData['payment']['payment_regularGrossInterestIncome'], 16);
             $resultData['payment']['payment_partialPrincipalRepayment'] = $capitalRepayment;
@@ -993,8 +1135,8 @@ class UserDataShell extends AppShell {
             $cashInPlatform = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $regularGrossInterest, 16);
             $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = $cashInPlatform;
         }
-         print_r($resultData);
-        //unset($resultData['payment']['payment_partialPrincipalAndInterestPayment']);
+ echo __FUNCTION__ . " " . __LINE__  . "\n";        
+        return;
     }
     
     /**
@@ -1022,10 +1164,10 @@ class UserDataShell extends AppShell {
    
     /**
      *  Calculates the sum of the payment concept "PartialPrincipalRepayment" that happened during a day
+     * 
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalPartialPrincipalRepaymentPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_partialPrincipalRepayment']);    
@@ -1037,7 +1179,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalDelayedInterestIncomePerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_delayedInterestIncome']);    
@@ -1049,7 +1190,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_commissionPaid']);    
@@ -1061,7 +1201,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
      *  @return string      accumulated amount
-     *
      */
     public function calculateGlobalTotaltaxVATPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_taxVAT']);    
@@ -1074,7 +1213,6 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
     public function calculateCommissionPaid(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -1087,11 +1225,14 @@ class UserDataShell extends AppShell {
      *  @param  array       array with the current transaction data
      *  @param  array       array with all data so far calculated and to be written to DB
      *  @return string      amount expressed as a string
-     * 
      */
-    public function calculateGlobalWrittenOff(&$transactionData, &$resultData) {
+    public function calculateGlobalTotalWrittenOffPerDay(&$transactionData, &$resultData) {
         //$result = bcadd($resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'], $resultData['investment']['investment_writtenOff'], 16);
-        return $resultData['Userinvestmentdata']['userinvestmentdata_writtenOff'];      
+        $result = "0.0";
+        if (!empty($resultData['payment']['payment_writtenOff'])) {
+            $result = $resultData['payment']['payment_writtenOff'];
+        }
+        return $result;      
     }
  
     
@@ -1113,20 +1254,331 @@ class UserDataShell extends AppShell {
      *  @return int         new status of the loan
      */
     public function calculateActiveStateChange(&$transactionData, &$resultData) {
+echo __FUNCTION__ . " " . __LINE__  . "\n";    
+        echo "changing from preactive to active \n";
+        print_r($resultData);
         $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+        $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
         // move the corresponding part of the money from reserved funds to outstanding principal
-            
-        if ($resultData['investment']['investment_statusOfLoan'] ==  WIN_LOANSTATUS_PREACTIVE) {
-            $resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_reservedFunds'],
-                                                $resultData['investment']['investment_myInvestment']);
-            $resultData['investment']['investment_outstandingPrincipal'] = bcadd( $resultData['investment']['investment_outstandingPrincipal'],
-                                                $resultData['investment']['investment_myInvestment']);     
-            return WIN_LOANSTATUS_ACTIVE;
-        }
+        $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'],
+                    $resultData['investment']['investment_reservedFunds'],
+                    16
+                ); 
+        $resultData['payment']['payment_myInvestment'] = bcadd( 
+                    $resultData['payment']['payment_myInvestment'],
+                    $resultData['investment']['investment_reservedFunds'],
+                    16
+                );     
+        $resultData['investment']['investment_myInvestment'] = bcadd( 
+                    $resultData['investment']['investment_myInvestment'],
+                    $resultData['investment']['investment_reservedFunds'],
+                    16
+                );
+        $resultData['investment']['investment_reservedFunds'] = bcsub( 
+                    $resultData['investment']['investment_reservedFunds'],
+                    $resultData['investment']['investment_reservedFunds'],
+                    16
+                );
+echo __FUNCTION__ . " " . __LINE__  . "\n";    
+        echo "state changed \n";
+        print_r($resultData);
+        return WIN_LOANSTATUS_ACTIVE;
     }  
+    
+    /**
+     *  Calculates the sum of the payment concept "Currency Exchange Fee" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     */
+    public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_currencyExchangeFee'],$resultData['globalcashflowdata']['globalcashflowdata_currencyExchangeFee']));  
+    }
+
+    /**
+     *  Calculates the sum of the payment concept "Currency Exchange Transaction" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     */
+    public function calculateGlobalTotalCurrencyExchangeTransactionPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_currencyExchangeTransaction']);  
+    }
+    
+    /**
+     *  Calculates the sum of the payment concept "Income with holding Tax" that happened during a day
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      accumulated amount
+     */
+    public function calculateGlobalTotalIncomeWithholdingTaxPerDay(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_incomeWithholdingTax']);  
+    }
  
+ 
+    /**
+     *  State Change Management.
+     *  Implements the state changes based on events. These events can be:
+     *      a transaction record
+     *      a state of a variable (example outstanding principle for a loan, investment_outstandingPrincipal 
+     * 
+     *  @param  array       Array with the current transaction data
+     *  @param  array       Array with all data so far calculated and to be written to DB
+     *  @event  string      This is an optional parameter and may NOT always be needed or present
+     *                      'ChangeToBadDebtState'
+     *                      'ChangeToCancelState'
+     *                      'ChangeToActiveState'
+     *                      OutstandingPrincipal = 0;
+     * statusOfLoan can have the following values: 
+     *   WIN_LOANSTATUS_WAITINGTOBEFORMALIZED 
+     *   WIN_LOANSTATUS_ACTIVE 
+     *   WIN_LOANSTATUS_FINISHED
+     *   WIN_LOANSTATUS_CANCELLED  
+     *   WIN_LOANSTATUS_WRITTEN_OFF 
+     *   WIN_LOANSTATUS_UNKNOWN
+     *  variables taken into consideration:
+     *                 $resultData['investment']['investment_statusOfLoan']
+     *              
+     *  @return new state
+     */
+    public function manageState(&$transactionData, &$resultData, $event) {
+      
+        $initialStatusOfLoan = $resultData['investment']['investment_statusOfLoan'];       
+        $tempOutstandingPrincipal = 21;
+        
+        switch ($initialStatusOfLoan) {
+            case WIN_LOANSTATUS_WAITINGTOBEFORMALIZED:
+                if ($event == "changeToActiveState") {
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_ACTIVE;
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']++;
+                }
+                if ($event == "changeToCancelledState") {
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_CANCELLED;
+
+                }
+                return $resultData['investment']['investment_statusOfLoan'];
+            break;
+        
+            case WIN_LOANSTATUS_ACTIVE:
+                if ($tempOutstandingPrincipal == 0) {       // A loan has finished
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_FINISHED;
+                } 
+                if ($event == "changeToBadDebtState") {
+                    $resultData['Userinvestmentdata']['userinvestmentdata_numberActiveInvestments']--;
+                    $resultData['investment']['investment_statusOfLoan'] = WIN_LOANSTATUS_WRITTEN_OFF;
+                }
+                return $resultData['investment']['investment_statusOfLoan'];
+            break;
+            
+            case WIN_LOANSTATUS_FINISHED:                                       // Don't do anything 
+                return WIN_LOANSTATUS_WRITTEN_FINISHED;           
+            break;           
+        
+            case WIN_LOANSTATUS_CANCELLED:                                      // Don't do anything    
+                return WIN_LOANSTATUS_CANCELLED;
+            break;
+        
+            case WIN_LOANSTATUS_WRITTEN_OFF:                                    // Don't do anything    
+                return WIN_LOANSTATUS_WRITTEN_OFF;
+            break;
+
+            case WIN_LOANSTATUS_UNKNOWN:                                        // Don't do anything    
+                return WIN_LOANSTATUS_UNKNOWN;  
+            break;       
+        } 
+    }    
     
+  
+     /**
+     *  Get the amount which corresponds to the "Global WrittenOff" concept for visualization
+     *  on dashboard2
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function calculateDashboard2GlobalWrittenOff(&$transactionData, &$resultData) {
+        if (isset($resultData['payment']['payment_writtenOff'])) {
+            return $resultData['payment']['payment_writtenOff'];
+        }
+    }   
+ 
+    /**
+     * Call a function to fix rounding errors as "committed" by the platform.
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function recalculateRoundingErrors(&$transactionData, &$resultData) {
+        $tempOustanding = null;
+        if (isset($this->data['precision'])) {
+            $precision = $this->data['precision'];
+        }
+        if (!empty($this->data['recalculateRoundingErrors']) 
+                && bccomp($resultData['investment']['investment_outstandingPrincipal'], $precision, 16) < 0
+                && bccomp("0", $resultData['investment']['investment_outstandingPrincipal'], 16) != 0) {
+            $function = $this->data['recalculateRoundingErrors']['function'];
+            $this->$function($transactionData, $resultData);
+        }
+echo __FUNCTION__ . " " . __LINE__  . "\n";          
+print_r($transactionData);
+print_r($resultData); 
+    }
     
+    /**
+     *  Recalculate variables with rounding errors adjusting the variables as needed
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     */
+    public function recalculationOfRoundingErrors(&$transactionData, &$resultData) {
+        $variables = $this->data['recalculateRoundingErrors']['values'];
+        $i = 1;
+        foreach ($variables as $variable) {
+echo "Loop variable = " ;
+print_r($variable);
+            $modelFrom = explode("_", $variable["from"][0]);
+            $modelTo = explode("_", $variable["to"][0]);
+            $value = $resultData[$modelFrom[0]][$variable["from"][0]];
+            
+            if ($variable["sign"] == "negative") {
+                $value = 0 - $value;
+            }
+echo "Value = $value\n";            
+print_r($modelTo);
+
+            $resultData[$modelTo[0]][$variable["to"][0]] = bcadd($resultData[$modelTo[0]][$variable["to"][0]], $value, 16);
+print_r($resultData);
+            $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "From"] = $variable["from"][0];
+            $resultData['roundingerrorcompensation']['roundingerrorcompensation_variable' . $i . "To"] = $variable["to"][0];
+            $resultData['roundingerrorcompensation']['roundingerrorcompensation_roundingError' . $i] = $value;
+            $i++;
+            
+        }
+echo __FUNCTION__ . " " . __LINE__  . "\n";        
+    }
+    
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateIncentivesAndBonus(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /** STILL NOT FINISHED
+     *  Calculate the real state of a loan and if the loan must be on reservedAssets or outstandingPrincipal
+     *  There are different states
+     *  WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
+     *  The function write myInvestment in reservedFunds
+     *  WIN_LOANSTATUS_VERIFYWAITINGTOBEFORMALIZED
+     *  We verify first that the investment in preactive state is not already in DB in order to save it
+     *  WIN_LOANSTATUS_VERIFYACTIVE
+     *  We verify that the investment is not in preactive state, then we add it in DB with active state.
+     *  If the investment is already on DB with preactive state, we change the state 
+     *  and move the reservedFunds to outstandingPrincipal
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB
+     *  @return string      the string representation of a large integer
+     */
+    public function calculateReservedFunds(&$transactionData, &$resultData) {
+        if (empty($resultData['investment']['investment_loanId']) && empty($resultData['investment']['investment_sliceIdentifier'])) {
+            $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'] = $transactionData['amount'];
+            $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'] = bcadd($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReference'],$transactionData['amount'], 16);
+            $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $transactionData['amount'], 16);
+            return;
+        }
+        //$result = $resultData['investment']['investment_reservedFunds'];     // in case more slices were bought of same loan
+        if ($resultData['investment']['investment_tempState'] == WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+            return $this->data['companyHandle']->manageReservedFunds($transactionData, $resultData, $this->data);
+        }
+        print_r($resultData);
+        return;
+    }
+    
+    /**
+     *  Get the amount which corresponds to the "totalReservedAssets" concept
+     *  for the controlVariables check
+     * 
+     *  @param  array       array with the current transaction data
+     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
+     *  @return string      the string representation of a large integer
+     */
+    public function calculateTotalReservedAssets(&$transactionData, &$resultData) {
+//        if (isset($resultData['investment']['investment_outstandingPrincipal)
+        $result = $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'];
+        $result = bcsub($result, $resultData['payment']['payment_disinvestment'], 16);
+        $resultData['investment']['investment_reservedFunds'] = bcsub($resultData['investment']['investment_reservedFunds'], $resultData['payment']['payment_disinvestment'], 16);
+        $result = bcadd($result, $resultData['payment']['payment_reservedFunds'], 16);
+        $result = bcsub($result, $resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp'], 16);
+        unset($resultData['globalcashflowdata']['globalcashflowdata_disinvestmentWithoutLoanReferenceTmp']);
+        $result = bcadd($result, $resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp'], 16);
+        unset($resultData['globalcashflowdata']['globalcashflowdata_investmentWithoutLoanReferenceTmp']);
+        return $result;
+    }
+    
+    public function setData($data) {
+        foreach ($data as $key => $individualData) {
+            $this->data[$key] = $individualData;
+        }
+    }
+    
+    /**
+     * Function to calculate the payment reserved funds
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculatePaymentReservedFunds(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateRecoveries(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculateCurrencyFluctation(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    
+    /**
+     * 
+     * @param  array $transactionData array with the current transaction data    
+     * @param  array $resultData array with all data so far calculated and to be written to DB
+     * @return string bonus amount
+     */
+    function calculatePlatformRecoveries(&$transactionData, &$resultData) {
+        //$result = $resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'];
+        //$result = bcadd($result, $transactionData['amount'], 16);
+        return $transactionData['amount'];
+    }
+    
+    function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
+        return $transactionData['amount'];
+    }
+    function calculateGenericAmountReturn(&$transactionData, &$resultData){
+        return $transactionData['amount'];
+    }
+ 
 }
 
 

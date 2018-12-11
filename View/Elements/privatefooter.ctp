@@ -21,19 +21,20 @@ Pending:
 
 */
 ?>
-<?php
-	$actualDate = getDate();
-         $version = Configure::read('winvestify');
-?>
+
 
 
 <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> <?php echo $version['version'] ?>
+      <b><?php echo __('Version') ?></b>
+      <?php echo $runTimeParameters['runtimeconfiguration_softwareVersion'] ?>
     </div>
-	<strong>Copyright &copy; <?php echo $actualDate['year']; echo "&nbsp;" . __("Winvestify") . ". ";
-	echo "</strong>";
-	echo "All rights reserved";
-	?>
+	<strong>Copyright &copy; 
+            <?php 
+                $actualDate = getDate(); 
+                echo $actualDate['year']; echo "&nbsp;" . __("Winvestify") . ". ";
+                echo "</strong>";
+                echo "All rights reserved";
+            ?>
     
 </footer>

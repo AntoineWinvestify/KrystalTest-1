@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://beyond-language-skills.com                 |
  * +-----------------------------------------------------------------------+
@@ -21,7 +20,8 @@
  * @version 0.1
  * @date 2017-03-29
  * @package
- * 
+ * /
+ /*
   2017-03-29
   validation
   function createContactMessage()
@@ -68,7 +68,6 @@ class Contactform extends AppModel {
     );
 
     /**
-     *
      * 	Create the message in the data base and the event for send the mail.
      * 	
      * 	@param 		string	$name
@@ -76,10 +75,9 @@ class Contactform extends AppModel {
      * 	@param		string	$text
      *  @param          string  $subject
      *
-     * 	@return 	array	
-     * 							
+     * 	@return 	array								
      */
-public function createContactMessage($userName, $email, $subjectval ,$subjecttext ,$text) {
+    public function createContactMessage($userName, $email, $subjectval ,$subjecttext ,$text) {
         $data = array(
             'name' => $userName,
             'email' => $email,
@@ -91,15 +89,14 @@ public function createContactMessage($userName, $email, $subjectval ,$subjecttex
         $this->set($data);
         if ($this->validates()) {   // OK
             $this->save($data);
-        } else {                     // validation false
+        } 
+        else {                     // validation false
             $result[0] = 0;
             $errors = array('errors' => 'Form error', $this->validationErrors);
             $result[1] = $errors;
             return $result;
         }
 
-        /* $event = new CakeEvent("sendContactMessage", $this, array('name' => $userName, 'email' => $email, 'subject' => $subject, 'text' => $text)); //Create the event to send the mail
-          $this->getEventManager()->dispatch($event); */
         $result[0] = 1;
         //Insert OK
         return $result;
@@ -108,7 +105,12 @@ public function createContactMessage($userName, $email, $subjectval ,$subjecttex
     function afterSave($created, $options = array()) {
 
         if ($created) {
-            $event = new CakeEvent("sendContactMessage", $this, array('name' => $this->data['name'], 'email' => $this->data['email'], 'subject' => $this->data['subjecttext'], 'text' => $this->data['text']));
+            $event = new CakeEvent("sendContactMessage", $this, 
+                                    array('name' => $this->data['name'], 
+                                        'email' => $this->data['email'], 
+                                        'subject' => $this->data['subjecttext'], 
+                                        'text' => $this->data['text']));
+            
             $this->getEventManager()->dispatch($event);
         }
         return true;

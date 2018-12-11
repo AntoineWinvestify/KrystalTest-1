@@ -59,7 +59,7 @@ class CollectDataClientShell extends GearmanClientShell {
         $companyTypes = $this->Company->find('list', array(
             'fields' => array('Company.company_typeAccessTransaction')
         ));
-        $this->date = date("Ymd", strtotime("-1 day"));
+        $this->date = date("Ymd");
         $numberOfIteration = 0;
         while ($numberOfIteration == 0){
             if (Configure::read('debug')) {
@@ -77,7 +77,7 @@ class CollectDataClientShell extends GearmanClientShell {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
                     print_r($pendingJobs);
                 }
-                $linkedaccountsResults = [];
+  //              $linkedaccountsResults = [];
                 $companiesInFlowExist = [];
                 foreach ($pendingJobs as $job) {
                     $queueInfo = json_decode($job['Queue2']['queue2_info'], true);
@@ -126,7 +126,10 @@ class CollectDataClientShell extends GearmanClientShell {
                                 $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'][] = $linkedaccount['Linkedaccount']['id'];
                             }
                             $this->getStartDate($linkedaccount, $job['Queue2']['id']);
-                            
+                            if ($this->queueInfo[$job['Queue2']['id']]['originExecution'] == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                                $this->queueInfo[$job['Queue2']['id']]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
+                            }
+
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
@@ -178,14 +181,14 @@ class CollectDataClientShell extends GearmanClientShell {
                             echo "All information \n";
                             print_r($data);
                         }
-                         echo "\n" . __LINE__ . "   " . __FILE__;
-                         echo "\n sending information to worker \n";
+                        echo "\n" . __LINE__ . "   " . __FILE__;
+                        echo "\n sending information to worker \n";
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
                     }
                 }
 
                 $this->GearmanClient->runTasks();
-
+                
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Result received from Worker\n");
                 }
@@ -210,10 +213,12 @@ class CollectDataClientShell extends GearmanClientShell {
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
-                }                     
+                }     
+                $this->killShellCommand("collectDataWorker");
                 exit;
             }
         }
+        $this->killShellCommand("collectDataWorker");
     }
     
     /**
@@ -221,6 +226,7 @@ class CollectDataClientShell extends GearmanClientShell {
      * @param array $linkedaccount Array that contains everything about the linkedaccount
      */
     public function getStartDate($linkedaccount, $queueId) {
+
         //We set null startDate
         $this->queueInfo[$queueId]['startDate'][$linkedaccount['Linkedaccount']['id']] = null;
         $startDate = date("Ymd", strtotime($linkedaccount['Linkedaccount']['linkedaccount_lastAccessed']));

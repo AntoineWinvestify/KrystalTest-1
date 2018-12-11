@@ -1,6 +1,4 @@
-
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -21,7 +19,9 @@
  * @version 0.7
  * @date 2017-08-16
  * @package
- *
+ */
+
+/**
  * 2017-08-23 version_0.2
  * link account
  *
@@ -62,8 +62,16 @@
  * Introduction of call back functions for translation of company specific concepts to
  * Winvestify standardized concepts 
  * 
+ * 2017-03-06   version 0.8.2
+ * New definition for callback of amortizationtable
+ * 
+ * 
  */
 class mintos extends p2pCompany {
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
+                                                                                // consider 0 € in order to "close" an active investment
+    ];
     protected $valuesTransaction = [     // All types/names will be defined as associative index in array
         [
             "A" =>  [
@@ -97,7 +105,7 @@ class mintos extends p2pCompany {
                             ],
                     "functionName" => "extractDataFromString",
                 ],
-                [
+                /*[
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate
                                                                                 // format ["concept string platform", "concept string Winvestify"]
@@ -113,15 +121,23 @@ class mintos extends p2pCompany {
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
                                             10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
                                             11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], // ?????????
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],         // ?????????
+                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"], 
+                                            13 => ["Default interest income" => "Late_payment_fee_income"],         
                                             14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
-                                            16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
-                                            ]                      
-                            ],
+                                  //        15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+                                  //        16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
+                                            17 => ["Cashback bonus" => "Incentives_and_bonus"],                                    
+                                            18 => ["Incoming currency exchange transaction" => "Incoming_currency_exchange_transaction"],
+                                            19 => ["Outgoing currency exchange transaction" => "Outgoing_currency_exchange_transaction"],                           
+                                            20 => ["Reversed late payment fee income" => "Compensation_negative"], 
+                                            21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
+                                            22 => ["Cashback bonus" => "Incentives_and_bonus"],
+                                            23 => ["Affiliate bonus" => "Incentives_and_bonus"],
+                                            24 => ["Investment share buyer pays to a seller. "  => "Sell_secondary_market"],
+                                        ],
+                                ],
                     "functionName" => "getTransactionDetail",
-                ]
+                ]*/
             ],
             "D" => [
                 [
@@ -143,22 +159,31 @@ class mintos extends p2pCompany {
                                                                                 // depending if the amount is positive or negative
                                 "input3" => [0 => ["Incoming client payment" => "Cash_deposit"],                // OK
                                             1 => ["Investment principal increase" => "Primary_market_investment"],
-                                            2 => ["Investment share buyer pays to a seller" => "Secondary_market_investment"],
+                                            2 => ["Investment share buyer pays to a seller." => "Secondary_market_investment"],
                                             3 => ["Investment principal repayment" => "Capital_repayment"],    //OK
                                             4 => ["Investment principal rebuy" => "Principal_buyback"],        // OK                               
                                             5 => ["Interest income on rebuy" => "Interest_income_buyback"],    // OK
                                             6 => ["Interest income" => "Regular_gross_interest_income"],       //
                                             7 => ["Delayed interest income on rebuy" => "Delayed_interest_income_buyback"],     // OK
-                                            8 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                       
                                             9 => ["Delayed interest income" => "Delayed_interest_income"],  // OK
-                                            10 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
-                                            11 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer
-                                            12 => ["Default interest income Loan ID:" => "Late_payment_fee_income"],            // ?????????
-                                            13 => ["Default interest income" => "Late_payment_fee_income"],                     // ?????????
-                                            14 => ["Client withdrawal" => "Cash_withdrawal"],
-                                            15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
-                                            16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
-                                            ]                    
+                                            10 => ["Default interest income on rebuy Rebuy" => "Default_interest_income_rebuy"],
+                                            11 => ["Default interest income" => "Default_interest_income"],                 
+                                            12 => ["Late payment fee income" =>"Late_payment_fee_income"],      // OK                                             
+                                            13 => ["Discount/premium for secondary market transaction" => "Income_secondary_market"],   // For seller
+                                            14 => ["Discount/premium for secondary market transaction" => "Cost_secondary_market"],     // for buyer                                    
+                                            15 => ["Client withdrawal" => "Cash_withdrawal"],
+ //                                           15 => ["Outgoing currency exchange transaction" => "Currency_exchange_transaction"],
+ //                                           16 => ["Incoming currency exchange transaction" => "Currency_exchange_transaction"],
+                                            18 => ["Incoming currency exchange transaction" => "Incoming_currency_exchange_transaction"],
+                                            19 => ["Outgoing currency exchange transaction" => "Outgoing_currency_exchange_transaction"],                           
+                                            20 => ["Reversed late payment fee income" => "Compensation_negative"], 
+                                            21 => ["FX commission with Exchange Rate" => "Currency_exchange_fee"],
+                                            22 => ["Cashback bonus" => "Incentives_and_bonus"],
+                                            23 => ["Affiliate bonus" => "Incentives_and_bonus"],
+                                            24 => ["Investment share buyer pays to a seller. "  => "Sell_secondary_market"],
+                                            
+
+                                        ]                    
                                 ],
                     "functionName" => "getComplexTransactionDetail",
                 ],                
@@ -265,14 +290,22 @@ class mintos extends p2pCompany {
             "K" =>  [
                 "name" => "investment_LTV"                                      // Winvestify standardized name   OK
              ],
-            "L" =>  [
-                    "name" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-             ],
-            "M" =>  [
+            "L" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
+            /*"M" =>  [
                 "name" => "investment_numberOfInstalments"                      // Winvestify standardized name. This is, 
                                                                                 // at time of investing, the number of
                                                                                 // instalments.
-             ],
+             ],*/
             "N" =>  [
                 "name" => "investment_paidInstalments"                          // Winvestify standardized name OK
                 ],
@@ -377,13 +410,13 @@ class mintos extends p2pCompany {
                     "type" => "investment_currency",                            // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
                 ],
-                [
+                /*[
                     "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => "#current.investment_originalState",  // set to "ACTIVE"
                                 ],
                     "functionName" => "getDefaultValue",
-                ],
+                ],*/
                 [
                     "type" => "investment_typeOfInvestment",                    // Winvestify standardized name  OK
                     "inputData" => [
@@ -449,7 +482,24 @@ class mintos extends p2pCompany {
             ]
         ],
         6 => [
-            "name" => "amortizationtable_paymentStatus"
+                [
+                    "type" => "amortizationtable_paymentStatus",                          
+                    "inputData" => [                                            
+                                "input2" => "",                                  
+                                "input3" => "",
+                                "input4" => 0                                   
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],        
+                [
+                    "type" => "amortizationtable_paymentStatusOriginal",    
+                    "inputData" => [                                       
+                                "input2" => "",                        
+                                "input3" => "",
+                                "input4" => 0                             
+                            ],
+                    "functionName" => "extractDataFromString",
+                ],
         ]
     ];
     
@@ -501,9 +551,17 @@ class mintos extends p2pCompany {
                 ]           
              ],
     */
-            "J" =>  [
-                    "name" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
-                 ],  
+            "J" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => "."
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
             "M" =>  [
                     "name" => "investment_originalState"                        // Winvestify standardized name  OK
                  ], 
@@ -512,7 +570,7 @@ class mintos extends p2pCompany {
                  ],
             "R" =>  [
                 [
-                    "type" => "investment_outstandingPrincipal",                // Winvestify standardized name OK 
+                    "type" => "investment_outstandingPrincipalFromP2P",                // Winvestify standardized name OK 
                     "inputData" => [
                                 "input2" => "",
                                 "input3" => ".",
@@ -520,13 +578,13 @@ class mintos extends p2pCompany {
                                 ],
                     "functionName" => "getAmount",
                 ],
-                [
+                /*[
                     "type" => "investment_statusOfLoan",                        // Winvestify standardized name  OK
                     "inputData" => [
                                 "input2" => "#current.investment_originalState",                            
                                 ],
                     "functionName" => "getDefaultValue",
-                ],
+                ],*/
             ],
             "V" =>  [
                 [
@@ -579,7 +637,7 @@ class mintos extends p2pCompany {
                 "type" => "myWallet",                                           // Winvestify standardized name   OK
                 "inputData" => [
                     "input2" => "",
-                    "input3" => ",",
+                    "input3" => ".",
                     "input4" => 16
                 ],
                 "functionName" => "getAmount",
@@ -591,6 +649,7 @@ class mintos extends p2pCompany {
                 "inputData" => [
                     "input2" => "1",
                     "input3" => "0",
+                    "input4" => ".",
                 ],
                 "functionName" => "handleNumber",
             ]
@@ -600,11 +659,22 @@ class mintos extends p2pCompany {
                 "type" => "outstandingPrincipal",                               // Winvestify standardized name  OK
                 "inputData" => [
                     "input2" => "",
-                    "input3" => ",",
+                    "input3" => ".",
                     "input4" => 16
                 ],
                 "functionName" => "getAmount",
             ]
+        ],
+        "reservedFunds" => [
+            [
+                "type" => "reservedFunds",                                      // Winvestify standardized name  OK
+                "inputData" => [
+                    "input2" => "",
+                    "input3" => ".",
+                    "input4" => 16
+                ],
+                "functionName" => "getAmount",
+            ],
         ],
         ]
     ];      
@@ -622,7 +692,7 @@ class mintos extends p2pCompany {
                 "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
                 "investment_loanType" => "translateLoanType",
                 "investment_amortizationMethod" => "translateAmortizationMethod",  
-                "investment_statusOfLoan" => "translateOriginalLoanState"
+                //"investment_statusOfLoan" => "translateOriginalLoanState"
             ]
         ],
         "expiredLoan" => [
@@ -630,27 +700,31 @@ class mintos extends p2pCompany {
                 "investment_buyBackGuarantee" => "translateInvestmentBuyBackGuarantee",
                 "investment_loanType" => "translateLoanType",
                 "investment_amortizationMethod" => "translateAmortizationMethod",  
-                "investment_statusOfLoan" => "translateOriginalLoanState"
+                //"investment_statusOfLoan" => "translateOriginalLoanState"
             ]
         ]
     ];
     
-    
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus",
+        ]
+    ];    
     
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
             'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 'I' => 'Next Payment',
-            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Term', 'N' => 'Payments Received', 'O' => 'Status', 
-            'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Purchase' , 'S' => 'Received Payments', 
+            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Remaining Term', 'N' => 'Payments Received', 'O' => 'Status', 
+            'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Investment' , 'S' => 'Received Payments', 
             'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
             );
      
       protected $expiredLoansHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
             'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 
-            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Term', 'L' => 'Payments Received', 'M' => 'Status', 
-            'N' => 'Buyback Guarantee', 'O' => 'My Investments', 'P' => 'Date of Purchase' , 'Q' => 'Received Payments', 
+            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Initial Term', 'L' => 'Payments Received', 'M' => 'Status', 
+            'N' => 'Buyback Guarantee', 'O' => 'My Investments', 'P' => 'Date of Investment' , 'Q' => 'Received Payments', 
             'R' => 'Outstanding Principal', 'S' => 'Amount in Secondary Market', 'T' => 'Price', 'U' => 'Discount/Premium', 
-            'V' => 'Currency', 'W' => 'Finished');
+            'V' => 'Currency', 'W' => 'Finished', 'X' => 'Rebuy reasons');
       
     protected $transactionHeader = array(
         'A' => 'Transaction ID', 
@@ -661,6 +735,7 @@ class mintos extends p2pCompany {
         'F' => 'Currency'
             );
     
+    
        
     function __construct() {
         parent::__construct();
@@ -669,8 +744,8 @@ class mintos extends p2pCompany {
         $this->typeFileInvestment = "xlsx";
         $this->typeFileExpiredLoan = "xlsx";
         $this->typeFileAmortizationtable = "html";
-        $this->minEmptySize = 3108;
-        $this->maxEmptySize = 3110;
+        //$this->minEmptySize = 3104;
+        //$this->maxEmptySize = 3400;
         
         //$this->loanIdArray = array("15058-01","12657-02 ","14932-01 ");
         //$this->maxLoans = count($this->loanIdArray);
@@ -875,31 +950,37 @@ class mintos extends p2pCompany {
             case 5:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }               
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for mintos files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
                 }
-                
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if (Configure::read('debug')) {
                     echo 'File size:     ' . $size;
                 }
-
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+               
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                } */
                 
                 
                 if(empty($this->tempUrl['transactionPage'])){                 
                     $this->tempUrl['transactionPage'] = array_shift($this->urlSequence);
                     //Url preparation for download multiple tramsaction files
                     $this->numberOfFiles = 0;
-                    $this->tempUrl['downloadTransacitonUrl'] = array_shift($this->urlSequence);
+                    $this->tempUrl['downloadTransactionUrl'] = array_shift($this->urlSequence);
                     $this->tempUrl['transactionReferer'] = array_shift($this->urlSequence);         
                     $this->tempUrl['transactionsCredentials'] = array_shift($this->urlSequence);
                     $this->tempUrl['headersJson'] = array_shift($this->urlSequence);
@@ -943,28 +1024,35 @@ class mintos extends p2pCompany {
                 else {
                      $this->idForSwitch = 5;
                 }
-                $this->getPFPFileMulticurl($this->tempUrl['downloadTransacitonUrl'], $referer, $credentials, $headers, $this->fileName);
+                $this->getPFPFileMulticurl($this->tempUrl['downloadTransactionUrl'], $referer, $credentials, $headers, $this->fileName);
                 break;
             case 7:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for mintos files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                //$size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
                 if (Configure::read('debug')) {
                     echo 'File size:     ' . $size;
                 }
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
+      
+                //if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
                     } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                        return $this->getError(__LINE__, __FILE__, $headerError);
                     }
-                } else {
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                         unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                    }
+                /*} else {
                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
+                }*/
                    
                 $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
@@ -987,25 +1075,41 @@ class mintos extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
-                if (Configure::read('debug')) {
-                    echo 'File size:     ' . $size;
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for mintos files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                     unlink($this->getFolderPFPFile() . DS . $this->fileName);
                 }
 
-                $size = filesize($this->getFolderPFPFile() . DS . $this->fileName);
-                if ($size < $this->minEmptySize || $size > $this->maxEmptySize) {
-                    $headerError = $this->compareHeader();
-                    if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
-                        return $this->getError(__LINE__, __FILE__, $headerError);
-                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
-                        $this->getError(__LINE__, __FILE__, $headerError);
-                        //$this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
-                    }
-                } else {
-                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                } 
                 
                 $this->idForSwitch++;     
             case 9:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for mintos files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
+                }
                 $this->idForSwitch++;          
                 $this->getCompanyWebpageMultiCurl();
                 break; 
@@ -1019,8 +1123,18 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
-
+                $eurDashboardFound = false;
                 foreach($boxes as $keyBox => $box){
+                    $boxValue = $box->nodeValue;
+                    echo $boxValue;
+                    if(strpos($boxValue, '€') !== false){
+                        echo 'Dashboard with € found';
+                        $eurDashboardFound = true;
+                    }
+                    else{
+                        continue;
+                    }
+
                     //echo $box->nodeValue;
                     //echo "BOX NUMBER: =>" . $keyBox;
                     $tds = $box->getElementsByTagName('td');
@@ -1029,10 +1143,10 @@ class mintos extends p2pCompany {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
                     foreach($tds as $key => $td){
-                        //echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
+                        echo $key . " => " . $td->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["myWallet"] = $tds[1]->nodeValue;
-                        $tempArray["global"]["outstandingPrincipal"] = $tds[37]->nodeValue;   
-                        //$tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
+                        $tempArray["global"]["outstandingPrincipal"] = $tds[3]->nodeValue;   
+                       //$tempArray["global"]["totalEarnedInterest"] = $this->getMonetaryValue($tds[21]->nodeValue);
 
 
                     }
@@ -1045,8 +1159,14 @@ class mintos extends p2pCompany {
                         //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
                         $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
                     }*/
+                    break;
 
                 }
+                
+                if(!$eurDashboardFound){
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_CURRENCY);
+                }
+                
                 $lis = $boxes[0]->getElementsByTagName('li');
                 $this->verifyNodeHasElements($lis);
                 if (!$this->hasElements) {
@@ -1057,7 +1177,7 @@ class mintos extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
-                $tempArray["global"]["activeInvestment"] = $divs[2]->nodeValue;
+                $tempArray["global"]["activeInvestment"] = trim($divs[2]->nodeValue);
                 print_r($tempArray["global"]);
                 return $tempArray["global"];
         }
@@ -1258,7 +1378,7 @@ class mintos extends p2pCompany {
      */
     public function translateLoanType($inputData) {
         $type = WIN_TYPEOFLOAN_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData){
             case "MORTGAGE LOAN":
                 $type = WIN_TYPEOFLOAN_MORTGAGE;
@@ -1296,7 +1416,7 @@ class mintos extends p2pCompany {
      */
     public function translateAmortizationMethod($inputData) {
         $type = WIN_AMORTIZATIONMETHOD_UNKNOWN;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData){
             case "FULL":
                 $type = WIN_AMORTIZATIONMETHOD_FULL;
@@ -1305,7 +1425,7 @@ class mintos extends p2pCompany {
                 $type = WIN_AMORTIZATIONMETHOD_PARTIAL;
                 break;
             case "INTEREST-ONLY":
-                $type = WIN_AMORTIZATIONMETHOD_INTERESTONLY;
+                $type = WIN_AMORTIZATIONMETHOD_INTEREST_ONLY;
                 break;
             case "BULLET":
                 $type = WIN_AMORTIZATIONMETHOD_BULLET;
@@ -1352,7 +1472,7 @@ class mintos extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         $data = WIN_BUYBACKGUARANTEE_NOT_PROVIDED;
-        $inputData = mb_strtoupper($inputData);
+        $inputData = mb_strtoupper(trim($inputData));
         switch ($inputData) {
             case "YES":
                 $data = WIN_BUYBACKGUARANTEE_PROVIDED;
@@ -1367,7 +1487,7 @@ class mintos extends p2pCompany {
      * @param string $inputData     company specific originalLoanState
      * @return int                  Winvestify standardized investmentBuyBackGuarantee
      */
-    public function translateOriginalLoanState($inputData) {
+    /*public function translateOriginalLoanState($inputData) {
 
         switch ($inputData) {
             case "Current":
@@ -1387,7 +1507,10 @@ class mintos extends p2pCompany {
                 break; 
             case "Default": 
                 $result = WIN_LOANSTATUS_ACTIVE;
-                break;            
+                break;
+            case "Grace Period": 
+                $result = WIN_LOANSTATUS_ACTIVE;
+                break;
             case "Finished": 
                 $result = WIN_LOANSTATUS_FINISHED;
                 break; 
@@ -1396,7 +1519,7 @@ class mintos extends p2pCompany {
                 break;   
         }   
         return $result; 
-    }       
+    }*/       
   
  
     function structureRevisionAmortizationTable($node1, $node2){
@@ -1422,5 +1545,54 @@ class mintos extends p2pCompany {
         return $structureRevision;
     }
     
+
+    /**
+     * Function to translate the company specific AmortizationPaymentStatus to the Winvestify standardized
+     * concept
+     * 
+     * @param string $inputData     company specific AmortizationPaymentStatus
+     * @return int                  Winvestify standardized AmortizationPaymentStatus
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+        $data = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+        $inputData = mb_strtoupper(trim($inputData));
+
+        switch ($inputData) {
+            case "PAID AFTER THE DUE DATE":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE;
+                break;
+            case "PAID":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+                break;
+            case "SCHEDULED":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;
+            case "LATE":
+                $data = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;                     
+        }
+        return $data;        
+    }
+/*
+
+20.12.2016	 € 282.03	 € 545.26	 € 827.29	  20.12.2016	 Paid
+20.01.2017	 € 267.01	 € 560.28	 € 827.29	  31.01.2017	 Paid after the due date
+Received late payment fee: € 36.36
+20.12.2017	 € 319.97	 € 507.32	 € 827.29                        Late
+20.01.2018	 € 306.64	 € 520.65	 € 827.29			 Scheduled 
+
+
+WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED    
+WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID
+WIN_AMORTIZATIONTABLE_PAYMENT_PAID_AFTER_DUE_DATE
+WIN_AMORTIZATIONTABLE_PAYMENT_PAID
+WIN_AMORTIZATIONTABLE_PAYMENT_PENDING                     
+WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN
+
+ 
+ 
+
+
+ */    
     
 }

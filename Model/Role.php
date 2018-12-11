@@ -1,5 +1,4 @@
 <?php
-
 /**
 * +-----------------------------------------------------------------------------+
 * | Copyright (C) 2017, http://www.winvestify.com                               |
@@ -19,9 +18,6 @@
 * @version 0.1
 * @date 2017-06-16
 * @package
-*
-* 
-* 
 */
 
 App::uses('CakeEvent', 'Event');

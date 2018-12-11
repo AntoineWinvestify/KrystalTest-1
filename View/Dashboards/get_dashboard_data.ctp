@@ -142,41 +142,44 @@ foreach ($dashboardGlobals['investments'] as $key => $companyGlobal) {
             var canvas1 = document.getElementById("pieChart1");
             var labelsPieChart1 = <?php echo json_encode($labelsPieChart1); ?>;
             var dataPieChart1 = <?php echo json_encode($dataPieChart1); ?>;
-            var data1 = {
-                labels: labelsPieChart1,
-                datasets: [
-                    {
-                        data: dataPieChart1,
-                        backgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#706bdd",
-                            "#55acee"
-                        ],
-                        hoverBackgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#706bdd",
-                            "#55acee"
-                        ]
-                    }]
-            };
-            var myPieChart1 = new Chart(canvas1, {
-                type: 'doughnut',
-                data: data1,
-                options: {
-                    title: {
-                        display: true,
-                        text: '<?php echo __("My Balance") ?>',
-                        fontSize: 16,
-                        fontFamily: "Arial"
+            if (dataPieChart1[0] != "No data") {
+                var data1 = {
+                    labels: labelsPieChart1,
+                    datasets: [
+                        {
+                            data: dataPieChart1,
+                            backgroundColor: [
+                                "#5acc5a",
+                                "#24e0c5",
+                                "#08c4b2",
+                                "#0b8599",
+                                "#706bdd",
+                                "#55acee"
+                            ],
+                            hoverBackgroundColor: [
+                                "#5acc5a",
+                                "#24e0c5",
+                                "#08c4b2",
+                                "#0b8599",
+                                "#706bdd",
+                                "#55acee"
+                            ]
+                        }]
+                };
+                var myPieChart1 = new Chart(canvas1, {
+                    type: 'doughnut',
+                    data: data1,
+                    options: {
+                        title: {
+                            display: true,
+                            text: '<?php echo __("My Balance") ?>',
+                            fontSize: 16,
+                            fontFamily: "Arial"
+                        }
                     }
-                }
-            });
+                });
+            }
+
 
 
 
@@ -185,41 +188,43 @@ foreach ($dashboardGlobals['investments'] as $key => $companyGlobal) {
             var canvas2 = document.getElementById("pieChart2");
             var labelsPieChart2 = <?php echo json_encode($labelsPieChart2) ?>;
             var dataPieChart2 = <?php echo json_encode($dataPieChart2) ?>;
-            var data2 = {
-                labels: labelsPieChart2,
-                datasets: [
-                    {
-                        data: dataPieChart2,
-                        backgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#706bdd",
-                            "#55acee"
-                        ],
-                        hoverBackgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#706bdd",
-                            "#55acee"
-                        ]
-                    }]
-            };
-            var myPieChart2 = new Chart(canvas2, {
-                type: 'doughnut',
-                data: data2,
-                options: {
-                    title: {
-                        display: true,
-                        text: '<?php echo __("Outstanding Principal") ?>',
-                        fontSize: 16,
-                        fontFamily: "Arial"
+            if (dataPieChart2[0] != "No data") {
+                var data2 = {
+                    labels: labelsPieChart2,
+                    datasets: [
+                        {
+                            data: dataPieChart2,
+                            backgroundColor: [
+                                "#5acc5a",
+                                "#24e0c5",
+                                "#08c4b2",
+                                "#0b8599",
+                                "#706bdd",
+                                "#55acee"
+                            ],
+                            hoverBackgroundColor: [
+                                "#5acc5a",
+                                "#24e0c5",
+                                "#08c4b2",
+                                "#0b8599",
+                                "#706bdd",
+                                "#55acee"
+                            ]
+                        }]
+                };
+                var myPieChart2 = new Chart(canvas2, {
+                    type: 'doughnut',
+                    data: data2,
+                    options: {
+                        title: {
+                            display: true,
+                            text: '<?php echo __("Outstanding Principal") ?>',
+                            fontSize: 16,
+                            fontFamily: "Arial"
+                        }
                     }
-                }
-            });
+                });
+            }       
 
 
 
@@ -227,41 +232,44 @@ foreach ($dashboardGlobals['investments'] as $key => $companyGlobal) {
             var canvas3 = document.getElementById("pieChart3");
             var labelsPieChart3 = <?php echo json_encode($labelsPieChart3); ?>;
             var dataPieChart3 = <?php echo json_encode($dataPieChart3); ?>;
-            var data3 = {
-                labels: labelsPieChart3,
-                datasets: [
-                    {
-                        data: dataPieChart3,
-                        backgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#706bdd",
-                            "#55acee"
-                        ],
-                        hoverBackgroundColor: [
-                            "#5acc5a",
-                            "#24e0c5",
-                            "#08c4b2",
-                            "#0b8599",
-                            "#706bdd",
-                            "#55acee"
-                        ]
-                    }]
-            };
-            var myPieChart3 = new Chart(canvas3, {
-                type: 'doughnut',
-                data: data3,
-                options: {
-                    title: {
-                        display: true,
-                        text: '<?php echo __("Amount Invested") ?>',
-                        fontSize: 16,
-                        fontFamily: "Arial"
+            if (dataPieChart3[0] != "No data") {
+                var data3 = {
+                    labels: labelsPieChart3,
+                    datasets: [
+                        {
+                            data: dataPieChart3,
+                            backgroundColor: [
+                                "#5acc5a",
+                                "#24e0c5",
+                                "#08c4b2",
+                                "#0b8599",
+                                "#706bdd",
+                                "#55acee"
+                            ],
+                            hoverBackgroundColor: [
+                                "#5acc5a",
+                                "#24e0c5",
+                                "#08c4b2",
+                                "#0b8599",
+                                "#706bdd",
+                                "#55acee"
+                            ]
+                        }]
+                };
+                var myPieChart3 = new Chart(canvas3, {
+                    type: 'doughnut',
+                    data: data3,
+                    options: {
+                        title: {
+                            display: true,
+                            text: '<?php echo __("Amount Invested") ?>',
+                            fontSize: 16,
+                            fontFamily: "Arial"
+                        }
                     }
-                }
-            });
+                });
+                
+            }    
 
         });	// function
 </script>

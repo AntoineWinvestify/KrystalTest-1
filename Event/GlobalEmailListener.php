@@ -63,7 +63,7 @@ class GlobalEmailListener implements CakeEventListener {
         /*
           DEFINED EVENTS:
           newUserCreated                      A new user has successfully registered
-          SendContacMessage                   Somebody contacted use via ContactForm
+          SendContactMessage                  Somebody contacted use via ContactForm
          */
 
         
@@ -116,24 +116,6 @@ class GlobalEmailListener implements CakeEventListener {
             $Email->send();
         } catch (Exception $e) {
             $infoString = __FILE__ . " " . __LINE__ . " Event: 'newUserCreated'. Caught email exception: " . $e->getMessage() . "\n";
-            CakeLog::error($infoString);
-        }
-
-// TEMPORARY FIX: SEND A EMAIL TO MANUEL EVERYTIME WHEN A NEW USER HAS SUCCESFULLY REGISTERED. THIS IS TO BE REMOVED
-// BY MAY 31 2017
-        try {
-            $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to(array('manuelmillan@winvestify.com' => __("Admin Winvestify")));
-            $Email->subject(__("Registration of new user at Winvestify"));
-            $Email->template('admin', 'standard_email_layout');
-            $Email->viewVars(array('email' => $resultInvestor['Investor']['investor_email'],
-                'telephone' => $resultInvestor['Investor']['investor_telephone'],
-            ));
-            $Email->emailFormat('html');
-            $Email->send();
-        } catch (Exception $e) {
-            $infoString = __FILE__ . " " . __LINE__ . " Event: 'newUserCreated: admin email'. Caught email exception: " . $e->getMessage() . "\n";
             CakeLog::error($infoString);
         }
     }

@@ -180,7 +180,7 @@ echo $companyInvestmentDetails[0];
                         <div class="tab-pane active" id="<?php echo $companyInvestmentDetails[1]['name'] ?>Tab">
                             <div class="row">
                                 <div class="col-xs-12 col-sm-12 col-md-2 col-md-offset-5 col-lg-2 col-lg-offset-5">
-                                    <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/> <i class="ion ion-ios-information-outline tooltipPFP"></i>
+                                    <img src="<?php echo $companyInvestmentDetails[1]['logo'] ?>" class="img-responsive center-block"/>
                                 </div>
                             </div>
                             <div class="row" style="display:none;" id="tooltipPFP">
@@ -234,22 +234,22 @@ echo $companyInvestmentDetails[0];
                                     <div class="card card-stats">
                                         <div class="card-content">
                                             <p class="headerBox"><small><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Actual Yield.') ?>" class="ion ion-ios-information-outline" ></i></small> <strong><?php echo __('Actual Yield') ?></strong></p>
-                                            <h3 class="title">0</h3>
+                                            <h3 class="title"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></h3>
                                         </div>
                                         <div class="card-footer">
                                             <table id="box2Table" class="table" width="100%" cellspacing="0">
                                                 <tbody>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return - Total Funds.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR Total Funds') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualTotalFundsReturn'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualTotalFundsReturn']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPast12Months'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Net Annual Return past year.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('NAR past year') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnualReturnPastYear'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPastYear']*100, WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                     <tr>
@@ -260,11 +260,11 @@ echo $companyInvestmentDetails[0];
                                                                 <i class="ion ion-arrow-graph-up-right" style="color:black"></i>
                                                             </span>
                                                         </td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netReturnPast12Months'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netReturnPast12Months'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . " €" ?></td>
                                                     </tr>
                                                     <tr>
                                                         <td class="left"><i data-toggle="tooltip" data-container="body" data-placement="top" title="<?php echo __('Your total interest and other income on all linked platforms minus fees, tax and write-offs.') ?>" class="ion ion-ios-information-outline" ></i> <?php echo __('Net Return, past year') ?></td>
-                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netReturnPastYear'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . "%" ?></td>
+                                                        <td class="right"><?php echo number_format(round($companyInvestmentDetails[1][0]['Userinvestmentdata']['userinvestmentdata_netReturnPastYear'], WIN_SHOW_DECIMAL), WIN_SHOW_DECIMAL) . " €" ?></td>
                                                     </tr>
                                                     <tr><td colspan="2"><hr width="90%" class="no-padding"/></td></tr>
                                                 </tbody>

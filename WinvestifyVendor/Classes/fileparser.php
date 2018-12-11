@@ -94,7 +94,7 @@
  */
 class Fileparser {
     
-    protected $config = array ('offsetStart' => 0,
+    protected $config =  ['offsetStart' => 0,
                             'offsetEnd'     => 0,
                             'separatorChar' => ";",
                             'sortParameter' => "",                  // used to "sort" the array and use $sortParameter as prime index.
@@ -102,13 +102,13 @@ class Fileparser {
                                                                     // Typically used for sorting by loanId index
                             'changeCronologicalOrder' => 0          // Do not 'sort' order of the resulting array. This option is executed AFTER
                                                                     // the 'sortParameter' is checked. 
-                            );
+                            ];
 
-    protected $errorData = array();                                 // Contains the information of the last occurred error
+    protected $errorData = [];                                 // Contains the information of the last occurred error
     
     protected $defaultFinishDate;
 
-    protected $currencies = array(EUR => ["EUR", "€"],
+    protected $currencies = [EUR => ["EUR", "€"],
                                     GBP => ["GBP", "£"],
                                     USD => ["USD", "$"],
                                     ARS => ["ARS", "$"],
@@ -121,10 +121,10 @@ class Fileparser {
                                     CHF => ["CHF", "Fr"],
                                     MXN => ["MXN", "$"],
                                     RUB => ["RUB", "₽"],
-                                    );
+                                    ];
 
     // dictionary lookup for trying to identify an unknown concept
-    protected $dictionaryWords = array('tax'    => WIN_CONCEPT_TYPE_COST,
+    protected $dictionaryWords = ['tax'    => WIN_CONCEPT_TYPE_COST,
                                 'instalment'    => WIN_CONCEPT_TYPE_INCOME,
                                 'installment'   => WIN_CONCEPT_TYPE_INCOME,
                                 'payment'       => WIN_CONCEPT_TYPE_COST,
@@ -143,7 +143,7 @@ class Fileparser {
                                 'sale'          => WIN_CONCEPT_TYPE_INCOME,
                                 'earning'       => WIN_CONCEPT_TYPE_INCOME
 
-                            );   
+                            ];   
  // "char" is a space seperated list of the following lables. Note that more then 1 lable can be assigned to the same concept.
  // Possible lables that can be applied to each concept are:
  // AM_TABLE        => Force the collection of the amortization table. This might be a brandnew table or an update of a table for 
@@ -153,6 +153,12 @@ class Fileparser {
  // PRE-ACTIVE      => Investment should go into PRE-ACTIVE state
  // READ_INVESTMENT_DATA => Re-read the data of the investment from the actual "investment.xls" file (assuming it exists). 
  //                         This is only aplicable to the content of the investment model   
+ // TO_ACTIVE_STATUS ==> We put the investment as active
+ // PREACTIVE ==> We put the investment as preactive by default
+ // PREACTIVE_VERIFICATION ==> We verify first that the investment in preactive state is not already in DB in order to save it with preactive state
+ // ACTIVE_VERIFICATION ==> We verify that the investment is not in preactive state, then we add it in DB with active state.
+ //                                 If the investment is already on DB with preactive state, we change the state 
+ //                                 and move the reservedFunds to outstandingPrincipal
     
  /*
   * The index corresponds to the number of the concepts as defined in document "Flow_Data.xlsx"
@@ -160,7 +166,7 @@ class Fileparser {
   * array can be done using both "detail" or "type" as search key
   * 
   * Format:
-  * "detail" => name of internal Winvestify concept as defined in Flow Data
+  * "detail" => name of internal Winvestify concept as defined in Flow Data. Can be considered as en event
   * "transactionType" => Identifies if it is a cost or an income
   * "account" => NOT REALLY USED. MAY BE DELETED 
   * "type" => link to the variables as defined in 'internalVariablesConfiguration.php'
@@ -182,18 +188,18 @@ class Fileparser {
                 "type" => "globalcashflowdata_platformWithdrawals"          
                 ],
             3 => [
-                "detail" => "Primary_market_investment",
+                "detail" => "Primary_market_investment",                        //We want a primary_market_investment but in active state as default                                               //For example Mintos
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "investment_myInvestment",  
-                "chars" => "AM_TABLE"
+                "chars" => "ACTIVE"
                 ],
             4 => [
                 "detail" => "Secondary_market_investment",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "Capital",
                 "type" => "payment_secondaryMarketInvestment",
-                "chars" => "AM_TABLE,"
+                "chars" => "AM_TABLE"
                 ],
             5 => [
                 "detail" => "Capital_repayment",
@@ -218,7 +224,8 @@ class Fileparser {
                 "detail" => "Principal_and_interest_payment",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "Mix",
-                "type" => "payment_principalAndInterestPayment"
+                "type" => "payment_principalAndInterestPayment",
+                "chars" => "REPAYMENT"
                 ],
             9 => [
                 "detail" => "Regular_gross_interest_income",
@@ -260,7 +267,7 @@ class Fileparser {
                 "detail" => "Compensation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensationPositive"    
+                "type" => "payment_platformCompensationPositive"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -278,7 +285,7 @@ class Fileparser {
                 "detail" => "Recoveries",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "concept19"
+                "type" => "payment_loanRecoveries"
                 ],
             20 => [
                 "detail" => "Commission",
@@ -305,7 +312,7 @@ class Fileparser {
                 "type" => "concept23"
                 ],           
             24 => [
-                "detail" => "Payment_currency_exchange_fee",
+                "detail" => "Currency_exchange_fee",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "payment_currencyExchangeFee"
@@ -332,7 +339,7 @@ class Fileparser {
                 "detail" => "Write-off",
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "investment_writtenOff"
+                "type" => "payment_writtenOff"
                 ],
             29 => [
                 "detail" => "Registration",
@@ -378,22 +385,22 @@ class Fileparser {
                 ],
             36 => [
                 "detail" => "Outgoing_currency_exchange_transaction", 
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
                 "type" => "outgoingCurrencyExchangeTransaction",
                 ],
             37 => [
                 "detail" => "Compensation_negative",  
-                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensationNegative",
+                "type" => "payment_platformCompensationNegative",
                 ],
-            38 => [
+            38 => [     // This is the "normal case" for disinvestments WITH a loan id (LoanBook)
                 "detail" => "Disinvestment_primary_market", 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
                 "type" => "disinvestmentPrimaryMarket",
-                "chars" => "REMOVE_AM_TABLE" 
+                //"chars" => "REMOVE_AM_TABLE" 
                 ],
             39 => [
                 "detail" => "Disinvestment_secundary_market", 
@@ -409,6 +416,76 @@ class Fileparser {
                 "type" => "createReservedFunds",
                 "chars" => "PRE-ACTIVE",
                 ],
+
+            41 => [
+                "detail" => "Cashback_bonus",                            
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "createReservedFunds",
+                ],
+
+            42 => [ // This is for so-called Ghost Loans (example: Zank)
+                "detail" => "Disinvestment_without_loanReference",                            
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "disinvestmentWithoutLoanReference",
+                ],
+            43 => [
+                "detail" => "Commission",                                       // Some commission in Zank are 0,0000 €. getComplexTransactionDetail read this commission as income, we need this to resolve the unknow concept error.
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_commissionPaid"
+            ],
+            44 => [
+                "detail" => "Primary_market_investment_preactive",              //We want a primary_market_investment but in preactive state as default
+                                                                                //For example Zank
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentPreactive",  
+                "chars" => "PREACTIVE"
+                ],
+            45 => [
+                "detail" => "Primary_market_investment_active_verification",    //We want a primary_market_investment in active state as default but
+                                                                                //it is needed a verification if before it was in preactive status
+                                                                                //for example Finanzarel or loanbook
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "investment_myInvestmentActiveVerification",  
+                "chars" => "ACTIVE_VERIFICATION"
+                ],
+            46 => [
+                "detail" => "Regular_gross_interest_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "payment_regularGrossInterestCost"           
+                ],
+            47 => [
+                "detail" => "Capital_repayment_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "Capital",
+                "type" => "payment_capitalRepaymentCost",
+                "chars" => "REPAYMENT"                   
+            ],
+            48 =>[
+                "detail" => "Sell_secondary_market",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_secondaryMarketSell",
+            ],
+            49 =>[
+                "detail" => "Default_interest_income_rebuy",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "DefaultInterestIncomeRebuy",
+            ],
+            /*50 =>[
+                "detail" => "Secondary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_secondaryMarketSell",
+            ],*/
+
+
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept
@@ -430,7 +507,7 @@ class Fileparser {
                 "type" => "investment_activeStateChange",
                 "chars" => "AM_TABLE, READ_INVESTMENT_DATA"                     // = Collect Amortization table *and* re-read the current investment data
                 ],
- /*       Not NEEDED AS THIS IS DONE USING A N ORDINARY TRANSACTION RECORD
+ /*       Not NEEDED AS THIS IS DONE USING AN ORDINARY TRANSACTION RECORD
             10002 => [
                 "detail" => "Change_to_badDebt_state",                          // Move an investment from ACTIVE to WRITTEN_OFF 
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
@@ -850,13 +927,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
 
         echo "totalRows = $maxRows\n";
-     
+
         for ($i = $maxRows; $i > 0; $i--) {
             if (empty($rowDatas[$i]["A"])) {
                 unset($rowDatas[$i]);
             }
         }   
- 
+
         // remove items at from the end of the array
         for ($i == 0; $i < $this->config['offsetEnd']; $i++) {
             array_pop($rowDatas);
@@ -873,7 +950,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 if (array_key_exists("name", $value)) {     
                     $finalIndex = "\$tempArray[\$i]['" . str_replace(".", "']['", $value['name']) . "']";
                     $tempString = $finalIndex  . "= '" . $rowData[$key] .  "'; ";
-                    eval($tempString);                   
+                    eval($tempString); 
                 }
                 else {          // "type" => .......
                     foreach ($value as $myKey => $userFunction ) {
@@ -903,8 +980,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
 
                         array_unshift($userFunction['inputData'], trim($rowData[$key]));       // Add cell content to list of input parameters
                         if ($outOfRange == false) {
-                            $tempResult = call_user_func_array(array(__NAMESPACE__ .'Fileparser',
-                                                                       $userFunction['functionName']),
+                            $tempResult = call_user_func_array([__NAMESPACE__ .'Fileparser',
+                                                                       $userFunction['functionName']],
                                                                        $userFunction['inputData']);
 
                             if (is_array($tempResult)) {                                
@@ -1184,15 +1261,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function normalizeDate($date, $currentFormat) {
-        $internalFormat = $this->multiexplode(array(":", " ", ".", "-", "/"), $currentFormat);
+        $internalFormat = $this->multiexplode([":", " ", ".", "-", "/"], $currentFormat);
         (count($internalFormat) == 1 ) ? $dateFormat = $currentFormat : $dateFormat = $internalFormat[0] . $internalFormat[1] . $internalFormat[2];
-        $tempDate = $this->multiexplode(array(":", " ", ".", "-", "/"), $date);
+        $tempDate = $this->multiexplode([":", " ", ".", "-", "/"], $date);
 
         if (count($tempDate) == 1) {
            return;
         }
 
-        $finalDate = array();
+        $finalDate = [];
 
         $length = strlen($dateFormat);
         for ($i = 0; $i < $length; $i++) {
@@ -1287,10 +1364,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                 $decArray = explode($char, $input);
                 $dec = preg_replace("/[-]/", "", $decArray[1]);
                 $dec2 =  strlen((string)explode(".", $decArray[0])[1]);             
-                $input = strtr($input, array(',' => '.'));    
+                $input = strtr($input, [',' => '.']);    
                 $input = number_format(floatval($input), $dec + $dec2);
             } else{
-                $input = strtr($input, array(',' => '.'));    
+                $input = strtr($input, [',' => '.']);    
                 $input = number_format(floatval($input), 0);
             }
             $separator = "\.";
@@ -1357,11 +1434,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }        
           
         if ($found == YES) {
-            $result = array($internalConceptName,"type" => "internalName");
+            $result = [$internalConceptName,"type" => "internalName"];
             return $result;
         }
         else {
-            echo "unknown concept [$input] for complex, so start doing some guessing for concept $originalConcept\n";  
+            echo "unknown concept [$input] for complex, so start doing some guessing for concept '$originalConcept'\n";  
         }
     } 
     
@@ -1379,7 +1456,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     private function getCurrency($loanCurrency) {
 
-        $filter = array(".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " ");
+        $filter = [".", ",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "];
         $currencySymbol = str_replace($filter, "", $loanCurrency);
 
         foreach ($this->currencies as $currencyIndex => $currency) {        
@@ -1436,7 +1513,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             }
         }        
         if ($found == YES) {
-            $result = array($internalConceptName,"type" => "internalName");
+            $result = [$internalConceptName,"type" => "internalName"];
             return $result;
         }
         else {
@@ -1476,7 +1553,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
     }
 
     /**
-     * Search for a something within a string, starting AFTER $search
+     * Search for something within a string, starting AFTER $search
      * and ending when $separator is found
      * If $search == "" then $extractedString starts from beginning of $input.
      * If $separator = "" then $extractedString contains the $input starting from $search to end
@@ -1672,8 +1749,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
                         array_unshift($userFunction['inputData'], $valueTd);       // Add cell content to list of input parameters
  //                       print_r($userFunction['inputData']);
                         if ($outOfRange == false) {
-                            $tempResult = call_user_func_array(array($this,
-                                                                       $userFunction['functionName']),
+                            $tempResult = call_user_func_array([$this,
+                                                                       $userFunction['functionName']],
                                                                        $userFunction['inputData']
                                     );
 //                            print_r($tempResult);
@@ -1852,13 +1929,14 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $data = $this->convertExcelMultiSheetByParts($file, $inputType);
             echo "HEADER IS: ";
             print_r($data);
-
             return $data;
         } else { //Simple sheet
             $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
             echo "HEADER IS: ";
-            print_r(array_filter($data[1]));
-            return $data[1];
+            foreach($data as $rowData){
+                print_r(array_filter($rowData));
+            }
+            return $data;
         }
     }
       
@@ -1880,6 +1958,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         switch($extension) {
             case "xlsx":
                 $inputType = "Excel2007";
+                break;
+            case "xls":
+                $inputType = "Excel5";
                 break;
             case "csv":
                 $inputType = "CSV";
@@ -2026,7 +2107,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator = ".") {
         $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
         if($separator === "."){
            $cleanInput =  str_replace(",", "", $cleanInput);

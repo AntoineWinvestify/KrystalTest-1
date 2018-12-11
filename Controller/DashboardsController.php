@@ -76,7 +76,9 @@ function getDashboardData()  {
 									));
 
 // Check if investor already has linked one or more accounts. 									
-	$resultLinkedaccounts = $this->Linkedaccount->find("count", array("investor_id" => $this->Session->read('Auth.User.Investor.id')));
+	$resultLinkedaccounts = $this->Linkedaccount->find("count", array("investor_id" => $this->Session->read('Auth.User.Investor.id'),
+                                                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE
+                                                            ));
 																											
 	if ($resultLinkedaccounts > 0) {	// user has one or more linked accounts
 		$dashboardGlobals = JSON_decode($dataResult['Data']['data_JSONdata'], true);
@@ -98,8 +100,11 @@ function getDashboardData()  {
 				$this->set('pieChart1Empty', false);				
 			}
 		if (empty($labelsPieChart)) {
-			$this->set('pieChart1Empty', true);	
+                    $this->set('pieChart1Empty', true);
 		}
+                if (empty($dataPieChart)) {
+                    $dataPieChart[0] = "No data";
+                }
 		$this->set('labelsPieChart1', $labelsPieChart);
 		$this->set('dataPieChart1', $dataPieChart);
 	
@@ -114,8 +119,11 @@ function getDashboardData()  {
 				$this->set('pieChart2Empty', false);
 			}
 		if (empty($labelsPieChart)) {
-			$this->set('pieChart2Empty', true);	
+                    $this->set('pieChart2Empty', true);
 		}
+                if (empty($dataPieChart)) {
+                    $dataPieChart[0] = "No data";
+                }
 		$this->set('labelsPieChart2', $labelsPieChart);
 		$this->set('dataPieChart2', $dataPieChart);
 	
@@ -130,8 +138,11 @@ function getDashboardData()  {
 				$this->set('pieChart3Empty', false);
 			}
 		if (empty($labelsPieChart)) {
-			$this->set('pieChart3Empty', true);	
+                    $this->set('pieChart3Empty', true);
 		}
+                if (empty($dataPieChart)) {
+                    $dataPieChart[0] = "No data";
+                }
 		$this->set('labelsPieChart3', $labelsPieChart);
 		$this->set('dataPieChart3', $dataPieChart);
 		

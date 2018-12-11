@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -16,8 +15,8 @@
  *
  *
  * @author 
- * @version
- * @date
+ * @version 0.1
+ * @date 2018-06-18
  * @package
  */
 
@@ -30,7 +29,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Queue2', 'Amortizationtable');  
+    public $uses = array('Amortizationtable', 'Globalamortizationtable', 'Company', 'Linkedaccount');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -43,7 +42,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
         $this->flowName = "GEARMAN_FLOW3B";
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
-        $workerFunction = "collectamortizationtablesFileFlow";
+        $workerFunction = "parseAm";
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
         //$resultQueue = $this->Queue->getUsersByStatus(FIFO, $queueStatus, $queueAccessType);
@@ -52,7 +51,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Starting Gearman Flow 3B Client\n");
         }
         
-        $inActivityCounter++;                                           // Gearman client 
+        $inActivityCounter++;                                                   // Gearman client 
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
         $numberOfIteration = 0;
         while ($numberOfIteration == 0) {
@@ -63,8 +62,6 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                                                   WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE,
                                                 $jobsInParallel);            
                         
-            
-            
             if (!empty($pendingJobs)) {
                 if (Configure::read('debug')) {
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "There is work to be done");
@@ -77,7 +74,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                     $userReference = $job['Queue2']['queue2_userReference'];
                     $directory = Configure::read('dashboard2Files') . $userReference . DS . $this->queueInfo[$job['Queue2']['id']]['date'] . DS;
                     $dir = new Folder($directory);
-                    $subDir = $dir->read(true, true, $fullPath = true);     // get all sub directories
+                    $subDir = $dir->read(true, true, $fullPath = true);         // get all sub directories
 
                     $i = 0;
                     foreach ($subDir[0] as $subDirectory) {
@@ -94,13 +91,17 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             $this->out(__FUNCTION__ . " " . __LINE__ . ": queueInfo " . $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'][0]);
                         }
                         $dirs = new Folder($subDirectory);
-//                        $nameCompany = $dirs->findRecursive();
 
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
-                        $tempPfpName = explode("/", $allFiles[0]);
-
-                        $pfp = $tempPfpName[count($tempPfpName) - 2];
-                        echo "pfp = " . $pfp . "\n";
+                        if (!empty($allFiles)) {
+                            $tempPfpName = explode("/", $allFiles[0]);
+                            $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        } else {
+                            $allOtherFiles = $dirs->findRecursive(".*");
+                            $tempPfpName = explode("/", $allOtherFiles[0]);
+                            $pfp = $tempPfpName[count($tempPfpName) - 2];
+                        }
+                        echo "Pfp = " . $pfp . "\n";
 
                         $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
                         $i++;
@@ -110,11 +111,19 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                             'pfp' => $pfp,
                             'userReference' => $job['Queue2']['queue2_userReference'],
                             'files' => $allFiles
-                                );
-                        
+                        );
                         echo "PARAM TOTAL";
+                        /* if (in_array($linkedAccountId, $this->queueInfo[$job['Queue2']['id']]['companiesInFlow'])) {
+                          break;
+                          } */
+                        print_r($subDirectory);
+                        if(file_exists($subDirectory . "/" . $pfp)){
+                            $parametersFile = $subDirectory . "/" . $pfp . "/flow3aTransferClientToWorker.json";
+                        }
                     }
-                    $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);
+                    file_put_contents($parametersFile, json_encode($params));
+                    echo "file = $parametersFile";
+                    $this->GearmanClient->addTask($workerFunction, $parametersFile, null, $job['Queue2']['id'] . ".-;" . $workerFunction . ".-;" . $userReference);               
                 }
                 $this->GearmanClient->runTasks();
                 
@@ -125,6 +134,7 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
                 
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, "Data succcessfully downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $this->saveAmortizationtablesToDB();
+
                 unset($pendingJobs);
             }
             else {
@@ -135,13 +145,15 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             }
             
             $inActivityCounter++;
-            if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
+            if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {       
                     $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT \n");
-                }                     
+                }
+                $this->killShellCommand("parseAmortizationDataWorker");
                 exit;
             }
         }
+        $this->killShellCommand("parseAmortizationDataWorker");
     }
     
     /**
@@ -149,15 +161,32 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
      * tables are completely updated until today. Although it seems that Zank takes its time to repay an amortization 
      */
     public function saveAmortizationtablesToDB() {
-$timeStart = time();
+        $timeStart = time();
+
         foreach ($this->tempArray as $tempArray) {
-            foreach ($tempArray as $amortizationData) {
-                $this->Amortizationtable->saveAmortizationtable($amortizationData);
+            foreach ($tempArray as $linkedaccount => $amortizationData) {
+                $filterConditions = array('id' => $linkedaccount);
+                $result = $this->Linkedaccount->find("first", array('conditions' => $filterConditions,
+                                                                        'recursive' => -1,
+                                                                        'fields'  => 'company_id',
+                                                                       ));
+
+                $filterConditions = array('id' => $result['Linkedaccount']['company_id']);       
+                $companyResult = $this->Company->getCompanyDataList($filterConditions);
+
+                $companyTechnicalFeatures = $companyResult[$result['Linkedaccount']['company_id']]['company_technicalFeatures'];  
+                
+                // Does P2P have global, non-individualized amortization tables?
+                if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { 
+                    $this->Globalamortizationtable->saveGlobalAmortizationtable($amortizationData, $result['Linkedaccount']['company_id']);
+                }                                                       
+                else {        
+                    $this->Amortizationtable->saveAmortizationtable($amortizationData);
+                }  
             }
         }
-$timeStop = time();
-echo "NUMBER OF SECONDS EXECUTED = " . ($timeStop - $timeStart) . "\n";        
+        $timeStop = time();
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
     }
-
-    
+   
 }

@@ -37,7 +37,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $this->GearmanWorker->addServers('127.0.0.1');
         $this->GearmanWorker->addFunction('multicurlFiles', array($this, 'getDataMulticurlFiles'));
         $this->GearmanWorker->addFunction('casperFiles', array($this, 'getDataCasperFiles'));
-        echo __FUNCTION__ . " " . __LINE__ . ": " . "Starting to listen to data from its Client\n";
+        echo  __CLASS__ . ": " . "Starting to listen to data from its Client\n";
         while( $this->GearmanWorker->work() );
     }
     
@@ -58,6 +58,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $this->queueCurlFunction = "collectUserGlobalFilesParallel";
         $this->Applicationerror = ClassRegistry::init('Applicationerror');
         $this->Structure = ClassRegistry::init('Structure');
+        $this->Investment = ClassRegistry::init('Investment');
         if (Configure::read('debug')) {
             $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Checking if data arrive correctly\n");
             print_r($data);
@@ -74,19 +75,16 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         foreach ($data["companies"] as $linkedaccount) {
             $this->initCompanyClass($data, $i, $linkedaccount, WIN_DOWNLOAD_PFP_FILE_SEQUENCE);
             
-            $structure = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_SINGLE_INVESTMENT_PAGE);
+            $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_SINGLE_INVESTMENT_PAGE);
+            $structure[] = $this->Structure->getStructure($linkedaccount['Linkedaccount']['company_id'], WIN_STRUCTURE_INVESTMENTS_FILE_HTML);
+            $investmentList = $this->Investment->getData(array('linkedaccount_id' => $linkedaccount['Linkedaccount']['id']), array('investment_loanId'));
             $this->newComp[$i]->setTableStructure($structure);
-            
+            $this->newComp[$i]->setInvestmentList($investmentList);
+            $this->newComp[$i]->$queueCurlFunction();
+
             $i++;
         }
-        $companyNumber = 0;
-        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_START = " . microtime());
-        //We start at the same time the queue on every company
-        foreach ($data["companies"] as $linkedaccount) {
-            $this->newComp[$companyNumber]->$queueCurlFunction();
-            $companyNumber++;
-        }
-        
+
         $this->queueCurls->addListener('complete', array($this, 'multiCurlQueue'));
 
         //This is the queue. It is working until there are requests
@@ -95,9 +93,9 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
             $this->queueCurls->socketSelect();
         }
 
-        $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
+  //      $this->out(__FUNCTION__ . " " . __LINE__ . ": MICROTIME_FINISHED = " . microtime());
         
-        $lengthTempArray = count($this->tempArray);
+        $lengthTempArray = count($this->tempArray);        
         $statusCollect = [];
         $errors = null;
         for ($i = 0; $i < $lengthTempArray; $i++) {
@@ -112,7 +110,7 @@ class CollectDataWorkerShell extends GearmanWorkerShell {
         $data['statusCollect'] = $statusCollect;
         $data['errors'] = $errors;
         if (Configure::read('debug')) {
-            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
+  //          $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "Sending back information of worker 1");
             print_r($data);
         }
         return json_encode($data);

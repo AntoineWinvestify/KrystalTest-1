@@ -55,7 +55,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES),
                                                   WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES,
                                                 $jobsInParallel);            
-            
+
             $linkedaccountsResults = [];
             $queueInfos = [];
             print_r($pendingJobs);
@@ -71,21 +71,24 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     $pathToJsonFile = $dir->findRecursive(WIN_FLOW_NEW_LOAN_FILE . ".*");
                     foreach ($pathToJsonFile as $key => $path) {
                         $tempName = explode("/", $path);
+                        print_r($tempName);
                         if (Configure::read('debug')) {
-                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");
-                            print_r($tempName);
+                            $this->out(__FUNCTION__ . " " . __LINE__ . ": " . "TempName array");                            
                         }
+                        
                         $linkedAccountId = $tempName[count($tempName) - 3];
                         if (!in_array($linkedAccountId, $queueInfo['companiesInFlow'])) {
                             continue;
                         }
-                        $file = new File($path);
+                        $file = new File($path);                  
                         $jsonLoanIds = $file->read(true, 'r');
                         $loanIds = json_decode($jsonLoanIds, true);
+                        $finalLoanIds = $loanIds;
+
                         $linkAccountIds[] = $linkedAccountId;
-                        $queueInfos[] = $loanIds;
+                        $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
-                    $filterConditions = array('id' => $linkAccountIds);
+                    $filterConditions = array('id' => $queueInfo['companiesInFlow']); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     //foreach ($queueInfo['loanIds'] as $key => $loanId) {
                     /*foreach ($loanIds as $key => $loanId) {
@@ -109,7 +112,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             $userLinkedaccounts[$key][$companyType][$i] = $linkedaccount;
                             //We need to save all the accounts id in case that a Gearman Worker fails,in order to delete all the folders
                             $this->userLinkaccountIds[$pendingJobs[$key]['Queue2']['id']][$i] = $linkedaccount['Linkedaccount']['id'];
-                            $loandIdLinkedaccounts[$key][$companyType][$i] = $queueInfos[$key];
+                            $loandIdLinkedaccounts[$key][$companyType][$i] = $loanIdsPerCompany[$linkedaccountId];
                             $i++;
                         }
                     }
@@ -134,15 +137,43 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             echo "Type of access for company" . $typeAccessKey . "\n";
                             echo "All information \n";
                             print_r($data);
-                        }
+                        }                       
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
-                    }
+                        }
                 }
 
                 $this->GearmanClient->runTasks();
-                
-                // ######################################################################################################                
 
+                // ######################################################################################################           
+                foreach ($pendingJobs as $jobToDeleteSlice) {
+                    $queue2JsonDecoded = json_decode($jobToDeleteSlice['Queue2']["queue2_info"], true);
+                    foreach($queue2JsonDecoded['companiesInFlow'] as $linkAccountId){
+                        $path = Configure::read('dashboard2Files') . $jobToDeleteSlice['Queue2']['queue2_userReference'] . DS . $queue2JsonDecoded['date'] . DS . $linkAccountId . DS;
+                        $folder = new Folder($path);
+                        $pathToJsonFile = $folder->findRecursive("finishedToday" . ".*");
+                        if(isset($pathToJsonFile[0])){
+                            echo "Finished investment finded, deleting fron slice db \n";                      
+                            $jsonFile = fopen($pathToJsonFile[0], "r");
+                            $jsonInfo = fread($jsonFile, filesize($pathToJsonFile[0]));
+                            $jsonInfo = json_decode($jsonInfo, true);
+                            echo "Slice to delete: ";
+                            print_r($jsonInfo);
+                            
+                            $this->Investmentslice = ClassRegistry::init('Investmentslice');
+                            foreach($jsonInfo as $sliceId => $loanID){
+                                echo "Deleting $sliceId \n";
+                                $this->Investmentslice->delete($sliceId);
+                            }
+                            
+                        }
+                    }
+                }
+                //Delete the slice of investment that finisehd today.
+               /* if(isset($baseDirectory)){
+                    
+                }*/
+                
+                
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $numberOfIteration++;
             }
@@ -152,12 +183,12 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                 sleep (WIN_SLEEP_DURATION); 
             }
             if ($inActivityCounter > MAX_INACTIVITY) {              // system has dealt with ALL request for tonight, so exit "forever"
-                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";                  
+                echo __METHOD__ . " " . __LINE__ . "Maximum Waiting time expired, so EXIT \n";
+                $this->killShellCommand("collectAmortizationDataWorker");
                 exit;
             }
         }
-        
-        
+        $this->killShellCommand("collectAmortizationDataWorker");       
     }
     
     

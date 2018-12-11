@@ -1,18 +1,18 @@
 <?php
 
 /**
- * +-----------------------------------------------------------------------------+
- * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
+ * | Copyright (C) 2018, http://www.winvestify.com                   	  	|
+ * +----------------------------------------------------------------------------+
  * | This file is free software; you can redistribute it and/or modify 		|
  * | it under the terms of the GNU General Public License as published by  	|
  * | the Free Software Foundation; either version 2 of the License, or 		|
  * | (at your option) any later version.                                      	|
  * | This file is distributed in the hope that it will be useful   		|
  * | but WITHOUT ANY WARRANTY; without even the implied warranty of    		|
- * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                |
+ * | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               |
  * | GNU General Public License for more details.        			|
- * +-----------------------------------------------------------------------------+
+ * +----------------------------------------------------------------------------+
  *
  *
  * @author 
@@ -69,6 +69,12 @@
  * 
  * Parser AmortizationTables                                                    [OK, tested]
  * 
+ * 
+ * 2018-03-20       version 0.91
+ * Minor adjustments in configuration variables
+ * 
+ * 
+ * 
  * Pending:
  * Fecha en duda
  *
@@ -96,8 +102,11 @@ class zank extends p2pCompany {
  
        
     protected $dashboard2ConfigurationParameters = [
-        'outstandingPrincipalRoundingParm' => '0.01'                            // This *optional* parameter is used to determine what we 
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
                                                                                 // consider 0 € in order to "close" an active investment
+        'verifyReservedFunds' => [
+            "function" => "addIntoTransactionAtFinal"
+        ]
     ];
     
     protected $transactionConfigParms = [
@@ -131,15 +140,15 @@ class zank extends p2pCompany {
                             ],
                     "functionName" => "extractDataFromString",
                 ],
-                [
+                /*[
                     "type" => "transactionDetail",                              // Winvestify standardized name   OK
                     "inputData" => [                                            // List of all concepts that the platform can generate  
                                                                                 // format ["concept string platform", "concept string Winvestify"]
                                 "input2" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
-                                    2 => ["inversion" => "Primary_market_investment"],
-                        //            3 => ["inversion" => "Disinvestment"],  
+                                    2 => ["inversion" => "Primary_market_investment_preactive"],
+                                    3 => ["inversion" => "Disinvestment"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
                                     6 => ["recargo" => "Delayed_interest_income"],
@@ -148,7 +157,7 @@ class zank extends p2pCompany {
                                 ]                    
                             ],
                     "functionName" => "getTransactionDetail",
-                ]
+                ]*/
             ],
             "C" => [
                 
@@ -169,7 +178,7 @@ class zank extends p2pCompany {
                                   "input3" => [
                                     0 => ["ingreso" => "Cash_deposit"],
                                     1 => ["retirado" => "Cash_withdrawal"],
-                                    2 => ["inversion" => "Primary_market_investment"],
+                                    2 => ["inversion" => "Primary_market_investment_preactive"],
                                     3 => ["inversion" => "Disinvestment_primary_market"],  
                                     4 => ["principal" => "Capital_repayment"],
                                     5 => ["intereses" => "Regular_gross_interest_income"],
@@ -193,7 +202,7 @@ class zank extends p2pCompany {
                 [
                     "type" => "conceptChars",                                   // Winvestify standardized name
                     "inputData" => [
-				"input2" => "#current.internalName",            // get Winvestify concept
+                                    "input2" => "#current.internalName",            // get Winvestify concept
                                 ],
                     "functionName" => "getConceptChars",
                 ]
@@ -240,10 +249,20 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0
+                                "input3" => 4,
+                                 "input4" => ","
                                 ],
                     "functionName" => "handleNumber",
-                ]                                           
+                ],
+                [
+                    "type" => "investment_expectedAnnualYield",                 
+                    "inputData" => [                                            
+                                "input2" => "",                               
+                                "input3" => "",
+                                "input4" => 0                                   // 'input3' is NOT mandatory. 
+                            ],
+                    "functionName" => "extractDataFromString",
+                ]   
             ], 
             "D" =>  [
                 "name" => "investment_originalDuration"
@@ -279,7 +298,15 @@ class zank extends p2pCompany {
                 ],
             ],
             "F" => [
-                "name" => "investment_capitalRepaymentFromP2P"
+                [
+                    "type" => "investment_capitalRepaymentFromP2P",                                         // Winvestify standardized name   OK
+                    "inputData" => [                                 
+                                "input2" => ".",                  
+                                "input3" => ",",                      
+                                "input4" => 4
+                                ],
+                    "functionName" => "getAmount",
+                ],
             ],
             /*"G" => DON'T TAKE, ASK ANTOINE*/
             /* "H" => DON'T TAKE, ASK ANTOINE*/
@@ -306,7 +333,7 @@ class zank extends p2pCompany {
                     "functionName" => "extractDataFromString",
                 ],
                 [
-                    "type" => "investment_originalLoanState",                    
+                    "type" => "investment_originalState",                    
                     "inputData" => [                                            // Get the "original" Zank concept, which is used later on
                                 "input2" => "#current.investment_statusOfLoan", // 'input3' is NOT mandatory. 
                             ],
@@ -336,7 +363,8 @@ class zank extends p2pCompany {
                     "type" => "investment_nominalInterestRate",                 // Winvestify standardized name   OK
                     "inputData" => [
                                 "input2" => "100",
-                                "input3" => 0
+                                "input3" => 4,
+                                "input4" => ","
                                 ],
                     "functionName" => "handleNumber",
                 ]                                         
@@ -417,7 +445,7 @@ class zank extends p2pCompany {
             'offsetStart' => 1,
             'offsetEnd'     => 0,
             'separatorChar' => ";",
-            'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
+            'sortParameter' => "investment_loanId"                              // used to "sort" the array and use $sortParameter as prime index.
         ]
     ); 
     
@@ -486,8 +514,25 @@ class zank extends p2pCompany {
                 "functionName" => "getAmount",
             ]
         ],*/
-        8 => [
-            "name" => "amortizationtable_paymentStatus"
+        7 => [                                                                  // Use the 2 letter code, except for Cuota Congelada
+            [                                                                   // Winvestify standardized name  OK
+                "type" => "amortizationtable_paymentStatus",                        
+                "inputData" => [                                           
+                            "input2" => "",                        
+                            "input3" => "",
+                            "input4" => 0                                 
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "amortizationtable_paymentStatusOriginal",                              
+                "inputData" => [                                           
+                            "input2" => "",                        
+                            "input3" => "",
+                            "input4" => 0                                   
+                        ],
+                "functionName" => "extractDataFromString",
+            ],
         ]
     ];
     
@@ -583,7 +628,13 @@ class zank extends p2pCompany {
         
     ];
     
-        protected $investmentHeader = array(   
+    protected $callbackAmortizationTable = [
+        "parserDataCallback" => [
+            "amortizationtable_paymentStatus" => "translateAmortizationPaymentStatus"
+        ]
+    ];
+    
+    protected $investmentHeader = array(   
         'A' => 'Fecha',
         'B' => 'Préstamo',
         'C' => 'Rentabilidad',
@@ -593,14 +644,16 @@ class zank extends p2pCompany {
         'G' => 'Intereses ordinarios',
         'H' => 'Intereses demora',
         'I' => 'Comision',
-        'J' => 'Estado');
+        'J' => 'Estado'
+    );
     
     protected $transactionHeader = array(
         'A' => 'Fecha',
         'B' => 'Tipo',
         'C' => 'Cantidad',
         'D' => 'Destino',
-        'E' => 'Saldo');
+        'E' => 'Saldo'
+    );
 
   
     function __construct() {
@@ -964,7 +1017,7 @@ class zank extends p2pCompany {
                     $tempArray['marketplace_subscriptionProgress'] = 10000;
                 } else if ($status == 'Publicado') {
                     $tempArray['marketplace_subscriptionProgress'] = $subdivs[39]->nodeValue;
-                } else if ($status == 'Cancelado') {
+                } else if ($status == 'Cancelado' || $status == 'Tiempo excedido') {
                     $tempArray['marketplace_subscriptionProgress'] = 0;
                     $tempArray['marketplace_status'] = REJECTED;
                 }
@@ -1765,11 +1818,16 @@ class zank extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for zank files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 $path = $this->getFolderPFPFile();
                 $file = $path . DS . $this->fileName;
@@ -1790,11 +1848,16 @@ class zank extends p2pCompany {
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
+                if(mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"){  //Compare mine type for zank files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
                 $headerError = $this->compareHeader();
                 if($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER){    
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 } else if( $headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER){
-                    $this->saveGearmanError(array('line' => __LINE__, 'file' => __file__, 'subtypeErrorId' => $headerError));
+                    return $this->getError(__LINE__, __FILE__, $headerError);
                 }
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();
@@ -1815,7 +1878,7 @@ class zank extends p2pCompany {
                         echo " " . $key . "=>" . $div->nodeValue . " ";
                     }
                 }*/
-                $this->tempArray['global']['activeInvestment'] = $divs[28]->nodeValue;
+                $this->tempArray['global']['activeInvestment'] = $divs[27]->nodeValue;
                 return $this->tempArray; 
         }
     }
@@ -1832,6 +1895,8 @@ class zank extends p2pCompany {
                 $this->loanTotalIds = $this->loanIds;
                 $this->loanKeys = array_keys($this->loanIds);
                 $this->loanIds = array_values($this->loanIds);
+                    
+
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
                 break;
@@ -1839,8 +1904,12 @@ class zank extends p2pCompany {
                 //Change account
                 $this->credentials['_username'] = $this->user;
                 $this->credentials['_password'] = $this->password;
-                //$this->credentials['_username'] = "Klauskuk@gmail.com";
-                //$this->credentials['_password'] = "P2Pes2017";
+                if (empty($this->loanTotalIds) || empty($this->loanIds)) {
+                    $this->tempArray['tables'] = null;
+                    $this->tempArray['correctTables'] = null;
+                    $this->tempArray['errorTables'] = null;
+                    return $this->tempArray;
+                }
                 // get login page
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -1965,9 +2034,9 @@ class zank extends p2pCompany {
                 }
                 foreach ($tables as $table) {
                     echo "Read table: ";
-                    if ($table->getAttribute('id') == 'parte' || $table->getAttribute('id') == 'todo') {
+                    if ($table->getAttribute('id') == 'parte' /*|| $table->getAttribute('id') == 'todo'*/) {
                         $AmortizationTable = new DOMDocument();
-                        $clone = $table->cloneNode(TRUE); //Clene the table
+                        $clone = $table->cloneNode(TRUE); //Clean the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
                         $revision = $this->structureRevisionAmortizationTable($AmortizationTableString,$this->tableStructure);
@@ -1981,6 +2050,7 @@ class zank extends p2pCompany {
                         }
                         $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                     }
+                    
                 }
                 if ($this->i < $this->maxLoans) {
                     $this->idForSwitch = 4;
@@ -2110,7 +2180,7 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_INVESTMENT_TYPE_MANUALINVESTMENT;
-        $inputData = mb_strtoupper($inputData, "UTF-8");
+        $inputData =mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_INVESTMENT_TYPE_AUTOMATEDINVESTMENT;
@@ -2192,7 +2262,7 @@ class zank extends p2pCompany {
      * 
      * @param string $inputData     company specific investment market concept
      * @return int                  Winvestify standardized investment marke concept
-     */
+     */ 
     public function translateInvestmentMarket($inputData) {
         
     }
@@ -2206,6 +2276,43 @@ class zank extends p2pCompany {
      */
     public function translateInvestmentBuyBackGuarantee($inputData) {
         
+    }
+    
+     /**
+     * Function to translate the company specific 'originalLoanState' to the Winvestify standardized
+     * 'StatusOfLoan'
+     * @param string $inputData     company specific originalLoanState
+     * @return int                  Winvestify standardized investmentBuyBackGuarantee
+     */
+    public function translateAmortizationPaymentStatus($inputData) {
+        $inputData = mb_strtoupper(trim($inputData), "UTF-8");
+        switch ($inputData) {
+            case "CO":                                                          // CUOTA COBRADA
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_PAID;
+                break;
+            case "EC":                                                          // CUOTA EN COBRO
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break; 
+            case "DE":                                                          // CUOTA DEVENGANDOSE
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break;           
+            case "PD":                                                          // CUOTA PENDIENTE
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED;
+                break; 
+            case "RE":                                                          // CUOTA RETRASADA
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;   
+            case "RF":                                                          // CUOTA FINANCIADA
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break;
+            case "CUOTA CONGELADA.":                                            // CUOTA CONGELADA  
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_LATE;
+                break; 
+            default:
+                $result = WIN_AMORTIZATIONTABLE_PAYMENT_UNKNOWN;
+                break;
+        }  
+        return $result; 
     }
 
     function structureRevisionAmortizationTable($node1, $node2) {
@@ -2232,6 +2339,47 @@ class zank extends p2pCompany {
         echo $structureRevision;
         return $structureRevision;
     }
+    
+    /**
+     * Function to manage reserved Funds for Zank depending on the state
+     * @param  $transactionData    array      array with the current transaction data
+     * @param  $resultData         array      array of shadow database with all data so far calculated and to be written to DB
+     * @param  $data               array      array of the UserData config params
+     * @return string      the string representation of a float
+     */
+    public function manageReservedFunds(&$transactionData, &$resultData, $data = null) {
+        if ($resultData['investment']['investment_isNew']) {
+            $resultData['investment']['investment_tempState'] = $resultData['investment']['investment_statusOfLoan'];
+            if ($resultData['investment']['investment_tempState'] !== WIN_LOANSTATUS_WAITINGTOBEFORMALIZED) {
+                $resultData['investment']['investment_tempState'] = WIN_LOANSTATUS_ACTIVE_AM_TABLE;
+                $resultData['investment']['investment_technicalStateTemp'] = "ACTIVE";
+                $resultData['payment']['payment_myInvestment'] = bcadd( 
+                    $resultData['payment']['payment_myInvestment'],
+                    $transactionData['amount'],
+                    16
+                );
+                $resultData['investment']['investment_myInvestment'] = bcadd( 
+                    $resultData['investment']['investment_myInvestment'],
+                    $transactionData['amount'],
+                    16
+                );
+                $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] = bcsub(
+                    $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'],
+                    $transactionData['amount'],
+                    16
+                );
+            }
+            else {
+                $resultData['investment']['investment_reservedFunds'] = bcadd($resultData['investment']['investment_reservedFunds'], $transactionData['amount'], 16);
+                unset($resultData['payment']['payment_myInvestment']);
+                return $transactionData['amount'];
+            }
+        }
+    }
 
+    
+    
+    
+    
 }
 

@@ -65,123 +65,405 @@
  */
 class circulantis extends p2pCompany {
 
-          
-        
 // CIRCULANTIS
-// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
-// Traspaso                                                                     H03337	   1,000.00	5/9/2016   1,000.00	          0             0       	1,000.00
-// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
-// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
-// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
+// MOVIMIENTO                                                                                              REFERENCIA     IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
+// Traspaso                                                                                                 H03337         1,000.00	5/9/2016    1,000.00	          0             0       	1,000.00
+// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....                                F180626           0         7/31/2017    572.18          66.34           15,049.39	     15,687.91
+// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....                   P154197          100	5/29/2017    2,936.42        300	12,264.55	15,500.97
+// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....   C112205	     159.63	5/30/2017    3,096.05	      0 	12,409.21	15,505.26
+   
+      
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
+    ];                                                  
     protected $valuesTransaction = [
-            "A" => [
-                [
-                    "type" => "transactionType",                                // Complex format, calling external method
-                    "inputData" => [                                            // List of all concepts that the platform can generate
-                                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Traspaso", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Operación cobrada", "Principal_repayment"],
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionType",  
+         [
+             "A" => [
+            [
+                "type" => "original_concept", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "", // May contain trailing spaces
+                    "input3" => "ID Puja",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
                 ],
-                [
-                    "type" => "transactionDetail",              // Complex format, calling external method
-                    "inputData" => [                            // List of all concepts that the platform can generate
-                                                                // format ["concept string platform", "concept string Winvestify"]
-                                   "input2" => [["Incoming client payment", "Cash_deposit"],
-                                                ["Investment principal increase", "Primary_market_investment"],
-                                                ["Investment principal repayment", "Principal_repayment"],                
-                                    ]   
-                            ],
-                    "functionName" => "getTransactionDetail",  
-                ],
-                [
-                    "type" => "ID_Puja",                                        // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => " ID Puja: ",                       // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-                [
-                    "type" => "ID_Subasta",                                     // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "ID Subasta: ",                     // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-                
-                [
-                    "type" => "loanId",                                         // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "Loan ID: ",                        // May contain trailing spaces
-                                "input3" => ",",
-                            ],
-                    "functionName" => "extractDataFromString",  
-                ],
-               
-                 [
-                    "type" => "date",                                           // Complex format, calling external method
-                    "inputData" => [
-                                "input2" => "#previous.date",                   // The calculated field "date" from the *previous* excel row (i.e. previous aray index) is loaded
-                                                                                // Note that "date" must be a field defined in this config file
-                                                                                // keywords are "#previous" and "#current" 
-                                                                                // Be aware that #previous does NOT contain any data in case of parsing the
-                                                                                // first line of the file.
-                                "input3" => false                               // This parameter indicates if the defined field will be overwritten 
-                                                                                // if it already contains a value.
-                                ],
-                    "functionName" => "getRowData",  
-                ],               
-     
+                "functionName" => "extractDataFromString",
             ],
-            "B" => [                                                            // Simply changing name of column to the Winvestify standardized name
-                    "name" => "loanId",                      
+            [
+                "type" => "investment_sliceId", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "ID Puja: ", // May contain trailing spaces
+                    "input3" => ",",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
                 ],
-            "C" => "importe",
-            "D" => [
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_loanId", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "ID Subasta: ", // May contain trailing spaces
+                    "input3" => ",",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+        ],
+        "B" => [
+            [
+                "type" => "transactionDetail", // Winvestify standardized name   OK
+                "inputData" => [// List of all concepts that the platform can generate format ["concept string platform", "concept string Winvestify"]
+                    "input2" => "#current.original_concept",
+                    "input3" => [
+                        "Alta en Circulantis" => "Cash_deposit",
+                        "Traspaso" => "Cash_deposit",
+                        "Traspaso" => "Cash_withdrawal",
+                        "OperaciÃ³n realizada" => "Primary_market_investment_preactive",
+                        "OperaciÃ³n formalizada" => "Primary_market_investment_active_verification",
+                        "OperaciÃ³n cobrada" => "Principal_and_interest_payment",
+                        "OperaciÃ³n cobrada parcialmente" => "Partial_principal_and_interest_payment"
+                    ],
+                ],
+                "functionName" => "getComplexTransactionDetail",
+            ]
+        ],
+        "C" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],
+        "D" => [
+            [
+                "type" => "date", // Winvestify standardized name 
+                "inputData" => [
+                    "input2" => "d/m/Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ],
+            /* "E" => "disponible",
+              "F" => "ofertado",*/
+             // "G" => "invertido",
+             /*"H" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],*/
+             ],
+        [
+          "A" => [
+            [
+                "type" => "original_concept", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "", // May contain trailing spaces
+                    "input3" => "ID Puja",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_sliceId", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "ID Puja: ", // May contain trailing spaces
+                    "input3" => ",",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+            [
+                "type" => "investment_loanId", // Winvestify standardized name   OK
+                "inputData" => [// trick to get the complete cell data as purpose
+                    "input2" => "ID Subasta: ", // May contain trailing spaces
+                    "input3" => ",",
+                    "input4" => 1                                   // 'input3' is mandatory. If not found then return "global_xxxxxx"
+                ],
+                "functionName" => "extractDataFromString",
+            ],
+        ],
+        "B" => [
+            [
+                "type" => "transactionDetail", // Winvestify standardized name   OK
+                "inputData" => [// List of all concepts that the platform can generate format ["concept string platform", "concept string Winvestify"]
+                    "input2" => "#current.original_concept",
+                    "input3" => [
+                        "Alta en Circulantis" => "dummy_concept",
+                        "Traspaso" => "dummy_concept",
+                        "Traspaso" => "dummy_concept",
+                        "OperaciÃ³n realizada" => "dummy_concept",
+                        "OperaciÃ³n formalizada" => "dummy_concept",
+                        "OperaciÃ³n cobrada" => "Capital_repayment",
+                        "OperaciÃ³n cobrada parcialmente" => "Partial_principal_repayment"
+                    ],
+                ],
+                "functionName" => "getComplexTransactionDetail",
+            ]
+        ],
+       /* "C" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],*/
+        "D" => [
+            [
+                "type" => "date", // Winvestify standardized name 
+                "inputData" => [
+                    "input2" => "d/m/Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ], 
+            "G" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],
+        ]
+        
+    ];
+
+    protected $valuesInvestment = [// All types/names will be defined as associative index in array
+        [
+            "A" => [
+                "name" => "investment_debtor"                              // Winvestify standardized name  OK
+            ],
+            "B" => [
+                "name" => "investment_riskRating",
+            ],
+            "C" => [
                 [
-                    "type" => "date",                                           // Winvestify standardized name 
+                    "type" => "investment_myInvestment", // Winvestify standardized name   OK
                     "inputData" => [
-				"input2" => "d/m/Y",                            // Input parameters. The first parameter
-                                                                                // is ALWAYS the contents of the cell
-                                  // etc etc  ...
-                                ],
-                    "functionName" => "normalizeDate",         
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 4
+                    ],
+                    "functionName" => "getAmount",
                 ]
             ],
-            "E" => "disponible",
-            "F" => "ofertado",
-            "G" => "invertido",
-            "H" => "total"
-        ];
-       
-    protected $transactionConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
-                                 );
- 
-    protected $investmentConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
-                                 );
+            "D" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
+            "E" => [
+                [
+                    "type" => "investment_dueDate", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "d/m/Y", // Input parameters. The first parameter
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ],
+            "F" => [
+                "name" => "investment_originalState",
+            ],
+            //"G" => [], ?
+            //"H" => ?
+            "I" => [
+                "name" => "investment_loanId"
+            ],
+            "J" => [
+                "name" => "investment_sliceId",
+            ],
+            "K" => [
+                [
+                    "type" => "date", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "d/m/Y", // Input parameters. The first parameter
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ],
+        ]
+    ];
+    protected $valuesExpiredLoan = [// We are only interested in the investment_loanId
+        [
+            "A" => [
+                [
+                    "type" => "date", // Winvestify standardized name 
+                    "inputData" => [
+                        "input2" => "d/m/Y", // Input parameters. The first parameter
+                    ],
+                    "functionName" => "normalizeDate",
+                ],
+            ],
+            "B" => [
+                "name" => "investment_debtor",
+            ],
+            "C" => [
+                "name" => "investment_loanId",
+            ],
+            "D" => [
+                [
+                    "type" => "investment_sliceIdentifier", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "1",
+                        "input3" => 0,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
+            "E" => [
+                "name" => "investment_riskRating",
+            ],
+            "F" => [
+                [
+                    "type" => "investment_myInvestment", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 4
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "G" => [
+                [
+                    "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
+                    "inputData" => [
+                        "input2" => "100",
+                        "input3" => 2,
+                        "input4" => ","
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
+            "H" => [
+                "name" => "investment_originalDuration",
+            ],
+            "I" => [
+                "name" => "investment_originalState",
+            ],
+        ]
+    ];
+    protected $valuesControlVariables = [
+        [
+            "myWallet" => [
+                [
+                    "type" => "myWallet", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "activeInvestments" => [
+                [
+                    "type" => "activeInvestments", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "1",
+                        "input3" => "0",
+                        "input4" => ",",
+                    ],
+                    "functionName" => "handleNumber",
+                ]
+            ],
+            "outstandingPrincipal" => [
+                [
+                    "type" => "outstandingPrincipal", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 16
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+            "reservedFunds" => [
+                [
+                    "type" => "reservedFunds", // Winvestify standardized name  OK
+                    "inputData" => [
+                        "input2" => "",
+                        "input3" => ",",
+                        "input4" => 16,
+                    ],
+                    "functionName" => "getAmount",
+                ]
+            ],
+        ]
+    ];
+    protected $transactionConfigParms = array(
+        [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("date", "investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    );
+    protected $investmentConfigParms = array(
+        [
+            'offsetStart' => 1,
+            'offsetEnd' => 0,
+            'separatorChar' => ";",
+            'sortParameter' => array("investment_loanId")          // used to "sort" the array and use $sortParameter as prime index.
+        ]
+    );
+    protected $compareHeaderConfigParam = array(
+        'separatorChar' => ";",
+        'chunkInit' => 1,
+        'chunkSize' => 2
+    );
+    protected $investmentHeader = array(
+        'A' => 'NOMBRE EMISOR/DEUDOR',
+        'B' => 'RATING',
+        'C' => 'IMPORTE €',
+        'D' => 'INTERES %',
+        'E' => 'VENCIMIENTO',
+        'F' => 'ESTADO',
+        'G' => 'FONDOS INVERTIDOS %',
+        'H' => 'IMPORTE COBRO €',
+        'I' => 'ID SUBASTA',
+        'J' => 'ID PUJA',
+        'K' => 'FECHA INICIO SUBASTA'
+    );
+    
+    protected $transactionHeader = array(
+        'A' => 'MOVIMIENTO',
+        'B' => 'REFERENCIA',
+        'C' => 'IMPORTE €',
+        'D' => 'FECHA',
+        'E' => 'DISPONIBLE €',
+        'F' => 'OFERTADO €',
+        'G' => 'INVERTIDO €',
+        'H' => 'TOTAL €',
+    );
 
-/*    NOT YET READY
-    protected $investmentConfigParms = array ('offsetStart' => 1,
-                                'offsetEnd'     => 0,
-                                'separatorChar' => ";",
-                                'sortParameter' => "investment_loanId"          // used to "sort" the array and use $sortParameter as prime index.
-                                 );      
- 
- */   
-    
-    
+
     function __construct() {
+        $this->typeFileTransaction = "csv";
+        $this->typeFileInvestment = "csv";
+        $this->typeFileExpiredLoan = "csv";
         parent::__construct();
 // Do whatever is needed for this subsclass
     }
@@ -211,9 +493,6 @@ class circulantis extends p2pCompany {
         return $fixedCost + $interest + $amount;
     }
 
-    
-    
-    
     /**
      * Collects the marketplace data.
      * @param Array $companyBackup
@@ -992,6 +1271,211 @@ class circulantis extends p2pCompany {
     }
 
     /**
+     * Download investment and cash flow files and collect control variables
+     * 
+     * @param string $str It is the web converted to string of the company.
+     * @return array Control variables.
+     */
+    function collectUserGlobalFilesParallel($str = null) {
+        switch ($this->idForSwitch) {
+            case 0:
+                echo __FILE__ . " " . __LINE__ . "<br>";
+
+                $this->idForSwitch++;
+                //We need to delete a urlsequence on DB for Circulantis to work
+                array_shift($this->urlSequence);
+            //$this->getCompanyWebpage();
+            //$resultMicirculantis = $this->companyUserLogin($user, $password);
+            //break;
+            case 1:
+                $credentials = array();
+                /**
+                 * Change user and password
+                 */
+                $credentials['user'] = $this->user;
+                $credentials['password'] = $this->password;
+                $credentials['login'] = 1;
+                $credentials['tipo'] = "I";
+                $this->idForSwitch++;
+                $this->doCompanyLoginMultiCurl($credentials);
+                break;
+            case 2:
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                break;
+            case 3:
+                $dom = new DOMDocument;
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                $divs = $this->getElements($dom, 'div', 'id', 'sub-menu');
+                if (empty($divs)) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $lis = $this->getElements($divs[0], 'li');
+                if (!$this->hasElements) {
+                    return $this->getError(__LINE__, __FILE__);
+                }
+                $resultMicirculantis = false;
+                if ($lis[0]->nodeValue === "Mis datos") {   // JSON response with wallet value
+                    $resultMicirculantis = true;
+                }
+
+                if (!$resultMicirculantis) {   // Error while logging in
+                    $tracings = "Tracing:\n";
+                    $tracings .= __FILE__ . " " . __LINE__ . " \n";
+                    $tracings .= "userName =  " . $this->config['company_username'] . ", password = " . $this->config['company_password'] . " \n";
+                    $tracings .= " \n";
+                    $msg = "Error while logging in user's portal. Wrong userid/password \n";
+                    $msg = $msg . $tracings . " \n";
+                    $this->logToFile("Warning", $msg);
+                    return $this->getError(__LINE__, __FILE__);
+                }
+
+                // Load page  panel-inversor
+                array_shift($this->urlSequence);
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl();
+                //echo "INVERSOR_PANEL" . $str;	
+                break;
+            case 4:
+
+                $dom = new DOMDocument;
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;
+                //Control varibles
+                $tables = $this->getElements($dom, 'table', 'class', 'table table-striped');
+
+                $trs = $tables[0]->getElementsByTagName('tr');
+
+                //Table doesnt have id
+                $loanReferenceId = array();
+                $tempArray["global"]["activeInvestment"] = 0;
+                foreach ($trs as $key => $tr) {
+                    if ($key == 0) {
+                        continue;
+                    }
+                    $idTd = $tr->getElementsByTagName('td')[1];
+                    $loanReferenceId[] = $idTd->nodeValue;
+                    $tempArray["global"]["activeInvestment"] ++;
+                }
+
+                $fondos = $this->getElements($dom, 'ul', 'class', 'distribucion_fondos');
+ 
+                $li1 = $fondos[0]->getElementsByTagName('li');
+                $li2 = $this->getElements($fondos[1], 'li', 'class', 'fondos_fi');
+                $tempArray["global"]["outstandingPrincipal"] = $li2[0]->nodeValue;
+                $tempArray["global"]["myWallet"] = $li1[2]->nodeValue;
+                $tempArray["global"]["reservedFunds"] = $li1[1]->nodeValue;
+
+                //Investment finished doesnt have,  we cant get it.
+                $trs = $tables[3]->getElementsByTagName('tr');
+                foreach ($trs as $key => $tr) {
+                    if ($key == 0) {
+                        $finishedInvestment[$key]['A'] = "investment_dueDate ";
+                        $finishedInvestment[$key]['B'] = "investment_debtor";
+                        $finishedInvestment[$key]['C'] = "investment_loanId";
+                        $finishedInvestment[$key]['D'] = "investment_sliceIdentifier";
+                        $finishedInvestment[$key]['E'] = "investment_riskRating";
+                        $finishedInvestment[$key]['F'] = "investment_myInvestment";
+                        $finishedInvestment[$key]['G'] = "investment_nominalInterestRate";
+                        $finishedInvestment[$key]['H'] = "investment_originalDuration";
+                        $finishedInvestment[$key]['I'] = "investment_originalState";
+                        //$finishedInvestment[$key]['J'] = ?
+                        continue;
+                    }
+                    $td = $tr->getElementsByTagName('td');
+                    $finishedInvestment[$key]['A'] = $td[0]->nodeValue;
+                    $finishedInvestment[$key]['B'] = $td[1]->nodeValue;
+                    $finishedInvestment[$key]['C'] = $td[2]->nodeValue;
+                    $finishedInvestment[$key]['D'] = $td[3]->nodeValue;
+                    $finishedInvestment[$key]['E'] = $td[4]->nodeValue;
+                    $finishedInvestment[$key]['F'] = $td[5]->nodeValue;
+                    $finishedInvestment[$key]['G'] = $td[6]->nodeValue;
+                    $finishedInvestment[$key]['H'] = $td[7]->nodeValue;
+                    $finishedInvestment[$key]['I'] = $td[8]->nodeValue;
+                    //$finishedInvestment[$key]['J'] = $td[9]->nodeValue;
+                }
+
+                $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
+                $this->saveFilePFP($this->fileName, json_encode($finishedInvestment));
+                $dayStart = 1;
+                $monthStart = 1;
+                $yearStart = 2013;
+                $dayFinish = date('d');
+                $monthFinish = date('m');
+                $yearFinish = date('Y');
+
+                //Investment
+                $this->downloadUrl = array_shift($this->urlSequence);
+                $this->investmentCredentials = array_shift($this->urlSequence);
+                $this->transactionCredentials = array_shift($this->urlSequence);
+                $this->headers = json_decode(array_shift($this->urlSequence),true);
+                $this->transactionCredentials2 = array("filtrofechas" => 1,
+                    "desde_d" => $dayStart,
+                    "desde_m" => $monthStart,
+                    "desde_y" => $yearStart,
+                    "hasta_d" => $dayFinish,
+                    "hasta_m" => $monthFinish,
+                    "hasta_y" => $yearFinish);
+                $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
+                $this->headerComparation = $this->investmentHeader;
+                $this->config['postMessage'] = true;
+                $this->config['returnTransfer'] = true;
+                $this->returnTransfer = true;
+               //$investmentDownload = $this->downloadUrl . "?exportdata=1&item=operacionesvigentes";
+                $this->idForSwitch++;
+ //--data 'exportdata=1&item=operacionesvigentes'
+//["Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8", "Accept-Encoding: gzip, deflate, br", "Accept-Language: es-ES,es;q=0.9", "Cache-Control: max-age=0", "Connection: keep-alive", "Content-Length: 23", "Content-Type: application/x-www-form-urlencoded", "Host: circulantis.com", "Origin: https://circulantis.com", "Referer: https://circulantis.com/mi-cuenta/panel-inversor?exportdata=1&item=operacionesvigentes", "Upgrade-Insecure-Requests: 1"]
+                $this->getPFPFileMulticurl($this->downloadUrl, $this->downloadUrl, $this->investmentCredentials, $this->headers, $this->fileName);
+                break;
+            case 5:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                if (mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain") {  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                $this->idForSwitch++;
+                $this->getCompanyWebpageMultiCurl($this->downloadUrl, $this->transactionCredentials2);
+                break;
+            case 6:
+                $this->fileName = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                $this->headerComparation = $this->transactionHeader;
+                $this->idForSwitch++;
+                $this->getPFPFileMulticurl($this->downloadUrl, $this->downloadUrl, $this->transactionCredentials, $this->headers, $this->fileName);
+                break;
+            case 7:
+                if (!$this->verifyFileIsCorrect()) {
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
+                }
+                if (mime_content_type($this->getFolderPFPFile() . DS . $this->fileName) !== "text/plain") {  //Compare mine type for finanzarel files
+                    echo 'mine type incorrect: ';
+                    echo mime_content_type($this->getFolderPFPFile() . DS . $this->fileName);
+                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_MIME_TYPE);
+                }
+                $headerError = $this->compareHeader();
+                if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    return $this->getError(__LINE__, __FILE__, $headerError);
+                }
+                $this->numFileTransaction++;
+                $this->fileName2 = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                copy ($this->getFolderPFPFile() . DS . $this->fileName , $this->getFolderPFPFile() . DS . $this->fileName2);
+                return $tempArray["global"];
+        }
+    }
+
+    /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
      * 	to our account
@@ -1003,9 +1487,6 @@ class circulantis extends p2pCompany {
      * 	
      */
     function companyUserLogin($user, $password) {
-//$user = "inigo.iturburua@gmail.com";
-//$password = "Ap_94!56";
-// manoloherrero@msn.com  Mecano1980
 
         $str = $this->getCompanyWebpage();  // load main page as default starting page
 
@@ -1065,7 +1546,7 @@ class circulantis extends p2pCompany {
 
         $node1->removeAttribute('class'); //This class is the loan type, can change
         $node2->removeAttribute('class');
-        
+
         $node1 = $this->cleanDom($node1, array(
             array('typeSearch' => 'element', 'tag' => 'div'),
             array('typeSearch' => 'element', 'tag' => 'a'),
@@ -1093,7 +1574,7 @@ class circulantis extends p2pCompany {
             array('typeSearch' => 'element', 'tag' => 'span'),
                 ), array('style', 'href', 'aria-valuenow', 'rel', 'id', 'title', 'value'));
 
-        $node2 = $this->cleanDom($node2, array( //We only want delete the class of td and tr, no other classes
+        $node2 = $this->cleanDom($node2, array(//We only want delete the class of td and tr, no other classes
             array('typeSearch' => 'element', 'tag' => 'td'),
                 ), array('class'));
 
@@ -1108,5 +1589,4 @@ class circulantis extends p2pCompany {
     }
 
 }
-
 ?> 

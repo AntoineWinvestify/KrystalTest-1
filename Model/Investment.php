@@ -1,29 +1,28 @@
 <?php
 /**
-// +-----------------------------------------------------------------------+
-// | Copyright (C) 2017, https://www.winvestify.com                        |
-// +-----------------------------------------------------------------------+
-// | This file is free software; you can redistribute it and/or modify     |
-// | it under the terms of the GNU General Public License as published by  |
-// | the Free Software Foundation; either version 2 of the License, or     |
-// | (at your option) any later version.                                   |
-// | This file is distributed in the hope that it will be useful           |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-// | GNU General Public License for more details.                          |
-// +-----------------------------------------------------------------------+
-// | Author: Antoine de Poorter                                            |
-// +-----------------------------------------------------------------------+
-*
-*
-* @author Antoine de Poorter
-* @version 0.1
-* @date 2017-10-18
-* @package
-*
-
-
-holds the logic of an individual investment
+  // +-----------------------------------------------------------------------+
+  // | Copyright (C) 2017, https://www.winvestify.com                        |
+  // +-----------------------------------------------------------------------+
+  // | This file is free software; you can redistribute it and/or modify     |
+  // | it under the terms of the GNU General Public License as published by  |
+  // | the Free Software Foundation; either version 2 of the License, or     |
+  // | (at your option) any later version.                                   |
+  // | This file is distributed in the hope that it will be useful           |
+  // | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+  // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
+  // | GNU General Public License for more details.                          |
+  // +-----------------------------------------------------------------------+
+  // | Author: Antoine de Poorter                                            |
+  // +-----------------------------------------------------------------------+
+ *
+ *
+ * @author Antoine de Poorter
+ * @version 0.1
+ * @date 2017-10-18
+ * @package
+ */
+/*
+  holds the logic of an individual investment
 
 2017-10-18		version 0.1
 initial version
@@ -36,11 +35,10 @@ initial version
 Pending:
 
 
+ */
 
-*/
-
-class Investment extends AppModel
-{
+class Investment extends AppModel {
+    
     var $name = 'Investment';
 
     
@@ -192,7 +190,22 @@ var $validate = array(
     }
 
 
+    /** 
+     *  Reads the investmentslices of an investment. Currently the system can only handle 1 slice per investment
+     * 
+     *  @param  bigint  database reference of Investment, i.e. investmentId
+     *  @return array   slices (database references) and sliceIdentifier of each slice
+     */
+    public function getInvestmentSlices ($investmentId) {	
+        
+        $this->Behaviors->load('Containable');
+	$this->contain('Investmentslice');  	
 
+        $slices = $this->find("first", array("conditions" => array("id" => $investmentId),                                   
+                                            "recursive" => 1,
+                                          ));
 
-
+        return $slices['Investmentslice']; 
+    }  
+    
 }

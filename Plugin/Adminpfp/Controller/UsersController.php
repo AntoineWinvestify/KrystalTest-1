@@ -1,4 +1,5 @@
 <?php
+
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                         |
@@ -44,120 +45,99 @@
  * Pending
  * --
  * 
-*/
+ */
 
 App::uses('ClassRegistry', 'Utility');
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
-class UsersController extends AdminpfpAppController
-{
 
-	var $name = 'Users';
-	var $helpers = array('Html', 'Form', 'Js');
-	var $uses = array('User');
-	var $components = array('Security');
-  	var $error;
-	
+class UsersController extends AdminpfpAppController {
 
+    var $name = 'Users';
+    var $helpers = ['Html', 'Form', 'Js', 'Session'];
+    var $uses = ['User', 'Adminpfp'];
+    var $components = ['Security'];
+    var $error;
 
+    function beforeFilter() {
 
-function beforeFilter() {
-
-    parent::beforeFilter();  
+        parent::beforeFilter();
 
 //	$this->Security->disabledFields = array('Participant.club'); // this excludes the club33 field from CSRF protection
-										// as it is "dynamic" and would fail the CSRF test
-
+        // as it is "dynamic" and would fail the CSRF test
 //	$this->Security->requireSecure(	'login'	);
-	$this->Security->csrfCheck = false;
-	$this->Security->validatePost = false;	
+        $this->Security->csrfCheck = false;
+        $this->Security->validatePost = false;
 // Allow only the following actons.
 //	$this->Security->requireAuth();
-	$this->Auth->allow('login', 'loginAction', 'readMLDatabase');    // allow the actions without logon
+	$this->Auth->allow('login', 'loginAction', 'readMLDatabase','logout');    // allow the actions without logon
 //$this->Security->unlockedActions('login');
-
-}
-
+    }
 
 
-
-
-
-
-public function loginAction() {
-     
-        if ($this->Auth->login()) {
+    public function loginAction() {
+        if ($this->Auth->login()) {   
+            $id = $this->Session->read('Auth.User.adminpfp_id');
+            $lang = $this->Session->read('Config.language');
+            $this->Adminpfp->save(['id' => $id, 'adminpfp_language' => $lang]);
             $this->redirect($this->Auth->redirectUrl());
         }
         else {
             echo "User is not logged on<br>";
             // Inform the user why s/he could not login and offer "recover password" option
         }
- }
+    }
 
+    /**
+     *
+     * 	Shows the login panel
+     *
+     */
+    public function login() {
+        if ($this->request->is('ajax')) {
+            $this->layout = 'ajax';
+            $this->disableCache();
+        }
+        else {
+            $this->layout = 'Adminpfp.winvestify_adminpfp_login_layout';
+        }
 
+        $error = false;
+        $this->set("error", $error);
+    }
 
-/**
-*
-*	Shows the login panel
-*
-*/
-public function login()
-{
-	if ( $this->request->is('ajax')) {
-		$this->layout = 'ajax';
-		$this->disableCache();
-	}
-	else {
-		$this->layout = 'Adminpfp.winvestify_adminpfp_login_layout';
-	}
-        
-	$error = false;
-	$this->set("error", $error);
-}
-
-
-
-
-public function logout() {
-	$user = $this->Auth->user();		// get all the data of the authenticated user
-	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
-                            ));
-	$this->getEventManager()->dispatch($event);
-        $this->Session->destroy();						// NOT NEEDED?
-	$this->Session->delete('Auth');
+    public function logout() {
+        $user = $this->Auth->user();  // get all the data of the authenticated user
+        $event = new CakeEvent('Controller.User_logout', $this, ['data' => $user,
+        ]);
+        $this->getEventManager()->dispatch($event);
+        $this->Session->destroy();      // NOT NEEDED?
+        $this->Session->delete('Auth');
         $this->Session->delete('Acl');
         $this->Session->delete('sectorsMenu');
-	return $this->redirect($this->Auth->logout());
-}
+        return $this->redirect($this->Auth->logout());
+    }
+
+    public function readMLDatabase() {
+        $this->autoRender = false;
+        Configure::write('debug', 2);
 
 
+        Configure::load('p2pGestor.php', 'default');
+        $serviceData = Configure::read('Tallyman');
+        $limitDays = $serviceData['maxHistoryLengthDays'];
+        $limitNumber = $serviceData['maxHistoryLengthNumber'];
+        $cutoffDate = date("Y-m-d H:i:s", time() - $limitDays * 3600 * 7 * 24);
 
+        $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata');
 
+        $resultTallyman = $this->Investorglobaldata->find("all", $params = ['recursive' => 1,
+            'conditions' => [
+                //           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
+                'created >' => $cutoffDate],
+            'limit' => $limitNumber]);
 
-public function readMLDatabase() {
-    $this->autoRender = false;
-   Configure::write('debug', 2); 
-    
-
-    Configure::load('p2pGestor.php', 'default');
-    $serviceData = Configure::read('Tallyman'); 
-    $limitDays = $serviceData['maxHistoryLengthDays'];
-    $limitNumber = $serviceData['maxHistoryLengthNumber'];
-    $cutoffDate = date("Y-m-d H:i:s", time() - $limitDays * 3600 * 7 * 24);
-
-    $this->Investorglobaldata = ClassRegistry::init('Adminpfp.Investorglobaldata'); 
-  
-    $resultTallyman = $this->Investorglobaldata->find("all", $params = array('recursive' => 1,
-							  'conditions'  => array(
-                                                   //           'userinvestmentdata_updateType' => SYSTEM_GENERATED,
-                                                              'created >' => $cutoffDate ),
-                                                              'limit' => $limitNumber )); 
-
-    $this->print_r2($resultTallyman);
-
-}
-
-
+        $this->print_r2($resultTallyman);
+    }
 
 }

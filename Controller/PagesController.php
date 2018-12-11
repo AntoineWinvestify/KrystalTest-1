@@ -43,7 +43,15 @@ class PagesController extends AppController {
 function beforeFilter() {
 
 	$this->Auth->allow();	// allow all actions as these are public pages
-
+/* CODE FOR INTERNATIONALIZATIN OF LONG TEXTS
+// App Controller Code.
+    $locale = Configure::read('Config.language');
+    if ($locale && file_exists(APP . 'View' . DS . $locale . DS . $this->viewPath . DS . $this->view . $this->ext)) {
+        // e.g. use /app/View/fra/Pages/tos.ctp instead of /app/View/Pages/tos.ctp
+        $this->viewPath = $locale . DS . $this->viewPath;
+    }
+}
+*/
 }
 
 

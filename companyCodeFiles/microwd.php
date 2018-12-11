@@ -33,7 +33,7 @@ class microwd extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    function companyUserLogin($user = "", $password = "", $options = array()) {
+    function companyUserLogin($user = "", $password = "", $options = []) {
         /*
           FIELDS USED BY microwd DURING LOGIN PROCESS
           $credentials['*'] = "XXXXX";

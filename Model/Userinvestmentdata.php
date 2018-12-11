@@ -19,7 +19,8 @@
  * @version 0.1
  * @date 2017-06-16
  * @package
- *
+ */
+/*
  * 
  * 
  */
@@ -38,6 +39,7 @@ class Userinvestmentdata extends AppModel {
     
     /**
      * Get data of the last linked accounts investments of an investor.
+     * 
      * @param string $investorId             investor database id.
      * @return array Last Userinvestmentdata rows for the linked accounts
      */
@@ -47,8 +49,10 @@ class Userinvestmentdata extends AppModel {
 
         //Get linked accounts id
         $linkedAccountsId = $this->Linkedaccount->find("all", array("recursive" => -1,
-            "conditions" => array("investor_id" => $investorId),
-            "fields" => array("id"),
+                                        "conditions" => array("investor_id" => $investorId, 
+                                                "linkedaccount_linkingProcess" => WIN_LINKING_NOTHING_IN_PROCESS,
+                                                'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
+                                        "fields" => array("id"),
         ));
 
         //Get last Userinvestmentdata table row for a linked account id
@@ -65,6 +69,7 @@ class Userinvestmentdata extends AppModel {
 
     /**
      * Get data of all the linked accounts of an investor.
+     * 
      * @param string $investorIdentity investor identity number
      * @return array Global data
      */
@@ -85,8 +90,7 @@ class Userinvestmentdata extends AppModel {
      * 	@param 		array 	$investmentdata 	All the data to be saved
      * 	@return 	array[0]    => boolean
      *                  array[1]    => detailed error information if array[0] = false
-     *                                 id if array[0] = true
-     * 			
+     *                                 id if array[0] = true		
      */
     public function createUserInvestmentData($userInvestmentData) {
         $this->create();
@@ -113,7 +117,7 @@ class Userinvestmentdata extends AppModel {
     }
     
     
-    public function getInvestmentIdByLoanId($loanIds) { // NOT NEEDED?? repalce with getData
+    public function getInvestmentIdByLoanId($loanIds) { // NOT NEEDED?? replace with getData
         $fields = array('Investment.investment_loanReference', 'Investment.id');
         $conditions = array('investment_loanReference' => $loanIds);
         $investmentIds = $this->find('list', $params = array('recursive' => -1,

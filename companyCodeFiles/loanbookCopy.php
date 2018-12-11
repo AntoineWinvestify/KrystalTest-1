@@ -321,7 +321,7 @@ function companyUserLogin($user = "", $password = "", $options = array()) {
 FIELDS USED BY LOANBOOK DURING LOGIN PROCESS
 		
 csrf		539d6241ffbb10437f4fe6e27552bfe9
-password	cede_4040
+password	xxxx
 signin		Login
 username	antoine.de.poorter@gmail.com				
 */

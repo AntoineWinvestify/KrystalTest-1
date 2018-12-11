@@ -1,8 +1,7 @@
 <?php
 /**
-// @(#) $Id$
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2009, http://yoursite                                   |
+*  | Copyright (C) 2017, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -20,7 +19,8 @@
 * @version 0.1
 * @date 2016-09-26
 * @package
-*
+*/
+/*
 
 2016-09-26	  version 2016_0.1
 function getUrlsequence()													[OK, tested]
@@ -76,14 +76,12 @@ class Urlsequence extends AppModel
 *		
 */
 public function getUrlsequence($companyId, $sequence) {
-
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	$filteringConditions = array('company_id'			=> $companyId,
 								'urlsequence_sequence'	=> $sequence);
 
-	$sequenceList = $this->find('all', $params = array('recursive'	=> -1,
-													  'order'		=> 'Urlsequence.urlsequence_sequenceNumber ASC',
-													  'conditions'  => $filteringConditions,
-													));
+	$sequenceList = $this->getData($filteringConditions,null,'Urlsequence.urlsequence_sequenceNumber ASC');
+
 	foreach ($sequenceList as $sequence) {
 		$tempSequence[] = $sequence['Urlsequence']['urlsequence_URL'];
 	}

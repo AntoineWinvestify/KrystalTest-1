@@ -50,31 +50,299 @@ class TestsController extends AppController {
 
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Test', "Data", "Investor", "Userinvestmentdata", "Globalcashflowdata", "Linkedaccount", "Company");
+    var $uses = array('Tooltipincompany', 'Tooltip', 'Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
 
     function beforeFilter() {
         parent::beforeFilter();
 
+        Configure::write('debug', 2);
 
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "testDateDiff", "xlsxConvert", "read"));
+            "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
+            "testDateDiff", "deleteFromUser",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3",
+            "memoryTest2", "hashTest", 'tooltip'));
+    }
+
+    public function pruebaYield() {
+        for ($i = 0; $i < 600000; $i++) {
+            yield $i;
+        }
+    }
+
+    public function tooltip() {
+
+
+        $this->Tooltip->locale = 'es';
+        $this->Tooltipincompany->locale = 'es';
+        $tooltip = $this->Tooltip->searchTooltipByCompany(25, 'es');
+        //ºecho "sin filtro:\n";
+        //$this->print_r2($tooltip);
+
+        echo "\n\n\n\n";
+        echo "con filtro:\n";
+        $filtered = $this->Tooltip->filterTooltipByIdentifier(array(15, 16), $tooltip);
+        $this->print_r2($filtered);
+        
+        $tooltip = $this->Tooltip->searchTooltipByCompany(24, 'es');
+        /*echo "sin filtro:\n";
+        $this->print_r2($tooltip);*/
+
+        echo "\n\n\n\n";
+        echo "con filtro:\n";
+        $filtered = $this->Tooltip->filterTooltipByIdentifier(array(15, 16), $tooltip);
+        $this->print_r2($filtered);
+        
+
+        echo "\n\n\n\n";
+        echo "gobal:\n";
+        
+        $global = $this->Tooltip->searchGlobalTooltip(array(38), 'es');
+        $this->print_r2($global);
+    }
+
+    function hashTest() {
+
+        $telephone = 615091091;
+        $username = "eduardo@winvestify.com";
+
+        $hashTelephone = hash("crc32", $telephone);
+        $hashUsername = hash("crc32", $username);
+        $uuid = $hashTelephone . $hashUsername;
+        echo strlen($uuid);
+        echo "    " . $uuid;
+    }
+
+    function memoryTest3() {
+        $timeInit = microtime(true);
+        foreach ($this->pruebaYield() as $y) {
+            if ($y == 100000 || $y == 200000 || $y == 300000 || $y == 400000 || $y == 500000) {
+                echo "!!!";
+                echo memory_get_usage();
+            }
+        }
+        echo "!!!";
+        echo memory_get_usage();
+        $timeEnd = microtime(true);
+        $time = $timeEnd - $timeInit;
+        echo " time" . $time;
+    }
+
+    public function memoryTest2() {
+        $timeInit = microtime(true);
+        for ($i = 0; $i <= 600000; $i++) {
+            $arrayprueba[] = $i;
+            if ($i == 100000 || $i == 200000 || $i == 300000 || $i == 400000 || $i == 500000) {
+                echo "!!!";
+                echo memory_get_usage();
+            }
+        }
+        echo "!!!";
+        echo memory_get_usage();
+        $timeEnd = microtime(true);
+        $time = $timeEnd - $timeInit;
+        echo " time" . $time;
+    }
+
+    public function readSize() {
+        echo 'patata ';
+        $size = filesize(APP . "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_6.xlsx");
+        echo 'hola';
+        echo $size;
+        echo 'patata ';
+        $size = filesize(APP . "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_7.xlsx");
+        echo 'hola';
+        echo $size;
+        echo 'patata ';
+        $size = filesize(APP . "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_8.xlsx");
+        echo 'hola';
+        echo $size;
+        echo 'patata ';
+        $size = filesize(APP . "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_9.xlsx");
+        echo 'patata ';
+        $size = filesize(APP . "files/dashboard2/39048098ab409be490A/20180508/899/twino/transaction_1_10.xlsx");
+        echo 'hola';
+        echo $size;
+        echo 'hola';
+        echo $size;
     }
 
     var $dateFinish = "20171129";
     var $numberOfFiles = 0;
-    
+
+    public function pdfTest() {
+
+// Include Composer autoloader if not already done.
+        include 'Vendor/autoload.php';
+
+// Parse pdf file and build necessary objects.
+        $parser = new \Smalot\PdfParser\Parser();
+        $pdf = $parser->parseFile('/home/eduardo/Downloads/inversion 3.pdf');
+        $text = $pdf->getText();
+        $data['A'] = trim($this->extractDataFromString($text, 'PROJECT NAME:', 'CONTRACT NUMBER:'));
+        $data['B'] = trim($this->extractDataFromString($text, 'INTEREST RATE:', 'LOAN PURPOSE:'));
+        echo $text;
+        print_r($data);
+    }
+
+    public function mytest1() {
+        $this->autoRender = false;
+        Configure::write('debug', 2);
+        $this->Investor->Behaviors->load('Containable');
+        $this->Investor->contain('Linkedaccount');
+        $result = $this->Investor->find("all", array("recursive" => 2,
+            "conditions" => array("Investor.investor_identity" => "39048098ab409be490A"),
+            array('Linkedaccount' => array('Linkedaccount.linkedaccount_statusExtended' => 10)
+            ))
+        );
+
+        $companyNothingInProcess = [];
+        $this->Investor = ClassRegistry::init('Investor');
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+// Find all the objects of Investor   
+        $filterConditions = array('Investor.investor_identity' => "39048098ab409be490A");       // Me
+
+        $this->Investor->Behaviors->load('Containable');
+        $this->Investor->contain('Linkedaccount');         // Own model is automatically included
+        $resultInvestorsData = $this->Investor->find("all", $params = array('recursive' => 2,
+            'conditions' => $filterConditions));
+
+        if (!isset($resultInvestorsData['Accountowner'])) {
+            echo "No linked accounts<br/>";
+            return [];
+        }
+
+        $accountOwnerIds = array();
+        foreach ($resultInvestorsData[0]['Linkedaccount'] as $account) {
+            if ($account['linkedaccount_status'] == 2) {
+                $accountOwnerIds[] = ['id' => $account['id']];
+            }
+        }
+        $this->print_r2($accountOwnerIds);
+        if (empty($accountOwnerIds)) {
+            echo "empty result to quit\n";
+            return;
+        }
+
+        $filterConditions = array(
+            "OR" => $accountOwnerIds,
+            "AND" => array(array('linkedaccount_linkingProcess' => 1,
+                    'linkedaccount_statusExtended' => 10
+                )),
+        );
+
+        $linkedAccountsResults = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
+        $this->print_r2($linkedAccountsResults);
+
+        $companyNothingInProcess = array();
+        foreach ($linkedAccountsResults as $key => $linkedAccountResult) {
+            //In this case $key is the number of the linkaccount inside the array 0,1,2,3
+            $companyNothingInProcess[] = $linkedAccountResult['Linkedaccount']['id'];
+        }
+        $this->print_r2($companyNothingInProcess);
+    }
+
+    public function mytest() {
+        $this->autoRender = false;
+        Configure::write('debug', 2);
+        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
+
+        $filterConditions = array("date" => "2018-01-11",
+            "investment_id" => 1022);
+
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+        if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+            echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";
+        }
+
+
+
+
+        //       $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
+
+
+
+        $result = $this->Globalamortizationtable->find("all", array("recursive" => 2,
+            "conditions" => array("Globalamortizationtable.id" => 17))
+        );
+        $this->print_r2($result);
+
+        echo "ssss<br>";
+        $this->Investmentslice->Behaviors->load('Containable');
+        $this->Investmentslice->contain('Globalamortizationtable');
+        $result1 = $this->Investmentslice->find("all", array("recursive" => 2,
+            "conditions" => array("Investmentslice.id" => 100)));
+        $this->print_r2($result1);
+
+        foreach ($result1[0]['Globalamortizationtable'] as $GlobalamortizationtableIndex) {
+            echo "id = " . $GlobalamortizationtableIndex['id'] . "<br/>";
+            echo "scheduledDate " . $GlobalamortizationtableIndex['globalamortizationtable_scheduledDate'] . "<br/>";
+        }
+
+
+        echo "Finished<br/>";
+    }
+
+    public function mytestOld() {
+
+        $this->autoRender = false;
+
+
+
+        $this->Queue2->addToQueueDashboard2("39048098ab409be490A", $queueInfo = null, $queueStatus = 11, $queueId = null, $queueType = 1);
+
+
+
+        //        WIN_ACTION_ORIGIN_ACCOUNT_LINKING', 1);
+//  define('WIN_ACTION_ORIGIN_REGULAR_UPDATE'
+        //           $this->Linkedaccount->deleteLinkedaccount($filterConditions, WIN_USER_INITIATED);
+//   $this->Linkedaccount->createNewLinkedAccount(3, 1, "myUserName", "myPassword");
+//$this->Linkedaccount->disableLinkedAccount(array('investor_id' => 1), WIN_USER_INITIATED);
+//$this->Linkedaccount->enableLinkedAccount(array('investor_id' => 1, 'company_id' => 3), WIN_USER_INITIATED);
+    }
+
+    private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
+
+        $position = stripos($input, $search);
+        if ($position !== false) {  // == TRUE
+            if ($mandatory == 2) {
+                return "global_" . mt_rand();
+            }
+            $start = $position;
+            $length = strlen($search);
+        } else { // FALSE
+            $start = 0;
+            $length = 0;
+
+            if ($mandatory == 1) {
+                return "global_" . mt_rand();
+            }
+        }
+
+        $position1 = stripos($input, $separator);
+        if ($position1 !== false) {  // == TRUE
+            $length1 = $position1;
+        } else { // FALSE
+            $length1 = 100;                 // ficticious value
+        }
+        $start = $start + $length;
+        $finish = $length1 - $start;
+        return substr($input, $start, $finish);
+    }
+
     public function xlsxConvert() {
         echo 'Inicio';
 
         $unoconv = Unoconv\Unoconv::create();
-        echo APP .  "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS . 'test.xlsx';
-        $meh = fopen (APP .  "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS . 'test.xlsx', "r+");
+        echo APP . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20180116" . DS . 'test.xlsx';
+        $meh = fopen(APP . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20180116" . DS . 'test.xlsx', "r+");
         echo fread($meh);
-         //$unoconv->transcode('\home ' . DS . 'eduardo' . DS . 'Downloads' . DS . 'testmenor.xlsx', 'pdf','\home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'testmenorConvertido.pdf');
-        $unoconv->transcode(APP . "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS  . 'test.xlsx', 'pdf', APP . "files" . DS ."investors" . DS . "39048098ab409be490A" .DS  . "20180116" . DS  . 'testConvertido.pdf');
+        //$unoconv->transcode('\home ' . DS . 'eduardo' . DS . 'Downloads' . DS . 'testmenor.xlsx', 'pdf','\home' . DS . 'eduardo' . DS . 'Downloads' . DS . 'testmenorConvertido.pdf');
+        $unoconv->transcode(APP . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20180116" . DS . 'test.xlsx', 'pdf', APP . "files" . DS . "investors" . DS . "39048098ab409be490A" . DS . "20180116" . DS . 'testConvertido.pdf');
 
         echo 'Fin';
     }
@@ -85,16 +353,16 @@ class TestsController extends AppController {
         $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);
         finfo_close($finfo);
         print_r($fileinfo);
-        
-        
+
+
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
-        
+
         $inputFileType = 'Excel2007';
         $objReader = PHPExcel_IOFactory::createReader($inputFileType);
-         $objPHPExcel = $objReader->load($file);
+        $objPHPExcel = $objReader->load($file);
         $worksheet = $objPHPExcel->getActiveSheet();
-        
+
         foreach ($worksheet->getRowIterator() as $row) {
             echo 'Row number: ' . $row->getRowIndex() . "\r\n";
             $cellIterator = $row->getCellIterator();
@@ -105,7 +373,6 @@ class TestsController extends AppController {
                 }
             }
         }
-        
     }
 
     public function xlsxRead() {
@@ -183,8 +450,8 @@ class TestsController extends AppController {
     }
 
     function arrayToExcel($array, $excelName) {
-        /*$array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
-        $excelName = "prueba";*/
+        /* $array = array("market" => 1, "q" => 2, "a" => 3, "s" => 4, "d" => 5, "f" => 6, "e" => 7, "r" => 8, "t" => 9, "y" => 11, "u" => 12, "i" => 13, "o" => 14, "p" => 15, "l" => 16);
+          $excelName = "prueba"; */
         $keyArray = array();
         App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.php'));
         App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
@@ -200,7 +467,7 @@ class TestsController extends AppController {
         $objPHPExcel->setActiveSheetIndex(0)
                 ->fromArray($keyArray, NULL, 'A1')
                 ->fromArray($array, NULL, 'A2');
-        
+
         $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         $objWriter->save($excelName);
         exit;
@@ -242,11 +509,6 @@ class TestsController extends AppController {
           exit;
          */
 
-
-
-
-
-
         $investorIdentity = $this->Auth->user('Investor.investor_identity');
         $dataFilterConditions = array('data_investorReference' => $userIdentity);
 
@@ -267,6 +529,35 @@ class TestsController extends AppController {
             echo "Nothing found, try again with other data";
             exit;
         }
+    }
+
+    /**
+     *  to test the new API for location
+     * 
+     * 
+     */
+    function testLocation() {
+        $this->autoRender = false;
+        Configure::write('debug', 2);
+        $accessKey = "40d49470983cedfb136010af6c2c9d4ePPPPP";
+        $ipAddress = "88.12.243.232";
+
+        // Initialize CURL:
+        $ch = curl_init('http://api.ipstack.com/' . $ipAddress . '?access_key=' . $accessKey . '');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Store the data:
+        $json = curl_exec($ch);
+        curl_close($ch);
+
+        // Decode JSON response:
+        $apiResult = json_decode($json, true);
+        if (isset($apiResult['error'])) {
+            echo "Errorcode = " . $apiResult['error']['code'];
+            debug($apiResult['error']);
+        }
+
+        debug($apiResult);
     }
 
     function convertPdf() {
@@ -501,6 +792,146 @@ class TestsController extends AppController {
         echo 20170326 - 20130324 . "<br>";
         echo 20170323 - 20130324 . "<br>";
         echo 20170000 - 20130000 . "<br>";
+    }
+
+    public function testAddPayment() {
+        $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
+        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        Configure::write('debug', 2);
+        echo "start of method " . __METHOD__ . "<br/>";
+        $this->autoRender = false;
+
+
+        include APP . "Console/Command/ParseDataClientShell.php";
+
+        $transactionData = ['transactionId' => 3242454534,
+            'date' => "2018-07-05",
+            'investment_loanId' => "1581870-01",
+        ];
+
+        $resultData = ['payment' =>
+            [
+                'payment_principalAndInterestPayment' => "9434.8",
+                'payment_capitalRepayment' => "6000.40",
+            //       'payment_regularGrossInterestIncome' => "434.40",
+            ],
+            'investment' =>
+            [
+                'investment_loanId' => "1581870-01",
+                'id' => 5529,
+                'investment_dateForPaymentDelayCalculation' => "2018-06-00",
+            ],
+        ];
+
+        $companyData[0]['Company']['id'] = 24;
+
+        $this->print_r2($transactionData);
+        $this->print_r2($resultData);
+
+        $myInd = new ParseDataClientShell();
+
+        $result = $myInd->repaymentReceived($transactionData, $resultData);
+
+        echo "result = $result\n";
+        /*
+          $sliceId = 1373;
+          $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);
+          echo "nextPendingInstalmentData = $nextPendingInstalmentDate";
+
+
+         */
+    }
+
+    function testAddPayment66() {
+        echo "start of method " . __METHOD__ . "<br/>";
+        $this->autoRender = false;
+        Configure::write('debug', 2);
+        $this->Amortizationtable = ClassRegistry::init('Amortizationtable');
+        $sliceId = 1373;
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";
+
+        /*
+          $globalAmortizationTable = $this->Globalamortizationtable->readFullAmortizationTable($sliceId);
+          $this->print_r2($globalAmortizationTable);
+          echo __FUNCTION__ . " " . __LINE__ . " <br/>";
+
+         */
+
+        $companyId = 25;
+        $investmentId = 5467;
+        $sliceIdentifier = 3546;
+        $data = ['paymentDate' => "2018-10-22",
+            'capitalRepayment' => "1093.3",
+            'interest' => "1.2",
+        ];
+        $result = $this->Amortizationtable->addPayment($companyId, $investmentId, $sliceIdentifier, $data);
+        $this->print_r2($result);
+
+
+        $nextPendingInstalmentDate = $this->Amortizationtable->getNextPendingPaymentDate($sliceId);
+        echo "nextPendingInstalmentData = $nextPendingInstalmentDate";
+
+
+
+        $this->Company = ClassRegistry::init('Company');
+        $pfp = "zank";
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp]);
+        //    $this->print_r2($this->companyData);        
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] && WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";
+        } else {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";
+        }
+
+        $pfp = "finanzarel";
+        $this->companyData = $this->Company->getData($filter = ['company_codeFile' => $pfp]);
+        //    $this->print_r2($this->companyData);
+        if ($this->companyData[0]['Company']['company_technicalFeatures'] && WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";
+        } else {
+            echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";
+        }
+    }
+
+    /**
+     *  to test the new API for location
+     * 
+     * 
+     */
+    function testChildModel() {
+        $this->autoRender = false;
+        Configure::write('debug', 2);
+
+        $this->Investment = ClassRegistry::init('Investment');
+
+
+        $filteringConditions = array('id >' => 1);
+        echo "filter = ";
+        print_r($filteringConditions);
+        $result = $this->Investment->find("all", array('conditions' => $filteringConditions,
+            'recursive' => -1,
+            'fields' => array('id', 'linkedaccount_id'))
+        );
+
+        $this->print_r2($result);
+        exit;
+
+
+        $filterConditions = array('id' => 2105);
+        print_r($filterConditions);
+        $resultInvestmentData = $this->Investment->find("all", $params = array('recursive' => 1,
+            'conditions' => $filterConditions));
+
+        $myInstance = $resultInvestmentData[0]['Investment']['id'];
+        $myInstance = 55;
+        echo $myInstance;
+//        $this->print_r2($resultInvestmentData);
+
+
+        $result = $this->Investment->hasChildModel($myInstance, 'Investmentslice');
+        echo "FINAL";
+        $this->print_r2($result);
     }
 
 }

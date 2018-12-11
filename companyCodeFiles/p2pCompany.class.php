@@ -169,13 +169,13 @@ class p2pCompany {
     protected $callbacks;
     protected $originExecution;
     protected $tableStructure;
+    protected $callbackAmortizationTable;
    
     protected $compareHeaderConfigParam = array( "chunkInit" => 1,
-                                        "chunkSize" => 1,     
+                                        "chunkSize" => 2,     
                                         );
-    
     //Number of days for each company download. Only some pfp uses it.
-    protected $period = 365;
+    protected $period = 165;
 
     /**
      *
@@ -1382,16 +1382,22 @@ class p2pCompany {
     /**
      * Create the cookies folder if not exists 
      * @param string $name It is the name for the folder
+     * @param string $originPath It is the name of the file, it could include more folder associate
      * @return boolean True if the folder is created
      */
-    public function createFolder($name = null, $originPath = null) {
+    public function createFolder($name = null, $originPath = null, $nameWithDS = true) {
         if (empty($name)) {
             return false;
         }
         if (empty($originPath)) {
             $originPath = dirname(__FILE__);
         }
-        $dir = $originPath . DS . $name;
+        if ($nameWithDS) {
+            $dir = $originPath . $name;
+        }
+        else {
+            $dir = $originPath . DS . $name;
+        }
         $folderCreated = false;
         if (!file_exists($dir)) {
             $folderCreated = mkdir($dir, 0777, true);
@@ -1433,6 +1439,7 @@ class p2pCompany {
      * Function to save a file of a PFP
      * @param string $fileName It is the file name with the extension
      * @param data $data Data to save on the file, it could be json or html
+     * return string The path of the file created
      */
     public function saveFilePFP($fileName, $data = null) {
         if (empty($data)) {
@@ -1442,6 +1449,7 @@ class p2pCompany {
         $fp = fopen($pathCreated . DS . $fileName, 'w');
         fwrite($fp, $data);
         fclose($fp);
+        return $pathCreated . DS . $fileName;
     }
 
     /**
@@ -1578,6 +1586,11 @@ class p2pCompany {
         return $this->tempArray;
     }
 
+    /**
+     * Function to get different type of Error Curl depending on its number
+     * @param integer $code It is the error code that is received from curl
+     * @return Constant Return a error curl depending on its number
+     */
     public function getErrorCurlType($code) {
         $subtypeError = WIN_ERROR_FLOW_CURL;
         switch ($code) {
@@ -1590,6 +1603,14 @@ class p2pCompany {
         return $subtypeError;
     }
 
+    /**
+     * Function that is used by Dashboard1to get an error within the companyCodeFile
+     * @param integer $line It is the line where the error is produced
+     * @param string $file It is the file where the error is produced
+     * @param string $typeSequence It is the type of urlSquence, LOGIN, WEB, LOGOUT
+     * @param integer $error It is the code that produced the error
+     * @return array
+     */
     public function setErrorOldUserinvestmentdata($line, $file, $typeSequence = null, $error = null) {
         $newLine = "\n";
         if (!empty($typeSequence)) {
@@ -1766,6 +1787,16 @@ class p2pCompany {
             //echo " A POST MESSAGE IS GOING TO BE GENERATED<br>";
         }
 
+        if ($this->config['returnTransfer'] == true) {
+                // Return the actual result of the curl result instead of success code
+             $request->getOptions()
+                ->set(CURLOPT_RETURNTRANSFER, true);
+        } 
+        else{
+            $request->getOptions()
+                ->set(CURLOPT_RETURNTRANSFER, false);
+        }
+        
         if (!empty($headers)) {
             echo "EXTRA HEADERS TO BE ADDED<br>";
             $request->getOptions()
@@ -1785,7 +1816,6 @@ class p2pCompany {
         if ($credentials) {
             //set data to be posted
             $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_POSTFIELDS, $credentials);
         }
 
@@ -1800,13 +1830,12 @@ class p2pCompany {
                 ->set(CURLOPT_FAILONERROR, true)
                 ->set(CURLOPT_REFERER, $referer)
                 //->set(CURLOPT_VERBOSE, 1)
-                // Return the actual result of the curl result instead of success code
-                ->set(CURLOPT_RETURNTRANSFER, false)
+
                 ->set(CURLOPT_FILE, $this->fp)
                 // Wait for 10 seconds to connect, set 0 to wait indefinitely
                 ->set(CURLOPT_CONNECTTIMEOUT, 30)
                 // Execute the cURL request for a maximum of 50 seconds
-                ->set(CURLOPT_TIMEOUT, 100)
+                ->set(CURLOPT_TIMEOUT, 1000000)
                 ->set(CURLOPT_ENCODING, "gzip,deflate,br")
                 // Do not check the SSL certificates
                 ->set(CURLOPT_SSL_VERIFYHOST, false)
@@ -1829,7 +1858,11 @@ class p2pCompany {
 
         if (empty($dateMin)) {
             $dateMin = "20090101";
-        }
+        } /*else{
+            $dateMin = $dateMin + 1;
+            echo $dateMin;
+            exit;
+        }*/
         // echo 'Date ' . $this->dateInit . " " . $this->dateFinish;
         if ($this->numberOfFiles == 0) {
             $this->dateInitPeriod = date("Ymd", strtotime(strtotime("Ymd", $this->dateFinish) . " " . -$datePeriod . " days")); //First init date must be Finish date - time period
@@ -2877,29 +2910,50 @@ FRAGMENT
     public function compareHeader() {
 
         $pathVendor = Configure::read('winvestifyVendor');
+        $pathError = Configure::read('winvestifyErrorFiles');
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
+        if (Configure::read('debug')) {
+            echo "our config: ";
+            print_r($this->headerComparation);
+            echo "Have content(1 no, 2 yes//// Twino 3 no, 4 Yes): " . count($data);       
+        }
+        if(count($data) === $this->compareHeaderConfigParam['chunkInit']){
+            return WIN_ERROR_FLOW_EMPTY_FILE;
+        }
 
-        if (!empty(array_diff($this->headerComparation, $data)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
-            if (!empty($configParam[0]['chunkInit'])) {  //Multi sheet
-                return $this->compareMulti();
-            } else {
-                return $this->compareSimple();
+        $data = array_filter($data[$this->compareHeaderConfigParam['chunkInit']]);
+        if (!empty(array_diff($this->headerComparation, $data)) || !empty(array_diff($data, $this->headerComparation)) || empty($data) || empty($this->headerComparation)) {  //Firt we compare if we have the same headers, if they are the same, we not need compare futher.
+            $date = date("Ymd");
+            $fileErrorDir = $pathError . $this->companyName . DS . $this->userReference . DS . $date . DS;
+
+            if (!file_exists($fileErrorDir)) {
+                mkdir($fileErrorDir, 0777, true);
+            }
+            copy($this->getFolderPFPFile() . DS . $this->fileName, $fileErrorDir . DS . $this->fileName);
+
+            if (!empty($configParam[0]['chunkInit'])) {
+                return $this->compareMulti();                                   //Multi sheet
+            }
+            else {
+                return $this->compareSimple();                                  //Single sheet
             }
         }
-        echo "OK";
+        if (Configure::read('debug')) {
+            echo "OK";
+        }
         return false;
     }
 
     public function compareSimple() {
         foreach ($this->headerComparation as $key => $value) {
             if ($value !== $data[$key]) { // If the array are the same, we compare positions, if the positions are the same, thay added new headers at the end.
-                echo "fatal error";
+                echo "Header comparation fatal error";
                 return WIN_ERROR_FLOW_NEW_MIDDLE_HEADER;                              // If positions aren't the same, they added new headers in the middle.
             }
         }
-        echo "Warning";
+        echo "Header comparation warning";
         return WIN_ERROR_FLOW_NEW_FINAL_HEADER;
     }
 
@@ -2925,8 +2979,18 @@ FRAGMENT
     }
 
     /**
+     * Function to set the investment list for a linkaccount from database
+     * @param string $tableStructure It is the table structure to compare
+     */
+    function setInvestmentList($investmentList) {
+        $this->investmentList = $investmentList;
+    }
+    
+    /**
      * Function to create a new loanIds.json with the amortizationTables that failed
      * and rename the old file loanIds to oldIdsLoan
+     * 
+     * This code help us with tracing errors in flow 3a, doesn't have other function.
      */
     public function verifyErrorAmortizationTable() {
 
@@ -2934,12 +2998,15 @@ FRAGMENT
         print_r($this->tempArray['correctTables']);
         echo "bads";
         print_r($this->tempArray['errorTables']);
+        echo 'Ended Today';
+        print_r($this->tempArray['finishedToday']);
+
+        $path = $this->getFolderPFPFile();
+
 
         if (!empty($this->tempArray['errorTables'])) {
-            $path = $this->getFolderPFPFile();
-            $oldFilePath = $path . DS . "oldLoanIds.json";
-            $filePath = $path . DS . "loanIds.json";
-
+            $oldFilePath = $path . DS . "goodLoanIds.json";
+            $badLoansPath = $path . DS . "badLoanIds.json";
             if (!empty($this->tempArray['correctTables'])) {
                 $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
                 $jsonIds = json_encode($this->tempArray['correctTables']);
@@ -2947,16 +3014,22 @@ FRAGMENT
                 fclose($idsJsonFile);
             }
 
-            unlink($filePath);
-            $idsJsonFile = fopen($filePath, "a"); //loanIds must be replaced, we can delete this info
+            $idsJsonFile = fopen($badLoansPath, "w"); //badLoanIds must be replaced, we can delete this info
             $jsonIds = json_encode($this->tempArray['errorTables']);
+            fwrite($badLoansPath, $jsonIds);
+            fclose($idsJsonFile);
+        }
+
+        if (!empty($this->tempArray['finishedToday'])) {
+            $finishedToday = $path . DS . "finishedToday.json";
+            echo "writing finished loans";
+            $idsJsonFile = fopen($finishedToday, "w");
+            $jsonIds = json_encode($this->tempArray['finishedToday']);
             fwrite($idsJsonFile, $jsonIds);
             fclose($idsJsonFile);
         }
     }
 
-  
-    
     /** 
      * Read ControlVariables configuration file
      *     
@@ -2988,6 +3061,16 @@ FRAGMENT
     public function getDashboard2ConfigurationParameters()  {
         return $this->dashboard2ConfigurationParameters;
     } 
+    
+    /**
+     * Callback function for Amortizationtable.
+     * Function to get all the callback for a company in Dashboard2 in the flow 3B
+     * 
+     * @return array
+     */
+    function getCallbackAmortizationTable() {
+        return $this->callbackAmortizationTable;
+    }
     
 }
 

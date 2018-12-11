@@ -27,11 +27,11 @@ initial test version
 <?php  
 	if (!$error) {			// this is the "first" time that this screen is show, will not be send when server has detected an error
 // For updating the url in browser if user decides to close a registration window
-		echo $this->Form->input('', array('name'    => 'ownDomain',
+		echo $this->Form->input('', ['name'    => 'ownDomain',
 						'value'     => $ownDomain,
 						'id'        => 'ownDomain',
 						'type'      => 'hidden'
-					));
+					]);
 	
 
 ?>
