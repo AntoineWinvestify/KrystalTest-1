@@ -167,7 +167,7 @@ class Investor extends AppModel {
 
     public function checkOver18($check) { //Calculate age for validation
         $birthDate = explode("/", $check['investor_dateOfBirth']);
-        print_r($birthDate);
+
         //get age from date or birthdate
         $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md") ? ((date("Y") - $birthDate[2]) - 1) : (date("Y") - $birthDate[2]));
 

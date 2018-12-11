@@ -51,7 +51,19 @@ function getData        [Tested local, OK]
 
  
 class AppModel extends Model {
-
+    
+    /**
+     * Configuration data for variable name translations
+     *
+     * @access private
+     * @var array
+     */
+    private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
+                                'investor_dateOfBirth' => 'investor_date_of_birth',
+                                'investor_city' => 'investor_city',
+                                'linkedaccount_state' => 'linkedaccount_status',
+                                'check_dateOfBirth' => 'check_date_of_birth'        // Not a realistic value, jsut for testing
+                              ];
 
     
     /**
@@ -92,8 +104,7 @@ class AppModel extends Model {
   
     
     /**
-     *
-     *	Generates a unique investor reference
+     * Generates a unique investor reference
      * 
      * @param -
      * @return UUID
@@ -117,8 +128,8 @@ class AppModel extends Model {
 
 
     /**
-     *
-     *	Generates a unique code which can be used for registration confirmation
+     * Generates a unique code which can be used for registration confirmation
+     * 
      * @param -
      * @return Random number
      */
@@ -176,7 +187,6 @@ class AppModel extends Model {
 
 
     /**
-     *
      * Converts the date for storage. Date input must be in format DD/MM/YYYY
      * and will be stored in format YYYY-MM-DD
      *
@@ -253,7 +263,7 @@ class AppModel extends Model {
 
 
     /**
-     *  Generic function to get the data of a table
+     * Generic function to get the data of a table
      * 
      * @param  array $filter filter of the table  ---> array("key" => value, ...),
      * @param  array $field  Fields you want get  ---> array("field", ...),
@@ -286,7 +296,8 @@ class AppModel extends Model {
     }
 
     
-    /** Checks if the current model has a child model
+    /** 
+     * Checks if the current model has a child model
      *  
      *  @param  bigInt      $currentInstance    Instance of the parent Model
      *  @param  string      $model              Name of child model
@@ -315,5 +326,87 @@ class AppModel extends Model {
         echo '<pre>';
         print_r($val);
         echo '</pre>';
-    }    
+    }  
+    
+   
+
+    /**  
+     * Adapts the name of a fieldlist for a find operation to the internal name(s)
+     * of the database variables
+     * $inputArray elements can be of form 'Model.variableName' or 'variableName'
+     * 
+     *  @param  array $inputArray  
+     *  @return boolean
+     */   
+    public function apiFieldListAdapter($inputArray) {
+
+        foreach ($inputArray as $key => $item) {
+            $explodeResult = explode(".", $item);
+ 
+            $newItem = (!empty($explodeResult[1]) ? $explodeResult[1] : $explodeResult[0]); 
+            $newKey = array_search($newItem, $this->apiVariableConfigArray);
+            if ($newKey) {
+                $inputArray[$key] = $newKey;
+            }   
+        }       
+        return true;
+    }
+    
+    /** 
+     * Adapt the variable names of an array (= keys) to the internal name of the
+     * database variable. 
+     * Typically used as filtering condition of a find operation
+     * Example  'investor_date_of_birth' ==> 'investor_dateOfBirth'
+     *  
+     *  @param array $inputArray 
+     *  @return boolean
+     */   
+    public function apiVariableNameInAdapter(&$inputArray)  {
+
+        foreach ($inputArray as $key => $item) {
+            $newKey = array_search($key, $this->apiVariableConfigArray);
+            if ($newKey) {
+                $inputArray[$newKey] = $item;
+                unset($inputArray[$key]);
+            }
+        }       
+        return true;
+    }
+
+    /** 
+     * Adapt the internal variable names of an array (= keys) to the external name of the
+     * variable according to the API specification. Typically this is used when returning
+     * the result of a find operation and when returning validationErrors when a find
+     * failed.
+     * 
+     * Example   'investor_dateOfBirth' ==> 'investor_date_of_birth'
+     *       
+     *  @code 
+     * 
+     *  $this->Model->apiVariableNameOutAdapter($valErrors);
+     * 
+     *  @endcode 
+     * 
+     *  @param array $inputArray 
+     *  @return boolean
+     */   
+    public function apiVariableNameOutAdapter(&$inputArray)  {
+
+        foreach ($inputArray as $key => $item) {          
+            if (array_key_exists($key, $this->apiVariableConfigArray)) {
+                $newKey = $this->apiVariableConfigArray[$key];
+                $inputArray[$newKey] = $item;
+                unset($inputArray[$key]);
+            }
+        }    
+        return true;
+    }   
+    
+    
+    
+    
+    
+    
+    
+    
 }

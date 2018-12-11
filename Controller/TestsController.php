@@ -108,8 +108,9 @@ class TestsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-        Configure::write('debug', 2);
-
+        Configure::write('debug', 2);        
+        $this->autoRender = false; 
+        
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
@@ -129,17 +130,31 @@ class TestsController extends AppController {
      * 
      */
     public function readInvestor($filterCondition, $listOfFields) { 
-    $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
+    $filterCondition = ['investor_date_of_birth' => "1990-07-20", 'investor_name' => "John11"];
     //, "Investor.id" => 1]; 
-    Configure::write('debug', 2);        
-    $this->autoRender = false;         
-    $listOfFields = ['name', 'surname', 'dateOfBirth', 'telephone'];
+         
+    $this->Investor-> apiVariableNameInAdapter($filterCondition);
+  
+    
+    
+    $results = $this->Investor->find("all", $params = ['conditions' => $filterCondition,
+                                               //       'fields' => $fields,
+                                                      'recursive' => 1]);
+    pr($results);  
+    
+    $this->Investor-> apiVariableNameOutAdapter($results[0]['Investor']);
+    pr($results);
+    exit;
+    
+    
+    
+    $listOfFields = ['name', 'surname', 'date_of_birth', 'telephone'];
 
     
     if (empty($listOfFields)) {
         // Only show by default 'public' fields, not internal technical fields
         $listOfFields =   ['name', 'surname',       
-                            'DNI', 'dateOfBirth', 
+                            'DNI', 'date_of_birth', 
                             'telephone', 'address1', 
                             'address2', 'postCode', 
                             'city', 'country', 
@@ -152,10 +167,32 @@ class TestsController extends AppController {
         $tempField = "Check.check_" . $field;
         $fields[] = $tempField; 
     }    
+   
+    
+    
+    
+    
+    
+    $this->Investor->apiFieldListAdapter($fields);
+   
+    
+    
+    
+    
+    
+    exit;
+    
+    
+    
+    
     
     $results = $this->Investor->find("all", $params = ['conditions' => $filterCondition,
                                                       'fields' => $fields,
-                                                      'recursive' => 0]);
+                                                      'recursive' => 1]);
+    pr($results);
+    
+    exit;
+    $resultsFinal = $results;
     $numberOfResults = count($results);
 
     $i = 0;
@@ -185,19 +222,60 @@ class TestsController extends AppController {
     pr($json);
     pr(json_encode($json));    
 
+    
+    
+ echo "start test with resultsFinal<br>";   
+    
+    pr($resultsFinal);
+    
+ 
+    $functionArray = ['TestsController','changeArrayValueIn'];
+    $result = array_walk_recursive($resultsFinal, $functionArray);    
+    
+    
+    
+    
+    
+    
+    
     }
  
+
+    /**
+     * Recursive function for changing the values of an array.
+     * 
+     *  @param  $item The array value of the array element to be operated upon
+     *  @param  $key The key of the array element to be operated upon
+     *  @return -
+     */ 
+    private function changeArrayValueIn(&$item, $key) {
+echo " key = $key and item = $item<br>";
+return;
+        if (array_key_exists($key, $this->keywordsArrayIn)) {
+            $item = $this->keywordsArrayIn[$key][$item];
+        }    
+        return;
+    }
     
     
     
     
+    
+    
+    
+    
+    
+    
+    
+     
+   
     /** FOR MODEL INVESTOR
      * Terminates GET investor
      * @param array $fields
      * @param type $listOfFields
      * 
      */
-    public function writeInvestor($fields) { 
+    public function writeInvestor() { 
     $fields = [
                 'id' => 1,        
                 'investor_name' => 'A',
@@ -209,10 +287,13 @@ class TestsController extends AppController {
     
     $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
     //, "Investor.id" => 1]; 
-    Configure::write('debug', 2);        
-    $this->autoRender = false;         
-    $listOfFields = ['name', 'surname', 'dateOfBirth', 'telephone'];
+       
+    $listOfFields = ['investor_name', 'investor_surname', 'investor_date_of_birth', 'investor_telephone'];
 
+
+    $this->Investor->apiFieldListAdapter($listOfFields);
+
+    
     
     if (empty($listOfFields)) {
         // Only show by default 'public' fields, not internal technical fields
@@ -238,9 +319,10 @@ class TestsController extends AppController {
     $result = $this->Investor->save($fields, $validates = true);
     echo "result= ";
     pr($result);
-    echo "OK";
+    echo "return result in Response Message";
     if (!$result) {
         $validationErrors = $this->Investor->validationErrors;
+        $valErrors = $validationErrors;
         pr($validationErrors);
         foreach ($validationErrors as $key => $errorItem) {          
             if (array_key_exists($key, $apiVariableConfigArray)) {
@@ -250,12 +332,16 @@ class TestsController extends AppController {
             }
         } 
         pr($validationErrors);
+        
+        
+        
+        
+        echo "testing validation errors<br>";
+        $this->Investor->apiVariableNameOutAdapter($valErrors);
+  
     }
     
  
-    
-  
-    
     
  $jsonString = '{
 "investor_DNI" : "54286464F",
