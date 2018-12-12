@@ -208,10 +208,15 @@ exit;
                 'investor_name' => 'A',
                 'investor_surname' => 'BBB',
                 'investor_telephone' => '+3456434533',
-                'investor_DNI' => "X2",
-                'investor_dateOfBirth' => "11/11/2018"
-            ];   
+                'investor_city' => "X2"
+                ];
+    pr($fields);    
+    echo "testing city configuration error<br>";
+    $this->Investor->apiVariableNameOutAdapter($fields); 
+    pr($fields); 
+exit;   
     
+        
     $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
     //, "Investor.id" => 1]; 
        
@@ -220,7 +225,11 @@ exit;
 
     $this->Investor->apiFieldListAdapter($listOfFields);
 
-    
+  $temp = [
+    'investor_name' => [ 'Name validation error'],
+    'investor_dateOfBirth' => ['You must be over 18 years old'],
+          ];
+pr($temp);
     
     if (empty($listOfFields)) {
         // Only show by default 'public' fields, not internal technical fields

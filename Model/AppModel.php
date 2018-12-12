@@ -60,9 +60,10 @@ class AppModel extends Model {
      */
     private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
                                 'investor_dateOfBirth' => 'investor_date_of_birth',
-                                'investor_city' => 'investor_city',  // ONLY translation shall be allowed
+                                'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
                                 'linkedaccount_state' => 'linkedaccount_status',
-                                'check_dateOfBirth' => 'check_date_of_birth'        // Not a realistic value, jsut for testing
+                                'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing
+                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code'
                               ];
 
         /**
@@ -404,11 +405,13 @@ class AppModel extends Model {
      */   
     public function apiVariableNameOutAdapter(&$inputArray)  {
 
-        foreach ($inputArray as $key => $item) {          
+        foreach ($inputArray as $key => $item) {  
             if (array_key_exists($key, $this->apiVariableConfigArray)) {
                 $newKey = $this->apiVariableConfigArray[$key];
-                $inputArray[$newKey] = $item;
-                unset($inputArray[$key]);
+                if ($key <> $newKey) {              // more resistent to errors in $this->apiVariableConfigArray
+                    $inputArray[$newKey] = $item;
+                    unset($inputArray[$key]);
+                }
             }
         }    
         return true;
