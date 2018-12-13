@@ -6,8 +6,7 @@ App::uses('Tooltip', 'Model');
 
 class TooltipTest extends CakeTestCase {
 
-    //public $fixtures = array('app.Accountowner', 'app.Linkedaccount', 'app.Investor');
-    //public $fixtures = array('app.Translatetooltip');
+    public $fixtures = array('app.Tooltip', 'app.Tootipincompany');
 
     public function setUp() {
         parent::setUp();
