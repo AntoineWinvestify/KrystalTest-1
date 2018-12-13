@@ -52,12 +52,13 @@ class Tooltip extends AppModel {
     var $uses = array('Tooltipincompany');
 
     /**
+     * 
      * Search all the tooltips from a company
      * @param int $companyId pfp id to search the tooltips
-     * @param strin $locale
+     * @param string $locale
      * @return array
      */
-    public function searchTooltipByCompany($companyId, $locale = 'en') {
+    public function searchTooltipByCompany($companyId, $locale) {
 
         $this->Tooltipincompany->Behaviors->load('Containable');
 
@@ -83,6 +84,7 @@ class Tooltip extends AppModel {
     }
 
     /**
+     * 
      *  Search in Tooltips directly to translate the tooltips to the given locale
      * @param array $tooltips
      * @param string $locale
@@ -103,6 +105,7 @@ class Tooltip extends AppModel {
     }
 
     /**
+     * 
      * Filter the tooltip from a company to obtain only the tooltips we want
      * @param array $tooltipIdentifier List of tooltip we want
      * @param array $tooltipArray List of all tooltip from a pfp
@@ -122,6 +125,7 @@ class Tooltip extends AppModel {
     }
 
     /**
+     * 
      * Get global tooltips that don't belong to a company
      * @param array $tooltipIdentifier List of tooltip we want
      * @param string $locale
@@ -146,13 +150,15 @@ class Tooltip extends AppModel {
     }
 
     /**
+     * 
      * Get tooltips from model and format the array for the api
      * @param array $tooltipIdentifier
-     * @param string $location
+     * @param string $locale
      * @param int $company
+     * @return int
      */
     public function getTooltip($tooltipIdentifier, $locale = 'en', $company = null) {
-        $tooltipFormated = array();
+        $tooltipFormatted = array();
         if (!empty($company)) {
             $tooltipsUnfiltered = $this->searchTooltipByCompany($company, $locale);
             $tooltips = $this->filterTooltipByIdentifier($tooltipIdentifier, $tooltipsUnfiltered);
@@ -166,7 +172,7 @@ class Tooltip extends AppModel {
             $tooltipFormated[$tooltip['Tooltip']['tooltipidentifier_id']] = $tooltip['Tooltip']['tooltip_text'];
         }
 
-        return $tooltipFormated;
+        return $tooltipFormatted;
     }
     
     
