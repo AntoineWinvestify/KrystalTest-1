@@ -90,6 +90,7 @@ class Tooltip extends AppModel {
      */
     public function translateTooltips($tooltips, $locale) {
         $this->locale = $locale;
+        $idList = array();
         foreach ($tooltips as $tooltip) {
             $idList[] = $tooltip['Tooltip']['id'];
         }
@@ -150,15 +151,15 @@ class Tooltip extends AppModel {
      * @param string $location
      * @param int $company
      */
-    public function getTooltip($tooltipIdentifier, $location, $company = null) {
+    public function getTooltip($tooltipIdentifier, $locale = 'en', $company = null) {
         $tooltipFormated = array();
         if (!empty($company)) {
-            $tooltipsUnfiltered = $this->searchTooltipByCompany($company, $location);
+            $tooltipsUnfiltered = $this->searchTooltipByCompany($company, $locale);
             $tooltips = $this->filterTooltipByIdentifier($tooltipIdentifier, $tooltipsUnfiltered);
             
         }
         else {
-            $tooltips = $this->searchGlobalTooltip($tooltipIdentifier, $location);
+            $tooltips = $this->searchGlobalTooltip($tooltipIdentifier, $locale);
         }
 
         foreach($tooltips as $tooltip){
