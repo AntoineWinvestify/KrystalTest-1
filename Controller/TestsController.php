@@ -75,10 +75,19 @@ class TestsController extends AppController {
 
     public function tooltip() {
 
-        $tooltip = $this->Tooltip->getTooltip(array(15,16), 'en', 25);
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 25);
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 24);
         $this->print_r2($tooltip);
         
-        $tooltip = $this->Tooltip->getTooltip(array(15,16), 'es', 25);
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'es', 25);
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'es', 24);
+        $this->print_r2($tooltip);
+        
+        $tooltip = $this->Tooltip->getTooltip(array(38,48,39,40,43), 'en');
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(38,48,39,40,43), 'es');
         $this->print_r2($tooltip);
     }
 
