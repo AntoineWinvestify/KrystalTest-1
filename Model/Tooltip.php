@@ -54,10 +54,10 @@ class Tooltip extends AppModel {
     /**
      * Search all the tooltips from a company
      * @param int $companyId pfp id to search the tooltips
-     * @param strin $location
+     * @param strin $locale
      * @return array
      */
-    public function searchTooltipByCompany($companyId, $location) {
+    public function searchTooltipByCompany($companyId, $locale = 'en') {
 
         $this->Tooltipincompany->Behaviors->load('Containable');
 
@@ -78,12 +78,18 @@ class Tooltip extends AppModel {
             'recursive' => -1,
         ));
 
-        $translatedResult = $this->translateTooltips($result);
+        $translatedResult = $this->translateTooltips($result, $locale);
         return $translatedResult;
     }
 
-    public function translateTooltips($tooltips) {
-
+    /**
+     *  Search in Tooltips directly to translate the tooltips to the given locale
+     * @param array $tooltips
+     * @param string $locale
+     * @return array
+     */
+    public function translateTooltips($tooltips, $locale) {
+        $this->locale = $locale;
         foreach ($tooltips as $tooltip) {
             $idList[] = $tooltip['Tooltip']['id'];
         }
@@ -117,12 +123,11 @@ class Tooltip extends AppModel {
     /**
      * Get global tooltips that don't belong to a company
      * @param array $tooltipIdentifier List of tooltip we want
-     * @param string $location
+     * @param string $locale
      * @return array
      */
-    public function searchGlobalTooltip($tooltipIdentifier, $location) {
-        //$this->locale = $location;
-
+    public function searchGlobalTooltip($tooltipIdentifier, $locale = 'en') {
+        $this->locale = $locale;
         $typeFilter = array('tooltip_type' => WIN_TOOLTIP_GLOBAL, 'tooltipidentifier_id' => $tooltipIdentifier);
 
         $result = $this->find('all', array('conditions' => $typeFilter,
