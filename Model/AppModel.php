@@ -5,8 +5,6 @@
  * This file is application-wide model file. You can put all
  * application-wide model-related methods here.
  *
- * PHP 5
- *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
@@ -28,16 +26,7 @@ App::uses('Model', 'Model');
  *
  * Add your application-wide methods in the class below, your models
  * will inherit them.
- *
- * @package       app.Model
  * 
- *
- *
- *
- *
- *
- *
- *
  *
 Version 0.1		2016-10-29																
 function createReference															[OK, tested]
@@ -63,10 +52,14 @@ class AppModel extends Model {
                                 'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
                                 'linkedaccount_state' => 'linkedaccount_status',
                                 'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing
-                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code'
+                                'investor_postCode' => 'investor_postcode',
+                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
+                                'company_countryName' => 'company_country_name',
+                                'company_privacyUrl' => 'company_privacy_url'
                               ];
 
-        /**
+    
+    /**
      * @brief wrapper for transactions
      *
      * Allow you to easily call transactions manually if you need to do saving
@@ -138,10 +131,7 @@ class AppModel extends Model {
 	return $random;
     }
 
-
-
-
-
+    
     /**
      *
      *	Decrypt a string
@@ -152,9 +142,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     /**
      *
      *	Encrypt a string
@@ -163,9 +150,6 @@ class AppModel extends Model {
     public function encryptDataBeforeSave($string) {
 	return(Security::rijndael($string, Configure::read('Security.salt'), 'encrypt'));
     }
-
-
-
 
 
     /**
@@ -183,9 +167,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     /**
      * Converts the date for storage. Date input must be in format DD/MM/YYYY
      * and will be stored in format YYYY-MM-DD
@@ -197,9 +178,6 @@ class AppModel extends Model {
 	$tempDate = $this->multiexplode(array("/","-"), $string);
 	return $tempDate[2] . "-" . $tempDate[1] . "-" . $tempDate[0];
     }
-
-
-
 
 
     /**
@@ -214,9 +192,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     /**
      *
      *	obtain the date of a datetime field
@@ -228,9 +203,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     public function calculateAge($birthday)  {  //date in yyyy-mm-dd format; or it can be in other formats as well
         $dob = date("Y-m-d",strtotime($birthday));
 
@@ -240,8 +212,6 @@ class AppModel extends Model {
         $diff = $dobObject->diff($nowObject);
 		return $diff->y;
     }
-
-
 
 
     /**

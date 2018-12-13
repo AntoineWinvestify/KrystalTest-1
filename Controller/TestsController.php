@@ -188,7 +188,7 @@ echo __FILE__ . " " . __LINE__ . "\n<br>";
     
 echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 pr($json); 
-exit;  
+  
   
     }
  
@@ -203,6 +203,7 @@ exit;
      * 
      */
     public function writeInvestor() { 
+
     $fields = [
                 'id' => 1,        
                 'investor_name' => 'A',
@@ -214,23 +215,15 @@ exit;
     echo "testing city configuration error<br>";
     $this->Investor->apiVariableNameOutAdapter($fields); 
     pr($fields); 
-exit;   
+
     
         
     $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
     //, "Investor.id" => 1]; 
        
     $listOfFields = ['investor_name', 'investor_surname', 'investor_date_of_birth', 'investor_telephone'];
-
-
     $this->Investor->apiFieldListAdapter($listOfFields);
 
-  $temp = [
-    'investor_name' => [ 'Name validation error'],
-    'investor_dateOfBirth' => ['You must be over 18 years old'],
-          ];
-pr($temp);
-    
     if (empty($listOfFields)) {
         // Only show by default 'public' fields, not internal technical fields
         $listOfFields =   ['name', 'surname',       

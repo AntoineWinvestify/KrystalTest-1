@@ -73,7 +73,8 @@ class AppModelTest extends CakeTestCase {
         'investor_address1' => 'Calle del Rio 23',
         'investor_address2' => 'Piso Bajo',
         'investor_city' => 'Madrid',
-        'investor_country' => 'Spain'
+        'investor_country' => 'Spain',
+        'investor_postcode' => '43456',
         ];
         
     $parmsResult = [
@@ -83,8 +84,9 @@ class AppModelTest extends CakeTestCase {
         'investor_address2' => 'Piso Bajo',
         'investor_city' => 'Madrid',
         'investor_country' => 'Spain',
+        'investor_postCode' => '43456',       
         ];  
-      
+     
         $this->AppModel->apiVariableNameInAdapter($parms);
         $this->assertArrayStructure($parms, $parmsResult, $msg = 'Regular format for Saving to DB NOT approved');  
     }       
@@ -97,9 +99,10 @@ class AppModelTest extends CakeTestCase {
         'investor_address1' => 'Calle del Rio 23',
         'investor_address2' => 'Piso Bajo',
         'investor_city' => 'Madrid',
-        'investor_country' => 'Spain'
+        'investor_country' => 'Spain',
+        'investor_postcode' => '43456',
         ];
-        
+
     $parmsResult = [
         'investor_DNI' => '54286464F',
         'investor_dateOfBirth' => '2003-12-05',
@@ -107,6 +110,7 @@ class AppModelTest extends CakeTestCase {
         'investor_address2' => 'Piso Bajo',
         'investor_city' => 'Madrid',
         'investor_country' => 'Spain',
+        'investor_postCode' => '43456',
         ]; 
         $this->AppModel->apiVariableNameOutAdapter($parmsResult);
         $this->assertArrayStructure($parms, $parmsResult, $msg = 'Data from Database with incorrect keys');  
