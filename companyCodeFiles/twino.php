@@ -665,11 +665,11 @@ class twino extends p2pCompany {
                     $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                     $this->headerComparation = $this->investmentHeader;
                     $this->tempUrl['refererInvestment'] = array_shift($this->urlSequence);
-                    if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) { //Only download expired loans the first time(in link account)
+                    //if ($this->originExecution == WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT) { //Only download expired loans the first time(in link account)
                         $this->idForSwitch++;
-                    } else {
+                    /*} else {
                         $this->idForSwitch = 9;
-                    }
+                    }*/
 
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
