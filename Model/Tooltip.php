@@ -155,7 +155,7 @@ class Tooltip extends AppModel {
      * @param array $tooltipIdentifier
      * @param string $locale
      * @param int $company
-     * @return int
+     * @return array
      */
     public function getTooltip($tooltipIdentifier, $locale = 'en', $company = null) {
         $tooltipFormatted = array();
