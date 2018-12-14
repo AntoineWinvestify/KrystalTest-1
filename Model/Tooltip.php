@@ -61,9 +61,8 @@ class Tooltip extends AppModel {
     public function searchTooltipByCompany($companyId, $locale) {
 
         $this->Tooltipincompany->Behaviors->load('Containable');
-
         $this->Tooltipincompany->contain('Tooltip');
-        $this->Tooltipincompany->bindModel(
+        /*$this->Tooltipincompany->bindModel(
                 array('belongsTo' => array(
                         'Tooltip' => array(
                             'className' => 'Tooltip',
@@ -71,7 +70,7 @@ class Tooltip extends AppModel {
                         )
                     )
                 )
-        );
+        );*/
 
         $companyFilter = array('company_id' => $companyId);
         $result = $this->Tooltipincompany->find('all', array('conditions' => $companyFilter,
@@ -100,7 +99,7 @@ class Tooltip extends AppModel {
         $result = $this->find('all', array(
             'conditions' => array('Tooltip.id' => $idList)
         ));        
-        
+
         return $result;
     }
 
@@ -169,9 +168,9 @@ class Tooltip extends AppModel {
         }
 
         foreach($tooltips as $tooltip){
-            $tooltipFormated[$tooltip['Tooltip']['tooltipidentifier_id']] = $tooltip['Tooltip']['tooltip_text'];
+            $tooltipFormatted[$tooltip['Tooltip']['tooltipidentifier_id']] = $tooltip['Tooltip']['tooltip_text'];
         }
-
+        
         return $tooltipFormatted;
     }
     

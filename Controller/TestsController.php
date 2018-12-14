@@ -77,6 +77,7 @@ class TestsController extends AppController {
 
         $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 25);
         $this->print_r2($tooltip);
+
         $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 24);
         $this->print_r2($tooltip);
         
