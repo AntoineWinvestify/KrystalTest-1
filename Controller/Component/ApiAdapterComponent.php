@@ -4,7 +4,7 @@
  *
  * Provides methods to convert string constants, as used in the API, to integers 
  * which are used internally in the application and database. 
- * This is done for the JOSN of an incoming HTTP message and for the JSON to be 
+ * This is done for the JSON of an incoming HTTP message and for the JSON to be 
  * sent in the HTTP response message.
  *
  * @author Antoine de Poorter
@@ -117,9 +117,11 @@ class ApiAdapterComponent extends Component {
 
 
     /**
-     * Changes the string value of fields to their corresponding internal 
+     * Changes the string value of selected fields to their corresponding internal 
      * integer value. This method operates directly on the provided array. 
-     * 
+     * Example:
+     *     "service_status" => ACTIVE   changes to "service_status" => 10
+     *  
      *  @param  array The array to operate upon
      *  @return boolean
      */
@@ -132,8 +134,10 @@ class ApiAdapterComponent extends Component {
      
     
     /**
-     * Changes the integer, internal, value of fields to their corresponding
+     * Changes the integer, internal, value of selected fields to their corresponding
      * string value. This method operates directly on the provided array. 
+     * Example:
+     *     "service_status" => 10   changes to "service_status" => ACTIVE
      * 
      *  @param  array The array to operate upon
      *  @return boolean

@@ -137,25 +137,25 @@ class AppModelTest extends CakeTestCase {
         $myFieldList1 = ['investor_name', 'investor_date_of_birth', 'investor_surname'];
         $myFieldList1Result = ['investor_name', 'investor_dateOfBirth', 'investor_surname'];
         $this->AppModel->apiFieldListAdapter($myFieldList1);
-        $this->assertArrayStructure($myFieldList1, $myFieldList1Result, $msg = 'Incorrect Definition of investor_dateOfBirth');  
+        $this->assertArrayStructure($myFieldList1, $myFieldList1Result, 'Incorrect Definition of investor_dateOfBirth');  
  
         
         $myFieldList2 = ['Investor.investor_name', 'Investor.investor_date_of_birth', 'Investor.investor_surname'];      
         $myFieldList2Result = ['Investor.investor_name', 'Investor.investor_dateOfBirth', 'Investor.investor_surname']; 
         $this->AppModel->apiFieldListAdapter($myFieldList2);
-        $this->assertArrayStructure($myFieldList2, $myFieldList2Result, $msg = 'Incorrect Definition of investor_dateOfBirth');        
+        $this->assertArrayStructure($myFieldList2, $myFieldList2Result, 'Incorrect Definition of investor_dateOfBirth');        
         
         
         $myFieldList3 = ['investor_name', 'Investor.investor_date_of_birth', 'investor_surname'];         
         $myFieldList3Result = ['investor_name', 'Investor.investor_dateOfBirth', 'investor_surname'];  
         $this->AppModel->apiFieldListAdapter($myFieldList3);
-        $this->assertArrayStructure($myFieldList3, $myFieldList3Result, $msg = 'Incorrect Definition of investor_dateOfBirth');      
+        $this->assertArrayStructure($myFieldList3, $myFieldList3Result, 'Incorrect Definition of investor_dateOfBirth');      
         
         
         $myFieldList4 = ['Investor.investor_name', 'investor_date_of_birth', 'Investor.investor_surname', 'linkedaccount_currency_code'];
         $myFieldList4Result = ['Investor.investor_name', 'investor_dateOfBirth', 'Investor.investor_surname', 'linkedaccount_currencyCode'];
         $this->AppModel->apiFieldListAdapter($myFieldList4);
-        $this->assertArrayStructure($myFieldList4, $myFieldList4Result, $msg = 'Incorrect Definition of linkedaccount_currencyCode');        
+        $this->assertArrayStructure($myFieldList4, $myFieldList4Result, 'Incorrect Definition of linkedaccount_currencyCode');        
         
         
         $myFieldList5 = ['Investor.investor_name', 'investor_date_of_birth', 
@@ -163,31 +163,31 @@ class AppModelTest extends CakeTestCase {
         $myFieldList5Result = ['Investor.investor_name', 'investor_dateOfBirth', 
                          'Investor.investor_address1', 'Linkedaccount.linkedaccount_currencyCode']; 
         $this->AppModel->apiFieldListAdapter($myFieldList5);
-        $this->assertArrayStructure($myFieldList5, $myFieldList5Result, $msg = 'Incorrect Definition of linkedaccount_currencyCode');        
+        $this->assertArrayStructure($myFieldList5, $myFieldList5Result, 'Incorrect Definition of linkedaccount_currencyCode');        
         
         
         $myFieldList6 = ['investor_date_of_birth'];         
         $myFieldList6Result = ['investor_dateOfBirth'];    
         $this->AppModel->apiFieldListAdapter($myFieldList6);
-        $this->assertArrayStructure($myFieldList6, $myFieldList6Result, $msg = 'Incorrect Definition of investor_dateOfBirth');         
+        $this->assertArrayStructure($myFieldList6, $myFieldList6Result, 'Incorrect Definition of investor_dateOfBirth');         
         
         
         $myFieldList7 = ['Investor.investor_date_of_birth']; 
         $myFieldList7Result = ['Investor.investor_dateOfBirth']; 
         $this->AppModel->apiFieldListAdapter($myFieldList7);
-        $this->assertArrayStructure($myFieldList7, $myFieldList7Result, $msg = 'Incorrect Definition of investor_dateOfBirth');        
+        $this->assertArrayStructure($myFieldList7, $myFieldList7Result, 'Incorrect Definition of investor_dateOfBirth');        
         
         
         $myFieldList8 = ['investor_name'];         
         $myFieldList8Result = ['investor_name']; 
         $this->AppModel->apiFieldListAdapter($myFieldList8);
-        $this->assertArrayStructure($myFieldList8, $myFieldList8Result, $msg = 'Incorrect Definition of investor_name');         
+        $this->assertArrayStructure($myFieldList8, $myFieldList8Result, 'Incorrect Definition of investor_name');         
         
         
         $myFieldList9 = ['Investor.investor_name'];
         $myFieldList9Result = ['Investor.investor_name'];
         $this->AppModel->apiFieldListAdapter($myFieldList9);
-        $this->assertArrayStructure($myFieldList9, $myFieldList9Result, $msg = 'Incorrect Definition of investor_name');  
+        $this->assertArrayStructure($myFieldList9, $myFieldList9Result, 'Incorrect Definition of investor_name');  
     }
 
     

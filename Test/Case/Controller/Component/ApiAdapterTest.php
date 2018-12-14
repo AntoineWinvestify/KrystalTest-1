@@ -34,12 +34,15 @@ App::uses('ApiAdapterComponent', 'Controller/Component');
 
 // A fake controller to test against
 class ApiAdapterControllerTest extends Controller {
-    public$paginate = null;
+    
 }
 
 class ApiAdapterTest extends CakeTestCase {
-    var $outGoingArray = [
-            "service_status" => "ACTIVE",
+    public $ApiAdapterComponent = null;
+    public $Controller = null;
+    
+    var $incomingArray = [
+            "service_status" => 'ACTIVE',
             "data" => [
                     [
                     "id" => 325938,
@@ -74,27 +77,27 @@ class ApiAdapterTest extends CakeTestCase {
               ];
     
 
-    var $incomingArray = [
-            "service_status" => 10,
-            "data" => [
+    var $outgoingArray = [
+            "service_status" => 20,
+              "data" => [
                 [
                 "id" => 325938,
-                "service_status" => 20,
+                "service_status" => 10,
                 "linkedaccount_status" => 1,
-                "linkedaccount_visual_state" => 10,
+                "linkedaccount_visual_state" => 20,
                 "polling_type" => 10,
                 "links" => [
                     "metadata_type_of_document" => 10,
-                    "linkedaccount_status" => 10
+                    "linkedaccount_status" => "NON_EXISTENT_VALUE"
                     ]
                 ],
                 [
                 "id" => 432456,
                 "metadata_type_of_document" => 20,
                 "service_status" => 30,
-                "polling_type" => 10,
+                "polling_type" => 20,
                 "linkedaccount_status" => 2,
-                "linkedaccount_visual_state" => 20,
+                "linkedaccount_visual_state" => 10,
                 "linkedaccount_username" => "antoine@gmail.com"
                 ],
                 [
@@ -107,45 +110,54 @@ class ApiAdapterTest extends CakeTestCase {
             ]
             ];    
     
+    /**
+     * Assert Array structures are the same
+     *
+     * @param array       $expected Expected Array
+     * @param array       $actual   Actual Array
+     * @param string|null $msg      Message to output on failure
+     *
+     * @return bool
+     */
+    public function assertArrayStructure($actual, $expected, $msg = '') {
+        ksort($expected);
+        ksort($actual);
+        $this->assertSame($actual, $expected, $msg);
+    }
+    
+    
     public function setUp() {
         parent::setUp();
         // Setup our component and fake test controller
         $Collection = new ComponentCollection();
-        $this->PagematronComponent = new PagematronComponent($Collection);
+        $this->ApiAdapterComponent = new ApiAdapterComponent($Collection);
         $CakeRequest = new CakeRequest();
         $CakeResponse = new CakeResponse();
-        $this->Controller = new PagematronControllerTest($CakeRequest, $CakeResponse);
-        $this->PagematronComponent->startup($this->Controller);
+        $this->Controller = new ApiAdapterControllerTest($CakeRequest, $CakeResponse);
+        $this->ApiAdapterComponent->startup($this->Controller);
     }
-
-
 
     
     public function testNormalizeIncomingJson() {
  
-        $this->ApiAdapter->normalizeIncomingJson($this->inComingArray);
-        $this->assertEquals(20, $this->Controller->paginate['xx']);        
+        $this->ApiAdapterComponent->normalizeIncomingJson($this->incomingArray);
+        $this->assertArrayStructure($this->incomingArray, $this->outgoingArray);        
     } 
-    
     
     
     
     public function testNormalizeOutgoingJson() {
 
-        $this->ApiAdapter->normalizeOutgoingJson($this->outGoingArray);
-        $this->assertEquals(20, $this->Controller->paginate['xx']);
-    } 
-    
-    
+        $this->ApiAdapterComponent->normalizeOutgoingJson($this->outgoingArray);
+   //     $this->assertArrayStructure($this->outGoingArray, $this->Controller->ApiAdapter->normalizeOutgoingJson($this->outGoingArray));
+    }
     
     
     public function tearDown() {
         parent::tearDown();
         // Clean up after we're done
-        unset($this->PagematronComponent);
+        unset($this->ApiAdapterComponent);
         unset($this->Controller);       
     }
-
-
-    
+   
 }
