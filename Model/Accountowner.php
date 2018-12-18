@@ -232,17 +232,23 @@ class Accountowner extends AppModel {
      * @return boolean
      */
     public function checkIfAccountOwnerExist($investorId, $companyId, $username, $password) {
-
-        $filterConditions = array('investor_id' => $investorId, 'company_id' => $companyId, 'accountowner_username' => $username, 'accountowner_password' => $password, 'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
-
-        $account = $this->find("all", $params = array('recursive' => -1,
-            'conditions' => $filterConditions,
+        $accountFinded = null;
+        $filterConditions = array('investor_id' => $investorId, 'company_id' => $companyId, 'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
+        $accounts = $this->find("all", $params = array('recursive' => -1,
+            'conditions' => array($filterConditions)
                 )
         );
-        if (!empty($account)) {
-            return $account;
-        } 
-        else {
+        
+        foreach ($accounts as $account) {
+            if ($account['Accountowner']['accountowner_username'] == $username && $account['Accountowner']['accountowner_password'] == $password) {
+                $accountFinded = $account;
+                break;
+            }
+        }
+
+        if (!empty($accountFinded)) {
+            return $accountFinded;
+        } else {
             return false;
         }
     }
@@ -256,7 +262,7 @@ class Accountowner extends AppModel {
 
         foreach ($results as $key => $val) {
             if (isset($val['Accountowner']['accountowner_password'])) {
-                $results[$key]['Accountowner']['linkedaccount_password'] = $this->decryptDataAfterFind(
+                $results[$key]['Accountowner']['accountowner_password'] = $this->decryptDataAfterFind(
                         $val['Accountowner']['accountowner_password']);
             }
             

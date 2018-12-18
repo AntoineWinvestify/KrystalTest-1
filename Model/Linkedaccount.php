@@ -379,16 +379,25 @@ class Linkedaccount extends AppModel {
      * @return type
      */
     public function api_precheck($investorId, $companyId, $username, $password) {
+        $this->Accountowner = ClassRegistry::init('Accountowner');  
         $accountOwnerId = $this->Accountowner->checkIfAccountOwnerExist($investorId, $companyId, $username, $password);
-        print_r($accountOwnerId);
-        exit;
+        //print_r($accountOwnerId);
+
+        $this->Company = ClassRegistry::init('Company');  
         $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures'));
-        if ($multiAccount[0]['company']['company_technicalFeatures'] & 1){
+        echo $multiAccount[0]['Company']['company_technicalFeatures'] . '          ';
+        
+        if (($multiAccount[0]['Company']['company_technicalFeatures'] & 1) == 1){
             $multiAccount = true;
         }
         else {
             $multiAccount = false;
         }
+        
+                
+        echo print_r($multiAccount);
+        exit;
+        
         
         if (!empty($accountOwnerExist) && $multiAccount){
             $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId));

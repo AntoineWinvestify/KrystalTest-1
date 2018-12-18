@@ -50,7 +50,7 @@ class TestsController extends AppController {
 
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
+    var $uses = array('Accountowner','Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
 
     function beforeFilter() {
@@ -59,7 +59,7 @@ class TestsController extends AppController {
         Configure::write('debug', 2);
 
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
+        $this->Auth->allow(array('a','convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff","deleteFromUser",
@@ -73,7 +73,23 @@ class TestsController extends AppController {
         }
     }
 
-    
+    public function a() {
+        $username = "qwerty";
+        $password = "qazwsx";
+        $companyId = 25;
+        $investorId = 1;
+        
+        $this->Linkedaccount->api_precheck($investorId, $companyId, $username, $password);
+        /*$data['Accountowner'] = array('company_id' => 25,
+            'investor_id' => 1,
+            'accountowner_username' => $username,
+            'accountowner_password' => $password,
+            'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE,
+        );
+
+        $this->Accountowner->save($data);*/
+    }
+
     public function deleteFromUser($investorId = null, $linkaccountsId = null) {
 
 
