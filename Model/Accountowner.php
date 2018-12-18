@@ -93,7 +93,7 @@ class Accountowner extends AppModel {
      */
     public function createAccountOwner($companyId, $investorId, $username, $password) {
         // check if an accountowner already exists
-        $filterConditions = array('company_id' => $companyId,
+        /*$filterConditions = array('company_id' => $companyId,
                                   'investor_id' => $investorId,
                                   'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE
                                     );
@@ -116,7 +116,7 @@ class Accountowner extends AppModel {
         if ($this->save($data, $validation = true)) {
             return $this->id;
         } 
-        return false;
+        return false;*/
     }
  
 
@@ -223,7 +223,30 @@ class Accountowner extends AppModel {
         return false;
     }
 
-    
+    /**
+     * 
+     * @param type $investorId
+     * @param type $companyId
+     * @param type $username
+     * @param type $password
+     * @return boolean
+     */
+    public function checkIfAccountOwnerExist($investorId, $companyId, $username, $password) {
+
+        $filterConditions = array('investor_id' => $investorId, 'company_id' => $companyId, 'accountowner_username' => $username, 'accountowner_password' => $password, 'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
+
+        $account = $this->find("all", $params = array('recursive' => -1,
+            'conditions' => $filterConditions,
+                )
+        );
+        if (!empty($account)) {
+            return $account;
+        } 
+        else {
+            return false;
+        }
+    }
+
     /**
      * 	Callback Function
      * 	Decrypt the sensitive data provided by the investor
@@ -265,5 +288,29 @@ class Accountowner extends AppModel {
         return true;
     }
     
+     /**
+     * 
+     * 
+     *          API FUNCTIONS
+     * 
+     */
     
+    /**
+     * 
+     * @param type $investorId
+     * @return type
+     */
+    public function api_readAccountowners($investorId) {
+
+        $filterConditions = array('investor_id' => $investorId);
+        $fields = array('company_id', 'accountowner_username', 'accountowner_password', 'linkedaccount_alias', 'linkedaccount_accountDisplayName','linkedaccount_icon');
+
+        $accounts = $this->find("all", $params = array('recursive' => 1,
+            'conditions' => $filterConditions,
+            'field' => $fields,
+                )
+        );
+        return $accounts;
+    }
+
 }
