@@ -108,14 +108,14 @@ class TestsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-        Configure::write('debug', 2);        
-        $this->autoRender = false; 
+        Configure::write('debug', 0);        
+ //       $this->autoRender = false; 
         
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff","deleteFromUser","find",
+            "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
             "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor"));
     }
@@ -123,132 +123,183 @@ class TestsController extends AppController {
     
     
     
-    /** FOR MODEL INVESTOR
-     * Terminates GET investor
-     * @param int $investorId
-     * @param type $listOfFields
+
+    /**
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested resource
      * 
      */
-    public function readInvestor($filterCondition, $listOfFields) { 
-    $filterCondition = ['investor_date_of_birth' => "1990-07-20", 'investor_city' => "Almeria"];
-echo __FILE__ . " " . __LINE__ . "\n<br>";  
-pr($filterCondition);    
-
-    $this->Investor-> apiVariableNameInAdapter($filterCondition);
-    
-echo __FILE__ . " " . __LINE__ . "\n<br>";    
-pr($filterCondition); 
-    
-
-    if (empty($listOfFields)) {
-        // Only show by default 'public' fields, not internal technical fields
-        $listOfFields =   ['Investor.investor_name', 'Investor.investor_surname', 'Investor.id',       
-                            'Investor.investor_DNI', 'Investor.investor_date_of_birth', 
-                              'Investor.investor_telephone', 
-                             'Check.check_postCode', 'Check.check_name', 'Check.check_surname',
-                             'Check.check_DNI','Check.check_date_of_birth', 'Check.check_telephone'
-            ];
+    public function view($id){
+     
+    if (empty($this->listOfFields)) {
+        $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                 'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                'Investor.investor_address1', 'Investor.investor_address2',
+                                'Investor.investor_city', 'Investor.investor_telephone',
+                                'Investor.investor_postCode', 'Investor.investor_email'  
+                                ];
     }
-   
   
-    $this->Investor->apiFieldListAdapter($listOfFields);
-echo __FILE__ . " " . __LINE__ . "\n<br>";   
-pr($listOfFields);
-echo __FILE__ . " " . __LINE__ . "\n<br>";     
-    $results = $this->Investor->find("all", $params = ['conditions' => $filterCondition,
-                                                      'fields' => $listOfFields,
+    foreach ($this->listOfFields as $field) {
+        $tempField = explode("_", $field);
+        if (count($tempField) == 2) {
+            $this->listOfFields[] = "Check.check_" . $tempField[1];
+        }       
+    }
+    
+    if (!in_array("id", $listOfFields)) {
+ //      $listOfFields[] = "Investor.id";
+    }    
+       
+    $this->Investor->contain('Investor', 'Check');
+    $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
+
+    if (!empty($result)) {
+        
+        $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
+        $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
+
+        foreach ($result['Investor'] as $key => $value) {
+            $json[$key]['value'] = $value;                 
+            if ($key === 'id') {
+                 continue;
+            } 
+            $rootName = explode("_", $key, 2); 
+            $json[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
+        } 
+    }
+    
+    $this->set(array(
+        'data' => $json,
+        '_serialize' => array('data')
+    ));           
+    }  
+     
+    
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param -
+     * 
+     */
+    public function index(){
+
+    if (empty($this->listOfFields)) {
+        $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                 'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                'Investor.investor_address1',  'Investor.investor_address2',
+                                'Investor.investor_city',  'Investor.investor_telephone',
+                                'Investor.investor_postCode',  'Investor.investor_email'  
+                                ];
+    } 
+
+    foreach ($this->listOfFields as $field) {
+        $tempField = explode("_", $field);
+        
+        if (count($tempField == 2)) {
+            $this->listOfFields[] = "Check.check_" . $tempField[1]; 
+        }  
+    } 
+    $this->Investor->contain('Investor', 'Check');
+    $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                      'fields' => $this->listOfFields,
                                                       'recursive' => 0]);
-    pr($results);
+
     $numberOfResults = count($results);    
 
-  echo __FILE__ . " " . __LINE__ . "\n<br>";    
-    pr($results);
     $j = 0;
     foreach ($results as $resultItem) { 
         $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
         $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
         
         foreach ($resultItem['Investor'] as $key => $value) {
-            if ($key === 'id') {
+            if ($key === 'id') {   
                 continue;
             } 
             $rootName = explode("_", $key, 2);
             
             if ($numberOfResults == 1) {
-                $json["data"][$key]['value'] = $value;  
-                $json["data"][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
+                $json[$key]['value'] = $value;  
+                $json[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
             }
             else {
-                $json["data"][$j][$key]['value'] = $value;  
-                $json["data"][$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
+                $json[$j][$key]['value'] = $value;  
+                $json[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
             } 
         }
         $j++;
     }
     
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
-pr($json); 
-  
-  
+    $this->set(array(
+        'data' => $json,
+        '_serialize' => array('data')
+    ));         
     }
- 
-  
     
-     
    
-    /** FOR MODEL INVESTOR
-     * Terminates GET investor
-     * @param array $fields
-     * @param type $listOfFields
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP PATCH/PUT.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested resource
      * 
      */
-    public function writeInvestor() { 
+    public function edit($id) { 
 
-    $fields = [
-                'id' => 1,        
-                'investor_name' => 'A',
-                'investor_surname' => 'BBB',
-                'investor_telephone' => '+3456434533',
-                'investor_city' => "X2"
-                ];
-    pr($fields);    
-    echo "testing city configuration error<br>";
-    $this->Investor->apiVariableNameOutAdapter($fields); 
-    pr($fields); 
-
+    echo __FILE__ . " " . __LINE__ . "\n";    
+    $this->print_r2($this->listOfFields);  
+ 
+    echo __FILE__ . " " . __LINE__ . "\n";  
+    $this->print_r2($this->listOfQueryParams);     
     
-        
-    $filterCondition = ['investor_DNI' => "X1126332E", 'investor_name' => "John11"];
-    //, "Investor.id" => 1]; 
-       
-    $listOfFields = ['investor_name', 'investor_surname', 'investor_date_of_birth', 'investor_telephone'];
-    $this->Investor->apiFieldListAdapter($listOfFields);
-
-    if (empty($listOfFields)) {
-        // Only show by default 'public' fields, not internal technical fields
-        $listOfFields =   ['name', 'surname',       
-                            'DNI', 'dateOfBirth', 
-                            'telephone', 'address1', 
-                            'address2', 'postCode', 
-                            'city', 'country', 
-                            'email'];
-    }
-    
-    
+    echo __FILE__ . " " . __LINE__ . "\n";
+    $this->print_r2($this->request->data);
+       Configure::write('debug', 0);        
     $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
                                 'investor_dateOfBirth' => 'investor_date_of_birth',
                                 'investor_city' => 'investor_city',
                                 'linkedaccount_state' => 'linkedaccount_status'
         
                               ]; 
-                              
-     
-    echo "Validating";
-    pr($fields);
+                               
+    echo "Validating"; 
+    
+
+ 
+    foreach ($this->listOfQueryParams as $key => $field) {
+        $tempField = explode("_", $key);
+        if (count($tempField == 2)) {
+            $listOfFields[] = "check_" . $tempField[1]; 
+        }  
+    }
+    $this->print_r2($listOfFields);
+  
+
+    $this->Check = ClassRegistry::init('Check');  
+    $resultsCheck = $this->Check->find('first', $params = ['conditions' => ['investor_id' => $id],
+                                                           'fields' => $listOfFields, 
+                                                           'recursive' => -1]);
+ 
+ exit; 
+    $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                      'fields' => $this->listOfFields,
+                                                      'recursive' => 0]);
+
+    $this->print_r2($resultsCheck);
+  
+ exit;   
     $result = $this->Investor->save($fields, $validates = true);
     echo "result= ";
-    pr($result);
+    $this->print_r2($result);
     echo "return result in Response Message";
+    
+    exit;
     if (!$result) {
         $validationErrors = $this->Investor->validationErrors;
         $valErrors = $validationErrors;
@@ -695,7 +746,7 @@ function deleteFromUser($investorId = null, $linkaccountsId = null) {
         echo 'Fin';
     }
 
-    public function read() {
+    public function read1() {
         $file = "test.xlsx";
         $finfo = finfo_open();
         $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);

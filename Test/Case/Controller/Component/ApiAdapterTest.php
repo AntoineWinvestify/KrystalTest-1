@@ -41,7 +41,7 @@ class ApiAdapterTest extends CakeTestCase {
     public $ApiAdapterComponent = null;
     public $Controller = null;
     
-    var $incomingArray = [
+    var $incomingArray1 = [
             "service_status" => 'ACTIVE',
             "data" => [
                     [
@@ -52,8 +52,7 @@ class ApiAdapterTest extends CakeTestCase {
                     "polling_type" => "NOTIFICATION_CHECK",
                     "links" => 
                         [
-                        "metadata_type_of_document" => "DNI_FRONT",
-                        "linkedaccount_status" => "NON_EXISTENT_VALUE"
+                        "metadata_type_of_document" => "DNI_FRONT"
                         ]
 
                     ],
@@ -77,7 +76,7 @@ class ApiAdapterTest extends CakeTestCase {
               ];
     
 
-    var $outgoingArray = [
+    var $outgoingArray1 = [
             "service_status" => 20,
               "data" => [
                 [
@@ -87,8 +86,7 @@ class ApiAdapterTest extends CakeTestCase {
                 "linkedaccount_visual_state" => 20,
                 "polling_type" => 10,
                 "links" => [
-                    "metadata_type_of_document" => 10,
-                    "linkedaccount_status" => "NON_EXISTENT_VALUE"
+                    "metadata_type_of_document" => 10
                     ]
                 ],
                 [
@@ -108,8 +106,40 @@ class ApiAdapterTest extends CakeTestCase {
                 "linkedaccount_visual_state" => 30
                 ]
             ]
-            ];    
+            ];   
     
+
+    var $incomingArray2 = [
+            "service_status" => 'ACTIVE',
+            "data" => [
+                    [
+                    "id" => 325938,
+                    "service_status" => "NOT_ACTIVE",
+                    "links" => 
+                        [
+                        "metadata_type_of_document" => "DNI_FRONT",
+                        "linkedaccount_status" => "IDLE"
+                        ]
+
+                    ]
+                ]
+        ];
+    
+    var $outgoingArray2 = [
+            "service_status" => 20,      
+              "data" => [
+                [
+                "id" => 325938,
+                "service_status" => 10,
+                 "links" => [
+                    "metadata_type_of_document" => 10,
+                    "linkedaccount_status" => "IDLE"
+                    ]
+                ]
+            ]
+        ];
+                        
+                  
     /**
      * Assert Array structures are the same
      *
@@ -140,17 +170,24 @@ class ApiAdapterTest extends CakeTestCase {
     
     public function testNormalizeIncomingJson() {
  
-        $this->ApiAdapterComponent->normalizeIncomingJson($this->incomingArray);
-        $this->assertArrayStructure($this->incomingArray, $this->outgoingArray);        
+        $this->ApiAdapterComponent->normalizeIncomingJson($this->incomingArray1);
+        $this->assertArrayStructure($this->incomingArray1, $this->outgoingArray1);        
     } 
     
     
-    
     public function testNormalizeOutgoingJson() {
-
-        $this->ApiAdapterComponent->normalizeOutgoingJson($this->outgoingArray);
-   //     $this->assertArrayStructure($this->outGoingArray, $this->Controller->ApiAdapter->normalizeOutgoingJson($this->outGoingArray));
-    }
+    
+        $this->ApiAdapterComponent->normalizeOutgoingJson($this->outgoingArray1);
+        $this->assertArrayStructure($this->outgoingArray1, $this->incomingArray1);
+    } 
+    
+    
+    public function testNormalizeIncomingJsonWithError() {
+ 
+        $this->ApiAdapterComponent->normalizeIncomingJson($this->incomingArray2);
+        $this->assertArrayStructure($this->incomingArray2, $this->outgoingArray2, 'Configuration Error');        
+    } 
+   
     
     
     public function tearDown() {

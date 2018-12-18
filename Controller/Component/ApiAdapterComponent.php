@@ -108,10 +108,11 @@ class ApiAdapterComponent extends Component {
      *  @return -
      */ 
     private function changeArrayValueIn(&$item, $key) {
-
         if (array_key_exists($key, $this->keywordsArrayIn)) {
-            $item = $this->keywordsArrayIn[$key][$item];
-        }    
+            if (array_key_exists($item, $this->keywordsArrayIn[$key])) { 
+                $item = (int) ($this->keywordsArrayIn[$key][$item]);
+            }
+        }
         return;
     }
 
@@ -129,6 +130,7 @@ class ApiAdapterComponent extends Component {
 
         $functionArray = ['ApiAdapterComponent','changeArrayValueIn'];
         $result = array_walk_recursive($dataArray, $functionArray);
+        echo "result = $result<br>";
         return $result;        
     }
      

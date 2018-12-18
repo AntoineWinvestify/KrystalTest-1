@@ -97,7 +97,16 @@ App::uses('Controller', 'Controller');
 
 class AppController extends Controller {
 
-
+    protected $listOfFields;                    // Array that holds the list of requested fields
+                                                // in normalized, internal DB format
+    protected $listOfQueryParams;               // Array that holds the list of Query parameters
+                                                // in normalized, internal DB format
+    
+    
+    
+    
+    
+    
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
         'Security',
@@ -134,9 +143,10 @@ class AppController extends Controller {
         $this->Security->blackHoleCallback = '_blackHole';
         $this->Security->requireSecure();
 
+        
+        
 // Load the application configuration file. Now it is available to the *whole* application	 
         Configure::load('p2pGestor.php', 'default');
-
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
         require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');                      
         $runtime = new Winvestify();
@@ -287,7 +297,7 @@ class AppController extends Controller {
                 $this->Session->write('sectorsMenu', $sectors);
             }
         }
-        
+            
         $fileName  = APP . "Config" . DS.  "googleCode.php";                    // file for Google Analytics
         $fileName1 = APP . "Config" . DS.  "googleCode1.php";                   // file to disable Google Analytics
         
@@ -296,9 +306,15 @@ class AppController extends Controller {
             case WIN_REMOTE_TEST_ENVIRONMENT: 
                 rename ($fileName, $fileName1);
             case WIN_LIVE_ENVIRONMENT:
-                rename ($fileName1, $fileName);       
+               rename ($fileName1, $fileName);       
             default:
         }  
+        
+        
+        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
+        
+        
+        
     }
 
     /**
@@ -620,4 +636,27 @@ Configure::write('debug', 2);
         return ($errorArray);    
     }
     
+    
+     /**
+      * Loads the class variables $listOfFields and $listOfQueryParams
+      * 
+      * @param 
+      * @param 
+      * @param 
+      * @return boolean
+      */   
+    public function  loadParameterFields(){ 
+        $this->Investor = ClassRegistry::init('Investor');
+        $this->listOfQueryParams = $this->request->query; 
+
+        if (array_key_exists('_fields', $this->listOfQueryParams )){              
+            $this->listOfFields = explode(",", $this->listOfQueryParams['_fields']);
+            $this->Investor->apiFieldListAdapter($this->listOfFields);           
+            unset($this->listOfQueryParams['_fields']);
+        }
+        $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
+        return true;
+    }
+    
+
 }

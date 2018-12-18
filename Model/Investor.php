@@ -65,6 +65,8 @@ App::uses('CakeEvent', 'Event');
 
 class Investor extends AppModel {
 
+    public $actsAs = array('Containable');
+    
     var $name = 'Investor';
     public $hasMany = array(
         'Linkedaccount' => array(
