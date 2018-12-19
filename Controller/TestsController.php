@@ -1,6 +1,4 @@
-
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://beyond-language-skills.com                 |
@@ -42,29 +40,85 @@ App::uses('File', 'Utility');
 //App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
-
+ 
 /* use PhpOffice\PhpSpreadsheet\IOFactory;
   use PhpOffice\PhpSpreadsheet\Cell; */
 
 class TestsController extends AppController {
 
+    var $reservedKeywordsOriginal = [
+                        'GLOBALDASHBOARD_NET_ANNUAL_RETURNS' => 1,
+                        'GLOBALDASHBOARD_CASH' => 2,  
+                        'GLOBALDASHBOARD_KPIS' => 3,  
+                        'GLOBALDASHBOARD_KPI_PLATFORM' => 4,  
+                        'GLOBALDASHBOARD_KPI_YIELD' => 5,
+                        'GLOBALDASHBOARD_KPI_TOTAL_VOLUME' => 6,  
+                        'GLOBALDASHBOARD_KPI_CASH' => 7,
+                        'GLOBALDASHBOARD_KPI_EXPOSURE' => 8,  
+                        'GLOBALDASHBOARD_KPI_CURRENT' => 9,  
+                        'GLOBALDASHBOARD_NET_RETURNS' => 10, 
+                        'GLOBALDASHBOARD_INVESTMENT_INDICATORS' => 11,  
+                        'GLOBALDASHBOARD_NET_EARNINGS' => 12,  
+                        'GLOBALDASHBOARD_PAYMENT_DELAY' =>13,  
+                        'GLOBALDASHBOARD_CURRENT' => 14,  
+                        'COMPANY_TOOLTIP' => 15,  
+                        'DASHBOARD_ACTIVE_INVESTMENTS' => 16,  
+                        'DASHBOARD_NET_DEPOSITS' => 17,  
+                        'DASHBOARD_CASH_DRAG' => 18,  
+                        'DASHBOARD_INVESTED_ASSETS' => 19,  
+                        'DASHBOARD_RESERVED_FUNDS' => 20,  
+                        'DASHBOARD_CASH ' => 21,  
+                        'DASHBOARD_LAST_365_DAYS' => 22,  
+                        'DASHBOARD_LAST_YEAR' => 23,  
+                        'DASHBOARD_TOTAL_FUNDS' => 24,  
+                        'DASHBOARD_NET_ANNUAL_RETURNS' => 25,  
+                        'DASHBOARD_NET_EARNINGS_LAST_365_DAYS' => 26,  
+                        'DASHBOARD_NET_EARNINGS_LAST_YEAR' => 27,  
+                        'DASHBOARD_NET_EARNINGS_TOTAL_FUNDS' => 28,  
+                        'DASHBOARD_PAYMENT_DELAY' => 29,  
+                        'DASHBOARD_CURRENT' => 30,  
+                        'DASHBOARD_EXPOSURE' => 31,  
+                        'PROFILE_NAME' => 32,  
+                        'PROFILE_SURNAMES' => 33,  
+                        'PROFILE_ADDRESS' => 34,  
+                        'PROFILE_POSTCODE' => 35,  
+                        'PROFILE_CITY' => 36,  
+                        'PROFILE_COUNTRY' => 37,  
+                        'PROFILE_IBAN' => 38,  
+                        'PROFILE_ID' => 39,  
+                        'PROFILE_TELEPHONE' => 40,  
+                        'PROFILE_DATE_OF_BIRTH' => 41,  
+                        'PROFILE_COMPANY' => 42,  
+                        'PROFILE_FISCAL_ID' => 43,  
+                        'PROFILE_PASSWORD' => 44,  
+                        'ACCOUNT_LINKING_USERNAME' => 45,  
+                        'ACCOUNT_LINKING_PASSWORD' => 46,  
+                        'ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME' => 47,
+                        'MONITORED' => 48,
+                        'ANALYZING' => 49,
+                        'QUEUED' => 50,
+                        'SUSPENDED' => 51
+                        ];   
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
     var $uses = array('Tooltipincompany', 'Tooltip', 'Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
+    public $components = array('ApiAdapter'); 
 
     function beforeFilter() {
         parent::beforeFilter();
 
-        Configure::write('debug', 2);
-
+        Configure::write('debug', 0);        
+ //       $this->autoRender = false; 
+        
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff", "deleteFromUser",
-            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3",
-            "memoryTest2", "hashTest", 'tooltip'));
+            "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
+            "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor", "testDateDiff", "deleteFromUser",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));
     }
 
     public function pruebaYield() {
@@ -73,23 +127,405 @@ class TestsController extends AppController {
         }
     }
 
+    
+    
+    
     public function tooltip() {
 
-        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 25);
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'en', 25);
         $this->print_r2($tooltip);
 
-        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 24);
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'en', 24);
+        $this->print_r2($tooltip);
+
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'es', 25);
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'es', 24);
+        $this->print_r2($tooltip);
+
+        $tooltip = $this->Tooltip->getTooltip(array(38, 48, 39, 40, 43), 'en');
         $this->print_r2($tooltip);
         
-        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'es', 25);
+        $tooltip = $this->Tooltip->getTooltip(array(38, 48, 39, 40, 43), 'es');
         $this->print_r2($tooltip);
-        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'es', 24);
-        $this->print_r2($tooltip);
+    }
+
+    /**
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested resource
+     * 
+     */
+    public function view($id){
+     
+    if (empty($this->listOfFields)) {
+        $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                 'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                'Investor.investor_address1', 'Investor.investor_address2',
+                                'Investor.investor_city', 'Investor.investor_telephone',
+                                'Investor.investor_postCode', 'Investor.investor_email'  
+                                ];
+    }
+  
+    foreach ($this->listOfFields as $field) {
+        $tempField = explode("_", $field);
+        if (count($tempField) == 2) {
+            $this->listOfFields[] = "Check.check_" . $tempField[1];
+        }       
+    }
+    
+    if (!in_array("id", $listOfFields)) {
+ //      $listOfFields[] = "Investor.id";
+    }    
+       
+    $this->Investor->contain('Investor', 'Check');
+    $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
+
+    if (!empty($result)) {
         
-        $tooltip = $this->Tooltip->getTooltip(array(38,48,39,40,43), 'en');
-        $this->print_r2($tooltip);
-        $tooltip = $this->Tooltip->getTooltip(array(38,48,39,40,43), 'es');
-        $this->print_r2($tooltip);
+        $this->Investor->apiVariableNameOutAdapter( $result['Investor']);
+        $this->Investor->apiVariableNameOutAdapter( $result['Check']);
+
+        foreach ($result['Investor'] as $key => $value) {
+            $json[$key]['value'] = $value;                 
+            if ($key === 'id') {
+                 continue;
+            } 
+            $rootName = explode("_", $key, 2); 
+            $json[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
+        } 
+    }
+    
+    $this->set(['data' => $json,
+              '_serialize' => ['data']]
+               );          
+    }  
+     
+    
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param -
+     * 
+     */
+    public function index(){
+
+    if (empty($this->listOfFields)) {
+        $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                 'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                'Investor.investor_address1',  'Investor.investor_address2',
+                                'Investor.investor_city',  'Investor.investor_telephone',
+                                'Investor.investor_postCode',  'Investor.investor_email'  
+                                ];
+    } 
+
+    foreach ($this->listOfFields as $field) {
+        $tempField = explode("_", $field);
+        
+        if (count($tempField == 2)) {
+            $this->listOfFields[] = "Check.check_" . $tempField[1]; 
+        }  
+    } 
+    $this->Investor->contain('Investor', 'Check');
+    $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                      'fields' => $this->listOfFields,
+                                                      'recursive' => 0]);
+
+    $numberOfResults = count($results);    
+
+    $j = 0;
+    foreach ($results as $resultItem) { 
+        $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
+        $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
+        
+        foreach ($resultItem['Investor'] as $key => $value) {
+            if ($key === 'id') {   
+                continue;
+            } 
+            $rootName = explode("_", $key, 2);
+            
+            if ($numberOfResults == 1) {
+                $json[$key]['value'] = $value;  
+                $json[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
+            }
+            else {
+                $json[$j][$key]['value'] = $value;  
+                $json[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
+            } 
+        }
+        $j++;
+    }
+    
+    $this->set(['data' => $json,
+              '_serialize' => ['data']]
+               ); 
+       
+    }
+    
+   
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP PATCH/PUT.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested resource
+     * 
+     */
+    public function edit($id) { 
+    Configure::write('debug', 2);     
+    $this->autoRender = false; 
+
+    $data = $this->listOfQueryParams;
+    $data['id'] = $id;
+ 
+    if (!($this->Investor->save($data, $validates = true))) {
+        $validationErrors = $this->Investor->validationErrors;
+        $this->Investor->apiVariableNameOutAdapter($validationErrors);
+ 
+        $this->print_r2($validationErrors);   
+        $this->response->statusCode(403); 
+
+        $formattedError = $this->createErrorFormat('NO_WRITE_ACCESS', 
+                                                    "It is not allowed to modify read-only fields", 
+                                                    $validationErrors);
+
+        $this->set(['error' => $formattedError, '_serialize' => ['error']]);        
+        
+    }
+    else {
+        echo "All OK, data saved, return 200 Ok<br>";
+        $this->response->statusCode(200);  
+        $this->set('_serialize', ['id' => 'saved ok']);                         // ??
+    }
+
+    }     
+    
+    
+   /** PENDING: NOT FINISHED, AND ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP POST.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested resource
+     * 
+     */
+    public function add($id) { 
+    Configure::write('debug', 0);
+    $this->autoRender = false;
+    
+    echo __FILE__ . " " . __LINE__ . "\n";    
+    $this->print_r2($this->listOfFields);  
+ 
+    echo __FILE__ . " " . __LINE__ . "\n";  
+    $this->print_r2($this->listOfQueryParams);     
+    
+    echo __FILE__ . " " . __LINE__ . "\n";
+    $this->print_r2($this->request->data);
+      
+
+    if ($this->Investor->save($this->listOfQueryParams, $validates = true)) {
+        $data = ['id' => $this->investor->Id];
+        $this->set[['data' => $data,
+                    '_serialize' => ['data']
+                ]];
+    }
+    else {
+        echo "Error occured, so return errorcodes";
+        $this->response->statusCode(200);  
+        $validationErrors = $this->Investor->validationErrors;
+        $this->Investor->apiVariableNameOutAdapter($validationErrors);
+    }
+    
+    
+    }     
+     
+    
+    
+    
+    /** PENDING: ERROR HANDLING TOWARDS HTTP d DONE HALFWAY
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/companies/[companyId]&fields=x,y,z
+     * Example GET /v1/companies/1.json&fields=company_name,company_country,...
+     * 
+     * @param -
+     * @return array 
+     */
+    public function index_v1_company(){
+
+    if (empty($this->listOfFields)) {
+        $this->listOfFields = ['company_name','company_url', 
+                                'company_country', 'company_countryName', 
+                                'company_privacyUrl', 'company_termsUrl',
+                                'company_logoGUID'
+                              ]; 
+                               
+    } 
+
+    $results = $this->Companies->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                      'fields' => $this->listOfFields,
+                                                      'recursive' => -1]);
+
+    $numberOfResults = count($results);    
+
+    $j = 0;
+    foreach ($results as $resultItem) { 
+        $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
+        
+        foreach ($resultItem['Company'] as $key => $value) {
+            if ($key === 'id') {   
+                continue;
+            } 
+            $rootName = explode("_", $key, 2);
+            
+            if ($numberOfResults == 1) {
+                $json[$key]['value'] = $value;  
+   
+            }
+            else {
+                $json[$j][$key]['value'] = $value;  
+  
+            } 
+        }
+        $j++;
+    }
+    
+    $this->set(['data' => $json,
+              '_serialize' => ['data']]
+               ); 
+    }
+    
+    
+    
+    
+    public function recursiveSearchIncoming() {   
+    Configure::write('debug', 2);        
+    $this->autoRender = false;   
+ 
+    $jsonString = '{
+  "service_status": "ACTIVE",
+  "data": [
+    {
+      "id": 325938,
+      "service_status": "NOT_ACTIVE",
+      "linkedaccount_status": "ACTIVE",
+      "linkedaccount_visual_state": "ANALYZING",
+      "polling_type": "NOTIFICATION_CHECK",
+      "links": [
+        {
+          "metadata_type_of_document": "DNI_FRONT",
+          "linkedaccount_status": "NON_EXISTENT_VALUE"
+        }
+      ]
+    },
+    {
+      "id": 432456,
+      "metadata_type_of_document": "DNI_BACK",
+      "service_status": "SUSPENDED",
+      "polling_type": "LINKEDACCOUNT_CHECK",
+      "linkedaccount_status": "NOT_ACTIVE",
+      "linkedaccount_visual_state": "QUEUED",
+      "linkedaccount_username": "antoine@gmail.com"
+    },
+    {
+      "id": 432458,
+      "metadata_type_of_document": "BANK_CERTIFICATE",
+      "polling_type": "PMESSAGE_CHECK",
+      "linkedaccount_status": "UNDEFINED",
+      "linkedaccount_visual_state": "MONITORED"
+    }
+  ]
+}';
+echo "Using a component<br>";     
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);    
+    $this->ApiAdapter->normalizeIncomingJson($jsonArray); 
+    pr($jsonArray);   
+    } 
+    
+    
+    public function recursiveSearchOutgoing() {
+
+     
+     
+
+    $jsonString = '{
+  "service_status": 10,
+  "data": [
+    {
+      "id": 325938,
+      "service_status": 20,
+      "linkedaccount_status": 1,
+      "linkedaccount_visual_state": 10,
+      "polling_type": 10,
+      "links": [
+        {
+          "metadata_type_of_document": 10,
+          "linkedaccount_status": 10
+        }
+      ]
+    },
+    {
+      "id": 432456,
+      "metadata_type_of_document": 20,
+      "service_status": 30,
+      "polling_type": 10,
+      "linkedaccount_status": 2,
+      "linkedaccount_visual_state": 20,
+      "linkedaccount_username": "antoine@gmail.com"
+    },
+    {
+      "id": 432458,
+      "metadata_type_of_document": 30,
+      "polling_type": 30,
+      "linkedaccount_status": 0,
+      "linkedaccount_visual_state": 30
+    }
+  ]
+}';
+
+    
+ echo "Using a component<br>";     
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);    
+    $this->ApiAdapter->normalizeOutgoingJson($jsonArray); 
+    pr($jsonArray);   
+    }   
+    
+
+
+    
+function search2($array, $key){
+    echo "MM";
+    if( array_key_exists($key, $array) ){
+        print("<br> ----------------- FOUND <u>{$key}</u> with value: {$array[$key]}");
+
+        return array( $key => $array[$key] );
+
+    }
+    else if( !array_key_exists($key, $array) ){
+        foreach ($array as $index   =>  $subarray){
+                if( is_array($subarray) ){
+                    print("<br> ************* <u>{$index}</u> is an ARRAY");
+                    print("<br> ************* RE-SEACHING <u>{$index}</u> FOR : <u>{$key}</u>");
+                    return search2($subarray, $key);
+                }
+        }
+    }
+}    
+    
+    
+   
+
+   public function deleteFromUser($investorId = null, $linkaccountsId = null) {
+
+        $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
+        $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
+        print_r($Idlist);
+        /* foreach($Idlist[''] as $id){ */
     }
 
     function hashTest() {
@@ -335,7 +771,7 @@ class TestsController extends AppController {
         echo 'Fin';
     }
 
-    public function read() {
+    public function read1() {
         $file = "test.xlsx";
         $finfo = finfo_open();
         $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);
@@ -922,4 +1358,5 @@ class TestsController extends AppController {
         $this->print_r2($result);
     }
 
+    
 }

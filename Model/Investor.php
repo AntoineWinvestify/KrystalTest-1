@@ -65,6 +65,8 @@ App::uses('CakeEvent', 'Event');
 
 class Investor extends AppModel {
 
+    public $actsAs = array('Containable');
+    
     var $name = 'Investor';
     public $hasMany = array(
         'Linkedaccount' => array(
@@ -100,104 +102,157 @@ class Investor extends AppModel {
         ),
     );
 
+//    $Check = ClassRegistry::init('Check');
     /**
      * 	Apparently can contain any type field which is used in a field. It does NOT necessarily
      * 	have to map to a existing field in the database. Very useful for automatic checks
      * 	provided by framework
      */
-    var $validate = array(
-        'investor_name' => array(
-            'rule1' => array('rule' => array('minLength', 2),
+    var $validate = [
+        'investor_name' => [
+            'rule1' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
-                'message' => 'Name validation error'),
+                'message' => 'Name validation error'
+                ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change the Name',
+                'on' => 'update'
+                ]
         /* 'rule2' => array('rule' => 'alphaNumeric',
           'allowEmpty' => false,
           'message' => 'Name validation error'), */
-        ),
-        'investor_surname' => array(
-            'rule1' => array('rule' => array('minLength', 2),
+        ],
+        'investor_surname' => [
+            'rule1' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
-                'message' => 'Surname validation error'),
+                'message' => 'Surname validation error'
+                ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your Surname',
+                'on' => 'update'
+            ]            
         /*   'rule2' => array('rule' => 'alphaNumeric',
           'allowEmpty' => false,
           'message' => 'Surname validation error'), */
-        ),
-        'investor_DNI' => array(
-            'rule' => array('minLength', 3),
-            'allowEmpty' => false,
-            'message' => 'Id validation error',
-        ),
-        'investor_dateOfBirth' => array(         
-            'age' => array(
+        ],
+        'investor_DNI' => [
+            'ruleLength' => ['rule' => ['minLength', 3],
+                'allowEmpty' => false,
+                'message' => 'Id validation error'
+                ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your legal Identification',
+                'on' => 'update'
+            ]
+        ],
+        'investor_dateOfBirth' => [        
+            'age_rule' => [
                 'rule' => 'checkOver18',
                 'message' => 'You must be over 18 years old'
-            )
-        ),
-        'investor_telephone' => array(
-            'rule' => array('minLength', 4),
-            'allowEmpty' => false,
-            'message' => 'Telephone validation error',
-        ),
-        'investor_address1' => array(
-            'rule' => array('minLength', 2),
-            'allowEmpty' => false,
-            'message' => 'Address validation error',
-        ),
-        'investor_postCode' => array(
-            'rule' => array('minLength', 2),
-            'allowEmpty' => false,
-            'message' => 'Postcode validation error',
-        ),
-        'investor_city' => array(
-            'rule' => array(array('minLength', 2), 'alphaNumeric'),
-            'allowEmpty' => false,
-            'message' => 'City validation error',
-        ),
-        'investor_country' => array(
-            'rule' => array('minLength', 2),
-            'allowEmpty' => false,
-            'message' => 'Country validation error',
-        ),
-        'investor_email' => array(
-            'rule' => '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
-            'allowEmpty' => false,
-            'message' => 'Email validation error',
-        ),
-    );
+            ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your Date of birth',
+                'on' => 'update'
+            ]
+        ],
+        'investor_telephone' => [ 
+            'ruleLength' => ['rule' => ['minLength', 4],
+                'allowEmpty' => false,
+                'message' => 'Telephone validation error'
+                ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change the Telephone number',
+                'on' => 'update'
+            ]            
+        ],
+        'investor_address1' => [ 
+            'ruleLength' => ['rule' =>  ['minLength', 2],
+                'allowEmpty' => false,
+                'message' => 'Address validation error'
+                ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your address',
+                'on' => 'update'
+            ]
+        ],
+         'investor_address2' => [
+            'ruleLength' => ['rule' => ['minLength', 2],
+                'allowEmpty' => false,
+                'message' => 'Address validation error'
+                ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your address',
+                'on' => 'update'
+            ]
+        ],       
+        'investor_postCode' => [
+            'ruleLength' => ['rule' => ['minLength', 2],
+                'allowEmpty' => false,
+                'message' => 'Postcode validation error'],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your postCode',
+                'on' => 'update'
+            ]
+        ],
+        'investor_city' => [
+            'rule' => [ ['minLength', 2], 
+                'alphaNumeric',
+                'allowEmpty' => false,
+                'message' => 'City validation error'],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your city of residence',
+                'on' => 'update'
+            ]
+        ],
+        'investor_country' => [ 
+            'rule' => [[ 'minLength', 2],
+                'allowEmpty' => false,
+                'message' => 'Country validation error'
+            ],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your country of residence',
+                'on' => 'update'
+            ]
+        ],
+        'investor_email' => [
+            'rule' => ['/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
+                'allowEmpty' => false,
+                'message' => 'Email validation error'],
+            'writeprotected_rule' => [
+                'rule' => 'writeProtected',
+                'message' => 'You cannot change your email',
+                'on' => 'update'
+            ]
+        ]
+    ];
 
-    public function checkOver18($check) { //Calculate age for validation
+    public function checkOver18($check) {                                       //Calculate age for validation
         $birthDate = explode("/", $check['investor_dateOfBirth']);
-        //get age from date or birthdate
         $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md") ? ((date("Y") - $birthDate[2]) - 1) : (date("Y") - $birthDate[2]));
-
         if ($age < 18) {
             return false;
         }
         return true;
     }
-
+    
+    
     /**
      * 	Generates a GUID for an image
      * 	
-     * 	@return array  array with a GUIDs		
+     * 	@return string	
      */
     public function getGUID() {
-        if (function_exists('com_create_guid')) {
-            return com_create_guid();
-        } else {
-            mt_srand((double) microtime() * 10000);                                    //optional for php 4.2.0 and up.
-            $charid = strtoupper(md5(uniqid(rand(), true)));
-            $hyphen = chr(45);       // "-"
-            $uuid = chr(123)       // "{"
-                    . substr($charid, 0, 8) . $hyphen
-                    . substr($charid, 8, 4) . $hyphen
-                    . substr($charid, 12, 4) . $hyphen
-                    . substr($charid, 16, 4) . $hyphen
-                    . substr($charid, 20, 12)
-                    . chr(125); // "}"
-            return $uuid;
-        }
-        return $GUIDs;
+        return CakeText::uuid();       
     }
 
     /**
@@ -248,8 +303,8 @@ class Investor extends AppModel {
     /** NOT YET FINISHED
      * 	De-activates a user. The corresponding data in "user" and "investor" is marked as 'deleted'
      * 
-     * 	@param 		int	$investor_Identity
-     * 	@return 	boolean	true	All OK
+     * 	@param 	int $investor_Identity
+     * 	@return boolean	true	All OK
      * 				false	Error occured
      * 						
      */
@@ -286,8 +341,8 @@ class Investor extends AppModel {
     /**
      * 	Increases the number of linkedaccounts of an investor
      * 
-     * 	@param 		int		$investorId	Identifier of the investor
-     * 	@return 	boolean	true	All OK, data has been saved
+     * 	@param int $investorId	Identifier of the investor
+     * 	@return boolean	true	All OK, data has been saved
      * 				false	Error occured				
      */
     function increaseLinkedAccounts($investorId) {
@@ -330,7 +385,7 @@ class Investor extends AppModel {
 
         if ($resultInvestor['Investor']['investor_linkedAccountChange'] == 1) {
             $this->id = $investorId;
-            $this->saveField('investor_linkedAccountChange', 0);       // remove change flag
+            $this->saveField('investor_linkedAccountChange', 0);                // remove change flag
             return true;
         }
 
@@ -342,11 +397,11 @@ class Investor extends AppModel {
             "conditions" => array("data_investorReference" => $resultInvestor['Investor']['investor_identity'])
         ));
 
-        if (empty($resultData)) {  // No information exists for this investor
+        if (empty($resultData)) {                                               // No information exists for this investor
             return true;
         }
 
-        if ($resultData['Data']['created'] < $cutoffTime) {  // existing information is too old, so refresh
+        if ($resultData['Data']['created'] < $cutoffTime) {                     // existing information is too old, so refresh
             return true;
         }
         return false;
@@ -355,8 +410,8 @@ class Investor extends AppModel {
     /**
      * 	Translates the unique userReference to the database reference
      * 
-     * 	@param 		string	$investorReference Unique Identifier of the investor
-     * 	@return 	int	$investorId The database reference of the investor				
+     * 	@param 	string $investorReference Unique Identifier of the investor
+     * 	@return int $investorId The database reference of the investor				
      */
     function investorReference2Id($investorReference) {
         $resultInvestor = $this->find("first", array("fields" => array("id"),
@@ -366,14 +421,25 @@ class Investor extends AppModel {
         return $resultInvestor['Investor']['id'];
     }
 
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * 	Save the data of a NEW investor
+     * 
+     * 	@param array $data Array of the data elements to be modified/saved for an 
+     *                     existing "investor" table
+     * 	@return 				
+     */   
     public function investorDataSave($data) {
-        $id = $this->find('first', array(
-            'fields' => array(
-                'Investor.id',
-            ),
-            'conditions' => array(
-                'Investor.user_id' => $data['id']),
-            'recursive' => -1,));
+        $id = $this->find('first', ['fields' => ['Investor.id'],
+                                    'conditions' => ['Investor.user_id' => $data['id']],
+                                    'recursive' => -1]);
 
         $checks = $this->readCheckData($id['Investor']['id']);
 
@@ -395,12 +461,12 @@ class Investor extends AppModel {
 
         //Checks control, if check is 1 can't change the field in db
         foreach ($checks[0]['Check'] as $keyCheck => $check) {
-            $checkField = strtolower(explode('_', $keyCheck)[1]);   //Get the check field name  check_name ----> name
+            $checkField = strtolower(explode('_', $keyCheck)[1]);               //Get the check field name  check_name ----> name
             foreach ($infoInvestor as $keyData => $dataInvestor) {
-                $dataField = strtolower(explode('_', $keyData)[1]); //Get data field name  investor_name ---> name
-                if ($checkField == $dataField && $check == CHECKED) {  //Compare names and unset array if data is CHECKED
+                $dataField = strtolower(explode('_', $keyData)[1]);             //Get data field name  investor_name ---> name
+                if ($checkField == $dataField && $check == CHECKED) {           //Compare names and unset array if data is CHECKED
                     unset($infoInvestor[$keyData]);
-                    unset($this->validate[$keyData]); //Unset field validation, cant validate with a null field;
+                    unset($this->validate[$keyData]);                           //Unset field validation, cant validate with a null field;
                 }
             }
         }
@@ -410,7 +476,8 @@ class Investor extends AppModel {
             $this->save($infoInvestor);
             $data = JSON_encode($infoInvestor);
             return 1 . "[" . 1 . "," . $data . ",";
-        } else {                     // validation false
+        } 
+        else {                     // validation false
             $errors = array('errors' => 'Form error', $this->validationErrors);
             $errors = json_encode($errors);
             return 0 . "[" . 0 . "," . $errors;
@@ -780,7 +847,6 @@ class Investor extends AppModel {
      *
      */
     public function afterFind($results, $primary = false) {
-
         foreach ($results as $key => $val) {
             if (isset($val['Investor']['investor_dateOfBirth'])) {
                 $results[$key]['Investor']['investor_dateOfBirth'] = $this->formatDateAfterFind(
@@ -794,6 +860,7 @@ class Investor extends AppModel {
                 $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
                         $val['Ocr']['investor_iban']);
             }
+               
         }
         return $results;
     }
@@ -811,7 +878,53 @@ class Investor extends AppModel {
         }
         if (!empty($this->data['Investor']['investor_telephone'])) {
             $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
-        }
+        } 
     }
 
+ 
+   
+    /**
+     * Check if an investor datum is write protected
+     * 
+     * @param int $investorId The internal database id of the investor
+     * @param string $fieldName The name of the variable to check
+     * @return boolean
+     */
+    public function isFieldWriteProtected($investorId, $fieldName) {
+        $tempFieldName = explode("_", $fieldName);
+        $fieldName = "check_" . $tempFieldName[1];
+
+        $checkData = $this->Check->find('first', $params = ['conditions' => ['investor_id' => $investorId],
+                                                  'fields' => $fieldName,
+                                                  'recursive' => -1
+                                                 ]);
+
+        return $checkData['Check'][$fieldName];
+    }  
+    
+    
+    /**
+     * 	Checks if a field is write protected
+     * 
+     * @param type $check
+     * @return boolean
+     */
+    public function writeProtected($check) {                                    // Check if a field is write protected
+        
+        $tempKey = array_keys($check);
+        $key = $tempKey[0];
+
+        if ($this->isFieldWriteProtected($this->data['Investor']['id'], $key)) {
+            return false;   
+        }
+        return true;
+    }      
+     
 }
+
+  
+    
+
+
+ 
+    
