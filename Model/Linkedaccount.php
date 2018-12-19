@@ -367,7 +367,6 @@ class Linkedaccount extends AppModel {
      * 
      * 
      *          API FUNCTIONS
-     * 
      */
     
     /**
@@ -379,35 +378,41 @@ class Linkedaccount extends AppModel {
      * @return type
      */
     public function api_precheck($investorId, $companyId, $username, $password) {
-        $this->Accountowner = ClassRegistry::init('Accountowner');  
-        $accountOwnerId = $this->Accountowner->checkIfAccountOwnerExist($investorId, $companyId, $username, $password);
-        //print_r($accountOwnerId);
-
-        $this->Company = ClassRegistry::init('Company');  
+        $this->Accountowner = ClassRegistry::init('Accountowner');
+        $accountOwner = $this->Accountowner->checkIfAccountOwnerExist($investorId, $companyId, $username, $password);
+        if (Configure::read('debug')) {
+            print_r($accountOwnerId);
+        }
+        $this->Company = ClassRegistry::init('Company');
         $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures'));
-        echo $multiAccount[0]['Company']['company_technicalFeatures'] . '          ';
-        
-        if (($multiAccount[0]['Company']['company_technicalFeatures'] & 1) == 1){
-            $multiAccount = true;
-        }
+        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;
+        if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
+            $multiAccountCheck = true;
+        } 
         else {
-            $multiAccount = false;
+            $multiAccountCheck = false;
         }
         
-                
-        echo print_r($multiAccount);
-        exit;
-        
-        
-        if (!empty($accountOwnerExist) && $multiAccount){
+        if (!empty($accountOwner) && $multiAccountCheck) {
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Linkedaccount is multiaccount and Accountowner already exist, can't link already linked, disabling linking";
+            }
             $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId));
-        }
-        else if (!empty($accountOwnerExist) && !$multiAccount){ //Not multiaccount company and already linked, can't link again
+            
+        } 
+        else if (!empty($accountOwner) && !$multiAccountCheck) { //Not multiaccount company and already linked, can't link again
+            if (Configure::read('debug')) {
+                echo __FUNCTION__ . " " . __LINE__ . ": " . "Linkedaccount not multiaccount and Accountowner already exist, can't link again";
+            }
             return false;
         }
-        //$accounts = $this->getAccountsToLink(); //Codigo pfp
-        //Cancelo los accounts que estan en $accountsLinked
-        $accounts['multiAccount'] = $multiAccount;
+
+        //$accounts = $this->getAccountsToLink(); //Codigo pfp------Linkaccount actual
+        if($multiAccountCheck){
+            //Cancelo los accounts que estan en $accountsLinked
+        }
+        
+        $accounts['multiAccount'] = $multiAccountCheck;
         return $accounts;
         /* $accounts can hold the following information:
           - account_identity
@@ -415,9 +420,7 @@ class Linkedaccount extends AppModel {
           - linkedaccount_currency */
     }
 
-
-    
-     /**
+    /**
      * 	Delete a an account that fulfills the filteringConditions
      * 	
      * 	@param 		int 	$linkaccountId	Must indicate at least "investor_id"

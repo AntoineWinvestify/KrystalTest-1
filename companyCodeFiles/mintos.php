@@ -842,7 +842,83 @@ class mintos extends p2pCompany {
         return false;
     }
 
+/**
+     *
+     * 	Checks if the user can login to its portal. Typically used for linking a company account
+     * 	to our account
+     *
+     * 	@param string	$user		username
+     * 	@param string	$password	password
+     * 	@return	boolean	true: 		user has succesfully logged in. $this->mainPortalPage contains the entry page of the user portal
+     * 					false: 		user could not log in
+     *
+     */
+    function companyUserLoginMultiAccount($user = "", $password = "", $options = array()) {
+        /*
+          FIELDS USED BY YYYYYYYYY  DURING LOGIN PROCESS
+          $credentials['_csrf_token'] = "XXXXX";
+         */
 
+        //First we need get the $csrf token
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+        $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+        $credentials['_username'] = $user;
+        $credentials['_password'] = $password;
+        $credentials['_csrf_token'] = $csrf;
+        $credentials['_submit'] = '';
+
+
+        if (!empty($options)) {
+            foreach ($options as $key => $option) {
+                $credentials[$key] = $option[$key];
+            }
+        }
+
+        //print_r($credentials);
+
+        $str = $this->doCompanyLogin($credentials); //do login
+
+
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;  //Check if works
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        // echo $str;
+
+        $confirm = false;
+
+        $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
+        foreach ($as as $a) {
+            // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
+            if (trim($a->nodeValue) == 'Overview') {
+                //echo 'a encontrado' . HTML_ENDOFLINE;
+                $confirm = true;
+            }
+
+            //Get logout url
+            if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
+                $url = $a->getAttribute('href');
+            }
+        }
+
+        
+
+        if ($confirm) {
+            return true;
+        }
+        return false;
+    }
+    
     /**
      * Download investments and cash flow files and collect control variables
      * 
