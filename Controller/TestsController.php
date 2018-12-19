@@ -50,7 +50,7 @@ class TestsController extends AppController {
 
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
+    var $uses = array('Tooltipincompany', 'Tooltip', 'Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
     var $error;
 
     function beforeFilter() {
@@ -62,9 +62,9 @@ class TestsController extends AppController {
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff","deleteFromUser",
-            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
-            "memoryTest2", "hashTest"));
+            "testDateDiff", "deleteFromUser",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3",
+            "memoryTest2", "hashTest", 'tooltip'));
     }
 
     public function pruebaYield() {
@@ -73,29 +73,37 @@ class TestsController extends AppController {
         }
     }
 
-    
-    public function deleteFromUser($investorId = null, $linkaccountsId = null) {
+    public function tooltip() {
 
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 25);
+        $this->print_r2($tooltip);
 
-            $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
-            $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
-            print_r($Idlist);
-            /*foreach($Idlist[''] as $id){*/
- 
-    
-            }
-    function hashTest(){
-    
-        $telephone= 615091091;
-        $username = "eduardo@winvestify.com";
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'en', 24);
+        $this->print_r2($tooltip);
         
-        $hashTelephone = hash("crc32", $telephone);
-        $hashUsername = hash("crc32", $username);     
-        $uuid = $hashTelephone . $hashUsername; 
-        echo strlen($uuid);
-        echo "    " . $uuid;     
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'es', 25);
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(15,16,17,18,19,20,49,50,51,52,54,55), 'es', 24);
+        $this->print_r2($tooltip);
+        
+        $tooltip = $this->Tooltip->getTooltip(array(38,48,39,40,43), 'en');
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(38,48,39,40,43), 'es');
+        $this->print_r2($tooltip);
     }
-    
+
+    function hashTest() {
+
+        $telephone = 615091091;
+        $username = "eduardo@winvestify.com";
+
+        $hashTelephone = hash("crc32", $telephone);
+        $hashUsername = hash("crc32", $username);
+        $uuid = $hashTelephone . $hashUsername;
+        echo strlen($uuid);
+        echo "    " . $uuid;
+    }
+
     function memoryTest3() {
         $timeInit = microtime(true);
         foreach ($this->pruebaYield() as $y) {
@@ -110,7 +118,7 @@ class TestsController extends AppController {
         $time = $timeEnd - $timeInit;
         echo " time" . $time;
     }
-    
+
     public function memoryTest2() {
         $timeInit = microtime(true);
         for ($i = 0; $i <= 600000; $i++) {
@@ -121,14 +129,11 @@ class TestsController extends AppController {
             }
         }
         echo "!!!";
-        echo memory_get_usage();       
+        echo memory_get_usage();
         $timeEnd = microtime(true);
         $time = $timeEnd - $timeInit;
         echo " time" . $time;
-        
     }
-
-    
 
     public function readSize() {
         echo 'patata ';
@@ -297,8 +302,7 @@ class TestsController extends AppController {
             }
             $start = $position;
             $length = strlen($search);
-        }
-        else { // FALSE
+        } else { // FALSE
             $start = 0;
             $length = 0;
 
@@ -310,8 +314,7 @@ class TestsController extends AppController {
         $position1 = stripos($input, $separator);
         if ($position1 !== false) {  // == TRUE
             $length1 = $position1;
-        }
-        else { // FALSE
+        } else { // FALSE
             $length1 = 100;                 // ficticious value
         }
         $start = $start + $length;
@@ -415,8 +418,7 @@ class TestsController extends AppController {
                 echo "Empiezo en " . $this->dateInit . " Termino en " . $this->dateFinish . " ";
                 $this->numberOfFiles++;
                 echo $this->numberOfFiles . HTML_ENDOFLINE;
-            }
-            else {
+            } else {
                 $this->dateFinish = date("Ymd", strtotime($this->dateInit . " " . -1 . " days")); //Next finish date will we the previous day of the last Init date
                 $this->dateInit = date("Ymd", strtotime($this->dateInit . " " . -$datePeriod . " days"));
                 if (date($this->dateInit) < date($dateMin)) {
@@ -511,8 +513,7 @@ class TestsController extends AppController {
             );
             $this->Data->save($data, $validate = true);
             echo "Data is now available in Dashboard";
-        }
-        else {
+        } else {
             echo "Nothing found, try again with other data";
             exit;
         }
@@ -867,8 +868,7 @@ class TestsController extends AppController {
         //    $this->print_r2($this->companyData);        
         if ($this->companyData[0]['Company']['company_technicalFeatures'] && WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";
-        }
-        else {
+        } else {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";
         }
 
@@ -877,8 +877,7 @@ class TestsController extends AppController {
         //    $this->print_r2($this->companyData);
         if ($this->companyData[0]['Company']['company_technicalFeatures'] && WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";
-        }
-        else {
+        } else {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";
         }
     }
