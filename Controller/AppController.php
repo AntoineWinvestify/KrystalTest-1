@@ -640,9 +640,7 @@ Configure::write('debug', 2);
      /**
       * Loads the class variables $listOfFields and $listOfQueryParams
       * 
-      * @param 
-      * @param 
-      * @param 
+      * @param - 
       * @return boolean
       */   
     public function  loadParameterFields(){ 
@@ -651,7 +649,7 @@ Configure::write('debug', 2);
 
         if (array_key_exists('_fields', $this->listOfQueryParams )){              
             $this->listOfFields = explode(",", $this->listOfQueryParams['_fields']);
-            $this->Investor->apiFieldListAdapter($this->listOfFields);           
+            $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack
             unset($this->listOfQueryParams['_fields']);
         }
         $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
