@@ -153,194 +153,229 @@ class TestsController extends AppController {
     /**
      * This methods terminates the HTTP GET.
      * Format GET /v1/investors/[investorId]&fields=x,y,z
-     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * Example GET /v1/investors/1.json&_fields=investor_name,investor_surname
      * 
      * @param integer $id The database identifier of the requested resource
      * 
      */
     public function view($id){
-     
-    if (empty($this->listOfFields)) {
-        $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                 'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                'Investor.investor_address1', 'Investor.investor_address2',
-                                'Investor.investor_city', 'Investor.investor_telephone',
-                                'Investor.investor_postCode', 'Investor.investor_email'  
-                                ];
-    }
-  
-    foreach ($this->listOfFields as $field) {
-        $tempField = explode("_", $field);
-        if (count($tempField) == 2) {
-            $this->listOfFields[] = "Check.check_" . $tempField[1];
-        }       
-    }
-    
-    if (!in_array("id", $listOfFields)) {
- //      $listOfFields[] = "Investor.id";
-    }    
-       
-    $this->Investor->contain('Investor', 'Check');
-    $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
 
-    if (!empty($result)) {
-        
-        $this->Investor->apiVariableNameOutAdapter( $result['Investor']);
-        $this->Investor->apiVariableNameOutAdapter( $result['Check']);
+        if (empty($this->listOfFields)) {
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                    'Investor.investor_address1', 'Investor.investor_address2',
+                                    'Investor.investor_city', 'Investor.investor_telephone',
+                                    'Investor.investor_postCode', 'Investor.investor_email'  
+                                    ];
+        }
 
-        foreach ($result['Investor'] as $key => $value) {
-            $json[$key]['value'] = $value;                 
-            if ($key === 'id') {
-                 continue;
+        foreach ($this->listOfFields as $field) {
+            $tempField = explode("_", $field);
+            if (count($tempField) == 2) {
+                $this->listOfFields[] = "Check.check_" . $tempField[1];
+            }       
+        }
+
+        if (!in_array("id", $listOfFields)) {
+     //      $listOfFields[] = "Investor.id";
+        }    
+
+        $this->Investor->contain('Investor', 'Check');
+        $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
+
+        if (!empty($result)) {
+
+            $this->Investor->apiVariableNameOutAdapter( $result['Investor']);
+            $this->Investor->apiVariableNameOutAdapter( $result['Check']);
+
+            foreach ($result['Investor'] as $key => $value) {
+                $apiResult[$key]['value'] = $value;                 
+                if ($key === 'id') {
+                     continue;
+                } 
+                $rootName = explode("_", $key, 2); 
+                $apiResult[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
             } 
-            $rootName = explode("_", $key, 2); 
-            $json[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
-        } 
-    }
-    
-    $this->set(['data' => $json,
-              '_serialize' => ['data']]
-               );          
+        }
+
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   );          
     }  
      
     
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
-     * Format GET /v1/investors/[investorId]&fields=x,y,z
-     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * Format GET /v1/investors/[investorId]&_fields=x,y,z
+     * Example GET /v1/investors.json&_fields=investor_name,investor_surname
      * 
      * @param -
      * 
      */
     public function index(){
 
-    if (empty($this->listOfFields)) {
-        $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                 'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                'Investor.investor_address1',  'Investor.investor_address2',
-                                'Investor.investor_city',  'Investor.investor_telephone',
-                                'Investor.investor_postCode',  'Investor.investor_email'  
-                                ];
-    } 
+        if (empty($this->listOfFields)) {
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                    'Investor.investor_address1',  'Investor.investor_address2',
+                                    'Investor.investor_city',  'Investor.investor_telephone',
+                                    'Investor.investor_postCode',  'Investor.investor_email'  
+                                    ];
+        } 
 
-    foreach ($this->listOfFields as $field) {
-        $tempField = explode("_", $field);
-        
-        if (count($tempField == 2)) {
-            $this->listOfFields[] = "Check.check_" . $tempField[1]; 
-        }  
-    } 
-    $this->Investor->contain('Investor', 'Check');
-    $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
-                                                      'fields' => $this->listOfFields,
-                                                      'recursive' => 0]);
+        foreach ($this->listOfFields as $field) {
+            $tempField = explode("_", $field);
 
-    $numberOfResults = count($results);    
+            if (count($tempField == 2)) {
+                $this->listOfFields[] = "Check.check_" . $tempField[1]; 
+            }  
+        } 
+        $this->Investor->contain('Investor', 'Check');
+        $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                          'fields' => $this->listOfFields,
+                                                          'recursive' => 0]);
 
-    $j = 0;
-    foreach ($results as $resultItem) { 
-        $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
-        $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
-        
-        foreach ($resultItem['Investor'] as $key => $value) {
-            if ($key === 'id') {   
-                continue;
-            } 
-            $rootName = explode("_", $key, 2);
-            
-            if ($numberOfResults == 1) {
-                $json[$key]['value'] = $value;  
-                $json[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
+        $numberOfResults = count($results);    
+
+        $j = 0;
+        foreach ($results as $resultItem) { 
+            $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
+            $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
+
+            foreach ($resultItem['Investor'] as $key => $value) {
+                if ($key === 'id') {   
+                    continue;
+                } 
+                $rootName = explode("_", $key, 2);
+
+                if ($numberOfResults == 1) {
+                    $apiResult[$key]['value'] = $value;  
+                    $apiResult[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
+                }
+                else {
+                    $apiResult[$j][$key]['value'] = $value;  
+                    $apiResult[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
+                } 
             }
-            else {
-                $json[$j][$key]['value'] = $value;  
-                $json[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
-            } 
+            $j++;
         }
-        $j++;
-    }
-    
-    $this->set(['data' => $json,
-              '_serialize' => ['data']]
-               ); 
-       
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   ); 
+
     }
     
    
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP PATCH/PUT.
-     * Format GET /v1/investors/[investorId]&fields=x,y,z
-     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
-     * 
+     * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
+     * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
+     *
      * @param integer $id The database identifier of the requested resource
      * 
      */
     public function edit($id) { 
-    Configure::write('debug', 2);     
-    $this->autoRender = false; 
 
-    $data = $this->listOfQueryParams;
-    $data['id'] = $id;
- 
-    if (!($this->Investor->save($data, $validates = true))) {
-        $validationErrors = $this->Investor->validationErrors;
-        $this->Investor->apiVariableNameOutAdapter($validationErrors);
- 
-        $this->print_r2($validationErrors);   
-        $this->response->statusCode(403); 
+        $data = $this->listOfQueryParams;
+        $data['id'] = $id;
 
-        $formattedError = $this->createErrorFormat('NO_WRITE_ACCESS', 
-                                                    "It is not allowed to modify read-only fields", 
-                                                    $validationErrors);
+        if (!($this->Investor->save($data, $validates = true))) {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
-        $this->set(['error' => $formattedError, '_serialize' => ['error']]);        
-        
-    }
-    else {
-        echo "All OK, data saved, return 200 Ok<br>";
-        $this->response->statusCode(200);  
-        $this->set('_serialize', ['id' => 'saved ok']);                         // ??
-    }
-
+            $formattedError = $this->createErrorFormat('NO_WRITE_ACCESS', 
+                                                        "It is not allowed to modify read-only fields", 
+                                                        $validationErrors);
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(403);                                       // 403 Forbidden  
+        }
+        else {
+            $apiResult = ['result' => "success"];
+            $resultJson = json_encode($apiResult);     
+        }
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
     }     
+
+    
+    /** STILL PENDING: NOT FULLY FINISHED MAKE IT AS GENERIC AS POSSIBLE
+     * This methods terminates the HTTP POST for actions
+     * Format POST /v1/users.json?_action=action&param1=value1&param3=value3..
+     * Example POST /v1/users.json?_action=precheck&username=pedro garcia
+     * 
+     * Format POST /v1/users/[investor_id].json?_action=action&param1=value1&param3=value3..
+     * Example POST /v1/users/1.json?_action=precheck&username=pedro garcia 
+     * 
+     * @param integer $id The database identifier of the requested resource  for 
+     *                    which to execute the 'action'
+     */
+    public function api_precheck($id) { 
+
+        $data = $this->listOfQueryParams;
+        if (!empty($id)) {
+            $data['id'] = $id;
+        }
+
+        $result = $this->Users->findByUsername($this->listOfQueryParams['username']);
+        if (!empty($result)) { 
+            $apiResult = ['result' => false];
+        }
+        else {
+            $apiResult = ['result' => true]; 
+        }
+        
+        $this->response->statusCode(200);      
+        $resultJson = json_encode($apiResult);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;         
+    }
+
+
+
+
     
     
    /** PENDING: NOT FINISHED, AND ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP POST.
-     * Format GET /v1/investors/[investorId]&fields=x,y,z
-     * Example GET /v1/investors/1.json&fields=investor_name,investor_surname
+     * Format POST /v1/investors.json?param1=value11&param2=value2&param3=value3....
+     * Example GET /v1/investors.json?investor_name=Antoine&investor_surname=De Poorter
      * 
-     * @param integer $id The database identifier of the requested resource
-     * 
+     * @param -
      */
     public function add($id) { 
-    Configure::write('debug', 0);
-    $this->autoRender = false;
-    
-    echo __FILE__ . " " . __LINE__ . "\n";    
-    $this->print_r2($this->listOfFields);  
- 
-    echo __FILE__ . " " . __LINE__ . "\n";  
-    $this->print_r2($this->listOfQueryParams);     
-    
-    echo __FILE__ . " " . __LINE__ . "\n";
-    $this->print_r2($this->request->data);
-      
+    //    Configure::write('debug', 2);
+        $this->autoRender = false;
 
-    if ($this->Investor->save($this->listOfQueryParams, $validates = true)) {
-        $data = ['id' => $this->investor->Id];
-        $this->set[['data' => $data,
-                    '_serialize' => ['data']
-                ]];
-    }
-    else {
-        echo "Error occured, so return errorcodes";
-        $this->response->statusCode(200);  
-        $validationErrors = $this->Investor->validationErrors;
-        $this->Investor->apiVariableNameOutAdapter($validationErrors);
-    }
-    
-    
+        echo __FILE__ . " " . __LINE__ . "\n";    
+        $this->print_r2($this->listOfFields);  
+
+        echo __FILE__ . " " . __LINE__ . "\n";  
+        $this->print_r2($this->listOfQueryParams);     
+
+        echo __FILE__ . " " . __LINE__ . "\n";
+        $this->print_r2($this->request->data);
+        
+        if ($this->Investor->save($this->listOfQueryParams, $validate = true)) {
+            $apiResult = ['id' => $this->Investor->id];           
+            $resultJson = json_encode($apiResult); 
+            $this->response->statusCode(201);              
+        }
+        else {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('USER_NOT_CREATED', 
+                                                        "User could not be created. More details for more", 
+                                                        $validationErrors);
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(403);                                       // 403 Forbidden              
+        }
+
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;       
     }     
      
     
@@ -382,18 +417,18 @@ class TestsController extends AppController {
             $rootName = explode("_", $key, 2);
             
             if ($numberOfResults == 1) {
-                $json[$key]['value'] = $value;  
+                $apiResult[$key]['value'] = $value;  
    
             }
             else {
-                $json[$j][$key]['value'] = $value;  
+                $apiResult[$j][$key]['value'] = $value;  
   
             } 
         }
         $j++;
     }
     
-    $this->set(['data' => $json,
+    $this->set(['data' => $apiResult,
               '_serialize' => ['data']]
                ); 
     }

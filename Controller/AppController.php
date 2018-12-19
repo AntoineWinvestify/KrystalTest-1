@@ -667,6 +667,11 @@ class AppController extends Controller {
             $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack
             unset($this->listOfQueryParams['_fields']);
         }
+        if (array_key_exists('_action', $this->listOfQueryParams )){              
+            $this->action = $this->listOfQueryParams['_action'];
+            $this->Investor->apiFieldListAdapter($this->action);                // Very dirty hack
+            unset($this->listOfQueryParams['_action']);
+        }       
         $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
         return true;
     }
