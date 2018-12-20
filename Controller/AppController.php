@@ -101,8 +101,10 @@ class AppController extends Controller {
                                                 // in normalized, internal DB format
     protected $listOfQueryParams;               // Array that holds the list of Query parameters
                                                 // in normalized, internal DB format
+                                                // An item in this array can be another array. In
+                                                // that case all entries are considered as OR condition
     
-    
+    protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
     
     
     
@@ -653,7 +655,9 @@ class AppController extends Controller {
     
     
      /**
-      * Loads the class variables $listOfFields and $listOfQueryParams
+      * Loads the class variables $listOfFields, $listOfQueryParams, action
+      * and the query parameters converted to CakePHP Filtering Conditions
+      * for Model operations
       * 
       * @param - 
       * @return boolean
@@ -664,17 +668,41 @@ class AppController extends Controller {
 
         if (array_key_exists('_fields', $this->listOfQueryParams )){              
             $this->listOfFields = explode(",", $this->listOfQueryParams['_fields']);
-            $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack
+            $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack          
             unset($this->listOfQueryParams['_fields']);
         }
         if (array_key_exists('_action', $this->listOfQueryParams )){              
             $this->action = $this->listOfQueryParams['_action'];
-            $this->Investor->apiFieldListAdapter($this->action);                // Very dirty hack
+            $this->Investor->apiFieldListAdapter($this->action);                // Very dirty hack            
             unset($this->listOfQueryParams['_action']);
         }       
         $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
+
+        foreach($this->listOfQueryParams as $key => $value) {
+            $parms = explode(",", $value); 
+
+            if (count($parms) > 1) {
+                $this->listOfQueryParams[$key] = $parms;
+            }
+        }
+
+        foreach ($this->listOfQueryParams as $principalField => $condition) {
+            if (is_array($condition)){
+                foreach ($condition as $key => $item) {
+                    $orCondition[][$principalField] = $item;
+                }
+            }
+            else {
+                $andCondition[$principalField] = $condition;
+            } 
+        }
+
+        $this->filterConditionQueryParms = ['OR' => $orCondition,
+                                           'AND' => $andCondition];
         return true;
     }
+    
+    
     
 
 }

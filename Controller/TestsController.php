@@ -101,7 +101,8 @@ class TestsController extends AppController {
                         ];   
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Tooltipincompany', 'Tooltip', 'Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
+    var $uses = array('Tooltipincompany', 'Tooltip', 'Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", 
+        "Globalcashflowdata", "Linkedaccount", "Check");
     var $error;
     public $components = array('ApiAdapter'); 
 
@@ -112,7 +113,7 @@ class TestsController extends AppController {
  //       $this->autoRender = false; 
         
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying",
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add",
@@ -206,8 +207,8 @@ class TestsController extends AppController {
     
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
-     * Format GET /v1/investors/[investorId]&_fields=x,y,z
-     * Example GET /v1/investors.json&_fields=investor_name,investor_surname
+     * Format GET /v1/investors.json&_fields=x,y,z
+     * Example GET /v1/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
      * 
      * @param -
      * 
@@ -230,6 +231,7 @@ class TestsController extends AppController {
                 $this->listOfFields[] = "Check.check_" . $tempField[1]; 
             }  
         } 
+        
         $this->Investor->contain('Investor', 'Check');
         $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
@@ -279,7 +281,7 @@ class TestsController extends AppController {
         $data = $this->listOfQueryParams;
         $data['id'] = $id;
 
-        if (!($this->Investor->save($data, $validates = true))) {
+        if (!($this->Investor->save($data, $validate = true))) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
@@ -307,18 +309,17 @@ class TestsController extends AppController {
      * Format POST /v1/users/[investor_id].json?_action=action&param1=value1&param3=value3..
      * Example POST /v1/users/1.json?_action=precheck&username=pedro garcia 
      * 
-     * @param integer $id The database identifier of the requested resource  for 
+     * @param integer $id The database identifier of the requested resource for 
      *                    which to execute the 'action'
      */
     public function api_precheck($id) { 
 
         $data = $this->listOfQueryParams;
         if (!empty($id)) {
-            $data['id'] = $id;
+            $data['id'] = $id;              //?????? not required in this context
         }
 
-        $result = $this->Users->findByUsername($this->listOfQueryParams['username']);
-        if (!empty($result)) { 
+        if (!$this->User->api_usernameExists($this->listOfQueryParams['username'])) { 
             $apiResult = ['result' => false];
         }
         else {
@@ -334,6 +335,22 @@ class TestsController extends AppController {
 
 
 
+    
+    public function editCheck() {
+        Configure::write('debug', 2);        
+        $this->autoRender = false;
+        $investorId = 1;
+        $fieldsToChange = ['name' => true,
+                            'surname' => 1,
+                            'investor_city' => true,
+                            'investor_DNI' => true,
+                            'email' => false
+                         ];
+        
+        $this->print_r2($fieldsToChange);
+        $result = $this->Check->api_editCheck($investorId, $fieldsToChange);
+        echo "\nresult = $result ! \n";
+    }
 
     
     
@@ -391,46 +408,46 @@ class TestsController extends AppController {
      */
     public function index_v1_company(){
 
-    if (empty($this->listOfFields)) {
-        $this->listOfFields = ['company_name','company_url', 
-                                'company_country', 'company_countryName', 
-                                'company_privacyUrl', 'company_termsUrl',
-                                'company_logoGUID'
-                              ]; 
-                               
-    } 
+        if (empty($this->listOfFields)) {
+            $this->listOfFields = ['company_name','company_url', 
+                                    'company_country', 'company_countryName', 
+                                    'company_privacyUrl', 'company_termsUrl',
+                                    'company_logoGUID'
+                                  ]; 
 
-    $results = $this->Companies->find("all", $params = ['conditions' => $this->listOfQueryParams,
-                                                      'fields' => $this->listOfFields,
-                                                      'recursive' => -1]);
+        } 
 
-    $numberOfResults = count($results);    
+        $results = $this->Companies->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                          'fields' => $this->listOfFields,
+                                                          'recursive' => -1]);
 
-    $j = 0;
-    foreach ($results as $resultItem) { 
-        $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
-        
-        foreach ($resultItem['Company'] as $key => $value) {
-            if ($key === 'id') {   
-                continue;
-            } 
-            $rootName = explode("_", $key, 2);
-            
-            if ($numberOfResults == 1) {
-                $apiResult[$key]['value'] = $value;  
-   
+        $numberOfResults = count($results);    
+
+        $j = 0;
+        foreach ($results as $resultItem) { 
+            $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
+
+            foreach ($resultItem['Company'] as $key => $value) {
+                if ($key === 'id') {   
+                    continue;
+                } 
+                $rootName = explode("_", $key, 2);
+
+                if ($numberOfResults == 1) {
+                    $apiResult[$key]['value'] = $value;  
+
+                }
+                else {
+                    $apiResult[$j][$key]['value'] = $value;  
+
+                } 
             }
-            else {
-                $apiResult[$j][$key]['value'] = $value;  
-  
-            } 
+            $j++;
         }
-        $j++;
-    }
-    
-    $this->set(['data' => $apiResult,
-              '_serialize' => ['data']]
-               ); 
+
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   ); 
     }
     
     

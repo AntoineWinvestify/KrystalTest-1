@@ -43,6 +43,10 @@ class AppModel extends Model {
     
     /**
      * Configuration data for variable name translations
+     * The following "endpoints" are incorporated into the configuration array:
+     * investor.json
+     * user.json
+     * 
      *
      * @access private
      * @var array
@@ -55,7 +59,16 @@ class AppModel extends Model {
                                 'investor_postCode' => 'investor_postcode',
                                 'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
                                 'company_countryName' => 'company_country_name',
-                                'company_privacyUrl' => 'company_privacy_url'
+                                'company_privacyUrl' => 'company_privacy_url',
+                                'investor_approvalCode' => 'approval_code',
+                                'investor_surname' => 'investor_surnames',
+                                'investor_email' => 'email',
+                                'accountDisplayName' => 'account_display_name',
+                                'displayName' => 'display_name',
+                                'usertoken_refreshToken' => 'refresh_token',
+        
+        
+        
                               ];
 
     

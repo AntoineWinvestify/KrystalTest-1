@@ -38,5 +38,57 @@ class Check extends AppModel {
 
     );
  
+   var $validate = [
+        'check_name' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for name should be a boolean'
+            ],
+        'check_surname' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for surname should be a boolean'
+            ]     
+        ];
+       
+    
+    /**
+     * Updates the status of a field from R/W to R/O or vice versa
+     * 
+     * Example: $fieldsToChange = ["investor_name" => "Pedro","investor_city" => "Madrid",....]
+     *      or $fieldsToChange = ["name" => "Pedro","city" => "Madrid",....];
 
+     * @param array $fieldsToChange array with all the fields to be changed and their new status
+     * @return boolean
+     */
+    public function api_editCheck($investorId, $fieldsToChange) {
+        
+        $date = new DateTime('now');
+        $datetime = $date->format('Y-m-d H:i:s');
+            
+        foreach ($fieldsToChange as $key => $newStatus) {
+            $checkKeyNames = explode("_", $key);
+            $checkKey = (count($checkKeyNames) == 2 ? $checkKeyNames[1]: $checkKeyNames[0]);
+
+            $data['check_'.$checkKey] = $newStatus;
+            $data['check_' . $checkKey . 'Time'] = $datetime;
+        } 
+
+        $tempId = $this->find('first', $params =['conditions' => ['investor_id' => $investorId],
+                                                'fields' => 'id',
+                                                'recursive' => -1]
+                             );
+
+        $data['id'] = $tempId['Check']['id'];
+
+        if ($this->save($data, $validate = true)){
+            return true;
+        }
+        else {
+            return false;   
+        }
+    }
+    
+
+
+        
+    
 }
