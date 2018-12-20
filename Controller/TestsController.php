@@ -337,6 +337,8 @@ class TestsController extends AppController {
 
     
     public function editCheck() {
+        
+        
         Configure::write('debug', 2);        
         $this->autoRender = false;
         $investorId = 1;

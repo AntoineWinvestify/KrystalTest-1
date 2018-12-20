@@ -46,7 +46,51 @@ class Check extends AppModel {
         'check_surname' => [
             'rule' => ['boolean'],
             'message' => 'attribute for surname should be a boolean'
-            ]     
+            ], 
+         'check_DNI' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for DNI should be a boolean'
+            ],
+        'check_dateOfBirth' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for dateOfBirth should be a boolean'
+            ], 
+         'check_email' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for email should be a boolean'
+            ],
+        'check_telephone' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for telephone should be a boolean'
+            ], 
+         'check_postCode' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for postCode should be a boolean'
+            ],
+        'check_address1' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for address1 should be a boolean'
+            ], 
+        'check_address2' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for address2 should be a boolean'
+            ],
+        'check_city' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for city should be a boolean'
+            ], 
+         'check_country' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for country should be a boolean'
+            ],
+        'check_iban' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for iban should be a boolean'
+            ],    
+        'check_businessName' => [
+            'rule' => ['boolean'],
+            'message' => 'attribute for businessName should be a boolean'
+            ],       
         ];
        
     

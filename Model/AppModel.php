@@ -66,12 +66,9 @@ class AppModel extends Model {
                                 'accountDisplayName' => 'account_display_name',
                                 'displayName' => 'display_name',
                                 'usertoken_refreshToken' => 'refresh_token',
-        
-        
-        
+ 
                               ];
 
-    
     /**
      * @brief wrapper for transactions
      *
