@@ -74,12 +74,21 @@ class TestsController extends AppController {
     }
 
     public function a() {
-        $username = "qwerty";
-        $password = "qazwsx";
+        $username = "kkukovetz@mli-ltd.com";
+        $password = "BarAlm17";
         $companyId = 25;
-        $investorId = 1;
+        Configure::write('Investor_id',1);   
         
-        $this->Linkedaccount->api_precheck($investorId, $companyId, $username, $password);
+        
+       $b = $this->Accountowner->api_readAccountowners(1);
+        print_r($b);
+        exit;
+       $accounts = $this->Linkedaccount->api_precheck($companyId, $username, $password);
+        print_r($accounts);
+exit;
+        
+        
+        
         /*$data['Accountowner'] = array('company_id' => 25,
             'investor_id' => 1,
             'accountowner_username' => $username,

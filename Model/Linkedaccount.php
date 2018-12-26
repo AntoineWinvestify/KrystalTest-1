@@ -49,7 +49,6 @@ class Linkedaccount extends AppModel {
             ));     
     
     
-    
     /**
      * 	Delete a an account that fulfills the filteringConditions
      * 	
@@ -346,7 +345,7 @@ class Linkedaccount extends AppModel {
             $linkedAccountResult = $this->find('first', $params = array(
                                         'conditions' => array('Linkedaccount.id' => $result['id']),
                                         'recursive' => -1,                          //int
-                                        'fields' => array('Linkedaccount.linkedaccountisControlledBy'),
+                                        'fields' => array('Linkedaccount.linkedaccount_isControlledBy'),
                                         'callbacks' => false,
                                         ));
             $isControlledBy = $linkedAccountResult['Linkedaccount']['linkedaccount_isControlledBy'];
@@ -369,22 +368,24 @@ class Linkedaccount extends AppModel {
      *          API FUNCTIONS
      */
     
+    
     /**
      * 
-     * @param type $investorId
-     * @param type $companyId
-     * @param type $username
-     * @param type $password
-     * @return type
+     * @param int $companyId
+     * @param string $username
+     * @param string $password
+     * @return array
      */
-    public function api_precheck($investorId, $companyId, $username, $password) {
+    public function api_precheck($companyId, $username, $password) {        
+        $this->investorId = Configure::read('Investor_id');
+        
         $this->Accountowner = ClassRegistry::init('Accountowner');
-        $accountOwner = $this->Accountowner->checkIfAccountOwnerExist($investorId, $companyId, $username, $password);
+        $accountOwner = $this->Accountowner->checkIfAccountOwnerExist($this->investorId, $companyId, $username, $password);
         if (Configure::read('debug')) {
-            print_r($accountOwnerId);
+            print_r($accountOwner);
         }
         $this->Company = ClassRegistry::init('Company');
-        $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures'));
+        $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
         $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;
         if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
             $multiAccountCheck = true;
@@ -404,20 +405,47 @@ class Linkedaccount extends AppModel {
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Linkedaccount not multiaccount and Accountowner already exist, can't link again";
             }
-            return false;
-        }
-
-        //$accounts = $this->getAccountsToLink(); //Codigo pfp------Linkaccount actual
-        if($multiAccountCheck){
-            //Cancelo los accounts que estan en $accountsLinked
+            
+            $error['error']['message'] = 'Account already linked';
+            return $error;
         }
         
-        $accounts['multiAccount'] = $multiAccountCheck;
+        //Login process
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGIN_SEQUENCE);
+        $newComp = $this->companyClass($multiAccount[0]['Company']['company_codeFile']);
+        $newComp->setUrlSequence($urlSequenceList);
+        $configurationParameters = array('tracingActive' => true,
+            'traceID' => $this->Auth->user('Investor.investor_identity'),
+        );
+        $newComp->defineConfigParms($configurationParameters);
+        $newComp->generateCookiesFile();
+        
+        if ($multiAccountCheck) {
+            $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
+            foreach ($accounts as $accountKey => $account) {
+                foreach ($accountsLinked as $accountLinked) {
+                    $accounts[$accountKey]['multiAccountCheck'] = false;
+                    if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {
+                        $accounts[$accountKey]['multiAccountCheck'] = true;
+                        break;
+                    }
+                    
+                }
+            }
+        } 
+        else {
+            $accounts = $newComp->companyUserLogin($username, $password);
+            if($accounts){
+                $accounts[0]['linkedaccount_accountIdentity'] = $username;
+                $accounts[0]['linkedaccount_accountDisplayName'] = $username;
+            }
+        }
+        if(empty($accounts)){
+            //ERROR LOGIN
+            $error['error']['message'] = 'Error at login. User or password incorrect.';
+            return $error;
+        }
         return $accounts;
-        /* $accounts can hold the following information:
-          - account_identity
-          - account_platform_display_name
-          - linkedaccount_currency */
     }
 
     /**
@@ -487,7 +515,8 @@ class Linkedaccount extends AppModel {
             if ($this->save($linkedAccountData, $validation = true)) {
                 $this->Accountowner->accountAdded($accountOwnerId);
                 return true;
-            } else {
+            } 
+            else {
                 return false;
             }
         }

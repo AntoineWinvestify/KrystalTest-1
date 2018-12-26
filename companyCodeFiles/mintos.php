@@ -911,10 +911,19 @@ class mintos extends p2pCompany {
             }
         }
 
-        
+        //Start reading multiaccount
+        $divs = $this->getElements($dom,'div', 'class', 'js-overview-vm m-container');
+        $buttons = $divs[0]->getElementsByTagName('button');
+        $accounts = array();
+        foreach($buttons as $key => $button){
+            $accounts[$key]['linkedaccount_accountIdentity'] = $button->nodeValue;
+            $accounts[$key]['linkedaccount_accountDisplayName'] = $user . "[$button->nodeValue]";
+            $accounts[$key]['linkedaccount_currency'] = $button->nodeValue;
+        }
 
-        if ($confirm) {
-            return true;
+        //print_r($accounts);
+        if (!empty($accounts)) {
+            return $accounts;
         }
         return false;
     }

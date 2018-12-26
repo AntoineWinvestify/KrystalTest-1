@@ -725,7 +725,7 @@ class ConsolidationWorkerShell extends GearmanWorkerShell {
      * @param array $arrays It is an array of arrays
      * @param array $orderParam With orderParams if needed
      */
-    public function joinTwoDimensionArrayTogether($arrays, $orderParam) {
+    public function joinTwoDimensionArrayTogether($arrays) {
         $dates = [];
         foreach ($arrays as $array) {
             foreach ($array as $key => $variableArray) {
