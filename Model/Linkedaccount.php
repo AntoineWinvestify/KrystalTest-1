@@ -370,23 +370,28 @@ class Linkedaccount extends AppModel {
     
     
     /**
-     * 
+     *
+     * Check login, search for multiaccounts in pfp with it and check if you already linked that account/s.
+     *  
      * @param int $companyId
      * @param string $username
      * @param string $password
-     * @return array
+     * @return array   If mono account, return always an array of size 1. Return account and a field that tells if 
+     *                  that account is already linked.
      */
     public function api_precheck($companyId, $username, $password) {        
         $this->investorId = Configure::read('Investor_id');
+        $alreadyLinked = false;
         
+        //Begin to check if that account already exist.
         $this->Accountowner = ClassRegistry::init('Accountowner');
-        $accountOwner = $this->Accountowner->checkIfAccountOwnerExist($this->investorId, $companyId, $username, $password);
+        $accountOwner = $this->Accountowner->checkIfAccountOwnerExist($this->investorId, $companyId, $username, $password);         //Seacrh for an account owner with same credentials and company
         if (Configure::read('debug')) {
             print_r($accountOwner);
         }
         $this->Company = ClassRegistry::init('Company');
         $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
-        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;
+        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in tecnichal freatures
         if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
             $multiAccountCheck = true;
         } 
@@ -398,16 +403,15 @@ class Linkedaccount extends AppModel {
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Linkedaccount is multiaccount and Accountowner already exist, can't link already linked, disabling linking";
             }
-            $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId));
+            $accountOwnerId = $accountOwner[0]['Accountowner']['id'];
+            $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId));         //Check for the active linkedaccounts from that acocuntowner
             
         } 
         else if (!empty($accountOwner) && !$multiAccountCheck) { //Not multiaccount company and already linked, can't link again
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Linkedaccount not multiaccount and Accountowner already exist, can't link again";
             }
-            
-            $error['error']['message'] = 'Account already linked';
-            return $error;
+            $alreadyLinked = true;
         }
         
         //Login process
@@ -423,10 +427,11 @@ class Linkedaccount extends AppModel {
         if ($multiAccountCheck) {
             $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
             foreach ($accounts as $accountKey => $account) {
+                $accounts[$accountKey]['accountCheck'] = false;
                 foreach ($accountsLinked as $accountLinked) {
-                    $accounts[$accountKey]['multiAccountCheck'] = false;
-                    if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {
-                        $accounts[$accountKey]['multiAccountCheck'] = true;
+                    //Check the accouts already linked with the accounts to link, if we have them in $accountLinked, mark them in $accounts as already linked.
+                    if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {        
+                        $accounts[$accountKey]['accountCheck'] = true;
                         break;
                     }
                     
@@ -436,12 +441,14 @@ class Linkedaccount extends AppModel {
         else {
             $accounts = $newComp->companyUserLogin($username, $password);
             if($accounts){
+                $accounts[0]['accountCheck'] = $alreadyLinked;
                 $accounts[0]['linkedaccount_accountIdentity'] = $username;
                 $accounts[0]['linkedaccount_accountDisplayName'] = $username;
             }
         }
         if(empty($accounts)){
             //ERROR LOGIN
+            $error = array();
             $error['error']['message'] = 'Error at login. User or password incorrect.';
             return $error;
         }
