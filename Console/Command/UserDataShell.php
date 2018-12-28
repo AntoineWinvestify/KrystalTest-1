@@ -792,10 +792,13 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     
     
     public function calculateGlobalTotalDefaultInterestIncome(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome']));   
+        return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome'], 16));   
     }
     public function calculateGlobalTotalDefaultInterestIncomeRebuy(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_defaultInterestIncomeRebuy'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncomeRebuy']));    
+        return(bcadd($resultData['payment']['payment_defaultInterestIncomeRebuy'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncomeRebuy'], 16));    
+    }
+    public function calculateGlobalTotalReversedLatePayment(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_reversedLatePayment'],$resultData['globalcashflowdata']['globalcashflowdata_reversedLatePayment'], 16));    
     }
     
     /**
@@ -1294,7 +1297,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @return string      accumulated amount
      */
     public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_currencyExchangeFee'],$resultData['globalcashflowdata']['globalcashflowdata_currencyExchangeFee']));  
+        return(bcadd($resultData['payment']['payment_currencyExchangeFee'],$resultData['globalcashflowdata']['globalcashflowdata_currencyExchangeFee'], 16));  
     }
 
     /**

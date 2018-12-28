@@ -484,7 +484,12 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "payment_secondaryMarketSell",
             ],*/
-
+            50 =>[
+                "detail" => "Reversed_late_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "payment_reversedLatePayment",
+            ],
 
         
             105 => [

@@ -185,8 +185,8 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-365",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
             "intervals" => "latest",
             "operation" => "subtract"
         ],
@@ -211,8 +211,8 @@ class WinFormulas {
                 "operation" => "add"
             ],
             "table" => "Userinvestmentdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-365",
+            "dateInit" => "-366",
+            "dateFinish" => "-366",
             "intervals" => "latest",
             "operation" => "subtract"
         ],

@@ -121,7 +121,7 @@ class twino extends p2pCompany {
                             6 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
                             7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
                             8 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"], // OK                                       
-                            9 => ["INTEREST EXTENSION" => "Incentives_and_bonus"],
+                            9 => ["INTEREST EXTENSION" => "Regular_gross_interest_income"],
                             10 => ["PRINCIPAL REPURCHASE" => "Principal_buyback"],
                             11 => ["INTEREST REPURCHASE" => "Interest_income_buyback"],
                             12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
