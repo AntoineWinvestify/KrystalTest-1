@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "d82eaf01ff16f0303075bd0be3badf41",
-    "content-hash": "84b08e00b40d9de8b23a65b619b8dbff",
+    "hash": "8322048304b950462679ee2de1400cac",
+    "content-hash": "9616a7d8fc53661d5b228c1a6f8d163d",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -171,6 +171,52 @@
                 "webdriver"
             ],
             "time": "2018-05-16 17:37:13"
+        },
+        {
+            "name": "firebase/php-jwt",
+            "version": "v5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/firebase/php-jwt.git",
+                "reference": "9984a4d3a32ae7673d6971ea00bae9d0a1abba0e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/9984a4d3a32ae7673d6971ea00bae9d0a1abba0e",
+                "reference": "9984a4d3a32ae7673d6971ea00bae9d0a1abba0e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": " 4.8.35"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Firebase\\JWT\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Neuman Vong",
+                    "email": "neuman+pear@twilio.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Anant Narayanan",
+                    "email": "anant@php.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
+            "homepage": "https://github.com/firebase/php-jwt",
+            "time": "2017-06-27 22:17:23"
         },
         {
             "name": "giggsey/libphonenumber-for-php",
@@ -634,12 +680,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PhpSpreadsheet.git",
-                "reference": "f0e69408caf87600fa4e9323b3d9ca1822740e78"
+                "reference": "294ba58ddef29907667f535d47d2dcc2f1aa8b8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/f0e69408caf87600fa4e9323b3d9ca1822740e78",
-                "reference": "f0e69408caf87600fa4e9323b3d9ca1822740e78",
+                "url": "https://api.github.com/repos/PHPOffice/PhpSpreadsheet/zipball/294ba58ddef29907667f535d47d2dcc2f1aa8b8b",
+                "reference": "294ba58ddef29907667f535d47d2dcc2f1aa8b8b",
                 "shasum": ""
             },
             "require": {
@@ -719,7 +765,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2018-12-10 09:24:29"
+            "time": "2018-12-15 06:42:07"
         },
         {
             "name": "psr/log",

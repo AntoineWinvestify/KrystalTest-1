@@ -135,6 +135,38 @@ class AppController extends Controller {
      * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
+
+ //       echo __FILE__ . " " . __LINE__ ."<br>\n";
+ //  $this->print_r2($this->request);
+   //     $this->print_r2($this);
+//echo "status of login = " . $this->Auth->login() . "!!\n";
+
+ /*       $this->Auth->authenticate = array(
+            'Form' => array(
+                'fields' => array(
+                    'username' => 'username',
+                    'password' => 'password'
+                ),
+                'userModel' => 'User',
+                'scope' => array(
+                    'User.active' => 1,
+                )
+            ),
+            'BzUtils.JwtToken' => array(
+                'fields' => array(
+                    'username' => 'username',
+                    'password' => 'password',
+                ),
+                'header' => 'AuthToken',
+                'userModel' => 'User',
+                'scope' => array(
+                    'User.active' => 1
+                )
+            )
+        );
+        
+  */     
+   /*     
         $this->Cookie->name = 'p2pManager';
         $this->Cookie->time = 3600;  // or '1 hour'
         $this->Cookie->secure = false;  // i.e. only sent if using secure HTTPS
@@ -146,7 +178,7 @@ class AppController extends Controller {
         $this->Security->requireSecure();
 
         
-        
+      */  
 // Load the application configuration file. Now it is available to the *whole* application	 
         Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
@@ -192,7 +224,7 @@ class AppController extends Controller {
         //Investment Status in marketplace
         $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
 
-
+/*
         //Country for excel export
         $this->countryArray = array(0 => __('Choose One'),
             '-Países Bálticos' => array(
@@ -206,7 +238,7 @@ class AppController extends Controller {
                 'DE' => 'Alemania',
                 'NL' => 'Países Bajos')
         );
-
+*/
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
@@ -312,7 +344,7 @@ class AppController extends Controller {
             default:
         }  
         
-        
+//echo __FILE__ . " " . __LINE__ ."<br>\n"; 
         $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
         
         

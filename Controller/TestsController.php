@@ -113,10 +113,10 @@ class TestsController extends AppController {
  //       $this->autoRender = false; 
         
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck",
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","api_index","v1_index","v1_view",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add",
+            "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add", "indexv1company", "viewv1company",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
             "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor", "testDateDiff", "deleteFromUser",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));
@@ -156,10 +156,10 @@ class TestsController extends AppController {
      * Format GET /v1/investors/[investorId]&fields=x,y,z
      * Example GET /v1/investors/1.json&_fields=investor_name,investor_surname
      * 
-     * @param integer $id The database identifier of the requested resource
+     * @param integer $id The database identifier of the requested 'Investor' resource
      * 
      */
-    public function view($id){
+    public function v1_view($id){
 
         if (empty($this->listOfFields)) {
             $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
@@ -175,11 +175,7 @@ class TestsController extends AppController {
             if (count($tempField) == 2) {
                 $this->listOfFields[] = "Check.check_" . $tempField[1];
             }       
-        }
-
-        if (!in_array("id", $listOfFields)) {
-     //      $listOfFields[] = "Investor.id";
-        }    
+        } 
 
         $this->Investor->contain('Investor', 'Check');
         $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
@@ -213,7 +209,7 @@ class TestsController extends AppController {
      * @param -
      * 
      */
-    public function index(){
+    public function v1_index(){
 
         if (empty($this->listOfFields)) {
             $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
@@ -264,16 +260,14 @@ class TestsController extends AppController {
         $this->set(['data' => $apiResult,
                   '_serialize' => ['data']]
                    ); 
-
-    }
-    
+    }   
    
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP PATCH/PUT.
      * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
      * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
      *
-     * @param integer $id The database identifier of the requested resource
+     * @param integer $id The database identifier of the requested 'Investor' resource
      * 
      */
     public function edit($id) { 
@@ -335,7 +329,7 @@ class TestsController extends AppController {
 
 
 
-    
+    /* to delete */
     public function editCheck() {
         
         
@@ -363,7 +357,7 @@ class TestsController extends AppController {
      * 
      * @param -
      */
-    public function add($id) { 
+    public function add() { 
     //    Configure::write('debug', 2);
         $this->autoRender = false;
 
@@ -400,49 +394,36 @@ class TestsController extends AppController {
     
     
     
-    /** PENDING: ERROR HANDLING TOWARDS HTTP d DONE HALFWAY
+    /** 
      * This methods terminates the HTTP GET.
-     * Format GET /v1/companies/[companyId]&fields=x,y,z
-     * Example GET /v1/companies/1.json&fields=company_name,company_country,...
+     * Format GET /v1/companies.json&_fields=x,y,z
+     * Example GET /v1/companies.json&company_country=ES,company_countryName=SPAIN&_fields=company_name,company_country,company_logoGUID
      * 
      * @param -
-     * @return array 
+     * @return array $apiResult A list of elements of array "company"
      */
-    public function index_v1_company(){
+    public function indexv1company(){       
+        $this->autoRender = false;
+        $this->Company = ClassRegistry::init('Company');
 
         if (empty($this->listOfFields)) {
-            $this->listOfFields = ['company_name','company_url', 
+            $this->listOfFields = ['id', 'company_name','company_url', 
                                     'company_country', 'company_countryName', 
                                     'company_privacyUrl', 'company_termsUrl',
                                     'company_logoGUID'
                                   ]; 
-
         } 
 
-        $results = $this->Companies->find("all", $params = ['conditions' => $this->listOfQueryParams,
+        $results = $this->Company->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
                                                           'recursive' => -1]);
-
-        $numberOfResults = count($results);    
 
         $j = 0;
         foreach ($results as $resultItem) { 
             $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
 
             foreach ($resultItem['Company'] as $key => $value) {
-                if ($key === 'id') {   
-                    continue;
-                } 
-                $rootName = explode("_", $key, 2);
-
-                if ($numberOfResults == 1) {
-                    $apiResult[$key]['value'] = $value;  
-
-                }
-                else {
-                    $apiResult[$j][$key]['value'] = $value;  
-
-                } 
+                $apiResult[$j][$key] = $value;  
             }
             $j++;
         }
@@ -452,6 +433,36 @@ class TestsController extends AppController {
                    ); 
     }
     
+     /** 
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/companies/[companyId]&fields=x,y,z
+     * Example GET /v1/companies/1.json&_fields=company_name,company_countryName
+     * 
+     * @param int   $id The database identifier of the requested 'Company' resource
+     * @return array $apiResult A list of elements of array "company"
+     */   
+   public function viewv1company($id){
+        $this->autoRender = false;
+                    
+        $this->Company = ClassRegistry::init('Company');
+        
+        if (empty($this->listOfFields)) {
+            $this->listOfFields = ['company_name','company_url', 
+                                    'company_country', 'company_countryName', 
+                                    'company_privacyUrl', 'company_termsUrl',
+                                    'company_logoGUID'
+                                  ]; 
+        }  
+
+        $result = $this->Company->find('first', $params= ['conditions' => ['id'=> $id],
+                                                          'fields' => $this->listOfFields, 
+                                                          'recursive' => -1
+                                                         ]);
+
+        $this->set(['data' => $result['Company'],
+                  '_serialize' => ['data']]
+                   );      
+    }    
     
     
     
@@ -574,7 +585,7 @@ function search2($array, $key){
     
    
 
-   public function deleteFromUser($investorId = null, $linkaccountsId = null) {
+    public function deleteFromUser($investorId = null, $linkaccountsId = null) {
 
         $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
         $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
