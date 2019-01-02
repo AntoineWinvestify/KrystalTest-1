@@ -302,7 +302,7 @@ class Accountowner extends AppModel {
         $this->Behaviors->load('Containable');
 
         $filterConditions = array('Accountowner.investor_id' => $this->investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
-        $accountOwneFields  = array('company_id', 'accountowner_username', 'accountowner_password');
+        $accountOwneFields  = array('company_id', 'accountowner_username');
 
         $LinkedaccoutFields = array('Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName', 
             'Linkedaccount.linkedaccount_alias', 'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
@@ -320,4 +320,47 @@ class Accountowner extends AppModel {
         return $accounts;
     }
 
+        /**
+     * Change the password on a PFP for a USER
+     * 
+     * @param type $accountownerId  id of the accountowner object
+     * @param type $newPass         new password
+     * @return boolean        
+     */
+    public function api_changeAccountPassword($accountownerId, $newPass) {
+        // Check if accountowner really exists.
+        $filterConditions = ['id' => $accountownerId];
+        $resultCounter = $this->find('first', array('conditions' => $filterConditions,
+            'recursive' => -1,
+        ));
+        $username = $resultCounter[0]['Accountowner']['accountowner_username'];
+        $companyId  = $resultCounter[0]['Accountowner']['company_id'];
+        //Try login
+        $this->Company = ClassRegistry::init('Company');
+        $this->Company = ClassRegistry::init('Company');
+        $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
+        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in tecnichal freatures
+        if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
+            $multiAccountCheck = true;
+        } 
+        else {
+            $multiAccountCheck = false;
+        }
+        if ($multiAccountCheck) {
+            $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
+        } 
+        else {
+            $accounts = $newComp->companyUserLogin($username, $password);
+        }
+
+
+        
+        if (!empty($resultCounter) && !($accounts)) {
+            if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 }
