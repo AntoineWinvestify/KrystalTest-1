@@ -194,7 +194,7 @@ class GearmanWorkerShell extends AppShell {
     
     public function initCompanyClass($data, $i, $linkedaccount, $typeUrlSequence) {
         echo "<br>******** Executing the loop **********<br>";
-        $this->companyId[$i] = $linkedaccount['Linkedaccount']['company_id'];
+        $this->companyId[$i] = $linkedaccount['Accountowner']['company_id'];
         echo "companyId = " . $this->companyId[$i] . " <br>";
         $companyConditions = array('Company.id' => $this->companyId[$i]);
         $result[$i] = $this->Company->getCompanyDataList($companyConditions);
@@ -215,8 +215,11 @@ class GearmanWorkerShell extends AppShell {
         $this->newComp[$i]->generateCookiesFile();
         $this->newComp[$i]->setIdForQueue($i); //Set the id of the company inside the loop
         $this->newComp[$i]->setIdForSwitch(0); //Set the id for the switch of the function company
-        $this->newComp[$i]->setUser($linkedaccount['Linkedaccount']['linkedaccount_username']); //Set the user on the class
-        $this->newComp[$i]->setPassword($linkedaccount['Linkedaccount']['linkedaccount_password']); //Set the pass on the class
+        $this->newComp[$i]->setUser($linkedaccount['Accountowner']['accountowner_username']); //Set the user on the class
+        $this->newComp[$i]->setPassword($linkedaccount['Accountowner']['accountowner_password']); //Set the pass on the class
+        $this->newComp[$i]->setLinkedAccountIdentity($linkedaccount['Linkedaccount']['linkedaccount_accountIdentity']); //Set the pass on the class
+        $this->newComp[$i]->setCurrency($linkedaccount['Linkedaccount']['linkedaccount_currency']); //Set the pass on the class
+        
         $configurationParameters = array('tracingActive' => true,
             'traceID' => $data["queue_userReference"],
         );

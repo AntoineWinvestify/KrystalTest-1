@@ -88,7 +88,9 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         $linkAccountIds[] = $linkedAccountId;
                         $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
-                    $filterConditions = array('id' => $queueInfo['companiesInFlow']); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
+
+                    $filterConditions = array('Linkedaccount.id' => $queueInfo['companiesInFlow']); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
+
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     //foreach ($queueInfo['loanIds'] as $key => $loanId) {
                     /*foreach ($loanIds as $key => $loanId) {
@@ -105,7 +107,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                     //In this case $key is the number of the linkaccount inside the array 0,1,2,3
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
-                        $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
+                        $companyType = $companyTypes[$linkedaccount['Accountowner']['company_id']];
                         $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue2']['queue2_userReference'], $linkedaccount['Linkedaccount']['id'], "amortizationTable");
                         if (!$folderExist) {
                             $linkedaccountId = $linkedaccount['Linkedaccount']['id'];

@@ -96,7 +96,7 @@ class Linkedaccount extends AppModel {
      */
     public function getLinkedaccountDataList($filterConditions) {
 
-        $linkedaccountResults = $this->find("all", $params = array('recursive' => -1,
+        $linkedaccountResults = $this->find("all", $params = array('recursive' => 1,
                                                                 'conditions' => $filterConditions)
                                             );
         return $linkedaccountResults;
@@ -337,13 +337,14 @@ class Linkedaccount extends AppModel {
         /**
      * 	Callback Function
      * 	Check if we can/need to send the Alias
+     * Problaby not necessary.
      *
      */
-    public function afterFind($results, $primary = false) {
+    /*public function afterFind($results, $primary = false) {
 
         if (!isset($results['Linkedaccount']['linkedaccount_isControlledBy'])) {
             $linkedAccountResult = $this->find('first', $params = array(
-                                        'conditions' => array('Linkedaccount.id' => $result['id']),
+                                        'conditions' => array('Linkedaccount.id' => $results[]['id']),
                                         'recursive' => -1,                          //int
                                         'fields' => array('Linkedaccount.linkedaccount_isControlledBy'),
                                         'callbacks' => false,
@@ -360,7 +361,7 @@ class Linkedaccount extends AppModel {
             }
         }
         return $results;
-    }     
+    }     */
  
     /**
      * 
@@ -505,8 +506,9 @@ class Linkedaccount extends AppModel {
      * 	@return 	boolean	true	Account linked
      * 				false	Error happened, account not linked
      */
-    public function api_addLinkedaccount($investorId, $companyId, $username, $password, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, $linkedaccountAlias, $linkedaccountCurrency = 'EUR') { //[last field is by default €]
-        $accountOwnerId = $this->createAccountOwner($companyId, $investorId, $username, $password);
+    public function api_addLinkedaccount($companyId, $username, $password, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, $linkedaccountAlias, $linkedaccountCurrency = 'EUR') { //[last field is by default €]
+        $this->investorId = Configure::read('Investor_id');
+        $accountOwnerId = $this->createAccountOwner($companyId, $this->investorId, $username, $password);
         if ($accountOwnerId > 0) {
             $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
                 'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,

@@ -62,7 +62,7 @@ class TestsController extends AppController {
         $this->Auth->allow(array('a','convertExcelToArray', "convertPdf", "bondoraTrying",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff","deleteFromUser",
+            "testDateDiff","deleteFromUser","multilogin",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
             "memoryTest2", "hashTest"));
     }
@@ -72,15 +72,39 @@ class TestsController extends AppController {
             yield $i;
         }
     }
+    
+    
+    public function multilogin() {
+        $username = "kkukovetz@mli-ltd.com";
+        $password = "BarAlm17";
+        $companyId = 25;
+        
+        $this->Company = ClassRegistry::init('Company');
+        $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
+        //Login process
+        $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGIN_SEQUENCE);
+        $newComp = $this->companyClass($multiAccount[0]['Company']['company_codeFile']);
+        $newComp->setUrlSequence($urlSequenceList);
+        $configurationParameters = array('tracingActive' => true,
+            'traceID' => $this->Auth->user('Investor.investor_identity'),
+        );
+        $newComp->defineConfigParms($configurationParameters);
+        $newComp->generateCookiesFile();
+        $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
+    }
 
     public function a() {
         $username = "kkukovetz@mli-ltd.com";
         $password = "BarAlm17";
         $companyId = 25;
-        Configure::write('Investor_id',1);   
         
+        /*$this->Accountowner->save(array("id" => 1, "accountowner_password" => $password,"accountowner_username" => $username));
+        $this->Accountowner->save(array("id" => 2, "accountowner_password" => $password,"accountowner_username" => $username));
+        exit;*/
+        Configure::write('Investor_id',290);   
+
         
-       $b = $this->Accountowner->api_readAccountowners(1);
+       $b = $this->Accountowner->api_readAccountowners();
         print_r($b);
         exit;
        $accounts = $this->Linkedaccount->api_precheck($companyId, $username, $password);
