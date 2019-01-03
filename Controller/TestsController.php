@@ -366,7 +366,7 @@ exit;*/
      * @param integer $id The database identifier of the requested resource for 
      *                    which to execute the 'action'
      */
-    public function api_precheck($id) { 
+    public function api_precheck() { 
 
         $data = $this->listOfQueryParams;
         if (!empty($id)) {

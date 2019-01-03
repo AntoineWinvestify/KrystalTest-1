@@ -66,16 +66,13 @@ class AppModel extends Model {
                                 'accountDisplayName' => 'account_display_name',
                                 'displayName' => 'display_name',
                                 'usertoken_refreshToken' => 'refresh_token',
-                                'company_id' => 'company_id',
+                                'company_id' => 'linkedaccount_company_id',
                                 'linkedaccount_accountIdentity' => 'linkedaccount_identity',
                                 'linkedaccount_accountDisplayName' => 'linkedaccount_platform_display_name',
                                 'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
                                 'accountowner_username' => 'linkedaccount_username',
                                 'accountowner_password' => 'linkedaccount_password',
-                                'linkedaccount_alias'  => 'linkedaccount_alias',
-                                'linkedaccount_status' => 'linkedaccount_status',
                                 'accountCheck'  => 'linkedaccount_linkingstatus',
-                                'linkedaccount_currency' => 'linkedaccount_currency',
                               ];
 
     /**

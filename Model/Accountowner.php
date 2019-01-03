@@ -237,7 +237,7 @@ class Accountowner extends AppModel {
                 break;
             }
         }
-        
+
         if (!empty($accountFinded)) {
             return $accountFinded;
         } else {
@@ -333,47 +333,31 @@ class Accountowner extends AppModel {
         return $accountsResult;
     }
 
-        /**
+     /**
      * Change the password on a PFP for a USER
      * 
      * @param type $accountownerId  id of the accountowner object
      * @param type $newPass         new password
      * @return boolean        
      */
-    public function api_changeAccountPassword($accountownerId, $newPass) {
+    public function api_changeAccountPassword($investorId, $accountownerId, $newPass) {
         // Check if accountowner really exists.
-        $filterConditions = ['id' => $accountownerId];
+        $filterConditions = ['Accountowner.id' => $accountownerId];
         $resultCounter = $this->find('first', array('conditions' => $filterConditions,
             'recursive' => -1,
         ));
-        $username = $resultCounter[0]['Accountowner']['accountowner_username'];
-        $companyId  = $resultCounter[0]['Accountowner']['company_id'];
-        //Try login
-        $this->Company = ClassRegistry::init('Company');
-        $this->Company = ClassRegistry::init('Company');
-        $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
-        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in tecnichal freatures
-        if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
-            $multiAccountCheck = true;
-        } 
-        else {
-            $multiAccountCheck = false;
-        }
-        if ($multiAccountCheck) {
-            $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
-        } 
-        else {
-            $accounts = $newComp->companyUserLogin($username, $password);
-        }
-
-
+        //Get credentials to try the login
+        $username = $resultCounter['Accountowner']['accountowner_username'];
+        $companyId  = $resultCounter['Accountowner']['company_id'];
         
-        if (!empty($resultCounter) && !($accounts)) {
+        //Login
+        $accounts = $this->Linkedaccount->api_precheck($investorId, $companyId, $username, $newPass);
+        if (!empty($resultCounter) && $accounts != false) {
             if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
-                return true;
+                return $feddback['feedback_message_user'] = 'Your password has been succesfully changed';
             }
         }
-        return false;
+        return $feddback['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password";
     }
     
 }

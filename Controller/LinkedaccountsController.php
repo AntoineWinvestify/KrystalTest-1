@@ -26,22 +26,22 @@
  * 
  * 2019-01-03	  version 0.2
  * function pre_check
- * 
- * 
+ * function edit
+ * function add
  */
 
 class LinkedaccountsController extends AppController {
 
     var $name = 'Linkedaccounts';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Linkedaccount','Accountowner', 'Tooltip');
+    var $uses = array('Linkedaccount', 'Accountowner', 'Tooltip');
     var $error;
 
     function beforeFilter() {
         parent::beforeFilter();
 
 //	$this->Security->requireAuth();
-        $this->Auth->allow(array('index','pre_check'));
+        $this->Auth->allow(array('index', 'pre_check', 'edit'));
     }
 
     public function index() {
@@ -68,8 +68,36 @@ class LinkedaccountsController extends AppController {
         
     }
 
-    public function pre_check($investorId, $companyId, $username, $password) {
-        $accounts = $this->Linkedaccount->api_precheck($investorId, $companyId, $username, $password);
+    
+    public function edit($id) {  
+        $newPass = $this->listOfQueryParams['accountowner_password'];
+        $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
+        $accountownerId = $data['Linkedaccount']['accountowner_id'];
+        $feedback = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);
+        return json_enconde($feedback);     
+    }
+    
+    public function add(){
+        $companyId = $this->listOfQueryParams['company_id'];
+        $username = $this->listOfQueryParams['accountowner_username'];
+        $password = $this->listOfQueryParams['accountowner_password'];    
+        $identity = $this->listOfQueryParams['linkedaccount']['linkedaccount_identity'];
+        $displayName = $this->listOfQueryParams['linkedaccount']['linkedaccount_accountDisplayName'];
+        if($this->listOfQueryParams['linkedaccount']['linkedaccount_currency']){
+            $currency = $this->listOfQueryParams['linkedaccount']['linkedaccount_currency'];
+        }
+        
+        
+        //$alias = $this->listOfQueryParams['linkedaccount']['linkedaccount_alias'];
+    }
+    
+
+    public function pre_check() {
+        $companyId = $this->listOfQueryParams['company_id'];
+        $username = $this->listOfQueryParams['accountowner_username'];
+        $password = $this->listOfQueryParams['accountowner_password'];           
+                
+        $accounts = $this->Linkedaccount->api_precheck($this->investorId, $companyId, $username, $password);
         foreach ($accounts['accounts'] as $key => $account) {
             $this->Linkedaccount->apiVariableNameOutAdapter($accounts['accounts'][$key]);
         }
