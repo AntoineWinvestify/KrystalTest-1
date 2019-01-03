@@ -21,9 +21,12 @@
  * @package
  */
 /*
-
-  2019-01-02	  version 0.1
-  function index
+ * 2019-01-02	  version 0.1
+ * function index
+ * 
+ * 2019-01-03	  version 0.2
+ * function pre_check
+ * 
  * 
  */
 
