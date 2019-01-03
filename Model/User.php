@@ -432,4 +432,21 @@ class User extends AppModel {
         return true;
     }
 
+   
+    /**
+     * Check if the requested username is already taken by another user
+     * 
+     * @param string $username The username to be checked
+     * @return boolean true username already exists
+     */
+    public function api_usernameExists($username) {  
+        $result = $this->findByUsername($username);
+        if (empty($result)) { 
+            return false;
+        }
+        else {
+            return true;
+        }  
+    }  
+    
 }

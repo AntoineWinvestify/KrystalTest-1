@@ -97,7 +97,18 @@ App::uses('Controller', 'Controller');
 
 class AppController extends Controller {
 
-
+    protected $listOfFields;                    // Array that holds the list of requested fields
+                                                // in normalized, internal DB format
+    protected $listOfQueryParams;               // Array that holds the list of Query parameters
+                                                // in normalized, internal DB format
+                                                // An item in this array can be another array. In
+                                                // that case all entries are considered as OR condition
+    
+    protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
+    
+    
+    
+    
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
         'Security',
@@ -124,6 +135,38 @@ class AppController extends Controller {
      * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
+
+ //       echo __FILE__ . " " . __LINE__ ."<br>\n";
+ //  $this->print_r2($this->request);
+   //     $this->print_r2($this);
+//echo "status of login = " . $this->Auth->login() . "!!\n";
+
+ /*       $this->Auth->authenticate = array(
+            'Form' => array(
+                'fields' => array(
+                    'username' => 'username',
+                    'password' => 'password'
+                ),
+                'userModel' => 'User',
+                'scope' => array(
+                    'User.active' => 1,
+                )
+            ),
+            'BzUtils.JwtToken' => array(
+                'fields' => array(
+                    'username' => 'username',
+                    'password' => 'password',
+                ),
+                'header' => 'AuthToken',
+                'userModel' => 'User',
+                'scope' => array(
+                    'User.active' => 1
+                )
+            )
+        );
+        
+  */     
+   /*     
         $this->Cookie->name = 'p2pManager';
         $this->Cookie->time = 3600;  // or '1 hour'
         $this->Cookie->secure = false;  // i.e. only sent if using secure HTTPS
@@ -134,15 +177,16 @@ class AppController extends Controller {
         $this->Security->blackHoleCallback = '_blackHole';
         $this->Security->requireSecure();
 
+        
+      */  
 // Load the application configuration file. Now it is available to the *whole* application	 
         Configure::load('p2pGestor.php', 'default');
-
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');                      
+        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');
         $runtime = new Winvestify();
-        $this->runTimeParameters = $runtime->readRunTimeParameters();  
+        $this->runTimeParameters = $runtime->readRunTimeParameters();
         $this->set('runTimeParameters', $this->runTimeParameters);
-       
+
         $durationPublic = array(0 => "Undefined",
             1 => "Días",
             2 => "Meses",
@@ -151,22 +195,22 @@ class AppController extends Controller {
         );
 
         // TRANSLATE CURRENCY NAME
-        $this->currencyName = array(EUR => "€", 
-                                    GBP => "£", 
-                                    USD => "$",
-                                    ARS => "$",
-                                    AUD => "$",
-                                    NZD => "$",                                           
-                                    BYN => "BR",       
-                                    BGN => "лв", 
-                                    CZK => "Kč",                                        
-                                    DKK => "Kr",                                       
-                                    CHF => "Fr",                                        
-                                    MXN => "$", 
-                                    RUB => "₽",              
-                                    );
-        
-                                 
+        $this->currencyName = array(EUR => "€",
+            GBP => "£",
+            USD => "$",
+            ARS => "$",
+            AUD => "$",
+            NZD => "$",
+            BYN => "BR",
+            BGN => "лв",
+            CZK => "Kč",
+            DKK => "Kr",
+            CHF => "Fr",
+            MXN => "$",
+            RUB => "₽",
+        );
+
+
         //Investor Status to PFP Admin
         $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
 
@@ -176,25 +220,25 @@ class AppController extends Controller {
         //Company ocr service status
         $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
 
-        
+
         //Investment Status in marketplace
         $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
 
-        
+/*
         //Country for excel export
         $this->countryArray = array(0 => __('Choose One'),
-                '-Países Bálticos' => array(
-                    'LV' => 'Letonia',
-                    'LT' => 'Lituania'
-                ),
-                '-Resto Europa' => array(
-                    'ES' => 'España',
-                    'IT' => 'Italia',
-                    'FR' => 'Francia',
-                    'DE' => 'Alemania',
-                    'NL' => 'Países Bajos')
+            '-Países Bálticos' => array(
+                'LV' => 'Letonia',
+                'LT' => 'Lituania'
+            ),
+            '-Resto Europa' => array(
+                'ES' => 'España',
+                'IT' => 'Italia',
+                'FR' => 'Francia',
+                'DE' => 'Alemania',
+                'NL' => 'Países Bajos')
         );
-
+*/
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
@@ -215,29 +259,29 @@ class AppController extends Controller {
             CROWD_REAL_ESTATE => __('R.E.'),
             SOCIAL => __('SOCIAL')
         );
-        
+
         $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
 
         $this->tooltipSinglePfpData = array(
-           "Zank" => __('zank tooltip'),
-           "Comunitae" => __('comunitae tooltip'),
-           "Growly" => __('growly tooltip'),
-           "MyTripleA" => __('mytriplea tooltip'),
-           "Arboribus" => __('arboribus tooltip'),
-           "Loanbook" => __('loanbook tooltip'),
-           "eCrowdInvest" => __('ecrowd tooltip'),
-           "Circulantis" => __('circulantis tooltip'),
-           "Colectual" => __('colectual tooltip'),
-           "Lendix" => __('lendix tooltip'),
-           "Bondora" => __('bondora tooltip'),
-           "Mintos" => __('mintos tooltip'),
-           "Twino" => __('twino tooltip'),
-           "Finanzarel" => __('finanzarel tooltip'),
-           "Finbee" => __('finbee tooltip'),
+            "Zank" => __('zank tooltip'),
+            "Comunitae" => __('comunitae tooltip'),
+            "Growly" => __('growly tooltip'),
+            "MyTripleA" => __('mytriplea tooltip'),
+            "Arboribus" => __('arboribus tooltip'),
+            "Loanbook" => __('loanbook tooltip'),
+            "eCrowdInvest" => __('ecrowd tooltip'),
+            "Circulantis" => __('circulantis tooltip'),
+            "Colectual" => __('colectual tooltip'),
+            "Lendix" => __('lendix tooltip'),
+            "Bondora" => __('bondora tooltip'),
+            "Mintos" => __('mintos tooltip'),
+            "Twino" => __('twino tooltip'),
+            "Finanzarel" => __('finanzarel tooltip'),
+            "Finbee" => __('finbee tooltip'),
         );
-        
+
         $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
-        
+
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -287,18 +331,24 @@ class AppController extends Controller {
                 $this->Session->write('sectorsMenu', $sectors);
             }
         }
-        
-        $fileName  = APP . "Config" . DS.  "googleCode.php";                    // file for Google Analytics
-        $fileName1 = APP . "Config" . DS.  "googleCode1.php";                   // file to disable Google Analytics
-        
+
+        $fileName = APP . "Config" . DS . "googleCode.php";                    // file for Google Analytics
+        $fileName1 = APP . "Config" . DS . "googleCode1.php";                   // file to disable Google Analytics
+
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
-            case WIN_REMOTE_TEST_ENVIRONMENT: 
-                rename ($fileName, $fileName1);
+            case WIN_REMOTE_TEST_ENVIRONMENT:
+                rename($fileName, $fileName1);
             case WIN_LIVE_ENVIRONMENT:
-                rename ($fileName1, $fileName);       
+               rename ($fileName1, $fileName);       
             default:
         }  
+        
+//echo __FILE__ . " " . __LINE__ ."<br>\n"; 
+        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
+        
+        
+        
     }
 
     /**
@@ -381,7 +431,7 @@ class AppController extends Controller {
 
     public function session() {
         $this->autoRender = FALSE;
-Configure::write('debug', 2); 
+        Configure::write('debug', 2);
         echo "Now = : " . date('Y-m-d H:i:s', strtotime(now)) . "<br>";
         echo '5 minutes ago = : ' . date('Y-m-d h:i:s', strtotime('- 5 minutes')) . "<br><br>";
 
@@ -493,7 +543,7 @@ Configure::write('debug', 2);
      */
     public function getGeoLocationData($ip) {
         $authKey = $this->runTimeParameters['runtimeconfiguration_geoLocationAuthKey'];
-           
+
         $curl = curl_init();
         if (!$curl) {
             $msg = __FILE__ . " " . __LINE__ . "Could not initialize cURL handle for url: " . $url . " \n";
@@ -595,6 +645,116 @@ Configure::write('debug', 2);
 
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
+        }
+
+        /**
+         * 
+         * This function check if the user request fulfill the permissions assigned to his role.
+         * If is true, the petition is done without problems, if we have at least a data that doesn't fulfill the permissions,
+         * we stop the petition and return an error.
+         * @param int $request The type of request, can be read, write, delete, ....
+         * @param array $data   The data to check.
+         * @param string $role  The role of the user.
+         * @return boolean
+         */
+        public function api_accessFilter($request, $data, $role){
+        //Filter json
+        return true;
+    }
+  
+    
+     /**
+      * Formats the error information into the error object for the API-V1
+      * 
+      * @param string $errorName Short one word description of error
+      * @param string $errorMessage The message in clear language which may be displayed to the user
+      * @param array $validationErrors This is an array with all the error messages per variable 
+      * @return array 
+      */   
+    public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
+        
+        foreach ($validationErrors as $key => $item) {
+            $tempArray['field'] = $key;
+            $tempArray['issue'] = $item[0];
+            $errorDetails[] = $tempArray;
+        }
+
+        $errorArray['error_name'] = $errorName;
+        $errorArray['error_message'] = $errorMessage;
+        $errorArray['error_details'] = $errorDetails;
+        return ($errorArray);    
     }
     
+    
+     /**
+      * Loads the class variables $listOfFields, $listOfQueryParams, action
+      * and the query parameters converted to CakePHP Filtering Conditions
+      * for Model operations
+      * 
+      * @param - 
+      * @return boolean
+      */   
+    public function  loadParameterFields(){ 
+        $this->Investor = ClassRegistry::init('Investor');
+        $this->listOfQueryParams = $this->request->query; 
+
+        if (array_key_exists('_fields', $this->listOfQueryParams )){              
+            $this->listOfFields = explode(",", $this->listOfQueryParams['_fields']);
+            $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack          
+            unset($this->listOfQueryParams['_fields']);
+        }
+        if (array_key_exists('_action', $this->listOfQueryParams )){              
+            $this->action = $this->listOfQueryParams['_action'];
+            $this->Investor->apiFieldListAdapter($this->action);                // Very dirty hack            
+            unset($this->listOfQueryParams['_action']);
+        }       
+        $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
+
+        foreach($this->listOfQueryParams as $key => $value) {
+            $parms = explode(",", $value); 
+
+            if (count($parms) > 1) {
+                $this->listOfQueryParams[$key] = $parms;
+            }
+        }
+
+        foreach ($this->listOfQueryParams as $principalField => $condition) {
+            if (is_array($condition)){
+                foreach ($condition as $key => $item) {
+                    $orCondition[][$principalField] = $item;
+                }
+            }
+            else {
+                $andCondition[$principalField] = $condition;
+            } 
+        }
+
+        $this->filterConditionQueryParms = ['OR' => $orCondition,
+                                           'AND' => $andCondition];
+        return true;
+    }
+    
+    
+    function generateLink($endpoint, $rel, $parameter) {
+        $this->endpointsVersion = Configure::read('generateLink');
+        $version = $this->endpointsVersion[$endpoint];
+        switch ($rel) {
+            case 'edit':
+                $link['method'] = 'PATCH';
+                break;
+            case 'delete':
+                $link['method'] = 'DELETE';
+                break;
+            case 'monitor':
+                $link['method'] = 'GET';
+                break;
+        }
+        $link['rel'] = $rel;
+        $link['href'] = DS . $version . DS . $endpoint . DS . $parameter;
+        return $link;
+    }
+            
+    
+    
+
 }

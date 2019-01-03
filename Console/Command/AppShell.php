@@ -305,7 +305,7 @@ class AppShell extends Shell {
     public function getLatestTotals($model, $filterConditions) {
 
         $temp = $this->$model->find("first", array('conditions' => $filterConditions,
-            'order' => array($model . '.id' => 'desc'),
+            'order' => array($model . '.date' => 'desc'),
             'recursive' => -1
         ));
 

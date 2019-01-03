@@ -84,9 +84,8 @@ function beforeFilter() {
                                         'changeDisplayLanguage', 'registerPanel', 'registerPanelA', 'registerPanelB', 
 					'registerPanelC', 'registerPanelD', 'registerPanelE','loginRedirect');
 
-
 	// allow these actions without logon
-//	$this->Security->validatePost = false;
+	$this->Security->validatePost = false;
 
 }
 
@@ -144,6 +143,7 @@ public function initLoad_OLD()
 *	Checking of login credentials and forwarding browser to default page	
 *
 */
+//public function loginAction()
 public function loginAction()
 {
 	if ($this->request->is('post')) {
@@ -180,9 +180,36 @@ public function loginAction()
 	}
 }
 
-
-
-
+    /**
+     * 
+     * This is a test for REST API
+     * 
+     * @throws NotAcceptableException
+     * 
+     * 
+     */
+    public function loginnew() {
+  //var_dump($this->request->data);
+  
+echo __FILE__ . " " . __LINE__ . " New login\n";
+	$this->layout = 'azarus_private_layout';
+$this->print_r2($this->request);
+echo __FILE__ . " " . __LINE__ . " \n";
+        if ($this->Auth->login()) {
+            
+echo __FILE__ . " " . __LINE__ . "\n";
+            $user = $this->Auth->user();
+            $token = JWT::encode($user, Configure::read('Security.salt'));
+            $this->set('user', $user);
+            $this->set('token', $token);
+            $this->set('_serialize', array('user', 'token'));
+        } else {
+            
+echo __FILE__ . " " . __LINE__ . "\n";
+    //       throw new NotAcceptableException(__('Email or password is wrong.'));
+        }
+echo __FILE__ . " " . __LINE__ . "\n";
+    }
 
 /**
 *

@@ -46,7 +46,6 @@ PENDING:
 *
 */
 App::uses('Component', 'Controller');
-App::uses('CakeTime', 'Utility');
 class UniqueLinkComponent extends Component
 {
 	var $myController;

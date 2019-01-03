@@ -225,7 +225,7 @@ class Accountowner extends AppModel {
      */
     public function checkIfAccountOwnerExist($investorId, $companyId, $username, $password) {
         $accountFinded = null;
-        $filterConditions = array('investor_id' => $investorId, 'company_id' => $companyId, 'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
+        $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.company_id' => $companyId, 'Accountowner.accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
         $accounts = $this->find("all", $params = array('recursive' => -1,
             'conditions' => array($filterConditions)
                 )
@@ -237,7 +237,7 @@ class Accountowner extends AppModel {
                 break;
             }
         }
-
+        
         if (!empty($accountFinded)) {
             return $accountFinded;
         } else {
@@ -297,27 +297,40 @@ class Accountowner extends AppModel {
      * @param int $status
      * @return array
      */
-    public function api_readAccountowners($linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
-        $this->investorId = Configure::read('Investor_id');
-        $this->Behaviors->load('Containable');
+    public function api_readAccountowners($investorId, $accountOwnerFields, $linkedaccountFields, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
+        $accountsResult = array();
+        $this->Behaviors->load('Containable'); 
 
-        $filterConditions = array('Accountowner.investor_id' => $this->investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
-        $accountOwneFields  = array('company_id', 'accountowner_username');
-
-        $LinkedaccoutFields = array('Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName', 
-            'Linkedaccount.linkedaccount_alias', 'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
-
+        $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
+        
         $accounts = $this->find("all", array('recursive' => -1,
             'conditions' => $filterConditions,
-            'fields' => $accountOwneFields,
+            'fields' => $accountOwnerFields,
             'contain' => array(
                 'Linkedaccount' => array(
                     'conditions' => array('linkedaccount_status' => $linkedaccountStatus),
-                    'fields' => $LinkedaccoutFields,
+                    'fields' => $linkedaccountFields,
                 )
             )
         ));
-        return $accounts;
+
+        $i = 0;
+        foreach($accounts as $account){
+            foreach($account['Linkedaccount'] as $linkedaccount){
+                $accountsResult['data'][$i]['id']= $linkedaccount['id'];
+                $accountsResult['data'][$i]['company_id'] = $account['Accountowner']['company_id'];
+                $accountsResult['data'][$i]['linkedaccount_status'] =  $linkedaccount['linkedaccount_status'];
+                $accountsResult['data'][$i]['linkedaccount_visualStatus'] = 'QUEUED'; //$linkedaccount['linkedaccount_linkingProcess'];
+                $accountsResult['data'][$i]['accountowner_username'] = $account['Accountowner']['accountowner_username'];
+                $accountsResult['data'][$i]['accountowner_password'] = $account['Accountowner']['accountowner_password'];
+                //$accountsResult['data'][$i]['linkedaccount_accountIdentity']= $linkedaccount['linkedaccount_accountIdentity'];
+                $accountsResult['data'][$i]['linkedaccount_accountDisplayName'] = $linkedaccount['linkedaccount_accountDisplayName'];
+                $accountsResult['data'][$i]['linkedaccount_alias'] = $linkedaccount['linkedaccount_alias'];
+
+                $i++;              
+            }   
+        }    
+        return $accountsResult;
     }
 
         /**

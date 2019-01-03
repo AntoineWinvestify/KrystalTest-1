@@ -26,12 +26,12 @@
 		"phpoffice/phpspreadsheet": "dev-develop",
                 "smalot/pdfparser": "*",
                 "lib-curl": "*",
-       		"giggsey/libphonenumber-for-php": "^8.8",
-                "php-unoconv/php-unoconv": "~0.2",
-		"firebase/php-jwt": "^5.0"
+                "brianlmoon/net_gearman": "@dev",
+		"giggsey/libphonenumber-for-php": "^8.8",
+                "php-unoconv/php-unoconv": "~0.2"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "3.7.37",
+		"phpunit/phpunit": "3.7.38",
                 "phpunit/phpunit-selenium": ">=1.2", 
 		"cakephp/cakephp-codesniffer": "^1.0.0"
 	},

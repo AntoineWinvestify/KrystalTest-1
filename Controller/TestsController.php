@@ -1,6 +1,4 @@
-
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2016, http://beyond-language-skills.com                 |
@@ -42,29 +40,86 @@ App::uses('File', 'Utility');
 //App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
-
+ 
 /* use PhpOffice\PhpSpreadsheet\IOFactory;
   use PhpOffice\PhpSpreadsheet\Cell; */
 
 class TestsController extends AppController {
 
+    var $reservedKeywordsOriginal = [
+                        'GLOBALDASHBOARD_NET_ANNUAL_RETURNS' => 1,
+                        'GLOBALDASHBOARD_CASH' => 2,  
+                        'GLOBALDASHBOARD_KPIS' => 3,  
+                        'GLOBALDASHBOARD_KPI_PLATFORM' => 4,  
+                        'GLOBALDASHBOARD_KPI_YIELD' => 5,
+                        'GLOBALDASHBOARD_KPI_TOTAL_VOLUME' => 6,  
+                        'GLOBALDASHBOARD_KPI_CASH' => 7,
+                        'GLOBALDASHBOARD_KPI_EXPOSURE' => 8,  
+                        'GLOBALDASHBOARD_KPI_CURRENT' => 9,  
+                        'GLOBALDASHBOARD_NET_RETURNS' => 10, 
+                        'GLOBALDASHBOARD_INVESTMENT_INDICATORS' => 11,  
+                        'GLOBALDASHBOARD_NET_EARNINGS' => 12,  
+                        'GLOBALDASHBOARD_PAYMENT_DELAY' =>13,  
+                        'GLOBALDASHBOARD_CURRENT' => 14,  
+                        'COMPANY_TOOLTIP' => 15,  
+                        'DASHBOARD_ACTIVE_INVESTMENTS' => 16,  
+                        'DASHBOARD_NET_DEPOSITS' => 17,  
+                        'DASHBOARD_CASH_DRAG' => 18,  
+                        'DASHBOARD_INVESTED_ASSETS' => 19,  
+                        'DASHBOARD_RESERVED_FUNDS' => 20,  
+                        'DASHBOARD_CASH ' => 21,  
+                        'DASHBOARD_LAST_365_DAYS' => 22,  
+                        'DASHBOARD_LAST_YEAR' => 23,  
+                        'DASHBOARD_TOTAL_FUNDS' => 24,  
+                        'DASHBOARD_NET_ANNUAL_RETURNS' => 25,  
+                        'DASHBOARD_NET_EARNINGS_LAST_365_DAYS' => 26,  
+                        'DASHBOARD_NET_EARNINGS_LAST_YEAR' => 27,  
+                        'DASHBOARD_NET_EARNINGS_TOTAL_FUNDS' => 28,  
+                        'DASHBOARD_PAYMENT_DELAY' => 29,  
+                        'DASHBOARD_CURRENT' => 30,  
+                        'DASHBOARD_EXPOSURE' => 31,  
+                        'PROFILE_NAME' => 32,  
+                        'PROFILE_SURNAMES' => 33,  
+                        'PROFILE_ADDRESS' => 34,  
+                        'PROFILE_POSTCODE' => 35,  
+                        'PROFILE_CITY' => 36,  
+                        'PROFILE_COUNTRY' => 37,  
+                        'PROFILE_IBAN' => 38,  
+                        'PROFILE_ID' => 39,  
+                        'PROFILE_TELEPHONE' => 40,  
+                        'PROFILE_DATE_OF_BIRTH' => 41,  
+                        'PROFILE_COMPANY' => 42,  
+                        'PROFILE_FISCAL_ID' => 43,  
+                        'PROFILE_PASSWORD' => 44,  
+                        'ACCOUNT_LINKING_USERNAME' => 45,  
+                        'ACCOUNT_LINKING_PASSWORD' => 46,  
+                        'ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME' => 47,
+                        'MONITORED' => 48,
+                        'ANALYZING' => 49,
+                        'QUEUED' => 50,
+                        'SUSPENDED' => 51
+                        ];   
     var $name = 'Tests';
     var $helpers = array('Js', 'Text', 'Session');
-    var $uses = array('Accountowner','Test', "Queue2", "Data", "Investor", "Userinvestmentdata", "Company", "Urlsequence", "Globalcashflowdata", "Linkedaccount");
+    var $uses = array('Tooltipincompany', 'Tooltip', 'Test', 'Queue2', 'Data', 'Investor', 'Userinvestmentdata', 'Company', 'Urlsequence', 
+        'Globalcashflowdata', 'Linkedaccount', 'Check', 'Accountowner');
     var $error;
+    public $components = array('ApiAdapter'); 
 
     function beforeFilter() {
         parent::beforeFilter();
 
-        Configure::write('debug', 2);
-
+        Configure::write('debug', 0);        
+ //       $this->autoRender = false; 
+        
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('a','convertExcelToArray', "convertPdf", "bondoraTrying",
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","api_index","v1_index","v1_view",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
-            "testDateDiff","deleteFromUser","multilogin",
-            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
-            "memoryTest2", "hashTest"));
+            "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add", "indexv1company", "viewv1company",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "linkedaccount",
+            "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor", "testDateDiff", "deleteFromUser",
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));
     }
 
     public function pruebaYield() {
@@ -93,23 +148,36 @@ class TestsController extends AppController {
         $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
     }
 
-    public function a() {
+    public function linkedaccount() {
         $username = "kkukovetz@mli-ltd.com";
         $password = "BarAlm17";
         $companyId = 25;
+        /*Configure::write('Investor_id',290);
         
-        /*$this->Accountowner->save(array("id" => 1, "accountowner_password" => $password,"accountowner_username" => $username));
-        $this->Accountowner->save(array("id" => 2, "accountowner_password" => $password,"accountowner_username" => $username));
-        exit;*/
-        Configure::write('Investor_id',290);   
+        $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $locale = 'en');
+        $accounts['tooltip_display_name'] = $tooltips[ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME];
+        $accounts['service_status'] = "ACTIVE";
+        $accounts['service_status_display_message'] = "You are using the maximum number of linkedaccounts. If you like to link more accounts, please upgrade your subscription";
+        $accounts = $accounts + $this->Accountowner->api_readAccountowners(WIN_LINKEDACCOUNT_ACTIVE);
+        $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
+        foreach($accounts['data'] as $key => $account){
+            $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
+            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['id']);
+            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
 
+        }*/
+        $accounts = $this->Linkedaccount->api_precheck(290, $companyId, $username, $password);
         
-       $b = $this->Accountowner->api_readAccountowners();
-        print_r($b);
-        exit;
-       $accounts = $this->Linkedaccount->api_precheck($companyId, $username, $password);
+        foreach ($accounts['accounts'] as $key => $account){
+            $this->Linkedaccount->apiVariableNameOutAdapter($accounts['accounts'][$key]);
+        }
+        $accounts = json_encode($accounts);
+        echo $accounts;
+        return $accounts;
+
+        /*$accounts = $this->Linkedaccount->api_precheck($companyId, $username, $password);
         print_r($accounts);
-exit;
+exit;*/
         
         
         
@@ -121,30 +189,482 @@ exit;
         );
 
         $this->Accountowner->save($data);*/
+    } 
+    
+    public function tooltip() {
+
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'en', 25);
+        $this->print_r2($tooltip);
+
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'en', 24);
+        $this->print_r2($tooltip);
+
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'es', 25);
+        $this->print_r2($tooltip);
+        $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'es', 24);
+        $this->print_r2($tooltip);
+
+        $tooltip = $this->Tooltip->getTooltip(array(38, 48, 39, 40, 43), 'en');
+        $this->print_r2($tooltip);
+        
+        $tooltip = $this->Tooltip->getTooltip(array(38, 48, 39, 40, 43), 'es');
+        $this->print_r2($tooltip);
     }
+    
+    /**
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/investors/[investorId]&fields=x,y,z
+     * Example GET /v1/investors/1.json&_fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested 'Investor' resource
+     * 
+     */
+    public function v1_view($id){
+
+        if (empty($this->listOfFields)) {
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                    'Investor.investor_address1', 'Investor.investor_address2',
+                                    'Investor.investor_city', 'Investor.investor_telephone',
+                                    'Investor.investor_postCode', 'Investor.investor_email'  
+                                    ];
+        }
+
+        foreach ($this->listOfFields as $field) {
+            $tempField = explode("_", $field);
+            if (count($tempField) == 2) {
+                $this->listOfFields[] = "Check.check_" . $tempField[1];
+            }       
+        } 
+
+        $this->Investor->contain('Investor', 'Check');
+        $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
+
+        if (!empty($result)) {
+
+            $this->Investor->apiVariableNameOutAdapter( $result['Investor']);
+            $this->Investor->apiVariableNameOutAdapter( $result['Check']);
+
+            foreach ($result['Investor'] as $key => $value) {
+                $apiResult[$key]['value'] = $value;                 
+                if ($key === 'id') {
+                     continue;
+                } 
+                $rootName = explode("_", $key, 2); 
+                $apiResult[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
+            } 
+        }
+
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   );          
+    }  
+     
+    
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/investors.json&_fields=x,y,z
+     * Example GET /v1/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
+     * 
+     * @param -
+     * 
+     */
+    public function v1_index(){
+
+        if (empty($this->listOfFields)) {
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                    'Investor.investor_address1',  'Investor.investor_address2',
+                                    'Investor.investor_city',  'Investor.investor_telephone',
+                                    'Investor.investor_postCode',  'Investor.investor_email'  
+                                    ];
+        } 
+
+        foreach ($this->listOfFields as $field) {
+            $tempField = explode("_", $field);
+
+            if (count($tempField == 2)) {
+                $this->listOfFields[] = "Check.check_" . $tempField[1]; 
+            }  
+        } 
+        
+        $this->Investor->contain('Investor', 'Check');
+        $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                          'fields' => $this->listOfFields,
+                                                          'recursive' => 0]);
+
+        $numberOfResults = count($results);    
+
+        $j = 0;
+        foreach ($results as $resultItem) { 
+            $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
+            $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
+
+            foreach ($resultItem['Investor'] as $key => $value) {
+                if ($key === 'id') {   
+                    continue;
+                } 
+                $rootName = explode("_", $key, 2);
+
+                if ($numberOfResults == 1) {
+                    $apiResult[$key]['value'] = $value;  
+                    $apiResult[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
+                }
+                else {
+                    $apiResult[$j][$key]['value'] = $value;  
+                    $apiResult[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
+                } 
+            }
+            $j++;
+        }
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   ); 
+    }   
+   
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP PATCH/PUT.
+     * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
+     * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
+     *
+     * @param integer $id The database identifier of the requested 'Investor' resource
+     * 
+     */
+    public function edit($id) { 
+
+        $data = $this->listOfQueryParams;
+        $data['id'] = $id;
+
+        if (!($this->Investor->save($data, $validate = true))) {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('NO_WRITE_ACCESS', 
+                                                        "It is not allowed to modify read-only fields", 
+                                                        $validationErrors);
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(403);                                       // 403 Forbidden  
+        }
+        else {
+            $apiResult = ['result' => "success"];
+            $resultJson = json_encode($apiResult);     
+        }
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
+    }     
+
+    
+    /** STILL PENDING: NOT FULLY FINISHED MAKE IT AS GENERIC AS POSSIBLE
+     * This methods terminates the HTTP POST for actions
+     * Format POST /v1/users.json?_action=action&param1=value1&param3=value3..
+     * Example POST /v1/users.json?_action=precheck&username=pedro garcia
+     * 
+     * Format POST /v1/users/[investor_id].json?_action=action&param1=value1&param3=value3..
+     * Example POST /v1/users/1.json?_action=precheck&username=pedro garcia 
+     * 
+     * @param integer $id The database identifier of the requested resource for 
+     *                    which to execute the 'action'
+     */
+    public function api_precheck($id) { 
+
+        $data = $this->listOfQueryParams;
+        if (!empty($id)) {
+            $data['id'] = $id;              //?????? not required in this context
+        }
+
+        if (!$this->User->api_usernameExists($this->listOfQueryParams['username'])) { 
+            $apiResult = ['result' => false];
+        }
+        else {
+            $apiResult = ['result' => true]; 
+        }
+        
+        $this->response->statusCode(200);      
+        $resultJson = json_encode($apiResult);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;         
+    }
+
+
+
+    /* to delete */
+    public function editCheck() {
+        
+        
+        Configure::write('debug', 2);        
+        $this->autoRender = false;
+        $investorId = 1;
+        $fieldsToChange = ['name' => true,
+                            'surname' => 1,
+                            'investor_city' => true,
+                            'investor_DNI' => true,
+                            'email' => false
+                         ];
+        
+        $this->print_r2($fieldsToChange);
+        $result = $this->Check->api_editCheck($investorId, $fieldsToChange);
+        echo "\nresult = $result ! \n";
+    }
+
+    
+    
+   /** PENDING: NOT FINISHED, AND ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP POST.
+     * Format POST /v1/investors.json?param1=value11&param2=value2&param3=value3....
+     * Example GET /v1/investors.json?investor_name=Antoine&investor_surname=De Poorter
+     * 
+     * @param -
+     */
+    public function add() { 
+    //    Configure::write('debug', 2);
+        $this->autoRender = false;
+
+        echo __FILE__ . " " . __LINE__ . "\n";    
+        $this->print_r2($this->listOfFields);  
+
+        echo __FILE__ . " " . __LINE__ . "\n";  
+        $this->print_r2($this->listOfQueryParams);     
+
+        echo __FILE__ . " " . __LINE__ . "\n";
+        $this->print_r2($this->request->data);
+        
+        if ($this->Investor->save($this->listOfQueryParams, $validate = true)) {
+            $apiResult = ['id' => $this->Investor->id];           
+            $resultJson = json_encode($apiResult); 
+            $this->response->statusCode(201);              
+        }
+        else {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('USER_NOT_CREATED', 
+                                                        "User could not be created. More details for more", 
+                                                        $validationErrors);
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(403);                                       // 403 Forbidden              
+        }
+
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;       
+    }     
+     
+    
+    
+    
+    /** 
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/companies.json&_fields=x,y,z
+     * Example GET /v1/companies.json&company_country=ES,company_countryName=SPAIN&_fields=company_name,company_country,company_logoGUID
+     * 
+     * @param -
+     * @return array $apiResult A list of elements of array "company"
+     */
+    public function indexv1company(){       
+        $this->autoRender = false;
+        $this->Company = ClassRegistry::init('Company');
+
+        if (empty($this->listOfFields)) {
+            $this->listOfFields = ['id', 'company_name','company_url', 
+                                    'company_country', 'company_countryName', 
+                                    'company_privacyUrl', 'company_termsUrl',
+                                    'company_logoGUID'
+                                  ]; 
+        } 
+
+        $results = $this->Company->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                          'fields' => $this->listOfFields,
+                                                          'recursive' => -1]);
+
+        $j = 0;
+        foreach ($results as $resultItem) { 
+            $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
+
+            foreach ($resultItem['Company'] as $key => $value) {
+                $apiResult[$j][$key] = $value;  
+            }
+            $j++;
+        }
+
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   ); 
+    }
+    
+     /** 
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/companies/[companyId]&fields=x,y,z
+     * Example GET /v1/companies/1.json&_fields=company_name,company_countryName
+     * 
+     * @param int   $id The database identifier of the requested 'Company' resource
+     * @return array $apiResult A list of elements of array "company"
+     */   
+   public function viewv1company($id){
+        $this->autoRender = false;
+                    
+        $this->Company = ClassRegistry::init('Company');
+        
+        if (empty($this->listOfFields)) {
+            $this->listOfFields = ['company_name','company_url', 
+                                    'company_country', 'company_countryName', 
+                                    'company_privacyUrl', 'company_termsUrl',
+                                    'company_logoGUID'
+                                  ]; 
+        }  
+
+        $result = $this->Company->find('first', $params= ['conditions' => ['id'=> $id],
+                                                          'fields' => $this->listOfFields, 
+                                                          'recursive' => -1
+                                                         ]);
+
+        $this->set(['data' => $result['Company'],
+                  '_serialize' => ['data']]
+                   );      
+    }    
+    
+    
+    
+    public function recursiveSearchIncoming() {   
+    Configure::write('debug', 2);        
+    $this->autoRender = false;   
+ 
+    $jsonString = '{
+  "service_status": "ACTIVE",
+  "data": [
+    {
+      "id": 325938,
+      "service_status": "NOT_ACTIVE",
+      "linkedaccount_status": "ACTIVE",
+      "linkedaccount_visual_state": "ANALYZING",
+      "polling_type": "NOTIFICATION_CHECK",
+      "links": [
+        {
+          "metadata_type_of_document": "DNI_FRONT",
+          "linkedaccount_status": "NON_EXISTENT_VALUE"
+        }
+      ]
+    },
+    {
+      "id": 432456,
+      "metadata_type_of_document": "DNI_BACK",
+      "service_status": "SUSPENDED",
+      "polling_type": "LINKEDACCOUNT_CHECK",
+      "linkedaccount_status": "NOT_ACTIVE",
+      "linkedaccount_visual_state": "QUEUED",
+      "linkedaccount_username": "antoine@gmail.com"
+    },
+    {
+      "id": 432458,
+      "metadata_type_of_document": "BANK_CERTIFICATE",
+      "polling_type": "PMESSAGE_CHECK",
+      "linkedaccount_status": "UNDEFINED",
+      "linkedaccount_visual_state": "MONITORED"
+    }
+  ]
+}';
+echo "Using a component<br>";     
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);    
+    $this->ApiAdapter->normalizeIncomingJson($jsonArray); 
+    pr($jsonArray);   
+    } 
+    
+    
+    public function recursiveSearchOutgoing() {
+
+     
+     
+
+    $jsonString = '{
+  "service_status": 10,
+  "data": [
+    {
+      "id": 325938,
+      "service_status": 20,
+      "linkedaccount_status": 1,
+      "linkedaccount_visual_state": 10,
+      "polling_type": 10,
+      "links": [
+        {
+          "metadata_type_of_document": 10,
+          "linkedaccount_status": 10
+        }
+      ]
+    },
+    {
+      "id": 432456,
+      "metadata_type_of_document": 20,
+      "service_status": 30,
+      "polling_type": 10,
+      "linkedaccount_status": 2,
+      "linkedaccount_visual_state": 20,
+      "linkedaccount_username": "antoine@gmail.com"
+    },
+    {
+      "id": 432458,
+      "metadata_type_of_document": 30,
+      "polling_type": 30,
+      "linkedaccount_status": 0,
+      "linkedaccount_visual_state": 30
+    }
+  ]
+}';
+
+    
+ echo "Using a component<br>";     
+    $jsonArray = json_decode($jsonString, true);
+    pr($jsonArray);    
+    $this->ApiAdapter->normalizeOutgoingJson($jsonArray); 
+    pr($jsonArray);   
+    }   
+    
+
+
+    
+function search2($array, $key){
+    echo "MM";
+    if( array_key_exists($key, $array) ){
+        print("<br> ----------------- FOUND <u>{$key}</u> with value: {$array[$key]}");
+
+        return array( $key => $array[$key] );
+
+    }
+    else if( !array_key_exists($key, $array) ){
+        foreach ($array as $index   =>  $subarray){
+                if( is_array($subarray) ){
+                    print("<br> ************* <u>{$index}</u> is an ARRAY");
+                    print("<br> ************* RE-SEACHING <u>{$index}</u> FOR : <u>{$key}</u>");
+                    return search2($subarray, $key);
+                }
+        }
+    }
+}    
+    
+    
+   
 
     public function deleteFromUser($investorId = null, $linkaccountsId = null) {
 
-
-            $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
-            $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
-            print_r($Idlist);
-            /*foreach($Idlist[''] as $id){*/
- 
-    
-            }
-    function hashTest(){
-    
-        $telephone= 615091091;
-        $username = "eduardo@winvestify.com";
-        
-        $hashTelephone = hash("crc32", $telephone);
-        $hashUsername = hash("crc32", $username);     
-        $uuid = $hashTelephone . $hashUsername; 
-        echo strlen($uuid);
-        echo "    " . $uuid;     
+        $Prefilter = array('investor_id' => 290);                      //Find all linkaccount of the investor
+        $Idlist = $this->Linkedaccount->getData($Prefilter, array('id'));
+        print_r($Idlist);
+        /* foreach($Idlist[''] as $id){ */
     }
-    
+
+    function hashTest() {
+
+        $telephone = 615091091;
+        $username = "eduardo@winvestify.com";
+
+        $hashTelephone = hash("crc32", $telephone);
+        $hashUsername = hash("crc32", $username);
+        $uuid = $hashTelephone . $hashUsername;
+        echo strlen($uuid);
+        echo "    " . $uuid;
+    }
+
     function memoryTest3() {
         $timeInit = microtime(true);
         foreach ($this->pruebaYield() as $y) {
@@ -159,7 +679,7 @@ exit;
         $time = $timeEnd - $timeInit;
         echo " time" . $time;
     }
-    
+
     public function memoryTest2() {
         $timeInit = microtime(true);
         for ($i = 0; $i <= 600000; $i++) {
@@ -170,14 +690,11 @@ exit;
             }
         }
         echo "!!!";
-        echo memory_get_usage();       
+        echo memory_get_usage();
         $timeEnd = microtime(true);
         $time = $timeEnd - $timeInit;
         echo " time" . $time;
-        
     }
-
-    
 
     public function readSize() {
         echo 'patata ';
@@ -346,8 +863,7 @@ exit;
             }
             $start = $position;
             $length = strlen($search);
-        }
-        else { // FALSE
+        } else { // FALSE
             $start = 0;
             $length = 0;
 
@@ -359,8 +875,7 @@ exit;
         $position1 = stripos($input, $separator);
         if ($position1 !== false) {  // == TRUE
             $length1 = $position1;
-        }
-        else { // FALSE
+        } else { // FALSE
             $length1 = 100;                 // ficticious value
         }
         $start = $start + $length;
@@ -381,7 +896,7 @@ exit;
         echo 'Fin';
     }
 
-    public function read() {
+    public function read1() {
         $file = "test.xlsx";
         $finfo = finfo_open();
         $fileinfo = finfo_file($finfo, $file, FILEINFO_MIME);
@@ -464,8 +979,7 @@ exit;
                 echo "Empiezo en " . $this->dateInit . " Termino en " . $this->dateFinish . " ";
                 $this->numberOfFiles++;
                 echo $this->numberOfFiles . HTML_ENDOFLINE;
-            }
-            else {
+            } else {
                 $this->dateFinish = date("Ymd", strtotime($this->dateInit . " " . -1 . " days")); //Next finish date will we the previous day of the last Init date
                 $this->dateInit = date("Ymd", strtotime($this->dateInit . " " . -$datePeriod . " days"));
                 if (date($this->dateInit) < date($dateMin)) {
@@ -560,8 +1074,7 @@ exit;
             );
             $this->Data->save($data, $validate = true);
             echo "Data is now available in Dashboard";
-        }
-        else {
+        } else {
             echo "Nothing found, try again with other data";
             exit;
         }
@@ -916,8 +1429,7 @@ exit;
         //    $this->print_r2($this->companyData);        
         if ($this->companyData[0]['Company']['company_technicalFeatures'] && WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";
-        }
-        else {
+        } else {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";
         }
 
@@ -926,8 +1438,7 @@ exit;
         //    $this->print_r2($this->companyData);
         if ($this->companyData[0]['Company']['company_technicalFeatures'] && WIN_PROVIDE_UP_TO_DATE_FILES == WIN_PROVIDE_UP_TO_DATE_FILES) {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is set for $pfp\n";
-        }
-        else {
+        } else {
             echo "WIN_PROVIDE_UP_TO_DATE_FILES flag is not set for $pfp\n";
         }
     }
@@ -972,4 +1483,5 @@ exit;
         $this->print_r2($result);
     }
 
+    
 }

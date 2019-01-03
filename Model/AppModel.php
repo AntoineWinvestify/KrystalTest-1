@@ -5,8 +5,6 @@
  * This file is application-wide model file. You can put all
  * application-wide model-related methods here.
  *
- * PHP 5
- *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
  *
@@ -28,16 +26,7 @@ App::uses('Model', 'Model');
  *
  * Add your application-wide methods in the class below, your models
  * will inherit them.
- *
- * @package       app.Model
  * 
- *
- *
- *
- *
- *
- *
- *
  *
 Version 0.1		2016-10-29																
 function createReference															[OK, tested]
@@ -51,9 +40,44 @@ function getData        [Tested local, OK]
 
  
 class AppModel extends Model {
-
-
     
+    /**
+     * Configuration data for variable name translations
+     * The following "endpoints" are incorporated into the configuration array:
+     * investor.json
+     * user.json
+     * 
+     *
+     * @access private
+     * @var array
+     */
+    private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
+                                'investor_dateOfBirth' => 'investor_date_of_birth',
+                                'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
+                                'linkedaccount_status' => 'linkedaccount_status',
+                                'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing
+                                'investor_postCode' => 'investor_postcode',
+                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
+                                'company_countryName' => 'company_country_name',
+                                'company_privacyUrl' => 'company_privacy_url',
+                                'investor_approvalCode' => 'approval_code',
+                                'investor_surname' => 'investor_surnames',
+                                'investor_email' => 'email',
+                                'accountDisplayName' => 'account_display_name',
+                                'displayName' => 'display_name',
+                                'usertoken_refreshToken' => 'refresh_token',
+                                'company_id' => 'company_id',
+                                'linkedaccount_accountIdentity' => 'linkedaccount_identity',
+                                'linkedaccount_accountDisplayName' => 'linkedaccount_platform_display_name',
+                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
+                                'accountowner_username' => 'linkedaccount_username',
+                                'accountowner_password' => 'linkedaccount_password',
+                                'linkedaccount_alias'  => 'linkedaccount_alias',
+                                'linkedaccount_status' => 'linkedaccount_status',
+                                'accountCheck'  => 'linkedaccount_linkingstatus',
+                                'linkedaccount_currency' => 'linkedaccount_currency',
+                              ];
+
     /**
      * @brief wrapper for transactions
      *
@@ -92,8 +116,7 @@ class AppModel extends Model {
   
     
     /**
-     *
-     *	Generates a unique investor reference
+     * Generates a unique investor reference
      * 
      * @param -
      * @return UUID
@@ -117,8 +140,8 @@ class AppModel extends Model {
 
 
     /**
-     *
-     *	Generates a unique code which can be used for registration confirmation
+     * Generates a unique code which can be used for registration confirmation
+     * 
      * @param -
      * @return Random number
      */
@@ -127,10 +150,7 @@ class AppModel extends Model {
 	return $random;
     }
 
-
-
-
-
+    
     /**
      *
      *	Decrypt a string
@@ -141,9 +161,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     /**
      *
      *	Encrypt a string
@@ -152,9 +169,6 @@ class AppModel extends Model {
     public function encryptDataBeforeSave($string) {
 	return(Security::rijndael($string, Configure::read('Security.salt'), 'encrypt'));
     }
-
-
-
 
 
     /**
@@ -172,11 +186,7 @@ class AppModel extends Model {
     }
 
 
-
-
-
     /**
-     *
      * Converts the date for storage. Date input must be in format DD/MM/YYYY
      * and will be stored in format YYYY-MM-DD
      *
@@ -187,9 +197,6 @@ class AppModel extends Model {
 	$tempDate = $this->multiexplode(array("/","-"), $string);
 	return $tempDate[2] . "-" . $tempDate[1] . "-" . $tempDate[0];
     }
-
-
-
 
 
     /**
@@ -204,9 +211,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     /**
      *
      *	obtain the date of a datetime field
@@ -218,9 +222,6 @@ class AppModel extends Model {
     }
 
 
-
-
-
     public function calculateAge($birthday)  {  //date in yyyy-mm-dd format; or it can be in other formats as well
         $dob = date("Y-m-d",strtotime($birthday));
 
@@ -230,8 +231,6 @@ class AppModel extends Model {
         $diff = $dobObject->diff($nowObject);
 		return $diff->y;
     }
-
-
 
 
     /**
@@ -253,7 +252,7 @@ class AppModel extends Model {
 
 
     /**
-     *  Generic function to get the data of a table
+     * Generic function to get the data of a table
      * 
      * @param  array $filter filter of the table  ---> array("key" => value, ...),
      * @param  array $field  Fields you want get  ---> array("field", ...),
@@ -286,7 +285,8 @@ class AppModel extends Model {
     }
 
     
-    /** Checks if the current model has a child model
+    /** 
+     * Checks if the current model has a child model
      *  
      *  @param  bigInt      $currentInstance    Instance of the parent Model
      *  @param  string      $model              Name of child model
@@ -315,5 +315,114 @@ class AppModel extends Model {
         echo '<pre>';
         print_r($val);
         echo '</pre>';
-    }    
+    }  
+    
+   
+
+    /**  
+     * Adapts the name of a fieldlist for a find operation to the internal name(s)
+     * of the database variables
+     * $inputArray elements can be of form 'Model.variableName' or 'variableName'
+     * 
+     * NOTE: The format of $inputArray: 
+     *      ['Model.FieldName1 as Model.newFieldName1', 
+     *       'FieldName2 as newFieldName2',
+     *         ...
+     *      ]
+     * is not supported 
+     * 
+     *   id as NEWNAME
+     *  @param  array $inputArray  
+     *  @return boolean
+     */   
+    public function apiFieldListAdapter(&$inputArray) {
+
+        foreach ($inputArray as $key => $item) {
+            $explodeResult = explode(".", $item);
+            $newItem = (!empty($explodeResult[1]) ? $explodeResult[1] : $explodeResult[0]); 
+            $newKey = array_search($newItem, $this->apiVariableConfigArray);
+
+            if (!empty($newKey)) {
+                if (!empty($explodeResult[1])) {
+                    $newKey = $explodeResult[0] . "." . $newKey;  
+                }
+               $inputArray[$key] = $newKey;
+            }   
+        }       
+        return true;
+    }
+    
+    /** 
+     * Adapt the variable names of an array (= keys) to the internal name of the
+     * database variable. 
+     * Typically used as filtering condition of a find operation
+     * Example  'investor_date_of_birth' ==> 'investor_dateOfBirth'
+     *  
+     *  @param array $inputArray 
+     *  @return boolean
+     */   
+    public function apiVariableNameInAdapter(&$inputArray)  {
+        foreach ($inputArray as $key => $item) {
+            $newKey = array_search($key, $this->apiVariableConfigArray);
+            if ($newKey <> $key) {              // more resistent to errors in $this->apiVariableConfigArray
+                if (!empty($newKey)) {
+                    $inputArray[$newKey] = $item;
+                    unset($inputArray[$key]);
+                }
+            
+            }
+        }       
+        return true;
+    }
+
+    /** 
+     * Adapt the internal variable names of an array (= keys) to the external name of the
+     * variable according to the API specification. Typically this is used when returning
+     * the result of a find operation and when returning validationErrors when a find
+     * failed.
+     * 
+     * Example   'investor_dateOfBirth' ==> 'investor_date_of_birth'
+     *       
+     *  @code 
+     * 
+     *  $this->Model->apiVariableNameOutAdapter($valErrors);
+     * 
+     *  @endcode 
+     * 
+     *  @param array $inputArray 
+     *  @return boolean
+     */   
+    public function apiVariableNameOutAdapter(&$inputArray)  {
+
+        foreach ($inputArray as $key => $item) {  
+            if (array_key_exists($key, $this->apiVariableConfigArray)) {
+                $newKey = $this->apiVariableConfigArray[$key];
+                if ($key <> $newKey) {              // more resistent to errors in $this->apiVariableConfigArray
+                    $inputArray[$newKey] = $item;
+                    unset($inputArray[$key]);
+                }
+            }
+        }    
+        return true;
+    }   
+    
+        /**
+     *
+     * 	Creates a new instance of class with name company, like zank, or comunitae....
+     *
+     * 	@param 		int 	$companyCodeFile		Name of "company"
+     * 	@return 	object 	instance of class "company"
+     *
+     */
+    function companyClass($companyCodeFile) {
+
+        $dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+        return $newComp;
+    }  
+    
 }
