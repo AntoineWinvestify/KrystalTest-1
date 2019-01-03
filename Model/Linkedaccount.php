@@ -496,41 +496,38 @@ class Linkedaccount extends AppModel {
         return true;
     }
 
-     /**
-     *
-     * 	Links a new investment account for an investor
-     *
-     * 	@param 		int 	$companyId		Identifier of company where linked account resides
-     * 	@param 		int 	$investorId		Identifier of investor
-     * 	@param 		string 	$username		username
-     * 	@param 		string 	$password		password
-     *
-     * 	@return 	boolean	true	Account linked
-     * 				false	Error happened, account not linked
-     */
-    public function api_addLinkedaccount($investorId, $companyId, $username, $password, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, $linkedaccountAlias, $linkedaccountCurrency = 'EUR') { //[last field is by default €]
-        $accountOwnerId = $this->createAccountOwner($companyId, $investorId, $username, $password);
-        if ($accountOwnerId > 0) {
+
+    public function addLinkedaccount($accountOwnerId, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, /*$linkedaccountAlias,*/$linkedaccountCurrency = 'EUR') { //[last field is by default €]
             $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
                 'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
                 'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
                 'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED,
                 'linkedaccount_accountIdentity' => $linkedaccountIdentity,
                 'linkedaccount_accountDisplayName' => $linkedaccountPlatformDisplayName,
-                'linkedaccount_alias' => $linkedaccountAlias,                 
+                //'linkedaccount_alias' => $linkedaccountAlias,                 
                 'accountowner_id' => $accountOwnerId,
                 'linkedaccount_currency' => $linkedaccountCurrency,
             );
 
             if ($this->save($linkedAccountData, $validation = true)) {
-                $this->Accountowner->accountAdded($accountOwnerId);
                 return true;
             } 
             else {
                 return false;
             }
+    }
+    
+     public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {
+        $accountOwnerId = $this->Accountowner->checkIfAccountOwnerExist($investorId, $companyId, $username, $password);         //Seacrh for an account owner with same credentials and company
+        if (!empty($accountOwnerId)) {
+            //Not new Accountowner
+            return $this->Linkedaccount->addLinkedaccount($accountOwnerId, $identity, $displayName, $currency);
+        } 
+        else {
+            //New Accountowner
+            $NewAccountOwnerId = $this->Accountowner->createAccountOwner($this->investorId, $companyId, $username, $password);
+            return $this->Linkedaccount->aaddLinkedaccount($NewAccountOwnerId, $identity, $displayName, $currency);
         }
-        return false;
     }
 
 }

@@ -89,31 +89,10 @@ class Accountowner extends AppModel {
      * @return boolean|\bigint
      */
     public function createAccountOwner($companyId, $investorId, $username, $password) {
-        // check if an accountowner already exists
-        /* $filterConditions = array('company_id' => $companyId,
-          'investor_id' => $investorId,
-          'accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE
-          );
-
-          $result = $this->find("first", array('conditions' => $filterConditions,
-          'recursive' => -1,
-          'fields'  => 'id',
-          ));
-          if (!empty($result)) {
-          return $result['Accountowner']['id'];
-          }
-
-          $data['Accountowner'] = array('company_id' => $companyId,
-          'investor_id' => $investorId,
-          'accountowner_username' => $username,
-          'accountowner_password' => $password,
-          'accountowner_status'   => WIN_ACCOUNTOWNER_ACTIVE,
-          );
-
           if ($this->save($data, $validation = true)) {
           return $this->id;
           }
-          return false; */
+          return false;
     }
 
     /**

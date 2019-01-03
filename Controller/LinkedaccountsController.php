@@ -77,20 +77,43 @@ class LinkedaccountsController extends AppController {
         return json_enconde($feedback);     
     }
     
-    public function add(){
+    public function add() {
         $companyId = $this->listOfQueryParams['company_id'];
         $username = $this->listOfQueryParams['accountowner_username'];
-        $password = $this->listOfQueryParams['accountowner_password'];    
+        $password = $this->listOfQueryParams['accountowner_password'];
         $identity = $this->listOfQueryParams['linkedaccount']['linkedaccount_identity'];
         $displayName = $this->listOfQueryParams['linkedaccount']['linkedaccount_accountDisplayName'];
-        if($this->listOfQueryParams['linkedaccount']['linkedaccount_currency']){
+        if ($this->listOfQueryParams['linkedaccount']['linkedaccount_currency']) {
             $currency = $this->listOfQueryParams['linkedaccount']['linkedaccount_currency'];
         }
         
+        if(!empty($currency)){
+            $result = $this->Linkedaccount->api_addLinkedaccount($this->investorId, $companyId, $username, $password, $identity, $displayName, $currency);
+        } 
+        else {
+            $result = $this->Linkedaccount->api_addLinkedaccount($this->investorId, $companyId, $username, $password, $identity, $displayName);
+        }      
         
-        //$alias = $this->listOfQueryParams['linkedaccount']['linkedaccount_alias'];
+        if (!empty($result)) { //Link OK
+            $this->accountOwnerFields = array('Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
+            $this->linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
+                'Linkedaccount.linkedaccount_alias', 'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
+            $accounts['data']['feedback_message_user'] = 'Account succefully linked.';
+            $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $this->accountOwnerFields, $this->linkedaccountFields, WIN_LINKEDACCOUNT_ACTIVE);
+            $accounts = $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
+            foreach ($accounts['data'] as $key => $account) {
+                $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
+                $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['id']);
+                $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
+                $accounts = json_encode($accounts);
+                return $accounts;
+            }
+            
+        } 
+        else{ //Link fail
+            //ERROR LINKEAR CUENTA
+        }
     }
-    
 
     public function pre_check() {
         $companyId = $this->listOfQueryParams['company_id'];
