@@ -789,7 +789,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateGlobalTotalLoanIncentivesAndBonusPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_loanIncentivesAndBonus']);    
     }   
-    
+    public function calculateGlobalTotalSecondaryMarketSell(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_secondaryMarketSell']);    
+    }
     
     public function calculateGlobalTotalDefaultInterestIncome(&$transactionData, &$resultData) {
         return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome'], 16));   

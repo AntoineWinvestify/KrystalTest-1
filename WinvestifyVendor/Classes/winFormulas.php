@@ -92,10 +92,11 @@ class WinFormulas {
                     "globaltotalsdata_defaultInterestIncome",
                     "globaltotalsdata_defaultInterestIncomeRebuy",
                     "globaltotalsdata_loanRecoveriesPerDay",
-                    //"globaltotalsdata_loanIncentivesAndBonusPerDay",
-                    "globaltotalsdata_loanCompensationPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
+                    "globaltotalsdata_secondaryMarketsell",
+                    "globaltotalsdata_defaultInterestIncome",
+                    "globaltotalsdata_defaultInterestIncomeRebuy",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -117,7 +118,8 @@ class WinFormulas {
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_currencyExchangeTransactionPerDay",
                     "globaltotalsdata_writtenOff",
-                    "globaltotalsdata_incomeWithholdingTaxPerDay"
+                    "globaltotalsdata_incomeWithholdingTaxPerDay",
+                    "globaltotalsdata_reversedLatePayment",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -410,7 +412,8 @@ class WinFormulas {
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_incomeWithholdingTaxPerDay",
-                    "globaltotalsdata_writtenOff"
+                    "globaltotalsdata_writtenOff",
+                    "globaltotalsdata_reversedLatePayment",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
