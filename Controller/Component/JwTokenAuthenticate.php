@@ -63,14 +63,10 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @throws CakeException
  */
 	public function __construct(ComponentCollection $collection, $settings) {
-              echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		parent::__construct($collection, $settings);
-                  echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		if (empty($this->settings['parameter']) && empty($this->settings['header'])) {
-                      echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			throw new CakeException(__d('bz_utils', 'You need to specify token parameter and/or header'));
 		}
-                  echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 	}
 
 /**
@@ -81,12 +77,8 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @return mixed.  False on login failure.  An array of User data on success.
  */
 	public function authenticate(CakeRequest $request, CakeResponse $response) {
- echo __FILE__ . " " . __LINE__ . "\n<br>";           
 		$user = $this->getUser($request);
-  echo __FILE__ . " " . __LINE__ . "\n<br>";      
-  var_dump($user);
 		if (!$user) {
-   echo __FILE__ . " " . __LINE__ . "\n<br>";                    
 			$response->statusCode(401);
 			$response->send();
 		}
@@ -102,18 +94,14 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
 	public function getUser(CakeRequest $request) {
 		if (!empty($this->settings['header'])) {
 			$token = $request->header($this->settings['header']);
-                          echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			if ($token) {
-                              echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 				return $this->_findUser($token, null);
 			}
 		}
 		if (!empty($this->settings['parameter']) && !empty($request->query[$this->settings['parameter']])) {
 			$token = $request->query[$this->settings['parameter']];
-                          echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			return $this->_findUser($token);
 		}
-                  echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		return false;
 	}
 

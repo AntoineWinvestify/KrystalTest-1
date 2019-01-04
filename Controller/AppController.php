@@ -113,7 +113,37 @@ class AppController extends Controller {
         'RequestHandler',
         'Security',
         'Session',
-        'Acl',
+ //       'Auth',
+ /* 
+         'Auth' => array(
+            'authenticate' => array(
+                'Form' => array(
+                    'fields' => array(
+                        'username' => 'username',
+                        'password' => 'password'
+                    ),
+                    'userModel' => 'User',
+                    'scope' => array(
+                        'User.active' => 1,
+                    )
+                ),
+                'BzUtils.JwtToken' => array(
+                    'fields' => array(
+                        'username' => 'username',
+                        'password' => 'password',
+                    ),
+                    'header' => 'AuthToken',
+                    'userModel' => 'User',
+                    'scope' => array(
+                        'User.active' => 1
+                    )
+                )
+            )
+        ),       
+        
+      */
+        
+       'Acl',
         'Auth' => array(
             /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
             'loginRedirect' => array('controller' => 'marketplaces',
@@ -122,7 +152,7 @@ class AppController extends Controller {
             'logoutRedirect' => array('controller' => 'users',
                 'action' => 'loginRedirect'
             ),
-        ),
+        ),  
         'Cookie',
     );
     var $uses = array('User', 'Role', 'Sector');
@@ -136,12 +166,12 @@ class AppController extends Controller {
      */
     public function beforeFilter() {
 
- //       echo __FILE__ . " " . __LINE__ ."<br>\n";
- //  $this->print_r2($this->request);
-   //     $this->print_r2($this);
-//echo "status of login = " . $this->Auth->login() . "!!\n";
+        echo __FILE__ . " " . __LINE__ ."<br>\n";
 
- /*       $this->Auth->authenticate = array(
+ //      $this->print_r2($this);
+    //    echo "status of login = " . $this->Auth->login() . "!!\n";
+  
+        $this->Auth->authenticate = array(
             'Form' => array(
                 'fields' => array(
                     'username' => 'username',
@@ -162,10 +192,16 @@ class AppController extends Controller {
                 'scope' => array(
                     'User.active' => 1
                 )
-            )
-        );
+            
+        )
         
-  */     
+      );
+        
+     
+         echo __FILE__ . " " . __LINE__ ."<br>\n";       
+      $this->print_r2($this->request->data);
+ //  $this->Auth->login(); 
+           echo __FILE__ . " " . __LINE__ ."<br>\n";
    /*     
         $this->Cookie->name = 'p2pManager';
         $this->Cookie->time = 3600;  // or '1 hour'
@@ -281,7 +317,7 @@ class AppController extends Controller {
         );
 
         $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
-
+/*
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -320,18 +356,19 @@ class AppController extends Controller {
                 throw new
                 FatalErrorException(__('You cannot access this page directly'));
             }
-        }
+        }*/
+        /*
         if ($this->Auth->user()) {
             $sectorExist = $this->Session->read('sectorsMenu');
             if (empty($sectorExist)) {
                 $roleId = $this->Auth->User('role_id');
-                /* $this->Role = ClassRegistry::init('Role');
-                  $sectors = $this->Role->getSectorsByRole($roleId); */
+                // $this->Role = ClassRegistry::init('Role');
+                //  $sectors = $this->Role->getSectorsByRole($roleId); 
                 $sectors = $this->getSectorsByRole($roleId);
                 $this->Session->write('sectorsMenu', $sectors);
             }
         }
-
+*/
         $fileName = APP . "Config" . DS . "googleCode.php";                    // file for Google Analytics
         $fileName1 = APP . "Config" . DS . "googleCode1.php";                   // file to disable Google Analytics
 
@@ -344,7 +381,7 @@ class AppController extends Controller {
             default:
         }  
         
-//echo __FILE__ . " " . __LINE__ ."<br>\n"; 
+        echo __FILE__ . " " . __LINE__ ."<br>\n"; 
         $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
         
         
@@ -608,6 +645,7 @@ class AppController extends Controller {
     /**
      * Function to get the sectors for the leftnavigationmenu by User's role
      * We do a three table query using the joins option
+     * 
      * @param int $roleId It is the user's role id
      * @return boolean|array Return false if there is not roleId or the array with the sectors
      */
@@ -645,32 +683,32 @@ class AppController extends Controller {
 
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
-        }
+    }
 
-        /**
-         * 
-         * This function check if the user request fulfill the permissions assigned to his role.
-         * If is true, the petition is done without problems, if we have at least a data that doesn't fulfill the permissions,
-         * we stop the petition and return an error.
-         * @param int $request The type of request, can be read, write, delete, ....
-         * @param array $data   The data to check.
-         * @param string $role  The role of the user.
-         * @return boolean
-         */
-        public function api_accessFilter($request, $data, $role){
-        //Filter json
-        return true;
+    /**
+     * 
+     * This function check if the user request fulfill the permissions assigned to his role.
+     * If is true, the petition is done without problems, if we have at least a data that doesn't fulfill the permissions,
+     * we stop the petition and return an error.
+     * @param int $request The type of request, can be read, write, delete, ....
+     * @param array $data   The data to check.
+     * @param string $role  The role of the user.
+     * @return boolean
+     */
+    public function api_accessFilter($request, $data, $role){
+    //Filter json
+    return true;
     }
   
     
-     /**
-      * Formats the error information into the error object for the API-V1
-      * 
-      * @param string $errorName Short one word description of error
-      * @param string $errorMessage The message in clear language which may be displayed to the user
-      * @param array $validationErrors This is an array with all the error messages per variable 
-      * @return array 
-      */   
+    /**
+     * Formats the error information into the error object for the API-V1
+     * 
+     * @param string $errorName Short one word description of error
+     * @param string $errorMessage The message in clear language which may be displayed to the user
+     * @param array $validationErrors This is an array with all the error messages per variable 
+     * @return array 
+     */   
     public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
         
         foreach ($validationErrors as $key => $item) {
@@ -686,14 +724,14 @@ class AppController extends Controller {
     }
     
     
-     /**
-      * Loads the class variables $listOfFields, $listOfQueryParams, action
-      * and the query parameters converted to CakePHP Filtering Conditions
-      * for Model operations
-      * 
-      * @param - 
-      * @return boolean
-      */   
+    /**
+     * Loads the class variables $listOfFields, $listOfQueryParams, action
+     * and the query parameters converted to CakePHP Filtering Conditions
+     * for Model operations
+     * 
+     * @param - 
+     * @return boolean
+     */   
     public function  loadParameterFields(){ 
         $this->Investor = ClassRegistry::init('Investor');
         $this->listOfQueryParams = $this->request->query; 
@@ -735,6 +773,26 @@ class AppController extends Controller {
     }
     
     
-    
+    /**
+     * Generate a random string, using a cryptographically secure 
+     * pseudorandom number generator (random_int)
+     * 
+     * For PHP 7, random_int is a PHP core function
+     * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+     * 
+     * @param int $length      How many characters do we want?
+     * @param string $keyspace A string of all possible characters
+     *                         to select from
+     * @return string
+     */
+    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $pieces = [];
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $pieces []= $keyspace[random_int(0, $max)];
+        }
+        return implode('', $pieces);
+    }   
 
 }

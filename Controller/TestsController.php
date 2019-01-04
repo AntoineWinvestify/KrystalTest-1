@@ -109,12 +109,12 @@ class TestsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-        Configure::write('debug', 0);        
+  //      Configure::write('debug', 0);        
  //       $this->autoRender = false; 
         
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","api_index","v1_index","v1_view",
-            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
+            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod","search2",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add", "indexv1company", "viewv1company",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
@@ -559,11 +559,41 @@ echo "Using a component<br>";
     $this->ApiAdapter->normalizeOutgoingJson($jsonArray); 
     pr($jsonArray);   
     }   
-    
-
+/*  
+5c2de18a-d924-4c20-a398-0b7f6d15f83e
+5c2de18a-2858-4e5b-8742-0b7f6d15f83e
+5c2de18a-dc00-4551-9860-0b7f6d15f83e
+*/    
 
     
 function search2($array, $key){
+    App::uses('CakeText', 'Utility');
+    $this->Role = ClassRegistry::init('Role');
+    $roleName = "superAdmin";
+    
+
+    
+    $roleId = $this->Role->translateRoleName2RoleId($roleName);
+    var_dump($roleId);
+    echo "AAAAAAAAAAAAAA";
+    $roleId1 = Hash::extract($roleId, 'Sector');
+    var_dump($roleId1);
+    $roleId2 = Hash::extract($roleId1, '{n}.sectors_href');
+    var_dump($roleId2);
+    
+    $dummy = $this->getSectorsByRole($roleId = 4); 
+    $dummy1 = Hash::extract($dummy, '{n}.Sector');
+    var_dump($dummy);
+    
+    var_dump($dummy1);    
+    exit;
+    
+    
+    
+    
+    
+    
+    
     echo "MM";
     if( array_key_exists($key, $array) ){
         print("<br> ----------------- FOUND <u>{$key}</u> with value: {$array[$key]}");

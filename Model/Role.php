@@ -41,4 +41,27 @@ class Role extends AppModel {
             'foreignKey' => 'role_id',
             ),
     );
+    public $actsAs = array('Containable');
+    
+    /**
+     * 
+     * Update the corresponding fields in the 'paymenttotal' table 
+     * 
+     * @param string $roleName Name of the role to translate
+     * @return int id of the role
+     */
+    function translateRoleName2RoleId($roleName) {
+    var_dump($roleName);
+    $this->contain('Sector');
+    
+    $roleMenuData = $this->findByRoleName($roleName, $fields = ['Role.role_name', 'Role.id']);
+    
+        $roleMenuData = $this->find('first', $param = ['conditions' => ['Role.role_name' => $roleName],
+                                                   'fields' => ['Role.role_name', 'Role.id']
+                                                ]);
+     
+ 
+        return($roleMenuData);
+    }
+   
 }

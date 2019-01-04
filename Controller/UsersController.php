@@ -1,7 +1,7 @@
 <?php
 /**
 * +-----------------------------------------------------------------------+
-* | Copyright (C) 2016, http://www.winvestify.com                         |
+* | Copyright (C) 201, http://www.winvestify.com                         |
 * +-----------------------------------------------------------------------+
 * | This file is free software; you can redistribute it and/or modify     |
 * | it under the terms of the GNU General Public License as published by  |
@@ -64,6 +64,12 @@ If the current user is not logged in or the key doesn’t exist, null will be re
 ?>
 
 <?php
+
+//App::build(array('Vendor' => array(APP . 'Vendor' . DS . 'firebase' . DS . 'php-jwt')));
+//App::uses('JWT', 'Vendor');
+
+App::import('Vendor', 'Firebase', array('file' => 'firebase' . DS . 'php-jwt' . DS .'src' . DS . 'JWT.php'));
+ 
  
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
@@ -78,15 +84,14 @@ class UsersController extends AppController
 
 function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
-
 	$this->Security->requireAuth();
+        
+        Configure::write('debug', 2);
         $this->Auth->allow( 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
                                         'changeDisplayLanguage', 'registerPanel', 'registerPanelA', 'registerPanelB', 
 					'registerPanelC', 'registerPanelD', 'registerPanelE','loginRedirect');
 
-	// allow these actions without logon
-	$this->Security->validatePost = false;
-
+//	$this->Security->validatePost = false;
 }
 
 
@@ -98,7 +103,7 @@ function beforeFilter() {
 *	Changes the display language for the user
 *
 *	@param 		string 	$language	ISO string for language 
-*	@return 	boolean	true
+*	@return 	boolean	true/users/loginAction
 *
 */
 function changeDisplayLanguage() {
@@ -123,7 +128,7 @@ function changeDisplayLanguage() {
 
 
 /**
-*
+*Configure::write('debug', 2);
 *	Short program stub for getting the location of the user
 *
 */
@@ -142,35 +147,67 @@ public function initLoad_OLD()
 *	
 *	Checking of login credentials and forwarding browser to default page	
 *
-*/
+*/ 
 //public function loginAction()
-public function loginAction()
-{
-	if ($this->request->is('post')) {
-		$this->Session->delete('Auth');		//start with a clean session
-                $this->Session->delete('sectorsMenu');
-		if ($this->Auth->login()) {
-			echo "SESSION1 = " . $this->Session->read('Auth.User.Investor.investor_accountStatus') ."<br>";			
-			if ($this->Session->read('Auth.User.Investor.investor_accountStatus') < QUESTIONAIRE_FILLED_OUT) {
-			/* user did not fully go through the full register phase, hence his account is not activated */
-				$this->Session->setFlash(__('Account not activated. contact Winvestify'),
-											'default',array(),	'auth');
-				$this->set("error", true);
-                                
-				return $this->redirect(
-					array('controller' => 'users', 'action' => 'loginRedirect'));
-			}
+public function loginAction() {
+    $this->autoRender = false;
+    Configure::write('debug', 2);
+   echo __FILE__ . " " . __LINE__ . " \n";
+   $this->print_r2($this->request->params);
+   $this->request->data['User'] = $this->request->data ; 
+	if ($this->request->is('post')) {   
+     echo __FILE__ . " " . __LINE__ . " \n";           
+            if ($this->Auth->login()) {
+         echo __FILE__ . " " . __LINE__ . " \n";           
+                $user = $this->Auth->user();
+  
+                $initialMenuData = $this->getSectorsByRole($roleId =4);
+                var_dump($initialMenuData);
+                foreach($initialMenuData as $item) {
+                    $tempData['icon'] = $item['Sector']['sectors_icon'];
+                    $tempData['href'] = $item['Sector']['sectors_href']; 
+                    $tempData['display_name'] = $item['Sector']['sectors_name']; 
+                    $tempData['initial_status'] = $item['Sector']['sectors_initialStatus'];
+                    $menuData[] = $tempData;
+                }
+           
+                $payload['iat'] = time();
+                $payload['exp'] = $payload['iat'] + WIN_JWT_DURATION;
+                $payload['iss'] = "www.winvestify.com";  
+                $payload['sub'] = $user['Investor']['id'];
+ 
+                $payload['menu_options'] = $menuData;
+                $payload['language'] = $user['Investor']['investor_language'];
+                $payload['role'] = $user['Role']['role_name'];                    
+                $payload['pmessage'] = true;                  
+                $payload['refresh_token'] = $this->random_str(100);
+                $payload['account_display_name'] = $user['Investor']['investor_' . 'name'] . " " . $user['Investor']['investor_surname']; 
+                $payload['endpoints'] = 888;               
+                
+                $token = JWT::encode($payload, Configure::read('Security.salt'));
+                echo "Token = $token<br>\n";               
+                
+                $this->set('token', $token);               
+                $this->set('payload', $payload);   
+                $this->set('_serialize', array('payload', 'token'));            
+echo __FILE__ . " " . __LINE__ . " \n";  
+exit;
+/*
+                $investorId = $this->Auth->user('Investor.id');
+                $lang = $this->Session->read('Config.language');
+                $this->Investor->save(array('id' => $investorId, 'investor_language' => $lang));
+                $this->checkUserInvestmentData();
+                $this->User->updateLastAccessed($investorId);
+ */
 
-			$investorId = $this->Auth->user('Investor.id');
-                        $lang = $this->Session->read('Config.language');
-                        $this->Investor->save(array('id' => $investorId, 'investor_language' => $lang));
-			$this->checkUserInvestmentData();
-			$this->User->updateLastAccessed($investorId);
-                        echo $this->Auth->redirectUrl();
-                      
-			return $this->redirect($this->Auth->redirectUrl());
+  //             exit;
+return;
+                echo $this->Auth->redirectUrl();
+                exit;
+                return $this->redirect($this->Auth->redirectUrl());
 		}
 		else {
+                    throw new NotAcceptableException(__('Email or password is wrong.'));                   
 			echo "SESSION2 = " . $this->Session->read('Auth.User.Investor.investor_accountStatus') ."<br>";			
 			$this->Session->setFlash(__('Username or password is incorrect'),
 											'default',array(),	'auth');
@@ -180,36 +217,6 @@ public function loginAction()
 	}
 }
 
-    /**
-     * 
-     * This is a test for REST API
-     * 
-     * @throws NotAcceptableException
-     * 
-     * 
-     */
-    public function loginnew() {
-  //var_dump($this->request->data);
-  
-echo __FILE__ . " " . __LINE__ . " New login\n";
-	$this->layout = 'azarus_private_layout';
-$this->print_r2($this->request);
-echo __FILE__ . " " . __LINE__ . " \n";
-        if ($this->Auth->login()) {
-            
-echo __FILE__ . " " . __LINE__ . "\n";
-            $user = $this->Auth->user();
-            $token = JWT::encode($user, Configure::read('Security.salt'));
-            $this->set('user', $user);
-            $this->set('token', $token);
-            $this->set('_serialize', array('user', 'token'));
-        } else {
-            
-echo __FILE__ . " " . __LINE__ . "\n";
-    //       throw new NotAcceptableException(__('Email or password is wrong.'));
-        }
-echo __FILE__ . " " . __LINE__ . "\n";
-    }
 
 /**
 *
@@ -220,7 +227,7 @@ public function login()
 {
 	if ( $this->request->is('ajax')) {
 		$this->layout = 'ajax';
-		$this->disableCache();
+		$this->disableCache();      exit;
 	}
 	else {
 		$this->layout = 'winvestify_publicLandingPageLayout';	
@@ -229,7 +236,7 @@ public function login()
 	$this->set("error", $error);
 }
 
-public function loginRedirect() {
+public function loginRedirect22() {
     $this->layout = "winvestify_login";
     $error = false;
     $this->set("error", $error);
