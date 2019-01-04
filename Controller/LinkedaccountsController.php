@@ -33,7 +33,6 @@
 class LinkedaccountsController extends AppController {
 
     var $name = 'Linkedaccounts';
-    var $helpers = array('Js', 'Text', 'Session');
     var $uses = array('Linkedaccount', 'Accountowner', 'Tooltip');
     var $error;
 
@@ -41,43 +40,61 @@ class LinkedaccountsController extends AppController {
         parent::beforeFilter();
 
 //	$this->Security->requireAuth();
-        $this->Auth->allow(array('index', 'pre_check', 'edit'));
+        $this->Auth->allow(array('v1_index', 'v1_pre_check', 'v1_edit'));
     }
 
-    public function index() {
-        $this->accountOwnerFields = array('Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
-        $this->linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
-            'Linkedaccount.linkedaccount_alias', 'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
-
-        $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->locale);
+    /**
+     * 
+     * @return string
+     */
+    public function v1_index() {
+        
+        $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->language);
         $accounts['tooltip_display_name'] = $tooltips[ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME];
         $accounts['service_status'] = "ACTIVE";
         $accounts['service_status_display_message'] = "You are using the maximum number of linkedaccounts. If you like to link more accounts, please upgrade your subscription";
-        $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $this->accountOwnerFields, $this->linkedaccountFields, WIN_LINKEDACCOUNT_ACTIVE);
+        $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, WIN_LINKEDACCOUNT_ACTIVE);
         $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
         foreach ($accounts['data'] as $key => $account) {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
             $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['id']);
             $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
+            //HOW GET POLLING RESOURCE ID?
         }
         $accounts = json_encode($accounts);
         return $accounts;
     }
-
-    public function view($id) {
-        
+    /**
+     *  Get specific data from a given linkedaccount.
+     * 
+     * @param type $id
+     */
+    public function v1_view($id) {
+        $fields = $this->listOfQueryParams['fields'];
     }
 
-    
-    public function edit($id) {  
+
+    /**
+     * 
+     * @param int $id
+     * @return string
+     */
+    public function v1_edit($id) {
+        
+        
         $newPass = $this->listOfQueryParams['accountowner_password'];
+        $newPass = 'BarAlm17';
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
         $feedback = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);
         return json_enconde($feedback);     
     }
     
-    public function add() {
+    /**
+     * 
+     * @return string
+     */
+    public function v1_add() {
         $companyId = $this->listOfQueryParams['company_id'];
         $username = $this->listOfQueryParams['accountowner_username'];
         $password = $this->listOfQueryParams['accountowner_password'];
@@ -108,14 +125,27 @@ class LinkedaccountsController extends AppController {
                 $accounts = json_encode($accounts);
                 return $accounts;
             }
-            
         } 
         else{ //Link fail
-            //ERROR LINKEAR CUENTA
+            //ERROR LINQUEAR CUENTA
         }
     }
-
-    public function pre_check() {
+    
+    /**
+     * 
+     * @param int $id
+     * @return string
+     */
+    public function v1_delete($id){
+        
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    public function v1_pre_check() {
         $companyId = $this->listOfQueryParams['company_id'];
         $username = $this->listOfQueryParams['accountowner_username'];
         $password = $this->listOfQueryParams['accountowner_password'];           

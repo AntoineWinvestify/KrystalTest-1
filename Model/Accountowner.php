@@ -202,7 +202,7 @@ class Accountowner extends AppModel {
      * @param type $password
      * @return boolean
      */
-    public function checkIfAccountOwnerExist($investorId, $companyId, $username, $password) {
+    public function checkAccountOwner($investorId, $companyId, $username, $password) {
         $accountFinded = null;
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.company_id' => $companyId, 'Accountowner.accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
         $accounts = $this->find("all", $params = array('recursive' => -1,
@@ -271,15 +271,24 @@ class Accountowner extends AppModel {
      * 
      */
 
+  
     /**
      * 
-     * @param int $status
+     * @param type $investorId
+     * @param type $accountOwnerFields
+     * @param type $linkedaccountFields
+     * @param type $linkedaccountStatus
+     * @param type $accountOwnerStatus
      * @return array
      */
-    public function api_readAccountowners($investorId, $accountOwnerFields, $linkedaccountFields, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
+    public function api_readAccountowners($investorId, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
+        
         $accountsResult = array();
         $this->Behaviors->load('Containable'); 
-
+        
+        $accountOwnerFields = array('Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
+        $linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
+            /*'Linkedaccount.linkedaccount_alias'*/ 'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
         
         $accounts = $this->find("all", array('recursive' => -1,
@@ -294,21 +303,22 @@ class Accountowner extends AppModel {
         ));
 
         $i = 0;
-        foreach($accounts as $account){
-            foreach($account['Linkedaccount'] as $linkedaccount){
-                $accountsResult['data'][$i]['id']= $linkedaccount['id'];
-                $accountsResult['data'][$i]['company_id'] = $account['Accountowner']['company_id'];
-                $accountsResult['data'][$i]['linkedaccount_status'] =  $linkedaccount['linkedaccount_status'];
-                $accountsResult['data'][$i]['linkedaccount_visualStatus'] = 'QUEUED'; //$linkedaccount['linkedaccount_linkingProcess'];
-                $accountsResult['data'][$i]['accountowner_username'] = $account['Accountowner']['accountowner_username'];
-                $accountsResult['data'][$i]['accountowner_password'] = $account['Accountowner']['accountowner_password'];
-                //$accountsResult['data'][$i]['linkedaccount_accountIdentity']= $linkedaccount['linkedaccount_accountIdentity'];
-                $accountsResult['data'][$i]['linkedaccount_accountDisplayName'] = $linkedaccount['linkedaccount_accountDisplayName'];
-                $accountsResult['data'][$i]['linkedaccount_alias'] = $linkedaccount['linkedaccount_alias'];
 
-                $i++;              
-            }   
-        }    
+        foreach($accounts as $accountKey => $account){         
+            foreach($account['Linkedaccount'] as $linkedaccount){
+                foreach($account['Accountowner'] as $key => $accountOwnerData){
+                    $accountsResult['data'][$i][$key] = $accountOwnerData;  
+                }
+                foreach($linkedaccount as $key => $field){
+                    if('accountowner_id' == $key){
+                        continue;
+                    }
+                    $accountsResult['data'][$i][$key] = $field;  
+                }
+                $accountsResult['data'][$i]['linkedaccount_visual_state'] = 'ANALYZING';
+                $i++;
+            }
+        }  
         return $accountsResult;
     }
 
@@ -322,21 +332,23 @@ class Accountowner extends AppModel {
     public function api_changeAccountPassword($investorId, $accountownerId, $newPass) {
         // Check if accountowner really exists.
         $filterConditions = ['Accountowner.id' => $accountownerId];
-        $resultCounter = $this->find('first', array('conditions' => $filterConditions,
+        $result = $this->find('first', array('conditions' => $filterConditions,
             'recursive' => -1,
         ));
         //Get credentials to try the login
-        $username = $resultCounter['Accountowner']['accountowner_username'];
-        $companyId  = $resultCounter['Accountowner']['company_id'];
+        $username = $result['Accountowner']['accountowner_username'];
+        $companyId  = $result['Accountowner']['company_id'];
         
         //Login
         $accounts = $this->Linkedaccount->api_precheck($investorId, $companyId, $username, $newPass);
-        if (!empty($resultCounter) && $accounts != false) {
+        if (!empty($result) && $accounts != false) {
             if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
-                return $feddback['feedback_message_user'] = 'Your password has been succesfully changed';
+                $feedback['feedback_message_user'] = 'Your password has been succesfully changed';
+                return $feedback;
             }
         }
-        return $feddback['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password";
+        $feedback['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password";
+        return $feedback;
     }
     
 }
