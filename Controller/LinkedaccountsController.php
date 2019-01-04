@@ -49,11 +49,13 @@ class LinkedaccountsController extends AppController {
      */
     public function v1_index() {
         
+        $linkedaccountStatus = $this->listOfQueryParams;
+        
         $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->language);
         $accounts['tooltip_display_name'] = $tooltips[ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME];
         $accounts['service_status'] = "ACTIVE";
         $accounts['service_status_display_message'] = "You are using the maximum number of linkedaccounts. If you like to link more accounts, please upgrade your subscription";
-        $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, WIN_LINKEDACCOUNT_ACTIVE);
+        $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $linkedaccountStatus);
         $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
         foreach ($accounts['data'] as $key => $account) {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
