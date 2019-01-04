@@ -490,6 +490,12 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "payment_reversedLatePayment",
             ],
+            51 => [
+                "detail" => "Reversed_commission",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_reversedCommission"    
+                ],
 
         
             105 => [
