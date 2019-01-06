@@ -120,6 +120,9 @@ class TestsController extends AppController {
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
             "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor", "testDateDiff", "deleteFromUser",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));
+   
+        echo "AAAAAAAA";
+        
     }
 
     public function pruebaYield() {
@@ -128,6 +131,8 @@ class TestsController extends AppController {
         }
     }
 
+    
+   
     
     
     
@@ -150,151 +155,8 @@ class TestsController extends AppController {
         $tooltip = $this->Tooltip->getTooltip(array(38, 48, 39, 40, 43), 'es');
         $this->print_r2($tooltip);
     }
-
-    /**
-     * This methods terminates the HTTP GET.
-     * Format GET /v1/investors/[investorId]&fields=x,y,z
-     * Example GET /v1/investors/1.json&_fields=investor_name,investor_surname
-     * 
-     * @param integer $id The database identifier of the requested 'Investor' resource
-     * 
-     */
-    public function v1_view($id){
-
-        if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                    'Investor.investor_address1', 'Investor.investor_address2',
-                                    'Investor.investor_city', 'Investor.investor_telephone',
-                                    'Investor.investor_postCode', 'Investor.investor_email'  
-                                    ];
-        }
-
-        foreach ($this->listOfFields as $field) {
-            $tempField = explode("_", $field);
-            if (count($tempField) == 2) {
-                $this->listOfFields[] = "Check.check_" . $tempField[1];
-            }       
-        } 
-
-        $this->Investor->contain('Investor', 'Check');
-        $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
-
-        if (!empty($result)) {
-
-            $this->Investor->apiVariableNameOutAdapter( $result['Investor']);
-            $this->Investor->apiVariableNameOutAdapter( $result['Check']);
-
-            foreach ($result['Investor'] as $key => $value) {
-                $apiResult[$key]['value'] = $value;                 
-                if ($key === 'id') {
-                     continue;
-                } 
-                $rootName = explode("_", $key, 2); 
-                $apiResult[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
-            } 
-        }
-
-        $this->set(['data' => $apiResult,
-                  '_serialize' => ['data']]
-                   );          
-    }  
-     
-    
-    /** PENDING: ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP GET.
-     * Format GET /v1/investors.json&_fields=x,y,z
-     * Example GET /v1/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
-     * 
-     * @param -
-     * 
-     */
-    public function v1_index(){
-
-        if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                    'Investor.investor_address1',  'Investor.investor_address2',
-                                    'Investor.investor_city',  'Investor.investor_telephone',
-                                    'Investor.investor_postCode',  'Investor.investor_email'  
-                                    ];
-        } 
-
-        foreach ($this->listOfFields as $field) {
-            $tempField = explode("_", $field);
-
-            if (count($tempField == 2)) {
-                $this->listOfFields[] = "Check.check_" . $tempField[1]; 
-            }  
-        } 
-        
-        $this->Investor->contain('Investor', 'Check');
-        $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
-                                                          'fields' => $this->listOfFields,
-                                                          'recursive' => 0]);
-
-        $numberOfResults = count($results);    
-
-        $j = 0;
-        foreach ($results as $resultItem) { 
-            $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
-            $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
-
-            foreach ($resultItem['Investor'] as $key => $value) {
-                if ($key === 'id') {   
-                    continue;
-                } 
-                $rootName = explode("_", $key, 2);
-
-                if ($numberOfResults == 1) {
-                    $apiResult[$key]['value'] = $value;  
-                    $apiResult[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
-                }
-                else {
-                    $apiResult[$j][$key]['value'] = $value;  
-                    $apiResult[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
-                } 
-            }
-            $j++;
-        }
-        $this->set(['data' => $apiResult,
-                  '_serialize' => ['data']]
-                   ); 
-    }   
-   
-    /** PENDING: ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP PATCH/PUT.
-     * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
-     * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
-     *
-     * @param integer $id The database identifier of the requested 'Investor' resource
-     * 
-     */
-    public function edit($id) { 
-
-        $data = $this->listOfQueryParams;
-        $data['id'] = $id;
-
-        if (!($this->Investor->save($data, $validate = true))) {
-            $validationErrors = $this->Investor->validationErrors;
-            $this->Investor->apiVariableNameOutAdapter($validationErrors);
-
-            $formattedError = $this->createErrorFormat('NO_WRITE_ACCESS', 
-                                                        "It is not allowed to modify read-only fields", 
-                                                        $validationErrors);
-            $resultJson = json_encode($formattedError);
-            $this->response->statusCode(403);                                       // 403 Forbidden  
-        }
-        else {
-            $apiResult = ['result' => "success"];
-            $resultJson = json_encode($apiResult);     
-        }
-        $this->response->type('json');
-        $this->response->body($resultJson); 
-        return $this->response;               
-    }     
-
-    
+ 
+  
     /** STILL PENDING: NOT FULLY FINISHED MAKE IT AS GENERIC AS POSSIBLE
      * This methods terminates the HTTP POST for actions
      * Format POST /v1/users.json?_action=action&param1=value1&param3=value3..
@@ -332,7 +194,6 @@ class TestsController extends AppController {
     /* to delete */
     public function editCheck() {
         
-        
         Configure::write('debug', 2);        
         $this->autoRender = false;
         $investorId = 1;
@@ -358,7 +219,6 @@ class TestsController extends AppController {
      * @param -
      */
     public function add() { 
-    //    Configure::write('debug', 2);
         $this->autoRender = false;
 
         echo __FILE__ . " " . __LINE__ . "\n";    
@@ -767,7 +627,16 @@ function search2($array, $key){
     public function mytest() {
         $this->autoRender = false;
         Configure::write('debug', 2);
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        $this->Role = ClassRegistry::init('Role');       
+        $info = $this->Role->translateRoleName2RoleId('Investor');
+        
+        var_dump($info);
+        exit;
+        
+        
+        
+        
+
         $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
 
         $filterConditions = array("date" => "2018-01-11",
@@ -777,13 +646,6 @@ function search2($array, $key){
         if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
             echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";
         }
-
-
-
-
-        //       $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
-
-
 
         $result = $this->Globalamortizationtable->find("all", array("recursive" => 2,
             "conditions" => array("Globalamortizationtable.id" => 17))
@@ -809,8 +671,6 @@ function search2($array, $key){
     public function mytestOld() {
 
         $this->autoRender = false;
-
-
 
         $this->Queue2->addToQueueDashboard2("39048098ab409be490A", $queueInfo = null, $queueStatus = 11, $queueId = null, $queueType = 1);
 

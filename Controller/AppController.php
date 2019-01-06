@@ -111,10 +111,10 @@ class AppController extends Controller {
     
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
-        'Security',
-        'Session',
+  //      'Security',
+ //       'Session',
  //       'Auth',
- /* 
+
          'Auth' => array(
             'authenticate' => array(
                 'Form' => array(
@@ -141,18 +141,18 @@ class AppController extends Controller {
             )
         ),       
         
-      */
+     
         
        'Acl',
-        'Auth' => array(
-            /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
+   /*     'Auth' => array(
+            //				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller 
             'loginRedirect' => array('controller' => 'marketplaces',
                 'action' => 'showMarketPlace'
             ),
             'logoutRedirect' => array('controller' => 'users',
                 'action' => 'loginRedirect'
             ),
-        ),  
+        ),*/ 
         'Cookie',
     );
     var $uses = array('User', 'Role', 'Sector');
@@ -165,23 +165,25 @@ class AppController extends Controller {
      * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
-
-        echo __FILE__ . " " . __LINE__ ."<br>\n";
+        if (Configure::read('debug')) {
+    //            var_dump($this->request);
+        }
+         
 
  //      $this->print_r2($this);
     //    echo "status of login = " . $this->Auth->login() . "!!\n";
   
-        $this->Auth->authenticate = array(
+  /*      $this->Auth->authenticate = array(
             'Form' => array(
                 'fields' => array(
                     'username' => 'username',
                     'password' => 'password'
                 ),
-                'userModel' => 'User',
-                'scope' => array(
-                    'User.active' => 1,
-                )
-            ),
+     //           'userModel' => 'User',
+      //          'scope' => array(
+      //              'User.active' => 1,
+      //         )
+            ),/*
             'BzUtils.JwtToken' => array(
                 'fields' => array(
                     'username' => 'username',
@@ -192,16 +194,13 @@ class AppController extends Controller {
                 'scope' => array(
                     'User.active' => 1
                 )
-            
-        )
-        
-      );
-        
+            )
+        );*/
      
-         echo __FILE__ . " " . __LINE__ ."<br>\n";       
-      $this->print_r2($this->request->data);
+ //        echo __FILE__ . " " . __LINE__ ."<br>\n";       
+ //     $this->print_r2($this->request->data);
  //  $this->Auth->login(); 
-           echo __FILE__ . " " . __LINE__ ."<br>\n";
+ //          echo __FILE__ . " " . __LINE__ ."<br>\n";
    /*     
         $this->Cookie->name = 'p2pManager';
         $this->Cookie->time = 3600;  // or '1 hour'
@@ -216,7 +215,7 @@ class AppController extends Controller {
         
       */  
 // Load the application configuration file. Now it is available to the *whole* application	 
-        Configure::load('p2pGestor.php', 'default');
+/*        Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
         require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');
         $runtime = new Winvestify();
@@ -259,7 +258,7 @@ class AppController extends Controller {
 
         //Investment Status in marketplace
         $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
-
+*/
 /*
         //Country for excel export
         $this->countryArray = array(0 => __('Choose One'),
@@ -275,6 +274,7 @@ class AppController extends Controller {
                 'NL' => 'Países Bajos')
         );
 */
+/*
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
@@ -317,7 +317,7 @@ class AppController extends Controller {
         );
 
         $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
-/*
+
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
             $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
@@ -369,20 +369,20 @@ class AppController extends Controller {
             }
         }
 */
-        $fileName = APP . "Config" . DS . "googleCode.php";                    // file for Google Analytics
-        $fileName1 = APP . "Config" . DS . "googleCode1.php";                   // file to disable Google Analytics
-
+//        $fileName = APP . "Config" . DS . "googleCode.php";                    // file for Google Analytics
+//        $fileName1 = APP . "Config" . DS . "googleCode1.php";                   // file to disable Google Analytics
+/*
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
-                rename($fileName, $fileName1);
+     //           rename($fileName, $fileName1);
             case WIN_LIVE_ENVIRONMENT:
-               rename ($fileName1, $fileName);       
+   //            rename ($fileName1, $fileName);       
             default:
         }  
-        
-        echo __FILE__ . " " . __LINE__ ."<br>\n"; 
-        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
+  */      
+//        echo __FILE__ . " " . __LINE__ ."<br>\n"; 
+ //       $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
         
         
         
@@ -769,6 +769,19 @@ class AppController extends Controller {
 
         $this->filterConditionQueryParms = ['OR' => $orCondition,
                                            'AND' => $andCondition];
+        
+        if (Configure::read('debug')) {
+                if (!empty($this->listOfQueryParams)) {
+                    var_dump($this->listOfQueryParams);
+                }
+                 if (!empty($this->listOfFields)) {
+                    var_dump($this->listOfFields);
+                }
+                if (!empty($this->filterConditionQueryParms)) {
+                    var_dump($this->filterConditionQueryParms);
+                }                
+        }
+        
         return true;
     }
     

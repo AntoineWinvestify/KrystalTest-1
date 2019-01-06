@@ -51,17 +51,10 @@ class Role extends AppModel {
      * @return int id of the role
      */
     function translateRoleName2RoleId($roleName) {
-    var_dump($roleName);
-    $this->contain('Sector');
+
+        $roleMenuData = $this->findByRoleName($roleName, $fields = ['Role.role_name', 'Role.id']);
+        return($roleMenuData['Role']['id']);
     
-    $roleMenuData = $this->findByRoleName($roleName, $fields = ['Role.role_name', 'Role.id']);
-    
-        $roleMenuData = $this->find('first', $param = ['conditions' => ['Role.role_name' => $roleName],
-                                                   'fields' => ['Role.role_name', 'Role.id']
-                                                ]);
-     
- 
-        return($roleMenuData);
     }
    
 }

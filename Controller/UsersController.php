@@ -76,7 +76,7 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AppController
 {
 	var $name = 'Users';
-	var $helpers = array('Js', 'Session');
+	var $helpers = array('Js');
 	var $uses = array('User', 'Investor');
   	var $error;
 
@@ -84,14 +84,17 @@ class UsersController extends AppController
 
 function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
-	$this->Security->requireAuth();
-        
-        Configure::write('debug', 2);
+//	$this->Security->requireAuth();
+ //var_dump($this->request->data);       
+  /*      
         $this->Auth->allow( 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
                                         'changeDisplayLanguage', 'registerPanel', 'registerPanelA', 'registerPanelB', 
 					'registerPanelC', 'registerPanelD', 'registerPanelE','loginRedirect');
+*/
+        $this->Auth->allow('login');
 
 //	$this->Security->validatePost = false;
+   //     Configure::write('debug', 0);
 }
 
 
@@ -143,26 +146,29 @@ public function initLoad_OLD()
 
 
 
-/**
-*	
-*	Checking of login credentials and forwarding browser to default page	
-*
-*/ 
-//public function loginAction()
-public function loginAction() {
-    $this->autoRender = false;
-    Configure::write('debug', 2);
+    /**
+     *	
+     *	Checking of login credentials and forwarding browser to default page	
+     *
+     */ 
+    public function login() {
+  //  $this->autoRender = false;
    echo __FILE__ . " " . __LINE__ . " \n";
-   $this->print_r2($this->request->params);
-   $this->request->data['User'] = $this->request->data ; 
-	if ($this->request->is('post')) {   
-     echo __FILE__ . " " . __LINE__ . " \n";           
-            if ($this->Auth->login()) {
-         echo __FILE__ . " " . __LINE__ . " \n";           
+ //  var_dump($this->request->params);
+    $this->request->data['User'] = $this->request->data ; 
+ //   var_dump($this->request);
+//     echo __FILE__ . " " . __LINE__ . " \n";
+	if ($this->request->is('post')) {    
+ //    echo __FILE__ . " " . __LINE__ . " \n"; 
+//     var_dump($this->request->data);
+     $userIdentified = $this->Auth->identify($this->request, $this->response);
+
+            if ($userIdentified) {    
+ //    echo __FILE__ . " " . __LINE__ . " \n";              
                 $user = $this->Auth->user();
-  
-                $initialMenuData = $this->getSectorsByRole($roleId =4);
-                var_dump($initialMenuData);
+
+                $initialMenuData = $this->getSectorsByRole($roleId = $userIdentified['Role']['id']);
+
                 foreach($initialMenuData as $item) {
                     $tempData['icon'] = $item['Sector']['sectors_icon'];
                     $tempData['href'] = $item['Sector']['sectors_href']; 
@@ -170,7 +176,7 @@ public function loginAction() {
                     $tempData['initial_status'] = $item['Sector']['sectors_initialStatus'];
                     $menuData[] = $tempData;
                 }
-           
+   //var_dump($menuData);      
                 $payload['iat'] = time();
                 $payload['exp'] = $payload['iat'] + WIN_JWT_DURATION;
                 $payload['iss'] = "www.winvestify.com";  
@@ -182,29 +188,16 @@ public function loginAction() {
                 $payload['pmessage'] = true;                  
                 $payload['refresh_token'] = $this->random_str(100);
                 $payload['account_display_name'] = $user['Investor']['investor_' . 'name'] . " " . $user['Investor']['investor_surname']; 
-                $payload['endpoints'] = 888;               
-                
-                $token = JWT::encode($payload, Configure::read('Security.salt'));
-                echo "Token = $token<br>\n";               
-                
-                $this->set('token', $token);               
-                $this->set('payload', $payload);   
-                $this->set('_serialize', array('payload', 'token'));            
-echo __FILE__ . " " . __LINE__ . " \n";  
-exit;
-/*
-                $investorId = $this->Auth->user('Investor.id');
-                $lang = $this->Session->read('Config.language');
-                $this->Investor->save(array('id' => $investorId, 'investor_language' => $lang));
-                $this->checkUserInvestmentData();
-                $this->User->updateLastAccessed($investorId);
- */
+                $payload['endpoints'] = 888;    
 
-  //             exit;
-return;
-                echo $this->Auth->redirectUrl();
-                exit;
-                return $this->redirect($this->Auth->redirectUrl());
+                $token = JWT::encode($payload, Configure::read('Security.salt'));    
+                $result['token'] = $token;  
+
+                $resultJson = json_encode($result);
+                $this->response->statusCode(200);         
+                $this->response->type('json');
+                $this->response->body($resultJson); 
+                return $this->response;                 
 		}
 		else {
                     throw new NotAcceptableException(__('Email or password is wrong.'));                   
@@ -215,7 +208,7 @@ return;
 			return $this->redirect(array('controller' => 'users', 'action' => 'loginRedirect'));
 		}
 	}
-}
+    }
 
 
 /**
@@ -223,7 +216,7 @@ return;
 *	Shows the login panel
 *
 */
-public function login()
+public function login11()
 {
 	if ( $this->request->is('ajax')) {
 		$this->layout = 'ajax';
