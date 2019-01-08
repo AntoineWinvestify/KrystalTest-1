@@ -20,7 +20,7 @@
 * @package
 *
 
-2016-10-25Version 0.1		
+2016-10-25 Version 0.1		
 Basic version with simple user authentication							[Not fully tested, ]
 
 
@@ -64,11 +64,7 @@ If the current user is not logged in or the key doesn’t exist, null will be re
 ?>
 
 <?php
-
-//App::build(array('Vendor' => array(APP . 'Vendor' . DS . 'firebase' . DS . 'php-jwt')));
-//App::uses('JWT', 'Vendor');
-
-App::import('Vendor', 'Firebase', array('file' => 'firebase' . DS . 'php-jwt' . DS .'src' . DS . 'JWT.php'));
+//App::import('Vendor', 'Firebase', array('file' => 'firebase' . DS . 'php-jwt' . DS .'src' . DS . 'JWT.php'));
  
  
 App::uses('CakeEvent', 'Event');
@@ -76,7 +72,6 @@ App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AppController
 {
 	var $name = 'Users';
-	var $helpers = array('Js');
 	var $uses = array('User', 'Investor');
   	var $error;
 
@@ -84,17 +79,11 @@ class UsersController extends AppController
 
 function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
-//	$this->Security->requireAuth();
- //var_dump($this->request->data);       
-  /*      
-        $this->Auth->allow( 'loginAction', 'provideNewPassword', 'login', 'readUsedLanguage',
-                                        'changeDisplayLanguage', 'registerPanel', 'registerPanelA', 'registerPanelB', 
-					'registerPanelC', 'registerPanelD', 'registerPanelE','loginRedirect');
-*/
+
+var_dump($this->request->data);       
+
         $this->Auth->allow('login');
 
-//	$this->Security->validatePost = false;
-   //     Configure::write('debug', 0);
 }
 
 
@@ -152,61 +141,24 @@ public function initLoad_OLD()
      *
      */ 
     public function login() {
-  //  $this->autoRender = false;
-   echo __FILE__ . " " . __LINE__ . " \n";
- //  var_dump($this->request->params);
-    $this->request->data['User'] = $this->request->data ; 
- //   var_dump($this->request);
-//     echo __FILE__ . " " . __LINE__ . " \n";
+
+        $this->request->data['User'] = $this->request->data ; 
+
 	if ($this->request->is('post')) {    
- //    echo __FILE__ . " " . __LINE__ . " \n"; 
-//     var_dump($this->request->data);
-     $userIdentified = $this->Auth->identify($this->request, $this->response);
+            $isUserIdentified = $this->Auth->identify($this->request, $this->response);
 
-            if ($userIdentified) {    
- //    echo __FILE__ . " " . __LINE__ . " \n";              
-                $user = $this->Auth->user();
-
-                $initialMenuData = $this->getSectorsByRole($roleId = $userIdentified['Role']['id']);
-
-                foreach($initialMenuData as $item) {
-                    $tempData['icon'] = $item['Sector']['sectors_icon'];
-                    $tempData['href'] = $item['Sector']['sectors_href']; 
-                    $tempData['display_name'] = $item['Sector']['sectors_name']; 
-                    $tempData['initial_status'] = $item['Sector']['sectors_initialStatus'];
-                    $menuData[] = $tempData;
-                }
-   //var_dump($menuData);      
-                $payload['iat'] = time();
-                $payload['exp'] = $payload['iat'] + WIN_JWT_DURATION;
-                $payload['iss'] = "www.winvestify.com";  
-                $payload['sub'] = $user['Investor']['id'];
- 
-                $payload['menu_options'] = $menuData;
-                $payload['language'] = $user['Investor']['investor_language'];
-                $payload['role'] = $user['Role']['role_name'];                    
-                $payload['pmessage'] = true;                  
-                $payload['refresh_token'] = $this->random_str(100);
-                $payload['account_display_name'] = $user['Investor']['investor_' . 'name'] . " " . $user['Investor']['investor_surname']; 
-                $payload['endpoints'] = 888;    
-
-                $token = JWT::encode($payload, Configure::read('Security.salt'));    
+            if ($isUserIdentified) {                 
+                $token = $this->getNewJWT($isUserIdentified, WIN_ACCESS_TOKEN);
                 $result['token'] = $token;  
-
                 $resultJson = json_encode($result);
                 $this->response->statusCode(200);         
                 $this->response->type('json');
                 $this->response->body($resultJson); 
                 return $this->response;                 
-		}
-		else {
-                    throw new NotAcceptableException(__('Email or password is wrong.'));                   
-			echo "SESSION2 = " . $this->Session->read('Auth.User.Investor.investor_accountStatus') ."<br>";			
-			$this->Session->setFlash(__('Username or password is incorrect'),
-											'default',array(),	'auth');
-			$this->set("error", true);
-			return $this->redirect(array('controller' => 'users', 'action' => 'loginRedirect'));
-		}
+            }
+            else {
+                throw new UnauthorizedException('Email or password is wrong');                   
+            }
 	}
     }
 
@@ -215,8 +167,8 @@ public function initLoad_OLD()
 *
 *	Shows the login panel
 *
-*/
-public function login11()
+*//*
+public function loginOld()
 {
 	if ( $this->request->is('ajax')) {
 		$this->layout = 'ajax';
@@ -229,12 +181,13 @@ public function login11()
 	$this->set("error", $error);
 }
 
+
 public function loginRedirect22() {
     $this->layout = "winvestify_login";
     $error = false;
     $this->set("error", $error);
 }
-
+*/
 
     
 
@@ -266,7 +219,7 @@ public function logout() {
 *
 *	returns the language as defined in a cookie of the user, or "".
 *
-*/
+*//*
 public function readUsedLanguage() {
     if ($this->request->is('requested')) {
 		if (empty($this->Cookie->read('p2pManager.language') == true)) {
@@ -275,7 +228,7 @@ public function readUsedLanguage() {
 		return $this->Cookie->read('p2pManager.language');
 	}
 }
- 
+*/ 
  
  
 
@@ -284,7 +237,7 @@ public function readUsedLanguage() {
 *
 *	Registration of an investor, step 1
 *	
-*/
+*//*
 public function registerPanel() {
 
 	$this->layout = 'winvestify_publicLandingPageLayout';
@@ -293,7 +246,7 @@ public function registerPanel() {
 	$this->set('ownDomain', $this->request->domain());
 	$this->render('registerPanelA');
 }
-
+*/
 
 
 
@@ -303,7 +256,7 @@ public function registerPanel() {
 *	
 *	Request username, password and mobile phone number
 *
-*/
+*//*
 public function registerPanelA() {
 
 	if (! $this->request->is('ajax')) {
@@ -342,7 +295,7 @@ print_r($validationResult);
                 $this->render('registerPanelA');
 	}	
 }
-
+*/
 
 
 
@@ -351,7 +304,7 @@ print_r($validationResult);
 *
 *	Check the code as entered by user. If correct prepare view for next screen
 *
-*/
+*//*
 public function registerPanelB() {
 
 	if (! $this->request->is('ajax')) {
@@ -399,7 +352,7 @@ public function registerPanelB() {
 		}
 	}
 }
-
+*/
 
 
 
@@ -408,7 +361,7 @@ public function registerPanelB() {
 *
 *	Check if at least one follower is selected and initiate the action to follow the selected investors/influencers 
 *	
-*/
+*//*
 public function registerPanelC() {
 	if (! $this->request->is('ajax')) {
 		throw new
@@ -441,10 +394,10 @@ public function registerPanelC() {
 	}
 	else {
 		//generate error and return the registerPanelC with some error indication
-*/
+
 	}
 }	
-	
+*/	
 
 
 
@@ -453,7 +406,7 @@ public function registerPanelC() {
 *
 *	Store result of simple questions about investments
 *
-*/
+*//*
 public function registerPanelD() {
 
     if (! $this->request->is('ajax')) {
@@ -481,7 +434,7 @@ public function registerPanelD() {
         $this->Investor->updateAccountCreationStatus($investorId, QUESTIONAIRE_FILLED_OUT);
 	$this->render('registerPanelE');
 }
-
+*/
 
 
 
@@ -490,7 +443,7 @@ public function registerPanelD() {
 *
 *	Registration of an investor, step 5, All done. 
 *
-*/
+*//*
 public function registerPanelE() {
 
 	if (! $this->request->is('ajax')) {
@@ -504,7 +457,7 @@ public function registerPanelE() {
 	$error = false;
 	$this->set('error', $false);
 }
-
+*/
 
 
 
@@ -521,7 +474,7 @@ public function registerPanelE() {
 /**
 *
 *
-*/
+*//*
 public function testReadPreferredFollowers() {
 	
 Configure::write('debug', 2); 
@@ -533,7 +486,7 @@ $this->autoRender = false;
 	$result = $this->Preferredfollower->listPreferredFollowers($countryCode);
 	$this->print_r2($result);
 }
-
+*/
 
 
 
@@ -566,7 +519,7 @@ echo "<br/>";
 *
 *	Collects new passwords from user after requesting a password reset
 *
-*/
+*//*
 public function changePasswordOneTimePanel($linkToken) {
 	$this->layout = 'zastac_public_login_layout';		// very simple login screen
 
@@ -577,7 +530,7 @@ public function changePasswordOneTimePanel($linkToken) {
 	$this->UniqueLink->revokeCurrentUniqueLinkToken($linkToken);
 	$this->set('linkToken', $linkToken);
 }
-
+*/
 
 
 
@@ -586,7 +539,7 @@ public function changePasswordOneTimePanel($linkToken) {
 *
 *	Executes the change of password
 *
-*/
+*//*
 public function changePasswordOneTime() {
 	if (! $this->request->is('ajax')) {
 		throw new
@@ -622,7 +575,7 @@ public function changePasswordOneTime() {
 			FatalErrorException(__('Password Not Valid'));			
 	}
 }	
-
+*/
 	
 	
 	
@@ -631,7 +584,7 @@ public function changePasswordOneTime() {
 *NOT TESTED YET
 *	password change function
 *	
-*/
+*//*
 public function changepw() {
 	$this->layout = 'intranet_layout';
 	if ($this->Auth->user('id')) {   // Just to  make sure User is logged
@@ -653,7 +606,7 @@ public function changepw() {
 		}
 	}
 }
-
+*/
 
 
 
@@ -663,7 +616,7 @@ public function changepw() {
 *	User has forgotten his/her password and requests a new one.
 *	"OK" will ALWAYS be returned to the browser
 *
-*/
+*//*
 public function provideNewPassword() {
 	Configure::write('debug', 2);
 	App::uses('CakeTime', 'Utility');	
@@ -699,7 +652,7 @@ public function provideNewPassword() {
 	// We don't do anything  if user does not exist, i.e. let request slowly die.
 	sleep(3);
 }
-
+*/
 
 
 
@@ -708,7 +661,7 @@ public function provideNewPassword() {
 *
 *	The  user requests a new password.
 *
-*/
+*//*
 public function requestNewPasswordPanel() {
 
 	if (! $this->request->is('ajax')) {
@@ -719,7 +672,7 @@ public function requestNewPasswordPanel() {
 	$this->layout = 'ajax';
 	$this->disableCache();
 }
-
+*/
 
 
 
@@ -738,82 +691,16 @@ function deleteUser() {
 
 
 
-
+/*
 public function cronDBbackup() {
 	Configure::write('debug', 0); 
 	$this->autoRender = false;
 	$this->export_tables("localhost","root","8870mit","search");
 }
+*/
 
 
 
-
-
-public function export_tables($host,$user,$pass,$name, $tables=false, $backup_name=false){ 
-    set_time_limit(3000);
-	$mysqli = new mysqli($host,$user,$pass,$name);
-	$mysqli->select_db($name); $mysqli->query("SET NAMES 'utf8'");
-    $queryTables = $mysqli->query('SHOW TABLES');
-	while($row = $queryTables->fetch_row()) {
-		$target_tables[] = $row[0];
-	}
-	if($tables !== false) {
-		$target_tables = array_intersect( $target_tables, $tables);
-	} 
-    $content = "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\r\nSET time_zone = \"+00:00\";\r\n\r\n\r\n/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;\r\n/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;\r\n/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;\r\n/*!40101 SET NAMES utf8 */;\r\n--\r\n-- Database: `".$name."`\r\n--\r\n\r\n\r\n";
-    foreach($target_tables as $table){
-        if (empty($table)){
-			continue;
-		} 
-        $result = $mysqli->query('SELECT * FROM `'.$table.'`');
-		$fields_amount=$result->field_count;
-		$rows_num=$mysqli->affected_rows;
-		$res = $mysqli->query('SHOW CREATE TABLE '.$table);
-		$TableMLine=$res->fetch_row(); 
-        $content .= "\n\n".$TableMLine[1].";\n\n";
-        for ($i = 0, $st_counter = 0; $i < $fields_amount;   $i++, $st_counter=0) {
-            while($row = $result->fetch_row())  { //when started (and every after 100 command cycle):
-                if ($st_counter%100 == 0 || $st_counter == 0 )  {
-					$content .= "\nINSERT INTO ".$table." VALUES";
-				}
-                $content .= "\n(";
-				for($j=0; $j<$fields_amount; $j++) {
-					$row[$j] = str_replace("\n","\\n", addslashes($row[$j]) );
-					if (isset($row[$j])){
-						$content .= '"'.$row[$j].'"' ;
-					}
-					else {
-						$content .= '""';
-					}
-					if ($j<($fields_amount-1)) {
-						$content.= ',';
-					} 
-				} 
-				$content .=")";
-                //every after 100 command cycle [or at last line] ....p.s. but should be inserted 1 cycle earlier
-                if ( (($st_counter+1)%100==0 && $st_counter!=0) || $st_counter+1==$rows_num) {
-					$content .= ";";
-					}
-				else {
-					$content .= ",";} $st_counter=$st_counter+1;
-				}
-			}
-			$content .="\n\n\n";
-		}
-    $content .= "\r\n\r\n/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;\r\n/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;\r\n/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;";
-    $backup_name = $backup_name ? $backup_name : $name."___(".date('H-i-s')."_".date('d-m-Y').")__rand".rand(1,11111111).".sql";
-//	ob_get_clean();
-//	header('Content-Type: application/octet-stream');
-//	header("Content-Transfer-Encoding: Binary");
-//	header("Content-disposition: attachment; filename=\"".$backup_name."\"");
-//  echo $content;
-	
-	$backupDir = Configure::read('dataBaseBackupDir');
-	$handle = fopen($backupDir. 'db-backup-'.time().'-'.(md5(implode(',',$tables))).'.sql','w+');
-	fwrite($handle,$content);
-	fclose($handle);		
-	exit;
-}
 
 
 
@@ -825,7 +712,7 @@ public function export_tables($host,$user,$pass,$name, $tables=false, $backup_na
 *	account data and social network data
 *THIS IS A *TEMPORARY* FIXED UNTILL A COMPLETE DATABASE STRUCTURE IS DEFINED.	
 *	
-*/
+*//*
 public function cronAnalyzeUserDatas($startDateParm, $endDateParm) {
 Configure::write('debug', 2);
 $this->autoRender = false;
@@ -990,26 +877,68 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         echo "FILENAME = " . $backupDir . $filename;
 	$objWriter->save($backupDir . $filename);
 }
-
-/** 
-*
-*
-*
 */
-public function getlinkedaccountpasswords($companyId) {
-Configure::write('debug', 2);
-$this->autoRender = false;
+    /** 
+     *
+     *
+     *
+     */
+    public function getlinkedaccountpasswords($companyId) {
+    Configure::write('debug', 2);
+    $this->autoRender = false;
 
-	$this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-	
-        $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0,
-                                                                                            'company_id' => $companyId,
-                                                                                    'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
-                                                            'fields' => array('company_id', 'investor_id', 
-                                                            'linkedaccount_username','linkedaccount_password'),
-            'recursive' => -1));
-            
-    $this->print_r2($resultLinkedAccounts);
+            $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
-}
+            $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0,
+                                                                                                'company_id' => $companyId,
+                                                                                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
+                                                                'fields' => array('company_id', 'investor_id', 
+                                                                'linkedaccount_username','linkedaccount_password'),
+                'recursive' => -1));
+
+        $this->print_r2($resultLinkedAccounts);
+
+    }
+
+    /** 
+     * Calculates a new access JWT or a new refresh JWT 
+     *
+     * @param array $userData array with all the (relevant) userdata required for generating
+     * the JWT
+     * @param int   $typeOfToken    1 = initial access token
+     *                              2 = refresh token
+     * @return string $token The generated JSON Webtoken
+     */
+    public function getNewJWT($userData, $typeOfToken) {
+     
+        $initialMenuData = $this->getSectorsByRole($roleId = $userData['Role']['id']);
+
+        foreach($initialMenuData as $item) {
+            $tempData['icon'] = $item['Sector']['sectors_icon'];
+            $tempData['href'] = $item['Sector']['sectors_href']; 
+            $tempData['display_name'] = $item['Sector']['sectors_name']; 
+            $tempData['initial_status'] = $item['Sector']['sectors_initialStatus'];
+            $menuData[] = $tempData;
+        }
+
+        $payload['iat'] = time();
+        $payload['exp'] = $payload['iat'] + WIN_JWT_DURATION;
+        $payload['iss'] = "www.winvestify.com";  
+        $payload['sub'] = $userData['Investor']['id'];
+//       $payload['menu_options'] = $menuData;
+        $payload['language'] = $userData['Investor']['investor_language'];
+        $payload['role'] = $userData['Role']['role_name'];                    
+        $payload['pmessage'] = true; 
+        
+        if ($typeOfToken == WIN_ACCESS_TOKEN) {
+            $payload['refresh_token'] = $this->random_str(100);
+        }
+        
+        $payload['account_display_name'] = $userData['Investor']['investor_' . 'name'] . " " . $userData['Investor']['investor_surname']; 
+        $payload['endpoints'] = 888;    
+        $token = JWT::encode($payload, Configure::read('Security.salt'));    
+        return $token;
+    }
+
+
 }

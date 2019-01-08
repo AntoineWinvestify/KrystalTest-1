@@ -63,14 +63,14 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @throws CakeException
  */
 	public function __construct(ComponentCollection $collection, $settings) {
-              echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		parent::__construct($collection, $settings);
-                  echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		if (empty($this->settings['parameter']) && empty($this->settings['header'])) {
-                      echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			throw new CakeException(__d('bz_utils', 'You need to specify token parameter and/or header'));
 		}
-                  echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 	}
 
 /**
@@ -101,19 +101,21 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  */
 	public function getUser(CakeRequest $request) {
 		if (!empty($this->settings['header'])) {
+var_dump($this->settings);                   
 			$token = $request->header($this->settings['header']);
-                          echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+var_dump($token); 
 			if ($token) {
-                              echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 				return $this->_findUser($token, null);
 			}
 		}
 		if (!empty($this->settings['parameter']) && !empty($request->query[$this->settings['parameter']])) {
 			$token = $request->query[$this->settings['parameter']];
-                          echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			return $this->_findUser($token);
 		}
-                  echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		return false;
 	}
 
@@ -125,11 +127,16 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @return Mixed Either false on failure, or an array of user data.
  */
 	public function _findUser($username, $password = null) {
-		try {
-			$decoded = Firebase\JWT\JWT::decode($username, Configure::read('Security.salt'), array('HS256'));
-			return json_decode(json_encode($decoded), true);
-		} catch (UnexpectedValueException $e) {
+var_dump($username);
+		//try {
+ echo "Security salt = "  . Configure::read('Security.salt') . "\n<br>";                  
+			$decoded = JWT::decode($username, Configure::read('Security.salt'), array('HS256'));
+echo __FILE__ . " " . __LINE__ . "\n<br>";
+//var_dump($decoded);
+                        return json_decode(json_encode($decoded), true);
+		//} catch (UnexpectedValueException $e) {
+echo __FILE__ . " " . __LINE__ . "\n<br>";                    
 			return false;
-		}
+		//}
 	}
 }

@@ -66,6 +66,7 @@ class AppModel extends Model {
                                 'accountDisplayName' => 'account_display_name',
                                 'displayName' => 'display_name',
                                 'usertoken_refreshToken' => 'refresh_token',
+                                'requireNewAccessToken'=> 'require_new_access_token',
  
                               ];
 

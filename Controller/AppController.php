@@ -94,7 +94,7 @@
  *
  */
 App::uses('Controller', 'Controller');
-
+App::import('Vendor', 'Firebase', array('file' => 'firebase' . DS . 'php-jwt' . DS .'src' . DS . 'JWT.php'));
 class AppController extends Controller {
 
     protected $listOfFields;                    // Array that holds the list of requested fields
@@ -105,7 +105,7 @@ class AppController extends Controller {
                                                 // that case all entries are considered as OR condition
     
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
-    
+    protected $action;                           // The 'action' of a POST operation
     
     
     
@@ -113,8 +113,7 @@ class AppController extends Controller {
         'RequestHandler',
   //      'Security',
  //       'Session',
- //       'Auth',
-
+        
          'Auth' => array(
             'authenticate' => array(
                 'Form' => array(
@@ -138,10 +137,9 @@ class AppController extends Controller {
                         'User.active' => 1
                     )
                 )
-            )
+            )  
         ),       
-        
-     
+      
         
        'Acl',
    /*     'Auth' => array(
@@ -166,41 +164,13 @@ class AppController extends Controller {
      */
     public function beforeFilter() {
         if (Configure::read('debug')) {
-    //            var_dump($this->request);
-        }
-         
+           var_dump($this->request);
+        } 
+  echo __FILE__ . " " . __LINE__ . " \n"; 
+        // do authentication for webtoken. 
+        // obtain all the relevant information, like investorId, language
+        // should also check for issuer, exp, invalid signature, etc, etc, 
 
- //      $this->print_r2($this);
-    //    echo "status of login = " . $this->Auth->login() . "!!\n";
-  
-  /*      $this->Auth->authenticate = array(
-            'Form' => array(
-                'fields' => array(
-                    'username' => 'username',
-                    'password' => 'password'
-                ),
-     //           'userModel' => 'User',
-      //          'scope' => array(
-      //              'User.active' => 1,
-      //         )
-            ),/*
-            'BzUtils.JwtToken' => array(
-                'fields' => array(
-                    'username' => 'username',
-                    'password' => 'password',
-                ),
-                'header' => 'AuthToken',
-                'userModel' => 'User',
-                'scope' => array(
-                    'User.active' => 1
-                )
-            )
-        );*/
-     
- //        echo __FILE__ . " " . __LINE__ ."<br>\n";       
- //     $this->print_r2($this->request->data);
- //  $this->Auth->login(); 
- //          echo __FILE__ . " " . __LINE__ ."<br>\n";
    /*     
         $this->Cookie->name = 'p2pManager';
         $this->Cookie->time = 3600;  // or '1 hour'
@@ -259,21 +229,7 @@ class AppController extends Controller {
         //Investment Status in marketplace
         $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
 */
-/*
-        //Country for excel export
-        $this->countryArray = array(0 => __('Choose One'),
-            '-Países Bálticos' => array(
-                'LV' => 'Letonia',
-                'LT' => 'Lituania'
-            ),
-            '-Resto Europa' => array(
-                'ES' => 'España',
-                'IT' => 'Italia',
-                'FR' => 'Francia',
-                'DE' => 'Alemania',
-                'NL' => 'Países Bajos')
-        );
-*/
+
 /*
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
@@ -297,26 +253,6 @@ class AppController extends Controller {
         );
 
         $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
-
-        $this->tooltipSinglePfpData = array(
-            "Zank" => __('zank tooltip'),
-            "Comunitae" => __('comunitae tooltip'),
-            "Growly" => __('growly tooltip'),
-            "MyTripleA" => __('mytriplea tooltip'),
-            "Arboribus" => __('arboribus tooltip'),
-            "Loanbook" => __('loanbook tooltip'),
-            "eCrowdInvest" => __('ecrowd tooltip'),
-            "Circulantis" => __('circulantis tooltip'),
-            "Colectual" => __('colectual tooltip'),
-            "Lendix" => __('lendix tooltip'),
-            "Bondora" => __('bondora tooltip'),
-            "Mintos" => __('mintos tooltip'),
-            "Twino" => __('twino tooltip'),
-            "Finanzarel" => __('finanzarel tooltip'),
-            "Finbee" => __('finbee tooltip'),
-        );
-
-        $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
 
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
@@ -368,10 +304,7 @@ class AppController extends Controller {
                 $this->Session->write('sectorsMenu', $sectors);
             }
         }
-*/
-//        $fileName = APP . "Config" . DS . "googleCode.php";                    // file for Google Analytics
-//        $fileName1 = APP . "Config" . DS . "googleCode1.php";                   // file to disable Google Analytics
-/*
+
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
@@ -382,9 +315,8 @@ class AppController extends Controller {
         }  
   */      
 //        echo __FILE__ . " " . __LINE__ ."<br>\n"; 
- //       $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
-        
-        
+        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
+  echo __FILE__ . " " . __LINE__ . " \n";       
         
     }
 
@@ -725,12 +657,12 @@ class AppController extends Controller {
     
     
     /**
-     * Loads the class variables $listOfFields, $listOfQueryParams, action
-     * and the query parameters converted to CakePHP Filtering Conditions
-     * for Model operations
+     * Loads the class variables $listOfFields, $listOfQueryParams, $action
+     * and the query parameters ($filterConditionQueryParms) converted to 
+     * CakePHP Filtering Conditions for Model operations
      * 
      * @param - 
-     * @return boolean
+     * @return true
      */   
     public function  loadParameterFields(){ 
         $this->Investor = ClassRegistry::init('Investor');

@@ -54,6 +54,9 @@ function beforeFilter() {
 
 //	$this->Security->requireAuth();
 //	$this->Auth->allow(array('cronAnalyzeUserDatas'));
+var_dump($this->request);
+  //      $this->Auth->allow(['v1_index', 'v1_view']);
+
 }
 
    
@@ -422,7 +425,7 @@ function linkAccount() {
 
     
     
-    /** 
+    /** THIS METHOD SHALL NOT BE ACCESIBLE TO INVESTOR PROFILE. DEFINE USING CONFIG DATA
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/investors.json&_fields=x,y,z
      * Example GET /api/1.0/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
@@ -431,13 +434,13 @@ function linkAccount() {
      * 
      */
     public function v1_index(){
-        
+      
         if (empty($this->listOfFields)) {
             $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
                                      'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                    'Investor.investor_address1',  'Investor.investor_address2',
-                                    'Investor.investor_city',  'Investor.investor_telephone',
-                                    'Investor.investor_postCode',  'Investor.investor_email'  
+                                     'Investor.investor_address1',  'Investor.investor_address2',
+                                     'Investor.investor_city',  'Investor.investor_telephone',
+                                     'Investor.investor_postCode',  'Investor.investor_email'  
                                     ];
         } 
 
@@ -448,7 +451,7 @@ function linkAccount() {
                 $this->listOfFields[] = "Check.check_" . $tempField[1]; 
             }  
         } 
-        
+      
         $this->Investor->contain('Investor', 'Check');
         $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
@@ -458,9 +461,6 @@ function linkAccount() {
 
         $j = 0;
         foreach ($results as $resultItem) { 
-            $this->Investor->apiVariableNameOutAdapter( $resultItem['Investor']);
-            $this->Investor->apiVariableNameOutAdapter( $resultItem['Check']);
-
             foreach ($resultItem['Investor'] as $key => $value) {
                 if ($key === 'id') {   
                     continue;
@@ -478,6 +478,8 @@ function linkAccount() {
             }
             $j++;
         }
+ 
+        $this->Investor->apiVariableNameOutAdapter($apiResult);
         $this->set(['data' => $apiResult,
                   '_serialize' => ['data']]
                    ); 
@@ -492,7 +494,8 @@ function linkAccount() {
      * 
      */
     public function v1_view($id){
-
+        // somehow, $id is not loaded
+$id = $this->request->params['id'];
         if (empty($this->listOfFields)) {
             $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
                                      'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
@@ -513,10 +516,6 @@ function linkAccount() {
         $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
 
         if (!empty($result)) {
-
-            $this->Investor->apiVariableNameOutAdapter( $result['Investor']);
-            $this->Investor->apiVariableNameOutAdapter( $result['Check']);
-
             foreach ($result['Investor'] as $key => $value) {
                 $apiResult[$key]['value'] = $value;                 
                 if ($key === 'id') {
@@ -526,7 +525,8 @@ function linkAccount() {
                 $apiResult[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
             } 
         }
-
+        
+        $this->Investor->apiVariableNameOutAdapter($apiResult);
         $this->set(['data' => $apiResult,
                   '_serialize' => ['data']]
                    );          
@@ -542,12 +542,14 @@ function linkAccount() {
      * @param integer $id The database identifier of the requested 'Investor' resource
      * 
      */
-    public function edit($id) { 
-
+    public function v1_edit($id) { 
+echo __FILE__ . " " . __LINE__ . "<br>\n";
+        // somehow, $id is not loaded
+$id = $this->request->params['id'];
         $data = $this->listOfQueryParams;
         $data['id'] = $id;
-
-        if (!($this->Investor->save($data, $validate = true))) {
+        $result = $this->Investor->save($data, $validate = true);
+        if (!($result)) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
@@ -558,9 +560,17 @@ function linkAccount() {
             $this->response->statusCode(403);                                       // 403 Forbidden  
         }
         else {
-            $apiResult = ['result' => "success"];
-            $resultJson = json_encode($apiResult);     
+            var_dump($this->data);
+            if (!empty($result['Investor']['requireNewAccessToken'])) {
+                $apiResult = ['requireNewAccessToken' => true];
+                $this->Investor->apiVariableNameOutAdapter($apiResult);
+                $resultJson = json_encode($apiResult);
+            }
+            else {
+                $this->response->statusCode(204);
+            }
         }
+        
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;               

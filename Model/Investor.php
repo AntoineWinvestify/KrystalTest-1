@@ -110,24 +110,24 @@ class Investor extends AppModel {
      */
     var $validate = [
         'investor_name' => [
-            'rule1' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
                 'message' => 'Name validation error'
-                ],
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change the Name',
                 'on' => 'update'
-                ]
+            ]
         /* 'rule2' => array('rule' => 'alphaNumeric',
           'allowEmpty' => false,
           'message' => 'Name validation error'), */
         ],
         'investor_surname' => [
-            'rule1' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
                 'message' => 'Surname validation error'
-                ],
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change your Surname',
@@ -138,10 +138,10 @@ class Investor extends AppModel {
           'message' => 'Surname validation error'), */
         ],
         'investor_DNI' => [
-            'ruleLength' => ['rule' => ['minLength', 3],
+            'length_rule' => ['rule' => ['minLength', 3],
                 'allowEmpty' => false,
                 'message' => 'Id validation error'
-                ],
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change your legal Identification',
@@ -160,10 +160,10 @@ class Investor extends AppModel {
             ]
         ],
         'investor_telephone' => [ 
-            'ruleLength' => ['rule' => ['minLength', 4],
+            'length_rule' => ['rule' => ['minLength', 4],
                 'allowEmpty' => false,
                 'message' => 'Telephone validation error'
-                ],
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change the Telephone number',
@@ -171,10 +171,10 @@ class Investor extends AppModel {
             ]            
         ],
         'investor_address1' => [ 
-            'ruleLength' => ['rule' =>  ['minLength', 2],
+            'length_rule' => ['rule' =>  ['minLength', 2],
                 'allowEmpty' => false,
                 'message' => 'Address validation error'
-                ],
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change your address',
@@ -182,10 +182,10 @@ class Investor extends AppModel {
             ]
         ],
          'investor_address2' => [
-            'ruleLength' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
                 'message' => 'Address validation error'
-                ],
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change your address',
@@ -193,9 +193,10 @@ class Investor extends AppModel {
             ]
         ],       
         'investor_postCode' => [
-            'ruleLength' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
-                'message' => 'Postcode validation error'],
+                'message' => 'Postcode validation error'
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change your postCode',
@@ -203,10 +204,11 @@ class Investor extends AppModel {
             ]
         ],
         'investor_city' => [
-            'rule' => [ ['minLength', 2], 
+            'length_rule' => ['rule' => ['minLength', 2], 
                 'alphaNumeric',
                 'allowEmpty' => false,
-                'message' => 'City validation error'],
+                'message' => 'City validation error'
+            ],
             'writeprotected_rule' => [
                 'rule' => 'writeProtected',
                 'message' => 'You cannot change your city of residence',
@@ -214,7 +216,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_country' => [ 
-            'rule' => [[ 'minLength', 2],
+            'length_rule' => ['rule' => ['minLength', 2],
                 'allowEmpty' => false,
                 'message' => 'Country validation error'
             ],
@@ -836,6 +838,22 @@ class Investor extends AppModel {
                     'investor' => $this->data[$this->alias],
                 ));
                 $this->getEventManager()->dispatch($event);
+            }
+        }
+var_dump($created);
+var_dump($this->data);
+var_dump($this->data['Investor']['investor_language']);
+var_dump($this->data['Investor']['investor_name']);
+var_dump($this->data['Investor']['investor_surname']);
+        // Identify that the WebClient should request a new access token with the updated information
+        if (!$created) {
+var_dump($this->data);            
+            if (!empty($this->data['Investor']['investor_language']) ||
+                    !empty($this->data['Investor']['investor_name'])  ||
+                    !empty($this->data['Investor']['investor_surname']
+                    )) {           
+                $this->data['Investor']['requireNewAccessToken'] = true;
+ var_dump($this->data);                
             }
         }
     }

@@ -113,7 +113,7 @@ class TestsController extends AppController {
  //       $this->autoRender = false; 
         
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","api_index","v1_index","v1_view",
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","precheck","v1_index","v1_view",
             "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod","search2",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add", "indexv1company", "viewv1company",
@@ -168,7 +168,7 @@ class TestsController extends AppController {
      * @param integer $id The database identifier of the requested resource for 
      *                    which to execute the 'action'
      */
-    public function api_precheck($id) { 
+    public function precheck($id) { 
 
         $data = $this->listOfQueryParams;
         if (!empty($id)) {
@@ -627,10 +627,18 @@ function search2($array, $key){
     public function mytest() {
         $this->autoRender = false;
         Configure::write('debug', 2);
-        $this->Role = ClassRegistry::init('Role');       
-        $info = $this->Role->translateRoleName2RoleId('Investor');
         
-        var_dump($info);
+        $this->Investor = ClassRegistry::init('Investor'); 
+        
+        $newList = ['Investor' => ['id' => 1,
+                    'investor_telephone' => '+3455555555',
+                    'investor_name' => 'US'
+             ]];
+        var_dump($newList);
+        $result = $this->Investor->save($newList, $validate = true);
+        
+        
+        var_dump($result);
         exit;
         
         
