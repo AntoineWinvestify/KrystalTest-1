@@ -80,8 +80,6 @@ class UsersController extends AppController
 function beforeFilter() {
 	parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
-var_dump($this->request->data);       
-
         $this->Auth->allow('login');
 
 }

@@ -166,7 +166,7 @@ class AppController extends Controller {
         if (Configure::read('debug')) {
            var_dump($this->request);
         } 
-  echo __FILE__ . " " . __LINE__ . " \n"; 
+echo __FILE__ . " " . __LINE__ . " \n"; 
         // do authentication for webtoken. 
         // obtain all the relevant information, like investorId, language
         // should also check for issuer, exp, invalid signature, etc, etc, 

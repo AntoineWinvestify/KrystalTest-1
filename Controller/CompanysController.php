@@ -41,24 +41,12 @@
 class CompanysController extends AppController {
 
     var $name = 'Companys';
-    var $helpers = array('Js', 'Session');
+    var $helpers = array('Session');
     var $uses = array('Company', 'Poll');
     var $error;
 
     function beforeFilter() {
         parent::beforeFilter(); // only call if the generic code for all the classes is required.
-//Configure::write('debug', 2);
-//	$this->Security->requireAuth();
-//	$this->Security->blackHoleCallback = '_blackHole';
-//	$this->Security->unlockedFields = array('Student.sex', 'Pubform.sex'); // Pubform is correct
-//	$this->Security->requireSecure(
-//							'login'
-//							);
-//	$this->Security->validatePost = true;
-//	$this->Security->disabledFields = array('Participant.club'); // this excludes the club1 field from CSRF protection
-        // as it is "dynamic" and would fail the CSRF test
-// Allow only the following actions.
-//	$this->Auth->allow(listCompany);    // allow all actions as these are public pages
     }
 
     /**
@@ -160,4 +148,79 @@ class CompanysController extends AppController {
         $this->set('error', $error);
     }
 
+    
+    /** 
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/companies.json&_fields=x,y,z
+     * Example GET /v1/companies.json&company_country=ES,company_countryName=SPAIN&_fields=company_name,company_country,company_logoGUID
+     * 
+     * @param -
+     * @return array $apiResult A list of elements of array "company"
+     */
+    public function v1_index(){       
+        $this->autoRender = false;
+        $this->Company = ClassRegistry::init('Company');
+
+        if (empty($this->listOfFields)) {
+            $this->listOfFields = ['id', 'company_name','company_url', 
+                                    'company_country', 'company_countryName', 
+                                    'company_privacyUrl', 'company_termsUrl',
+                                    'company_logoGUID'
+                                  ]; 
+        } 
+
+        $results = $this->Company->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                          'fields' => $this->listOfFields,
+                                                          'recursive' => -1]);
+
+        $j = 0;
+        foreach ($results as $resultItem) { 
+            $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
+
+            foreach ($resultItem['Company'] as $key => $value) {
+                $apiResult[$j][$key] = $value;  
+            }
+            $j++;
+        }
+        
+        $this->Investor->apiVariableNameOutAdapter($apiResult);
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   ); 
+    }
+    
+     /** 
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/companies/[companyId]&fields=x,y,z
+     * Example GET /v1/companies/1.json&_fields=company_name,company_countryName
+     * 
+     * @param int   $id The database identifier of the requested 'Company' resource
+     * @return array $apiResult A list of elements of array "company"
+     */   
+   public function v1_view($id){
+        $this->autoRender = false;
+                    
+        $this->Company = ClassRegistry::init('Company');
+        
+        if (empty($this->listOfFields)) {
+            $this->listOfFields = ['company_name','company_url', 
+                                    'company_country', 'company_countryName', 
+                                    'company_privacyUrl', 'company_termsUrl',
+                                    'company_logoGUID'
+                                  ]; 
+        }  
+
+        $apiResult = $this->Company->find('first', $params= ['conditions' => ['id' => $id],
+                                                          'fields' => $this->listOfFields, 
+                                                          'recursive' => -1
+                                                         ]);
+        
+        $this->Investor->apiVariableNameOutAdapter($apiResult)['Company'];
+        $this->set(['data' => $apiResult['Company'],
+                  '_serialize' => ['data']]
+                   );      
+    }    
+    
+    
+    
 }

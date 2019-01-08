@@ -44,20 +44,15 @@
 class InvestorsController extends AppController {
 
     var $name = 'Investors';
-    var $helpers = array('Js', 'Text', 'Session');
+    var $helpers = array('Text');
     var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence','Ocr');
     var $error;
 
     
-function beforeFilter() {
-        parent::beforeFilter();
+    function beforeFilter() {
+            parent::beforeFilter();
 
-//	$this->Security->requireAuth();
-//	$this->Auth->allow(array('cronAnalyzeUserDatas'));
-var_dump($this->request);
-  //      $this->Auth->allow(['v1_index', 'v1_view']);
-
-}
+    }
 
    
 
@@ -102,15 +97,16 @@ function deleteLinkedAccount() {
 }
 
     
-/**
- * Read the cheack data
- * @param type $investorId
- * @return type
- */
-public function readCheckData($investorId) {
-    $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-    return $checkData;
-}
+    /**
+     * Read the check data
+     * 
+     * @param type $investorId
+     * @return type
+     */
+    public function readCheckData($investorId) {
+        $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+        return $checkData;
+    }
     
     
     
@@ -495,7 +491,7 @@ function linkAccount() {
      */
     public function v1_view($id){
         // somehow, $id is not loaded
-$id = $this->request->params['id'];
+        $id = $this->request->params['id'];
         if (empty($this->listOfFields)) {
             $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
                                      'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
@@ -543,9 +539,8 @@ $id = $this->request->params['id'];
      * 
      */
     public function v1_edit($id) { 
-echo __FILE__ . " " . __LINE__ . "<br>\n";
         // somehow, $id is not loaded
-$id = $this->request->params['id'];
+        $id = $this->request->params['id'];
         $data = $this->listOfQueryParams;
         $data['id'] = $id;
         $result = $this->Investor->save($data, $validate = true);

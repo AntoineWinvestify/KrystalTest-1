@@ -254,77 +254,7 @@ class TestsController extends AppController {
     
     
     
-    /** 
-     * This methods terminates the HTTP GET.
-     * Format GET /v1/companies.json&_fields=x,y,z
-     * Example GET /v1/companies.json&company_country=ES,company_countryName=SPAIN&_fields=company_name,company_country,company_logoGUID
-     * 
-     * @param -
-     * @return array $apiResult A list of elements of array "company"
-     */
-    public function indexv1company(){       
-        $this->autoRender = false;
-        $this->Company = ClassRegistry::init('Company');
-
-        if (empty($this->listOfFields)) {
-            $this->listOfFields = ['id', 'company_name','company_url', 
-                                    'company_country', 'company_countryName', 
-                                    'company_privacyUrl', 'company_termsUrl',
-                                    'company_logoGUID'
-                                  ]; 
-        } 
-
-        $results = $this->Company->find("all", $params = ['conditions' => $this->listOfQueryParams,
-                                                          'fields' => $this->listOfFields,
-                                                          'recursive' => -1]);
-
-        $j = 0;
-        foreach ($results as $resultItem) { 
-            $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
-
-            foreach ($resultItem['Company'] as $key => $value) {
-                $apiResult[$j][$key] = $value;  
-            }
-            $j++;
-        }
-
-        $this->set(['data' => $apiResult,
-                  '_serialize' => ['data']]
-                   ); 
-    }
-    
-     /** 
-     * This methods terminates the HTTP GET.
-     * Format GET /v1/companies/[companyId]&fields=x,y,z
-     * Example GET /v1/companies/1.json&_fields=company_name,company_countryName
-     * 
-     * @param int   $id The database identifier of the requested 'Company' resource
-     * @return array $apiResult A list of elements of array "company"
-     */   
-   public function viewv1company($id){
-        $this->autoRender = false;
-                    
-        $this->Company = ClassRegistry::init('Company');
-        
-        if (empty($this->listOfFields)) {
-            $this->listOfFields = ['company_name','company_url', 
-                                    'company_country', 'company_countryName', 
-                                    'company_privacyUrl', 'company_termsUrl',
-                                    'company_logoGUID'
-                                  ]; 
-        }  
-
-        $result = $this->Company->find('first', $params= ['conditions' => ['id'=> $id],
-                                                          'fields' => $this->listOfFields, 
-                                                          'recursive' => -1
-                                                         ]);
-
-        $this->set(['data' => $result['Company'],
-                  '_serialize' => ['data']]
-                   );      
-    }    
-    
-    
+   
     
     public function recursiveSearchIncoming() {   
     Configure::write('debug', 2);        
