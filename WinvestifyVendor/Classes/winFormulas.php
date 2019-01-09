@@ -94,7 +94,7 @@ class WinFormulas {
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
                     "globaltotalsdata_secondaryMarketSell",
-                    "globalcashflowdata_reversedCommission",
+                    "globaltotalsdata_reversedCommission",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -259,7 +259,7 @@ class WinFormulas {
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
                     "globaltotalsdata_secondaryMarketSell",
-                    "globalcashflowdata_reversedCommission",
+                    "globaltotalsdata_reversedCommission",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -364,7 +364,7 @@ class WinFormulas {
                     "globaltotalsdata_defaultInterestIncomeRebuy",
                     "globaltotalsdata_recoveriesPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
-                    "globalcashflowdata_reversedCommission",
+                    "globaltotalsdata_reversedCommission",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -448,7 +448,7 @@ class WinFormulas {
                     "globaltotalsdata_defaultInterestIncome",
                     "globaltotalsdata_defaultInterestIncomeRebuy",
                     "globaltotalsdata_recoveriesPerDay",
-                    "globalcashflowdata_reversedCommission",
+                    "globaltotalsdata_reversedCommission",
                     "globaltotalsdata_incomeSecondaryMarket",
                     //need more data to take values from database
                 ],
