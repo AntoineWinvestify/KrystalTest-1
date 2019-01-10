@@ -672,6 +672,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         // load all the transaction data
                         foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
                             echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                            unlink($conceptChars);
                             if (isset($transactionData['conceptChars'])) {
                                 $conceptChars = explode(",", $transactionData['conceptChars']);
 
@@ -756,7 +757,7 @@ class ParseDataClientShell extends GearmanClientShell {
 //echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
                                 }
                             }
-
+                            unlink($transactionData['conceptChars']);
 
                             echo __LINE__ . " Memory usage before transactionData of $dateKey " . memory_get_usage() . " *-*-*-*-*-*-*-*\n";
                             foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
