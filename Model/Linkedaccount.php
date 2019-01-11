@@ -546,6 +546,15 @@ class Linkedaccount extends AppModel {
     }
 
 
+    /**
+     * Add the linked account to the db.
+     * 
+     * @param int $accountOwnerId                                               //Id from accountOwner
+     * @param string $linkedaccountIdentity                                     //Identity  from the linkedaccount, necessary for multiaccounts.
+     * @param string $linkedaccountPlatformDisplayName                          //How we will show the linkedaccount name to the user.
+     * @param string $linkedaccountCurrency                                     //Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner have different currency).
+     * @return boolean
+     */
     public function addLinkedaccount($accountOwnerId, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, /*$linkedaccountAlias,*/$linkedaccountCurrency = 'EUR') { //[last field is by default €]
             $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
                 'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
@@ -566,6 +575,18 @@ class Linkedaccount extends AppModel {
             }
     }
     
+    /**
+     * Add a new linkaccount for an investor. If accountOwner(same company and credentials) exited before, link the new linkedaccount with it, if not, create a new account owner.
+     * 
+     * @param int $investorId                                                   //Id from investor.
+     * @param int $companyId                                                    //Company from the accountOwner
+     * @param string $username
+     * @param string $password                                                  //Username and password are the credentials to login in the pfp site.
+     * @param string $identity                                                  //Identity  from the linkedaccount, necessary for multiaccounts.
+     * @param string $displayName                                               //How we will show the linkedaccount name to the user.
+     * @param string $currency                                                  //Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner have different currency).
+     * @return boolean
+     */
      public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {
         $accountOwnerId = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
         if (!empty($accountOwnerId)) {

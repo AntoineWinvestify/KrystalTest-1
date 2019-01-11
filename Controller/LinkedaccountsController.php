@@ -42,10 +42,14 @@ class LinkedaccountsController extends AppController {
 //	$this->Security->requireAuth();
         $this->Auth->allow(array('v1_index', 'v1_pre_check', 'v1_edit'));
     }
-
-    /**
+    
+    /** 
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/linkedaccounts?[status]
+     * 
      * 
      * @return string
+     * 
      */
     public function v1_index() {
         
@@ -66,10 +70,14 @@ class LinkedaccountsController extends AppController {
         $accounts = json_encode($accounts);
         return $accounts;
     }
+    
     /**
-     *  Get specific data from a given linkedaccount.
+     * This methods terminates the HTTP GET.
+     * Format GET /v1/linkedaccounts/[linkedaccountId]
+     * Example GET /v1/linkedaccounts/945
      * 
-     * @param type $id
+     * @param integer $id The database identifier of the requested 'Linkedaccount' resource
+     * @return string
      */
     public function v1_view($id) {
         $fields = $this->listOfQueryParams['fields'];
@@ -77,15 +85,17 @@ class LinkedaccountsController extends AppController {
 
 
     /**
-     * 
-     * @param int $id
+     * This methods terminates the HTTP PATCH/PUT
+     * Format PATCH /v1/linkedaccounts/[linkedaccountId]?[accountowner_password]
+     * Example PATCH /v1/linkedaccounts/945?accountowner_password=123456;
+     *  
+     * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
     public function v1_edit($id) {
         
         
         $newPass = $this->listOfQueryParams['accountowner_password'];
-        $newPass = 'BarAlm17';
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
         $feedback = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);
@@ -93,6 +103,9 @@ class LinkedaccountsController extends AppController {
     }
     
     /**
+     * This methods terminates the HTTP POST
+     * Format POST /v1/linkedaccounts?['company_id']&['accountowner_username']&['accountowner_password']&['linkedaccount']=[['linkedaccount_identity']&['linkedaccount_accountDisplayName']&['linkedaccount_currency']]
+     * Example POST /v1/linkedaccounts?company_id=25&linkedaccount_username=pfpaccount&linkedaccount_password=pfppassword&linkedaccount=[linkedaccount_username=978&linkedaccount_platform_display_name=Klaus[EUR]&linkedaccount_currency=EUR]
      * 
      * @return string
      */
@@ -144,7 +157,10 @@ class LinkedaccountsController extends AppController {
     
     
     /**
-     * 
+     * This methods terminates the HTTP POST
+     * Format POST api/1.0/linkedaccounts?['company_id']&['accountowner_username']&['accountowner_password']
+     * Example POST api/1.0/linkedaccounts?company_id=25&linkedaccount_username=pfpaccount&linkedaccount_password=pfppassword
+     *  
      * @return string
      */
     public function v1_pre_check() {

@@ -751,7 +751,7 @@ class AppController extends Controller {
                 break;
         }
         $link['rel'] = $rel;
-        $link['href'] = DS . $version . DS . $endpoint . DS . $parameter;
+        $link['href'] = 'api' . DS . $version . DS . $endpoint . DS . $parameter;
         return $link;
     }
             

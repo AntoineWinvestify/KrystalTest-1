@@ -273,12 +273,11 @@ class Accountowner extends AppModel {
 
   
     /**
+     * Return the accountOwners of an given investor with the related linkedaccounts.
      * 
-     * @param type $investorId
-     * @param type $accountOwnerFields
-     * @param type $linkedaccountFields
-     * @param type $linkedaccountStatus
-     * @param type $accountOwnerStatus
+     * @param int $investorId                                                  Id of the investor
+     * @param int/array $linkedaccountStatus                                   Active or/and suspended
+     * @param int/array $accountOwnerStatus                                    Active or/and suspended
      * @return array
      */
     public function api_readAccountowners($investorId, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
@@ -325,9 +324,9 @@ class Accountowner extends AppModel {
      /**
      * Change the password on a PFP for a USER
      * 
-     * @param type $accountownerId  id of the accountowner object
-     * @param type $newPass         new password
-     * @return boolean        
+     * @param int $accountownerId                                              Id of the accountowner object
+     * @param type $newPass                                                    New password
+     * @return array        
      */
     public function api_changeAccountPassword($investorId, $accountownerId, $newPass) {
         // Check if accountowner really exists.
