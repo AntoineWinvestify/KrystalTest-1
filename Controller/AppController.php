@@ -151,7 +151,7 @@ class AppController extends Controller {
                 'action' => 'loginRedirect'
             ),
         ),*/ 
-        'Cookie',
+   //     'Cookie',
     );
     var $uses = array('User', 'Role', 'Sector');
 
@@ -164,9 +164,9 @@ class AppController extends Controller {
      */
     public function beforeFilter() {
         if (Configure::read('debug')) {
-           var_dump($this->request);
+  //         var_dump($this->request);
         } 
-echo __FILE__ . " " . __LINE__ . " \n"; 
+
         // do authentication for webtoken. 
         // obtain all the relevant information, like investorId, language
         // should also check for issuer, exp, invalid signature, etc, etc, 
@@ -642,7 +642,7 @@ echo __FILE__ . " " . __LINE__ . " \n";
      * @return array 
      */   
     public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
-        
+  
         foreach ($validationErrors as $key => $item) {
             $tempArray['field'] = $key;
             $tempArray['issue'] = $item[0];
@@ -651,7 +651,9 @@ echo __FILE__ . " " . __LINE__ . " \n";
 
         $errorArray['error_name'] = $errorName;
         $errorArray['error_message'] = $errorMessage;
-        $errorArray['error_details'] = $errorDetails;
+        if (!empty($validationErrors)) {
+            $errorArray['error_details'] = $errorDetails;
+        }
         return ($errorArray);    
     }
     

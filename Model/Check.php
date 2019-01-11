@@ -97,9 +97,10 @@ class Check extends AppModel {
     /**
      * Updates the status of a field from R/W to R/O or vice versa
      * 
-     * Example: $fieldsToChange = ["investor_name" => "Pedro","investor_city" => "Madrid",....]
-     *      or $fieldsToChange = ["name" => "Pedro","city" => "Madrid",....];
-
+     * Example: $fieldsToChange = ["investor_name" => true,"investor_city" => false, ....]
+     *      or $fieldsToChange = ["name" => true,"city" => false, ....];
+     * 
+     * @param int $investorId The database reference of its parent object Investor
      * @param array $fieldsToChange array with all the fields to be changed and their new status
      * @return boolean
      */
@@ -107,12 +108,12 @@ class Check extends AppModel {
         
         $date = new DateTime('now');
         $datetime = $date->format('Y-m-d H:i:s');
-            
+         
         foreach ($fieldsToChange as $key => $newStatus) {
             $checkKeyNames = explode("_", $key);
             $checkKey = (count($checkKeyNames) == 2 ? $checkKeyNames[1]: $checkKeyNames[0]);
 
-            $data['check_'.$checkKey] = $newStatus;
+            $data['check_'. $checkKey] = $newStatus;
             $data['check_' . $checkKey . 'Time'] = $datetime;
         } 
 
@@ -126,13 +127,33 @@ class Check extends AppModel {
         if ($this->save($data, $validate = true)){
             return true;
         }
-        else {
-            return false;   
-        }
+        return false;   
     }
     
 
+    /**
+     * Creates a new 'Check' object for an Investor
+     * 
+     * @param int $investorId The internal reference to the Investor
+     * @param array $readOnlyFields array with all the fields which shall be defined as READ/ONLY
+     *                                    example: ['investor_telephone', 'investor_email', 'investor_surname']
+     * @return boolean
+     */
+    public function api_addCheck($investorId, $readOnlyFields) {
 
-        
-    
+        foreach ($readOnlyFields as $field) {
+            $newReadOnlyIndex[$field] = WIN_READONLY;
+        }
+        $data['investor_id'] = $investorId;
+
+        if ($this->save($data, $validate = true)){
+            $result = $this->api_editCheck($investorId, $newReadOnlyIndex);
+            if (!$result) {
+                $this->delete($investorId);
+                return false;
+            }
+            return true;
+        }
+        return false;         
+    }
 }

@@ -227,7 +227,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_email' => [
-            'rule' => ['/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
+            'complex_rule' => ['rule' => '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
                 'allowEmpty' => false,
                 'message' => 'Email validation error'],
             'writeprotected_rule' => [
@@ -265,7 +265,7 @@ class Investor extends AppModel {
      *                                                   The definition of the bitmap is defined in database table
      * 	@return 	int	> 0 characteristic assigned
      * 			0	characteristic not assigned
-     */
+     *//*
     function readAccountCreationStatus($investorReference, $statusBit) {
 
         $currentStatus = $this->find('first', array('conditions' => array('Investor.id' => $investorReference),
@@ -273,7 +273,7 @@ class Investor extends AppModel {
             'recursive' => -1,
         ));
         return $currentStatus['Investor']['investor_accountStatus'] & $statusBit;
-    }
+    }*/
 
     /**
      * 	Updates the status of the account of an investor
@@ -283,7 +283,7 @@ class Investor extends AppModel {
      * 							The definition of the bitmap is defined in database table
      * 	@return 	boolean	true	All OK
      * 				false	Error occured
-     */
+     *//*
     function updateAccountCreationStatus($investorReference, $addStatusBit) {
 
         $currentStatus = $this->find('first', array('conditions' => array('Investor.id' => $investorReference),
@@ -300,7 +300,7 @@ class Investor extends AppModel {
             echo __FILE__ . " " . __LINE__ . "<br>";
             return true;
         }
-    }
+    }*/
 
     /** NOT YET FINISHED
      * 	De-activates a user. The corresponding data in "user" and "investor" is marked as 'deleted'
@@ -825,7 +825,7 @@ class Investor extends AppModel {
      * 	
      */
     function afterSave($created, $options = array()) {
-        if (!empty($this->data['Investor']['investor_tempCode'])) {    // A confirmation code has been generated
+ /*       if (!empty($this->data['Investor']['investor_tempCode'])) {    // A confirmation code has been generated
             $event = new CakeEvent('confirmationCodeGenerated', $this, array('id' => $this->id,
                 'investor' => $this->data[$this->alias],
             ));
@@ -840,20 +840,16 @@ class Investor extends AppModel {
                 $this->getEventManager()->dispatch($event);
             }
         }
-var_dump($created);
-var_dump($this->data);
-var_dump($this->data['Investor']['investor_language']);
-var_dump($this->data['Investor']['investor_name']);
-var_dump($this->data['Investor']['investor_surname']);
+        */
+
         // Identify that the WebClient should request a new access token with the updated information
         if (!$created) {
-var_dump($this->data);            
+            
             if (!empty($this->data['Investor']['investor_language']) ||
-                    !empty($this->data['Investor']['investor_name'])  ||
+                    !empty($this->data['Investor']['investor_name']) ||
                     !empty($this->data['Investor']['investor_surname']
                     )) {           
                 $this->data['Investor']['requireNewAccessToken'] = true;
- var_dump($this->data);                
             }
         }
     }
@@ -887,7 +883,7 @@ var_dump($this->data);
      *
      * 	Rules are defined for what should happen when a database record is created or updated.
      * 	
-     */
+     */ 
     function beforeSave($options = array()) {
 
 // Store telephone number without spaces
@@ -897,6 +893,12 @@ var_dump($this->data);
         if (!empty($this->data['Investor']['investor_telephone'])) {
             $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
         } 
+        
+        // Observe that username is not saved to the Investor model, but only required for generating the "investor_identity"
+        if (!$this->id && !isset($this->data[$this->alias][$this->primaryKey])) {
+            $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['investor_email']); 
+            unset($this->data['Investor']['email']);//DOES THIS WORK???
+        }    
     }
 
  
@@ -922,12 +924,12 @@ var_dump($this->data);
     
     
     /**
-     * 	Checks if a field is write protected
+     * Checks if a field is write protected
      * 
      * @param type $check
      * @return boolean
      */
-    public function writeProtected($check) {                                    // Check if a field is write protected
+    public function writeProtected($check) { 
         
         $tempKey = array_keys($check);
         $key = $tempKey[0];
@@ -936,13 +938,59 @@ var_dump($this->data);
             return false;   
         }
         return true;
-    }      
-     
-}
-
-  
+    }    
     
-
-
  
-    
+
+
+
+
+    /**
+     * Create a new 'Investor' object
+     * 
+     * @param array $userData The data required for defining a new investor
+     * @return mixed false or the database reference of the created Investor object
+     */
+    public function api_addInvestor($userData) {  
+        
+        if ($this->save($userData, $validate = true)) {
+            $investorId = $this->id;
+            
+            $this->Check = ClassRegistry::init('Check');
+            if (!$this->Check->api_addCheck($investorId, ['telephone', 'email', 'identity'])) {
+                $this->delete($investorId);
+                return false;
+            }
+            $checkId = $this->Check->id;
+
+            $this->User = ClassRegistry::init('User');
+            if (!array_key_exists('Investor', $userData)) {
+                $userData['Investor']['investor_email'] = $userData['investor_email'];
+                $userData['Investor']['investor_password'] = $userData['investor_password'];
+                $userData['Investor']['investor_email'] = $userData['investor_email'];
+            }
+            
+            if (!$this->User->api_addUser($investorId, $userData['Investor']['investor_email'], 
+                                                  $userData['Investor']['investor_password'], 
+                                                  $userData['Investor']['investor_email'])) {
+                $this->Check->delete($checkId);
+                $this->delete($investorId);
+                return false;
+            }
+            $userId = $this->User->id;
+
+   /*          
+            $this->Pmessage = ClassRegistry::init('Pmessage');
+            if (!$this->Pmessage->addPmessage($investorId)) {
+                $this->Check->delete($checkId);
+                $this->User->delete($userId);
+                $this->delete($investorId);               
+                return false;
+            }
+   */ 
+            $this->id = $investorId;
+            $this->save(array('user_id' => $userId));
+            return $investorId;
+        }   
+    }
+}

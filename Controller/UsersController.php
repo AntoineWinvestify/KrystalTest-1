@@ -95,7 +95,7 @@ function beforeFilter() {
 *	@param 		string 	$language	ISO string for language 
 *	@return 	boolean	true/users/loginAction
 *
-*/
+*//*
 function changeDisplayLanguage() {
 
 	if (! $this->request->is('ajax')) {
@@ -111,26 +111,7 @@ function changeDisplayLanguage() {
 	$this->Cookie->write('p2pManager',	array('language' => $newLanguage));						// values are stored encrypted
 	$this->Session->write('Config.language', $newLanguage);
 }
-
-
-
-
-
-
-/**
-*Configure::write('debug', 2);
-*	Short program stub for getting the location of the user
-*
 */
-public function initLoad_OLD()
-{
-	$this->layout = 'winvestify_init_layout';								// layout that just loads the minimum JVM in the browser
-        $protocol = "https://";
-        $this->set('forwardLink', $protocol . $this->request->domain() . '/marketplaces/getGlobalMarketPlaceData');
-}
-
-
-
 
 
     /**
@@ -681,7 +662,7 @@ public function requestNewPasswordPanel() {
 *
 */
 function deleteUser() {
-	$this->layout = 'zastac_admin_layout';
+	
 	
 }
 
@@ -876,27 +857,8 @@ echo "startDate = $startDate and endDate = $endDate <br>";
 	$objWriter->save($backupDir . $filename);
 }
 */
-    /** 
-     *
-     *
-     *
-     */
-    public function getlinkedaccountpasswords($companyId) {
-    Configure::write('debug', 2);
-    $this->autoRender = false;
 
-            $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
-            $resultLinkedAccounts = $this->Linkedaccount->find("all", array('conditions' => array('id >' => 0,
-                                                                                                'company_id' => $companyId,
-                                                                                        'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
-                                                                'fields' => array('company_id', 'investor_id', 
-                                                                'linkedaccount_username','linkedaccount_password'),
-                'recursive' => -1));
-
-        $this->print_r2($resultLinkedAccounts);
-
-    }
 
     /** 
      * Calculates a new access JWT or a new refresh JWT 
@@ -923,7 +885,7 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         $payload['exp'] = $payload['iat'] + WIN_JWT_DURATION;
         $payload['iss'] = "www.winvestify.com";  
         $payload['sub'] = $userData['Investor']['id'];
-//       $payload['menu_options'] = $menuData;
+        $payload['menu_options'] = $menuData;
         $payload['language'] = $userData['Investor']['investor_language'];
         $payload['role'] = $userData['Role']['role_name'];                    
         $payload['pmessage'] = true; 
@@ -939,4 +901,80 @@ echo "startDate = $startDate and endDate = $endDate <br>";
     }
 
 
+    
+    
+
+    /**
+     * 
+     * Check if a username already exists in the system
+     * This methods terminates the HTTP POST for actions
+     * Format POST /api/1.0/users/pre-check
+     * 
+     * @return boolean
+     */
+    public function v1_precheck() {
+        $data = $this->listOfQueryParams;
+        if (!empty($id)) {
+            $data['id'] = $id;              //?????? not required in this context
+        }
+
+        if (!$this->User->api_usernameExists($this->listOfQueryParams['username'])) { 
+            $apiResult = ['result' => false];
+        }
+        else {
+            $apiResult = ['result' => true]; 
+        }
+        
+        $this->response->statusCode(200);      
+        $resultJson = json_encode($apiResult);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;         
+    }    
+    
+    
+    
+ 
+    /** PENDING: NOT FINISHED, AND ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP POST.
+     * Deal with error of missing data
+     * Format POST /api/1.0/investors.json
+     * 
+     * @param -
+     */
+    public function v1_add() { 
+
+        echo __FILE__ . " " . __LINE__ . "\n";    
+        $this->print_r2($this->listOfFields);  
+
+        echo __FILE__ . " " . __LINE__ . "\n";  
+        $this->print_r2($this->listOfQueryParams);     
+
+        echo __FILE__ . " " . __LINE__ . "\n";
+        $this->print_r2($this->request->data);
+        
+        if ($this->Investor->save($this->listOfQueryParams, $validate = true)) {
+            $apiResult['investor']['id'] = $this->Investor->id;    
+            $resultJson = json_encode($apiResult); 
+var_dump($apiResult); 
+            $this->response->statusCode(201);              
+        }
+        else {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('USER_NOT_CREATED', 
+                                                        "User could not be created. More detailed information available", 
+                                                        $validationErrors);
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(403);                                       // 403 Forbidden              
+        }
+
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;       
+    } 
+ 
+    
+    
 }

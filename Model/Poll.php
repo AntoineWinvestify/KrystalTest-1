@@ -1,8 +1,7 @@
 <?php
 /**
-// @(#) $Id$
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2009, http://yoursite                                   |
+// | Copyright (C) 2017, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -16,22 +15,11 @@
 // | Author: Antoine de Poorter                                            |
 // +-----------------------------------------------------------------------+
 //
+
 * @author Antoine de Poorter
 * @version 0.1
-* @date 2016-10-07
+* @date 2019-01-13
 * @package
-*
-
-2016-10-07	  version 2016_0.1
-function calculateRating(). Revisit again and use pollId as id, not companyId	[OK, but retest due to changes]
-function readQuestionsData()													[OK, tested]
-function storeData()															[OK, tested]
-
-
-Pending:
-
-
-
 */
 
 

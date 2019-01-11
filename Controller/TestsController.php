@@ -109,8 +109,8 @@ class TestsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-  //      Configure::write('debug', 0);        
- //       $this->autoRender = false; 
+        Configure::write('debug', 2);        
+        $this->autoRender = false; 
         
         //$this->Security->requireAuth();
         $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","precheck","v1_index","v1_view",
@@ -119,10 +119,7 @@ class TestsController extends AppController {
             "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add", "indexv1company", "viewv1company",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", 
             "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor", "testDateDiff", "deleteFromUser",
-            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));
-   
-        echo "AAAAAAAA";
-        
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));       
     }
 
     public function pruebaYield() {
@@ -157,104 +154,6 @@ class TestsController extends AppController {
     }
  
   
-    /** STILL PENDING: NOT FULLY FINISHED MAKE IT AS GENERIC AS POSSIBLE
-     * This methods terminates the HTTP POST for actions
-     * Format POST /v1/users.json?_action=action&param1=value1&param3=value3..
-     * Example POST /v1/users.json?_action=precheck&username=pedro garcia
-     * 
-     * Format POST /v1/users/[investor_id].json?_action=action&param1=value1&param3=value3..
-     * Example POST /v1/users/1.json?_action=precheck&username=pedro garcia 
-     * 
-     * @param integer $id The database identifier of the requested resource for 
-     *                    which to execute the 'action'
-     */
-    public function precheck($id) { 
-
-        $data = $this->listOfQueryParams;
-        if (!empty($id)) {
-            $data['id'] = $id;              //?????? not required in this context
-        }
-
-        if (!$this->User->api_usernameExists($this->listOfQueryParams['username'])) { 
-            $apiResult = ['result' => false];
-        }
-        else {
-            $apiResult = ['result' => true]; 
-        }
-        
-        $this->response->statusCode(200);      
-        $resultJson = json_encode($apiResult);
-        $this->response->type('json');
-        $this->response->body($resultJson); 
-        return $this->response;         
-    }
-
-
-
-    /* to delete */
-    public function editCheck() {
-        
-        Configure::write('debug', 2);        
-        $this->autoRender = false;
-        $investorId = 1;
-        $fieldsToChange = ['name' => true,
-                            'surname' => 1,
-                            'investor_city' => true,
-                            'investor_DNI' => true,
-                            'email' => false
-                         ];
-        
-        $this->print_r2($fieldsToChange);
-        $result = $this->Check->api_editCheck($investorId, $fieldsToChange);
-        echo "\nresult = $result ! \n";
-    }
-
-    
-    
-   /** PENDING: NOT FINISHED, AND ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP POST.
-     * Format POST /v1/investors.json?param1=value11&param2=value2&param3=value3....
-     * Example GET /v1/investors.json?investor_name=Antoine&investor_surname=De Poorter
-     * 
-     * @param -
-     */
-    public function add() { 
-        $this->autoRender = false;
-
-        echo __FILE__ . " " . __LINE__ . "\n";    
-        $this->print_r2($this->listOfFields);  
-
-        echo __FILE__ . " " . __LINE__ . "\n";  
-        $this->print_r2($this->listOfQueryParams);     
-
-        echo __FILE__ . " " . __LINE__ . "\n";
-        $this->print_r2($this->request->data);
-        
-        if ($this->Investor->save($this->listOfQueryParams, $validate = true)) {
-            $apiResult = ['id' => $this->Investor->id];           
-            $resultJson = json_encode($apiResult); 
-            $this->response->statusCode(201);              
-        }
-        else {
-            $validationErrors = $this->Investor->validationErrors;
-            $this->Investor->apiVariableNameOutAdapter($validationErrors);
-
-            $formattedError = $this->createErrorFormat('USER_NOT_CREATED', 
-                                                        "User could not be created. More details for more", 
-                                                        $validationErrors);
-            $resultJson = json_encode($formattedError);
-            $this->response->statusCode(403);                                       // 403 Forbidden              
-        }
-
-        $this->response->type('json');
-        $this->response->body($resultJson); 
-        return $this->response;       
-    }     
-     
-    
-    
-    
-   
     
     public function recursiveSearchIncoming() {   
     Configure::write('debug', 2);        

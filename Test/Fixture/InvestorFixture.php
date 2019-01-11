@@ -33,6 +33,8 @@ class InvestorFixture extends CakeTestFixture {
         'investor_telephone' => array('type' => 'string', 'length' => 20),
         'investor_email' => array('type' => 'string', 'length' => 100),
         'investor_linkedAccounts' => array('type' => 'tinyinteger'),
+        'investor_identity' => array('type' => 'string', 'length' => 45),  
+        'investor_accredited' => array('type' => 'tinyinteger'),
         'created' => 'datetime',
         'modified' => 'datetime',
     );
@@ -47,6 +49,8 @@ class InvestorFixture extends CakeTestFixture {
         'investor_telephone' => "+34666555444",
         'investor_email' => "inigo@winvestify.com",
         'investor_linkedAccounts' => 3,
+        'investor_identity' => "deklu94jchtwk4de",
+        'investor_accredited' => false,        
         'created' => '2007-03-18 10:41:23',
         'modified' => '2007-03-18 10:43:31'
       ),
@@ -58,6 +62,9 @@ class InvestorFixture extends CakeTestFixture {
         'investor_dateOfBirth' => '1997-03-07',
         'investor_telephone' => "+34666777444",
         'investor_email' => "daniel@winvestify.com",
+        'investor_linkedAccounts' => 3,
+        'investor_identity' => "5h03jas87acwc",
+        'investor_accredited' => true,  
         'created' => '2007-03-18 10:43:23',
         'modified' => '2007-03-18 10:45:31'
       )

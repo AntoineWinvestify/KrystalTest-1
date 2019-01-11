@@ -571,6 +571,41 @@ function linkAccount() {
         return $this->response;               
     }     
 
-      
+    /** PENDING: ERROR HANDLING TOWARDS HTTP STILL TO TEST
+     * This methods terminates the HTTP POST for defining a new investor.
+     * Format POST /api/1.0/investors.json
+     * Example POST /api/1.0/investors.json
+     *
+     * @return mixed false or the database identifier of the new 'Investor' object
+     */
+    public function v1_add($id) { 
+        // somehow, $id is not loaded
+        $id = $this->request->params['id'];
+        $data = $this->listOfQueryParams;// holds all the new investor data
+var_dump($data);       
+        $data['id'] = $id;
+        $result = $this->Investor->api_addUser($data);
+        if (!($result)) {
+            $formattedError = $this->createErrorFormat('CANNOT_CREATE_INVESTOR_OBJECT', 
+                                                        "The system encountered an undefined error, try again later on");
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(500);                                    
+        }
+        else {
+var_dump($this->data);
+            if (!empty($result['Investor']['requireNewAccessToken'])) {
+                $apiResult = ['requireNewAccessToken' => true];
+                $this->Investor->apiVariableNameOutAdapter($apiResult);
+                $resultJson = json_encode($apiResult);
+            }
+            else {
+                $this->response->statusCode(204);
+            }
+        }
+        
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
+    }          
     
 }

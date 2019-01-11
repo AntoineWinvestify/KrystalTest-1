@@ -134,7 +134,7 @@ class User extends AppModel {
 
         $this->Investor = ClassRegistry::init('Investor');
 
-        /* Deletes a record that has not yet been confirmed */
+        // Deletes a record that has not yet been confirmed 
         $tempUserData = $this->isUncomfirmedAccount($username);
 
         if (!empty($tempUserData)) {
@@ -208,7 +208,7 @@ class User extends AppModel {
      * @param string	$username   name of the user
      * @return array                [0] requested code
      *                              [1] number of times a code has been requested 	
-     */
+     *//*
     public function readConfirmationCode($username) {
         $resultUser = $this->find('all', array('conditions' => array('User.username' => $username),
             'recursive' => 0,
@@ -217,7 +217,7 @@ class User extends AppModel {
         $codeInformation[0] = $resultUser[0]['Investor']['investor_tempCode'];
         $codeInformation[1] = $resultUser[0]['Investor']['investor_numberOfCodesSent'];
         return $codeInformation;
-    }
+    }*/
 
     /**
      * 	Reset the (counter) information related to a confirmation code used in the process of account registration/confirmation
@@ -275,7 +275,7 @@ class User extends AppModel {
      * 
      *  @param 	string	$username The username
      *  @return 	array   $userData the user data of an unconfirmed account 
-     */
+     *//*
     public function isUncomfirmedAccount($username) {
 
         $resultUser = $this->find("all", array('conditions' => array('username' => $username),
@@ -290,7 +290,7 @@ class User extends AppModel {
 
         $resultUser = [];
         return $resultUser;
-    }
+    }*/
 
     /**
      *
@@ -444,9 +444,35 @@ class User extends AppModel {
         if (empty($result)) { 
             return false;
         }
-        else {
-            return true;
-        }  
+        return true;
     }  
+    
+      
+    
+    /**
+     * Create a new 'User' object
+     * 
+     * @param int $investorId The database reference of the Investor object
+     * @param string $userName The username of the new user
+     * @param string $userPassword The password of the new user
+     * @param string $email The email of the new user
+     * @return mixed | false or Database reference of User object 
+     */
+    public function api_addUser($investorId, $userName, $userPassword, $email) {  
+        
+        $userData['username'] = $userName;
+        $userData['password'] = $userPassword;
+        $userData['email'] = $email; 
+        $userData['role_id'] = ROLE_INVESTOR;   
+        $userData['investor_id'] = $investorId;  
+        $userData['active'] = true;
+   
+        if ($this->save($userData, $validate = true)) { 
+            return $this->id;
+        }
+        return false;
+    }      
+    
+    
     
 }
