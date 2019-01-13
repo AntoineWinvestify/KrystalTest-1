@@ -53,23 +53,19 @@ class InvestorTest extends CakeTestCase {
  */
     
  public function startup(Controller $controller) {
-//        parent::startup($controller);
- //       $this->Controller = $controller;
-         
-  //      $this->Auth = new AuthComponent(); 
-   //     $this->Auth->initialize();       
-        // Make sure the controller is using pagination
-      // $this->Component->load('Auth)');
 
-    //        $this->Controller->Component->load = array();
         }
     
   
 
     public function testApi_addInvestor() {
 
+        $data0 = ['investor_telephone' => '+34666555444',
+                'investor_email' => 'user' . mt_rand(0, 100000) . '@winvestify.com',
+                'investor_name' => 'John'
+                ];        
         $data = ['investor_telephone' => '+34666555444',
-                'investor_password' => 'myPassword_12',
+                'investor_password' => 'myPassword_12s',
                 'investor_email' => 'user' . mt_rand(0, 100000) . '@winvestify.com',
                 'investor_name' => 'John',
                 'investor_surname' => 'Doe',
@@ -93,8 +89,12 @@ class InvestorTest extends CakeTestCase {
         $infoUser = $this->User->find("first", array('conditions' => array('investor_id' => $result),
                                                      'recursive' => -1));  
         $message3 = "Regular format of data for Saving to DB 'User' NOT approved";
-        $this->assertEquals($infoUser['User']['username'], $data['investor_email'], $message3);        
- //       $this->assertEquals($infoUser['User']['password'], $data['investor_password'], $message3); 
+        $this->assertEquals($infoUser['User']['username'], $data['investor_email'], $message3);    
+        
+	
+//	$originalPassword = Security::rijndael($infoUser['User']['password'], Configure::read('Security.salt'), 'decrypt');
+//        $this->assertEquals($data['investor_password'], $originalPassword, $message3); // password is encrypted in DB
+        
         $this->assertEquals($infoUser['User']['email'], $data['investor_email'], $message3);         
         $this->assertEquals($infoUser['User']['role_id'], ROLE_INVESTOR, $message3);  
         $this->assertEquals($infoUser['User']['active'], ACTIVE, $message3);  
@@ -104,50 +104,13 @@ class InvestorTest extends CakeTestCase {
         $message4 = "Regular format of data for Saving to DB 'Check' NOT approved";
         $this->assertEquals($infoCheck['Check']['check_telephone'], WIN_READONLY, $message4);     
         $this->assertEquals($infoCheck['Check']['check_email'], WIN_READONLY, $message4);        
-        $this->assertEquals($infoCheck['Check']['check_name'], false, $message4);        
-    }
-    
-    /*
-    
-    public function testCheckOver18() {
-        $expected = 42;                                                        
-        $result = $this->CheckOver18($companyId = 20, 
-                                                       $investorId = 25, 
-                                                        $username = "inigo.iturburua@gmail.com", 
-                                                        $password = "8870mit");
-        $this->assertEquals($expected, $result);      
-
+        $this->assertEquals($infoCheck['Check']['check_name'], false, $message4);   
         
-        $expected1 = 5;                                                        
-        $result1 = $this->CheckOver18($companyId = 10, 
-                                                        $investorId = 63, 
-                                                        $username = "inigo.iturburua@gmail.com", 
-                                                        $password = "8870mit");
-        $this->assertEquals($expected1, $result1);         
+        $result5 = $this->Investor->api_addInvestor($data0, $validate = true);        
+        $message5 = "Cannot create new investor as mimimum set of data is not provided";
+        $this->assertEquals($result5, false, $message5);       
         
     }
-    
-       
-    public function testwriteProtected() {
-        // Add new account to an already defined PFP
-        $result = $this->writeProtected($companyId = 10, 
-                                                $investorId = 63, 
-                                                $username = __FILE__ . "inigo.iturburua@gmail.com", 
-                                                $password = __FILE__ . "8870mit");
-        $accountownerId = $result;
-        $expected = 5;         
-        $this->assertEquals($expected, $result);        
-    
-        $expected = true;
-        $result1 = $this->Investor->accountAdded($accountownerId);
-        $this->assertEquals($expected, $result1);      
-    }
-        
-    
-    
-    */
-    
-
 
     
 }

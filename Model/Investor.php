@@ -946,12 +946,25 @@ class Investor extends AppModel {
 
 
     /**
-     * Create a new 'Investor' object
+     * Create a new 'Investor' object with the minimum set of data: email/username, password
+     * and telephone
      * 
      * @param array $userData The data required for defining a new investor
      * @return mixed false or the database reference of the created Investor object
      */
     public function api_addInvestor($userData) {  
+        
+        if (!array_key_exists('Investor', $userData)) {
+            foreach ($userData as $key => $userItem) {
+                $userData['Investor'][$key] = $userItem;
+            }
+        }        
+        
+        if (empty($userData['Investor']['investor_email']) || 
+            empty($userData['Investor']['investor_password']) ||
+            empty($userData['Investor']['investor_telephone'])) {
+                return false;
+        }
         
         if ($this->save($userData, $validate = true)) {
             $investorId = $this->id;
@@ -964,12 +977,7 @@ class Investor extends AppModel {
             $checkId = $this->Check->id;
 
             $this->User = ClassRegistry::init('User');
-            if (!array_key_exists('Investor', $userData)) {
-                $userData['Investor']['investor_email'] = $userData['investor_email'];
-                $userData['Investor']['investor_password'] = $userData['investor_password'];
-                $userData['Investor']['investor_email'] = $userData['investor_email'];
-            }
-            
+
             if (!$this->User->api_addUser($investorId, $userData['Investor']['investor_email'], 
                                                   $userData['Investor']['investor_password'], 
                                                   $userData['Investor']['investor_email'])) {

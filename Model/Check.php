@@ -1,7 +1,7 @@
 <?php
 /**
   // +-----------------------------------------------------------------------+
-  // | Copyright (C) 200, http://www.winvestify.com                         |
+  // | Copyright (C) 2019, http://www.winvestify.com                         |
   // +-----------------------------------------------------------------------+
   // | This file is free software; you can redistribute it and/or modify     |
   // | it under the terms of the GNU General Public License as published by  |
@@ -14,8 +14,8 @@
   // +-----------------------------------------------------------------------+
   //
  * @author
- * @version 0.2
- * @date 2017-03-04
+ * @version 0.1
+ * @date 2019-01-04
  * @package
  */
 /*
@@ -105,7 +105,9 @@ class Check extends AppModel {
      * @return boolean
      */
     public function api_editCheck($investorId, $fieldsToChange) {
-        
+        if (empty($investorId)) {
+            return false;
+        }        
         $date = new DateTime('now');
         $datetime = $date->format('Y-m-d H:i:s');
          
@@ -121,7 +123,11 @@ class Check extends AppModel {
                                                 'fields' => 'id',
                                                 'recursive' => -1]
                              );
-
+ 
+        if (empty($tempId)) {
+            return false;
+        }
+        
         $data['id'] = $tempId['Check']['id'];
 
         if ($this->save($data, $validate = true)){
@@ -140,7 +146,9 @@ class Check extends AppModel {
      * @return boolean
      */
     public function api_addCheck($investorId, $readOnlyFields) {
-
+        if (empty($readOnlyFields) || empty($investorId)) {
+            return false;
+        }
         foreach ($readOnlyFields as $field) {
             $newReadOnlyIndex[$field] = WIN_READONLY;
         }
@@ -152,8 +160,10 @@ class Check extends AppModel {
                 $this->delete($investorId);
                 return false;
             }
-            return true;
+            return $this->id;
         }
         return false;         
     }
+    
+    
 }
