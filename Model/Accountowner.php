@@ -195,13 +195,13 @@ class Accountowner extends AppModel {
     }
 
     /**
-     * Chech
+     * Check if the investor already have linked an account owner.
      * 
      * @param int $investorId
      * @param int $companyId
      * @param string $username
      * @param string $password
-     * @return boolean
+     * @return boolean/array
      */
     public function checkAccountOwner($investorId, $companyId, $username, $password) {
         $accountFinded = null;

@@ -28,6 +28,9 @@
  * function pre_check
  * function edit
  * function add
+ * 
+ * 2019-01-14	  version 0.3
+ * function delete
  */
 
 class LinkedaccountsController extends AppController {
