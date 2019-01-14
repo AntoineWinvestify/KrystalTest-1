@@ -46,8 +46,8 @@ class LinkedaccountsController extends AppController {
     /** 
      * This methods terminates the HTTP GET.
      * Format GET /v1/linkedaccounts?[status]
-     * 
-     * 
+     * Example GET /v1/linkedaccounts?linkedaccount_status=ACTIVE
+     *             /v1/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
      * @return string
      * 
      */
@@ -152,7 +152,7 @@ class LinkedaccountsController extends AppController {
      * @return string
      */
     public function v1_delete($id){
-        
+        $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
     }
     
     

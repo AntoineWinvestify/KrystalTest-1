@@ -515,7 +515,7 @@ class Linkedaccount extends AppModel {
      * 	@return 	true	record(s) deleted
      * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
      */
-    public function api_deleteLinkedaccount($linkaccountId, $originator = WIN_USER_INITIATED) {
+    public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
                
         $indexList = $this->find('all', $params = array('recursive' => -1,
             'conditions' => array('linkaccount_id' => $linkaccountId),
@@ -526,7 +526,7 @@ class Linkedaccount extends AppModel {
             return false;
         }
 
-        if ($originator == WIN_USER_INITIATED) {
+        if ($roleName == 'Investor') {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_AND_DELETED_BY_USER;
         } 
         else {
@@ -568,7 +568,10 @@ class Linkedaccount extends AppModel {
             );
 
             if ($this->save($linkedAccountData, $validation = true)) {
-                return true;
+                $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
+                $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
+                $this->Accountowner->save(array('accountowner_linkedAccountCounter' => $linkedaccountCount));
+                return true; 
             } 
             else {
                 return false;
@@ -591,12 +594,12 @@ class Linkedaccount extends AppModel {
         $accountOwnerId = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
         if (!empty($accountOwnerId)) {
             //Not new Accountowner
-            return $this->Linkedaccount->addLinkedaccount($accountOwnerId, $identity, $displayName, $currency);
+            return $this->addLinkedaccount($accountOwnerId, $identity, $displayName, $currency);
         } 
         else {
             //New Accountowner
             $newAccountOwnerId = $this->Accountowner->createAccountOwner($this->investorId, $companyId, $username, $password);
-            return $this->Linkedaccount->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
+            return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
 

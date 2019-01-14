@@ -106,8 +106,8 @@ class AppController extends Controller {
     
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
     protected $investorId;                      // Investor id from the user. We get it from the token
-    protected $language;                          // Language for translations.  We get it from the token
-    
+    protected $language;                        // Language for translations.  We get it from the token
+    protected $roleName;                        // Name of the user role
     
     
     public $components = array('DebugKit.Toolbar',
