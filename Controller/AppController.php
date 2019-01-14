@@ -105,6 +105,9 @@ class AppController extends Controller {
                                                 // that case all entries are considered as OR condition
     
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
+    protected $investorId;                      // Investor id from the user. We get it from the token
+    protected $language;                        // Language for translations.  We get it from the token
+    protected $roleName;                        // Name of the user role
     protected $action;                           // The 'action' of a POST operation
     
     
@@ -741,5 +744,26 @@ class AppController extends Controller {
         }
         return implode('', $pieces);
     }   
+    function generateLink($endpoint, $rel, $parameter) {
+        $this->endpointsVersion = Configure::read('generateLink');
+        $version = $this->endpointsVersion[$endpoint];
+        switch ($rel) {
+            case 'edit':
+                $link['method'] = 'PATCH';
+                break;
+            case 'delete':
+                $link['method'] = 'DELETE';
+                break;
+            case 'monitor':
+                $link['method'] = 'GET';
+                break;
+        }
+        $link['rel'] = $rel;
+        $link['href'] = 'api' . DS . $version . DS . $endpoint . DS . $parameter;
+        return $link;
+    }
+            
+    
+    
 
 }

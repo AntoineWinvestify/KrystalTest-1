@@ -69,8 +69,8 @@ class Investor extends AppModel {
     
     var $name = 'Investor';
     public $hasMany = array(
-        'Linkedaccount' => array(
-            'className' => 'Linkedaccount',
+        'Accountowner' => array(
+            'className' => 'Accountowner',
             'foreignKey' => 'investor_id',
             'fields' => '',
             'order' => '',

@@ -101,8 +101,8 @@ class CollectDataClientShell extends GearmanClientShell {
                             $linkAccountId[] = $linkaccountIdInFlow;
                         }
                         $filterConditions = array(
-                                'investor_id' => $investorId,
-                                'id' => $linkAccountId
+                                'Accountowner.investor_id' => $investorId,
+                                'Linkedaccount.id' => $linkAccountId
                             );
                     }
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
@@ -113,7 +113,7 @@ class CollectDataClientShell extends GearmanClientShell {
                     //In this case $key is the number of the linkaccount inside the array 0,1,2,3
                     $i = 0;
                     foreach ($linkedaccountResult as $linkedaccount) {
-                        $companyType = $companyTypes[$linkedaccount['Linkedaccount']['company_id']];
+                        $companyType = $companyTypes[$linkedaccount['Accountowner']['company_id']];
                         $folderExist = $this->verifyCompanyFolderExist($pendingJobs[$key]['Queue2']['queue2_userReference'], $linkedaccount['Linkedaccount']['id']);
                         //We verify that a company doesn't have a folder with information, 
                         //if the folder exists, it means that we get than company previously on that day

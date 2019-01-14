@@ -54,7 +54,7 @@ class AppModel extends Model {
     private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
                                 'investor_dateOfBirth' => 'investor_date_of_birth',
                                 'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
-                                'linkedaccount_state' => 'linkedaccount_status',
+                                'linkedaccount_status' => 'linkedaccount_status',
                                 'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing
                                 'investor_postCode' => 'investor_postcode',
                                 'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
@@ -66,6 +66,13 @@ class AppModel extends Model {
                                 'accountDisplayName' => 'account_display_name',
                                 'displayName' => 'display_name',
                                 'usertoken_refreshToken' => 'refresh_token',
+                                'linkedaccount_accountIdentity' => 'linkedaccount_identity',
+                                'linkedaccount_accountDisplayName' => 'linkedaccount_platform_display_name',
+                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
+                                'linkedaccount_apiStatus' => 'linkedaccount_status',
+                                'accountowner_username' => 'linkedaccount_username',
+                                'accountowner_password' => 'linkedaccount_password',
+                                'accountCheck'  => 'linkedaccount_linkingstatus',
                                 'requireNewAccessToken'=> 'require_new_access_token',
  
                               ];
@@ -398,11 +405,23 @@ class AppModel extends Model {
         return true;
     }   
     
-    
-    
-    
-    
-    
-    
+        /**
+     *
+     * 	Creates a new instance of class with name company, like zank, or comunitae....
+     *
+     * 	@param 		int 	$companyCodeFile		Name of "company"
+     * 	@return 	object 	instance of class "company"
+     *
+     */
+    function companyClass($companyCodeFile) {
+
+        $dir = Configure::read('companySpecificPhpCodeBaseDir');
+        $includeFile = $dir . $companyCodeFile . ".php";
+        require_once($dir . 'p2pCompany.class' . '.php');   // include the base class IMPROVE WITH spl_autoload_register
+        require_once($includeFile);
+        $newClass = $companyCodeFile;
+        $newComp = new $newClass;
+        return $newComp;
+    }  
     
 }
