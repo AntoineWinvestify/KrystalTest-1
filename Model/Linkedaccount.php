@@ -523,9 +523,18 @@ class Linkedaccount extends AppModel {
         );
 
         if (empty($indexList)) {
-            return false;
+            return json_encode($return['feedback_message_user'] = 'Account removal failed.');
         }
 
+        //Check if the investor is the propreary pf the account.
+        $this->Accountowner = ClassRegistry::init('Accountowner');
+        $accountOwner = $this->Accountowner->find('first',array(
+           'conditions' => array('id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
+        ));
+        if($accountOwner == false){
+            return json_encode($return['feedback_message_user'] = 'Account removal failed.');
+        }
+       
         if ($roleName == 'Investor') {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_AND_DELETED_BY_USER;
         } 
@@ -535,14 +544,12 @@ class Linkedaccount extends AppModel {
 
         $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
         $this->updateAll($newData, $linkaccountId);
-
-        $this->Accountowner = ClassRegistry::init('Accountowner');
-
+      
         foreach ($indexList as $index) {
             $this->Accountowner->accountDeleted($index['accountowner_id']);
         }
 
-        return true;
+        return json_encode($return['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.');
     }
 
 

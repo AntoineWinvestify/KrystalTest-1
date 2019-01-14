@@ -195,11 +195,12 @@ class Accountowner extends AppModel {
     }
 
     /**
+     * Chech
      * 
-     * @param type $investorId
-     * @param type $companyId
-     * @param type $username
-     * @param type $password
+     * @param int $investorId
+     * @param int $companyId
+     * @param string $username
+     * @param string $password
      * @return boolean
      */
     public function checkAccountOwner($investorId, $companyId, $username, $password) {

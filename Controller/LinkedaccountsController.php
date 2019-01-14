@@ -147,12 +147,13 @@ class LinkedaccountsController extends AppController {
     }
     
     /**
-     * 
+     * Format DELETE api/1.0/linkedaccounts/[linkedaccountId]
+     * Example DELETE api/1.0//linkedaccounts/945
      * @param int $id
      * @return string
      */
     public function v1_delete($id){
-        $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
+        return $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
     }
     
     
