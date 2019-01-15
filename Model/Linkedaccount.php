@@ -223,13 +223,13 @@ class Linkedaccount extends AppModel {
          * @return boolean true
          */
 	public function beforeFind($queryData) {
-                if(!empty($queryData['conditions']['linkedaccount_status'])){
-                    switch ($queryData['conditions']['linkedaccount_status']) {
+                if(!empty($queryData['conditions']['Linkedaccount.linkedaccount_status'])){
+                    switch ($queryData['conditions']['Linkedaccount.linkedaccount_status']) {
                         case 'ACTIVE':
-                            $queryData['conditions']['linkedaccount_status'] = WIN_LINKEDACCOUNT_ACTIVE;
+                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_ACTIVE;
                             break;
                         case 'SUSPENDED':
-                            $queryData['conditions']['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
+                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
                             break;
                         default:
                             break;
@@ -611,5 +611,22 @@ class Linkedaccount extends AppModel {
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
-
+    
+    /**
+     * Return the accountOwners of an given investor with the related linkedaccounts.
+     * 
+     * @param int $linkedaccountId                                             Id of the linkedaccount
+     * @param array $linkedaccountFields                                       Request fields 
+     * @return array
+     */
+    public function api_readLinkedaccount($linkedaccountId, $linkedaccountFields) {
+        
+        $linkedaccount = $this->Linkedaccount->find('first', array('recursive' => -1,
+                'conditions' => array('Linkedaccount.id' => $linkedaccountId),
+                'fields' => $linkedaccountFields
+            )); 
+        return $linkedaccount;
+        
+    }
+    
 }
