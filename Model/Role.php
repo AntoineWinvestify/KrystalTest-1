@@ -45,7 +45,7 @@ class Role extends AppModel {
     
     /**
      * 
-     * Update the corresponding fields in the 'paymenttotal' table 
+     * Translates the role_name to its role_id
      * 
      * @param string $roleName Name of the role to translate
      * @return int id of the role

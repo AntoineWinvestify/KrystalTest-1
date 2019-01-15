@@ -72,6 +72,15 @@ class User extends AppModel {
         )
 */
     );
+ 
+    public $hasMany = array(
+        'Usertoken' => array(
+            'className' => 'Usertoken',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        )
+    );    
     
     public $belongsTo = array(
         'Role' => array(
@@ -473,6 +482,43 @@ class User extends AppModel {
         return false;
     }      
     
+    /**
+     * A JWT is deleted
+     * 
+     * @param array $refreshToken An array of 1 or more tokens to be deleted, i.e. 
+     * they can no longer be used to request new access tokens
+     * @return boolean
+     */
+    public function api_logout($refreshToken) {
+        $this->Usertoken->apiDeleteUserToken($token);
+        return true;
+    }  
     
+    /**
+     * A new (refreshtoken) token is prepared which can be used in the future to
+     * renew existing JWT.   
+     * 
+     * @param int $userId The internal database reference of the User object
+     * @return mixed refreshToken or false
+     */
+    public function api_addUserToken($userId) {
+        $token = $this->Usertoken->addUserToken($userId);
+        if (!empty($token)) {
+            return $token;
+        }
+        false;
+    }    
+
+    
+    /**
+     * A new access token is generated
+     * 
+     * @param string $refreshToken The refheshToken for which a new access token is to be generated
+     * @return boolean ! JWT False in case of internal error.
+     */
+    public function api_getNewAccessToken($refreshToken) {
+        $this->Usertoken->apiGetNewAccessToken($refreshToken);
+        return true;
+    }       
     
 }

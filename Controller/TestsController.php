@@ -129,6 +129,13 @@ class TestsController extends AppController {
     }
 
     
+    public function editCheck() {
+    echo __FILE__ . " " . __LINE__ . "\n";        
+    //$this->App = ClassRegistry::init('App');
+    
+
+    exit;
+    }
    
     
     
