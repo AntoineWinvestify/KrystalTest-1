@@ -1366,6 +1366,43 @@ class p2pCompany {
         $this->password = $password;
     }
 
+    
+    /**
+     * 
+     * Gets the linkedaccount identifier
+     */
+    public function  getLinkedAccountIdentity(){
+        return $this->linkedaccountIdentity;
+    }
+    
+    /**
+     * 
+     * Sets the linkedaccount identifier
+     * @param type $identifier
+     */
+    public function  setLinkedAccountIdentity($identity){
+        $this->linkedaccountIdentity = $identity;
+    }
+
+     /**
+     * 
+     * Gets the linkedaccount currency
+     * return type $currency
+     */
+    public function getCurrency(){
+        return $this->linkedaccountCurrency;
+    }
+
+    
+     /**
+     * 
+     * Sets the linkedaccount currency
+     * @param type $currency
+     */
+    public function setCurrency($currency){
+         $this->linkedaccountCurrency = $currency;
+    }
+
     /**
      * Generate a cookies file per user and per company to keep their cookies
      * @return string It is the name of the cookies file

@@ -737,8 +737,11 @@ class mintos extends p2pCompany {
         'F' => 'Currency'
             );
     
-    
-       
+    protected $mintosCurrencies = array(
+        'EUR' => '€',
+        'GEL' => 'ლ'
+    );
+
     function __construct() {
         parent::__construct();
         $this->i = 0;
@@ -842,7 +845,99 @@ class mintos extends p2pCompany {
         return false;
     }
 
+/**
+     *
+     * 	Checks if the user can login to its portal. Typically used for linking a company account
+     * 	to our account
+     *
+     * 	@param string	$user		username
+     * 	@param string	$password	password
+     * 	@return	boolean	true: 		user has succesfully logged in. $this->mainPortalPage contains the entry page of the user portal
+     * 					false: 		user could not log in
+     *
+     */
+    function companyUserLoginMultiAccount($user = "", $password = "", $options = array()) {
+        /*
+          FIELDS USED BY YYYYYYYYY  DURING LOGIN PROCESS
+          $credentials['_csrf_token'] = "XXXXX";
+         */
 
+        //First we need get the $csrf token
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+
+        $input = $this->getElements($dom, 'input', 'name', '_csrf_token');
+        $csrf = $input[0]->getAttribute('value'); //this is the csrf token
+
+        $credentials['_username'] = $user;
+        $credentials['_password'] = $password;
+        $credentials['_csrf_token'] = $csrf;
+        $credentials['_submit'] = '';
+
+
+        if (!empty($options)) {
+            foreach ($options as $key => $option) {
+                $credentials[$key] = $option[$key];
+            }
+        }
+
+        //print_r($credentials);
+
+        $str = $this->doCompanyLogin($credentials); //do login
+
+
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;  //Check if works
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        // echo $str;
+
+        $confirm = false;
+
+        $as = $dom->getElementsByTagName('a');
+        $this->verifyNodeHasElements($as);
+        if (!$this->hasElements) {
+            return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+        }
+        foreach ($as as $a) {
+            // echo 'Entrando ' . 'href value; ' . $a->getAttribute('herf') . ' node value' . $a->nodeValue . HTML_ENDOFLINE;
+            if (trim($a->nodeValue) == 'Overview') {
+                //echo 'a encontrado' . HTML_ENDOFLINE;
+                $confirm = true;
+            }
+
+            //Get logout url
+            if ($a->getAttribute('class') == 'logout main-nav-logout u-c-gray') {
+                $url = $a->getAttribute('href');
+            }
+        }
+
+        //Start reading multiaccount
+        $str = $this->getCompanyWebpage();
+        $dom = new DOMDocument;  //Check if works
+        $dom->loadHTML($str);
+        $dom->preserveWhiteSpace = false;
+        $divs = $this->getElements($dom, 'div', 'id', 'visible-currencies');
+        foreach ($divs as $key => $div) {
+            $labels = $this->getElements($div, 'label');
+            foreach ($labels as $keyLabel => $label) {
+                $labelValue = $label->nodeValue;
+                $currencyIdentity = $label->getAttribute('for');
+                $accounts[$keyLabel]['linkedaccount_currency'] = explode(" ", trim($labelValue))[0];
+                $accounts[$keyLabel]['linkedaccount_accountIdentity'] = explode("-", trim($currencyIdentity))[2];
+                $accounts[$keyLabel]['linkedaccount_accountDisplayName'] = $user . '[' . explode(" ", trim($labelValue))[0] . ']';
+
+            }
+        }
+        //print_r($accounts);
+        if (!empty($accounts)) {
+            return $accounts;
+        }
+        return false;
+    }
+    
     /**
      * Download investments and cash flow files and collect control variables
      * 
@@ -932,9 +1027,16 @@ class mintos extends p2pCompany {
                 //$credentialsFile = 'purchased_from=&purchased_till=&statuses%5B%5D=256&statuses%5B%5D=512&statuses%5B%5D=1024&statuses%5B%5D=2048&statuses%5B%5D=8192&statuses%5B%5D=16384&+=256&+=512&+=1024&+=2048&+=8192&+=16384&listed_for_sale_status=&min_interest=&max_interest=&min_term=&max_term=&with_buyback=&min_ltv=&max_ltv=&loan_id=&sort_field=&sort_order=DESC&max_results=20&page=1&include_manual_investments=';
                 $this->fileName = $this->nameFileInvestment . $this->numFileInvestment . "." . $this->typeFileInvestment;
                 $this->headerComparation = $this->investmentHeader;
+                
+                //Get currency download code;
+                $dom = new DOMDocument;  //Check if works
+                libxml_use_internal_errors(true);
+                $dom->loadHTML($str);
+                $dom->preserveWhiteSpace = false;                
+                
                 $url = array_shift($this->urlSequence);
-                $referer = array_shift($this->urlSequence);
-                $credentials = array_shift($this->urlSequence);
+                $referer = str_replace('{$currency}', $this->linkedaccountIdentity, array_shift($this->urlSequence));
+                $credentials = str_replace('{$currency}', $this->linkedaccountIdentity, array_shift($this->urlSequence));
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 if (Configure::read('debug')) {
@@ -998,10 +1100,12 @@ class mintos extends p2pCompany {
                 
                 $referer = strtr($this->tempUrl['transactionReferer'], array('{$date1}' => $dateInit));
                 $referer = strtr($referer, array('{$date2}' => $dateFinish));
+                $referer = str_replace('{$currency}', $this->linkedaccountIdentity, $referer);
                 echo "referer " . $referer;
                 
                 $credentials = strtr($this->tempUrl['transactionsCredentials'], array('{$date1}' => $dateInit));
                 $credentials = strtr($credentials, array('{$date2}' => $dateFinish));
+                $credentials = str_replace('{$currency}', $this->linkedaccountIdentity, $credentials);
                 echo "credentials " . $credentials;
                 
                 $headers = strtr( $this->tempUrl['headersJson'], array('{$baseUrl}' => $this->baseUrl));
@@ -1059,8 +1163,8 @@ class mintos extends p2pCompany {
                 $this->fileName = $this->nameFileExpiredLoan . $this->numFileExpiredLoan . "." . $this->typeFileExpiredLoan;
                 $this->headerComparation = $this->expiredLoansHeader;
                 $url = array_shift($this->urlSequence);
-                $referer = array_shift($this->urlSequence);
-                $credentials = array_shift($this->urlSequence);
+                $referer = str_replace('{$currency}', $this->linkedaccountIdentity, array_shift($this->urlSequence));
+                $credentials = str_replace('{$currency}', $this->linkedaccountIdentity, array_shift($this->urlSequence));
                 $headersJson = array_shift($this->urlSequence);
                 $headers = strtr($headersJson, array('{$baseUrl}' => $this->baseUrl));
                 if (Configure::read('debug')) {
@@ -1125,15 +1229,18 @@ class mintos extends p2pCompany {
                 $dom->preserveWhiteSpace = false;
                 
                 $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
-                $eurDashboardFound = false;
+                $currencyDashboardFound = false;
+                
+                $currency = $this->mintosCurrencies[$this->currency];
                 foreach($boxes as $keyBox => $box){
                     $boxValue = $box->nodeValue;
                     echo $boxValue;
-                    if(strpos($boxValue, '€') !== false){
-                        echo 'Dashboard with € found';
-                        $eurDashboardFound = true;
+                    if(strpos($boxValue, $currency) !== false){
+                        echo "Dashboard with $currency found";
+                        $currencyDashboardFound = true;
                     }
                     else{
+                         echo "Dashboard with $currency not found, reading next dashboard";
                         continue;
                     }
 
