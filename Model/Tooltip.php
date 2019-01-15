@@ -1,5 +1,4 @@
 <?php
-
 /**
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2017, https://www.winvestify.com                        |
@@ -52,8 +51,8 @@ class Tooltip extends AppModel {
     var $uses = array('Tooltipincompany');
 
     /**
-     * 
      * Search all the tooltips from a company
+     * 
      * @param int $companyId pfp id to search the tooltips
      * @param string $locale
      * @return array
@@ -83,8 +82,8 @@ class Tooltip extends AppModel {
     }
 
     /**
+     * Search in Tooltips directly to translate the tooltips to the given locale
      * 
-     *  Search in Tooltips directly to translate the tooltips to the given locale
      * @param array $tooltips
      * @param string $locale
      * @return array
@@ -104,8 +103,8 @@ class Tooltip extends AppModel {
     }
 
     /**
-     * 
      * Filter the tooltip from a company to obtain only the tooltips we want
+     * 
      * @param array $tooltipIdentifier List of tooltip we want
      * @param array $tooltipArray List of all tooltip from a pfp
      * @return array
@@ -124,8 +123,8 @@ class Tooltip extends AppModel {
     }
 
     /**
-     * 
      * Get global tooltips that don't belong to a company
+     * 
      * @param array $tooltipIdentifier List of tooltip we want
      * @param string $locale
      * @return array
@@ -149,8 +148,8 @@ class Tooltip extends AppModel {
     }
 
     /**
-     * 
      * Get tooltips from model and format the array for the api
+     * 
      * @param array $tooltipIdentifier
      * @param string $locale
      * @param int $company
