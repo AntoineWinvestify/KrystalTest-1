@@ -98,7 +98,8 @@
  */
 App::uses('CakeEvent', 'Event');
 App::uses('CakeTime', 'Utility');
-require_once(ROOT . DS . 'app' . DS . 'Vendor' . DS . 'autoload.php');
+App::uses('AppController', 'Controller');
+require_once (ROOT . DS . 'app' . DS .  'Vendor' . DS  . 'autoload.php');	
 
 class MarketPlacesController extends AppController {
 

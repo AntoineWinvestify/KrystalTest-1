@@ -29,17 +29,11 @@
  * 2017-10-24 version_0.3
  * Integration of parsing amortization tables with Gearman and fileparser
  * 
- * 2017-03-11 version 0.4
- * Header added in amortization tables.
- * 
- * 2017-06-11 version 0.5
- * Finalized investment download in getPfpFiles
- *  
+ * Parser AmortizationTables                                            [OK, tested]
  */
 
 /**
  * Contains the code required for accessing the website of "Twino".
- * Parser AmortizationTables                                            [OK, tested]
  * function calculateLoanCost()						[Not OK]
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
@@ -545,7 +539,7 @@ class twino extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    /**
+     /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account
      * 	to our account
@@ -640,7 +634,7 @@ class twino extends p2pCompany {
                 echo $this->tempUrl['ExportInvestment'];
                 print_r($this->urlSequence);
                 $this->idForSwitch++;
-                $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
+                $next = $this->getCompanyWebpageMultiCurl(null, $credentialsFile, true);
                 break;
             case 4:
                 //Download investment
@@ -651,7 +645,7 @@ class twino extends p2pCompany {
                     echo 'Reading download status: ' . SHELL_ENDOFLINE;
                     $this->statusDownloadUrl = array_shift($this->urlSequence);
                     $this->idForSwitch++;
-                    $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
+                    $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     break;
                 }
                 $this->idForSwitch++;
@@ -799,7 +793,7 @@ class twino extends p2pCompany {
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['transactionDownloadInit'], $credentialsFile, true);
                 break;
-            case 10:
+            case 7:
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -822,7 +816,7 @@ class twino extends p2pCompany {
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['transactionReferer'], false, false, $this->fileName);
                     break;
                 }
-            case 11:
+            case 8:
                 echo $str;
                 $response = json_decode($str, true);
                 print_r($response);
@@ -844,7 +838,7 @@ class twino extends p2pCompany {
                     echo 'Repeat Case: ' . $this->idForSwitch . SHELL_ENDOFLINE;
                 }
                 break;
-            case 12:
+            case 9:
                 if (!$this->verifyFileIsCorrect()) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);
                 }
@@ -871,7 +865,7 @@ class twino extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl();
                 //return $tempArray["global"] = "waiting_for_global";
                 break;
-            case 13:
+            case 10:
                 echo $str;
                 $variables = json_decode($str, true);
                 print_r($variables);
@@ -885,7 +879,7 @@ class twino extends p2pCompany {
         }
     }
 
-    /**
+     /**
      * Get amortization tables of user investments
      * @param string $str It is the web converted to string of the company.
      * @return array html of the tables

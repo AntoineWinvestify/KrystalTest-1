@@ -818,6 +818,45 @@ function getlevel() {
     return $this->filteredArray;
   }
   
+    /**
+     * Clean the array of unnecessary dates
+     * @param array $tempArray the array to clean
+     * @param object $companyHandle It is the company instance
+     * @param array $config Configuration array with values to use to delete
+     * @return null if $config not exist or $startDate is empty
+     */
+    public function cleanDatesTempArray(&$tempArray, $companyHandle, $config) {
+        if (empty($config)) {
+            return;
+        }
+        if (empty($this->startDate)) {
+            return;
+        }
+        $rangeDates = $this->createDateRange($this->startDate, $this->finishDate);
+        array_shift($rangeDates);
+        array_push($rangeDates, $this->finishDate);
+        foreach ($tempArray as $keyDate => $data) {
+            $date = date("Ymd", strtotime($keyDate));
+            if (!in_array($date, $rangeDates)) {
+                unset($tempArray[$keyDate]);
+            }
+        }
+    }
+    
+    function setCallbacks($callbacks) {
+        $this->callbacks = $callbacks;
+    }
+
+    function setCompanyHandle($companyHandle) {
+        $this->companyHandle = $companyHandle;
+    }
+
+    function setMyParser($myParser) {
+        $this->myParser = $myParser;
+    }
+
+
+    
 }
 
 

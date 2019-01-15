@@ -38,11 +38,11 @@
 
 class Tooltip extends AppModel {
 
-    public $actsAs = array(
+    /*public $actsAs = array(
         'Translate' => array(
             'tooltip_text'
         )
-    );
+    );*/
     public $hasMany = array(
         'Tooltipincompany' => array(
             'className' => 'Tooltipincompany',

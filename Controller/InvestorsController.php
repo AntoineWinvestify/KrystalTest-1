@@ -40,6 +40,7 @@
  * 
  */
 
+App::uses('AppController', 'Controller');
 
 class InvestorsController extends AppController {
 
