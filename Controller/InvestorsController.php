@@ -531,7 +531,7 @@ function linkAccount() {
 
    
     /** PENDING: ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP PATCH/PUT.
+     * This methods terminates the HTTP PATCH
      * Format PATCH /api/1.0/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
      * Example PATCH /api/1.01/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
      *
