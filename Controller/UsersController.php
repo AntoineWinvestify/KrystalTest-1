@@ -889,27 +889,26 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         $payload['language'] = $userData['Investor']['investor_language'];
         $payload['role'] = $userData['Role']['role_name'];                    
         $payload['pmessage'] = false; 
-        $payload['account_display_name'] = $userData['Investor']['investor_name'] . " " . $userData['Investor']['investor_surname']; 
+
         $payload['endpoints'] = 888;   
         
         if ($typeOfToken == WIN_ACCESS_TOKEN) {
-            $payload['refresh_token'] = $this->User->apiGetNewToken($userData['id']);
+            $payload['refresh_token'] = $this->User->api_getNewToken($userData['id']);
+            $payload['account_display_name'] = $userData['Investor']['investor_name'] . " " . $userData['Investor']['investor_surname']; 
         } 
-        else {      // type = $this->refreshToken
+        else {      // type = WIN_REFRESH_TOKEN
             $payload['refresh_token'] = $this->User->api_getNewAccessToken($refreshToken);
+            $payload['account_display_name'] = $this->accountDisplayName;
         }
-        
-        $token = JWT::encode($payload, Configure::read('Security.salt'));    
+   
+        $token = JWT::encode($payload, Configure::read('Security.salt')); 
         return $token;
     }
 
 
-    
-    
-
     /**
      * 
-     * Check if a username already exists in the system
+     * Check if a proposed username already exists in the system
      * This methods terminates the HTTP POST for actions
      * Format POST /api/1.0/users/pre-check
      * 
@@ -984,33 +983,37 @@ var_dump($apiResult);
      *
      */
     public function logout() {
-        $this->User->api_logout($this->refreshToken);
+    
+        $this->User->api_logout($this->data['refresh-token']);
+        $this->response->statusCode(200);         
+        return $this->response;
     }    
 
     
     /**
      *	
-     * Get a new access token for a user
+     *  a new access token for a user
+     * 
      * @param string $refreshToken The token to use for generating a new token
-     *
      */
-    public function v1_refreshtoken($refreshToken) {
-        // Collect the relevant user data for JWT generation        
+    public function refreshtoken() {
+        // Collect the relevant user data for JWT generation 
+
         $this->Role = ClassRegistry::init('Role');
         $userData['Role']['role_name'] = $this->roleName;        
         $userData['Role']['id'] = $this->Role->translateRoleName2RoleId($this->roleName);
         $userData['Investor']['investor_language'] = $this->language;
         $userData['Investor']['id'] = $this->InvestorId;
         $userData['Investor']['investor_name'] = $this->accountDisplayName;
-      
+
         $token = $this->getNewJWT($userData, WIN_REFRESH_TOKEN, $this->refreshToken);
-        
+          
         if (!empty($token)) {
             $result['token'] = $token;  
             $resultJson = json_encode($result);
             $this->response->statusCode(200);         
             $this->response->type('json');
-            $this->response->body($resultJson); 
+            $this->response->body($resultJson);         
             return $this->response;
         }
         else {

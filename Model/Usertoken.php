@@ -24,33 +24,34 @@ App::uses("AppModel", "Model");
 class Usertoken extends AppModel {
 
     var $name = 'UserToken';
-
+    var $useTable = "usertokens";
     
     public $belongsTo = array(
         'User' => array(
             'className' => 'User',
             'foreignKey' =>  'user_id'
-        )
+        ) 
     );
 
 
     
     /**
-     * Deletes one or more refreshTokens of a user. This is normally the result of a
+     * Deletes a refreshToken of a user. This is normally the result of a
      * logout action of the user.
      * 
-     * @param array $refreshToken An array of 1 or more tokens to be deleted
+     * @param array $refreshToken the object who contains the $refreshToken
      * @return integer Number of Objects deleted
      */   
-    public function api_deleteUsertoken($refreshToken) {     
-        
+    public function api_deleteUsertoken($refreshToken) { 
+
         $result = $this->find('all', $params = ['conditions' => ['usertoken_refreshToken' => $refreshToken],
                                                'recursive' => -1
                                        ]);
+
         $i = 0;
         foreach ($result as $token) {
-            if (in_array($token['usertoken_refreshToken'], $refreshToken)) {
-                delete($token['id']);
+            if ($token['Usertoken']['usertoken_refreshToken'] === $refreshToken) {
+                $this->delete($token['Usertoken']['id']);
                 $i++;
             }  
         }
@@ -66,13 +67,13 @@ class Usertoken extends AppModel {
      * @return mixed refreshToken or false
      */   
     public function api_addUserToken($userId) {
-        
+       
         $data['usertoken_refreshToken'] = $this->random_str(100);
         $data['usertoken_accessTokenRenewalCounter'] = 1;
         $data['user_id'] = $userId;
         
         if ($this->save($data)) {
-            return $data['refreshToken'];
+            return $data['usertoken_refreshToken'];
         }
         return false;
     }
@@ -85,18 +86,24 @@ class Usertoken extends AppModel {
      * @param array $refreshToken An array of 1 or more tokens to be deleted
      * @return mixed false or new refreshToken
      */   
-    public function api_getNewAccessToken($refreshToken) {
+    public function api_getNewAccessUserToken($refreshToken) {
         $result = $this->find('first', $params = ['conditions' => ['usertoken_refreshToken' => $refreshToken],
                                                'recursive' => -1
                                        ]);
-        if ($refreshToken == $result['usertoken_refreshToken']) {
-            $this->id = $result['id'];
+        if (empty($result)) {
+            return false;
+        }
+
+        if ($refreshToken == $result['Usertoken']['usertoken_refreshToken']) {
+            $this->id = $result['Usertoken']['id'];
             $newToken = $this->random_str(100);
-            $this->saveField(['usertoken_refreshToken' => $newToken, 
-                              'usertoken_accessTokenRenewalCounter' => $result['usertoken_accessTokenRenewalCounter'] + 1]);
+            $this->save(['id' => $result['Usertoken']['id'], 
+                         'usertoken_refreshToken' => $newToken, 
+                         'usertoken_accessTokenRenewalCounter' => $result['Usertoken']['usertoken_accessTokenRenewalCounter'] + 1]);
             return $newToken;
         }
         return false;        
     }
 
+ 
 }

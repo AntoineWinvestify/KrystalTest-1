@@ -110,17 +110,12 @@ class AppController extends Controller {
     protected $refreshToken;                    // The token required for refreshing, as obtainted from JWT
     protected $accountDisplayName;              // The display name of the user as obtained frm JWT
   
-    protected $investorId;                      // Investor id from the user. We get it from the token
-    protected $language;                        // Language for translations.  We get it from the token
-    protected $roleName;                        // Name of the user role
-    protected $action;                           // The 'action' of a POST operation
-    
     
     
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
   //      'Security',
- //       'Session',
+ //       'Session', 
         
          'Auth' => array(
             'authenticate' => array(
@@ -170,10 +165,11 @@ class AppController extends Controller {
      * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
+
         if (Configure::read('debug')) {
-            var_dump($this->request);
+ //           var_dump($this->request);
         } 
- 
+     
         $jwt = $this->request->header('AuthToken'); 
         
         if (!empty($jwt)) {
@@ -181,8 +177,8 @@ class AppController extends Controller {
             $this->InvestorId = $tokenObject->sub;   
             $this->roleName = $tokenObject->role;  
             $this->language = $tokenObject->language;
-            $this->refresh_token = $tokenObject->refresh_token;
-            $this->accountDisplayName = $tokenObject->account_displayname; 
+            $this->refreshToken = $tokenObject->refresh_token;
+            $this->accountDisplayName = $tokenObject->account_display_name; 
         }
   
 // Load the application configuration file. Now it is available to the *whole* application	 
@@ -714,35 +710,20 @@ class AppController extends Controller {
                     echo "filterConditionQueryParms = \n<br>";
                     var_dump($this->filterConditionQueryParms);
                 }
-                echo "request->data = \n<br>";
-                var_dump($this->request->data);
+                if (!empty($this->request->data)) {
+                    echo "request->data = \n<br>";
+                    var_dump($this->request->data);
+                }
         }
         
         return true;
     }
     
+ 
     
-    /**
-     * Generate a random string, using a cryptographically secure 
-     * pseudorandom number generator (random_int)
-     * 
-     * For PHP 7, random_int is a PHP core function
-     * For PHP 5.x, depends on https://github.com/paragonie/random_compat
-     * 
-     * @param int $length      How many characters do we want?
-     * @param string $keyspace A string of all possible characters
-     *                         to select from
-     * @return string
-     */
-    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
-    {
-        $pieces = [];
-        $max = mb_strlen($keyspace, '8bit') - 1;
-        for ($i = 0; $i < $length; ++$i) {
-            $pieces []= $keyspace[random_int(0, $max)];
-        }
-        return implode('', $pieces);
-    }   
+    
+    
+    
     function generateLink($endpoint, $rel, $parameter) {
         $this->endpointsVersion = Configure::read('generateLink');
         $version = $this->endpointsVersion[$endpoint];

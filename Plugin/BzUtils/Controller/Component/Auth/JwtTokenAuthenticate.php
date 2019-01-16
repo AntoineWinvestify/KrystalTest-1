@@ -63,14 +63,11 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @throws CakeException
  */
 	public function __construct(ComponentCollection $collection, $settings) {
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 		parent::__construct($collection, $settings);
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+                
 		if (empty($this->settings['parameter']) && empty($this->settings['header'])) {
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			throw new CakeException(__d('bz_utils', 'You need to specify token parameter and/or header'));
 		}
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 	}
 
 /**
@@ -80,13 +77,10 @@ echo __FILE__ . " " . __LINE__ . "\n<br>";
  * @param CakeResponse $response response object.
  * @return mixed.  False on login failure.  An array of User data on success.
  */
-	public function authenticate(CakeRequest $request, CakeResponse $response) {
- echo __FILE__ . " " . __LINE__ . "\n<br>";           
+	public function authenticate(CakeRequest $request, CakeResponse $response) {          
 		$user = $this->getUser($request);
-  echo __FILE__ . " " . __LINE__ . "\n<br>";      
-  var_dump($user);
-		if (!$user) {
-   echo __FILE__ . " " . __LINE__ . "\n<br>";                    
+
+		if (!$user) {                    
 			$response->statusCode(401);
 			$response->send();
 		}
@@ -100,22 +94,18 @@ echo __FILE__ . " " . __LINE__ . "\n<br>";
  * @return mixed Either false or an array of user information
  */
 	public function getUser(CakeRequest $request) {
-		if (!empty($this->settings['header'])) {
-var_dump($this->settings);                   
+		if (!empty($this->settings['header'])) {                 
 			$token = $request->header($this->settings['header']);
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
-var_dump($token); 
+
 			if ($token) {
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 				return $this->_findUser($token, null);
 			}
 		}
 		if (!empty($this->settings['parameter']) && !empty($request->query[$this->settings['parameter']])) {
 			$token = $request->query[$this->settings['parameter']];
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
 			return $this->_findUser($token);
 		}
-echo __FILE__ . " " . __LINE__ . "\n<br>"; 
+ 
 		return false;
 	}
 
@@ -127,16 +117,12 @@ echo __FILE__ . " " . __LINE__ . "\n<br>";
  * @return Mixed Either false on failure, or an array of user data.
  */
 	public function _findUser($username, $password = null) {
-var_dump($username);
-		//try {
- echo "Security salt = "  . Configure::read('Security.salt') . "\n<br>";                  
+
+		try {
 			$decoded = JWT::decode($username, Configure::read('Security.salt'), array('HS256'));
-echo __FILE__ . " " . __LINE__ . "\n<br>";
-//var_dump($decoded);
                         return json_decode(json_encode($decoded), true);
-		//} catch (UnexpectedValueException $e) {
-echo __FILE__ . " " . __LINE__ . "\n<br>";                    
+		} catch (UnexpectedValueException $e) {      
 			return false;
-		//}
+		}
 	}
 }

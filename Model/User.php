@@ -346,7 +346,7 @@ class User extends AppModel {
      *
      * 	Generates and stores a new password which the user MUST change
      *
-     */
+     *//*
     public function generateNewPassword($id) {
 
         $newRandomPassword = substr(md5(rand()), 0, 5) . date("Hs") . "!";
@@ -361,7 +361,7 @@ class User extends AppModel {
             'newRandomPassword' => $newRandomPassword
                 )
         );
-    }
+    }*/
 
     /**
      * Get the pfp admins of a company
@@ -490,23 +490,24 @@ class User extends AppModel {
      * @return boolean
      */
     public function api_logout($refreshToken) {
-        $this->Usertoken->apiDeleteUserToken($token);
+        $this->Usertoken->api_deleteUserToken($refreshToken);
         return true;
     }  
     
     /**
-     * A new (refreshtoken) token is prepared which can be used in the future to
+     * A new refreshtoken is prepared which can be used in the future to
      * renew existing JWT.   
      * 
      * @param int $userId The internal database reference of the User object
      * @return mixed refreshToken or false
      */
-    public function api_addUserToken($userId) {
-        $token = $this->Usertoken->addUserToken($userId);
+    public function api_getNewToken($userId) {
+
+        $token = $this->Usertoken->api_addUserToken($userId);
         if (!empty($token)) {
             return $token;
-        }
-        false;
+        } 
+        return false;
     }    
 
     
@@ -517,8 +518,11 @@ class User extends AppModel {
      * @return boolean ! JWT False in case of internal error.
      */
     public function api_getNewAccessToken($refreshToken) {
-        $this->Usertoken->apiGetNewAccessToken($refreshToken);
-        return true;
+        $token = $this->Usertoken->api_getNewAccessUserToken($refreshToken);
+        if (!empty($token)) {
+            return $token;
+        } 
+        return false;
     }       
     
 }
