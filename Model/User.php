@@ -485,7 +485,7 @@ class User extends AppModel {
     /**
      * A JWT is deleted
      * 
-     * @param array $refreshToken An array of 1 or more tokens to be deleted, i.e. 
+     * @param string $refreshToken An array of 1 or more tokens to be deleted, i.e. 
      * they can no longer be used to request new access tokens
      * @return boolean
      */

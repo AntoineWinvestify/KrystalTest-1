@@ -942,7 +942,7 @@ echo "startDate = $startDate and endDate = $endDate <br>";
      * Format POST /api/1.0/investors.json
      * 
      * @param -
-     */
+     *//*
     public function v1_add() { 
 
         echo __FILE__ . " " . __LINE__ . "\n";    
@@ -974,7 +974,7 @@ var_dump($apiResult);
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;       
-    } 
+    } */
  
 
     /**

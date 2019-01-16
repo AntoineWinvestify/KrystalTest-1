@@ -571,36 +571,33 @@ function linkAccount() {
         return $this->response;               
     }     
 
-    /** PENDING: ERROR HANDLING TOWARDS HTTP STILL TO TEST
+    /** NOT YET TESTED
      * This methods terminates the HTTP POST for defining a new investor.
      * Format POST /api/1.0/investors.json
      * Example POST /api/1.0/investors.json
-     *
+     * All the userdata is located in the POST body as a json 
+     * 
      * @return mixed false or the database identifier of the new 'Investor' object
      */
-    public function v1_add($id) { 
-        // somehow, $id is not loaded
-        $id = $this->request->params['id'];
-        $data = $this->listOfQueryParams;// holds all the new investor data
-var_dump($data);       
-        $data['id'] = $id;
-        $result = $this->Investor->api_addUser($data);
+    public function v1_add() { 
+
+        $data = $this->request->data;                                           // holds all the new investor data
+        var_dump($data); 
+        $this->AppModel->apiVariableNameInAdapter($this->request->data);        
+        var_dump($data);       
+        
+        $result = $this->Investor->api_addInvestor($data);
         if (!($result)) {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
             $formattedError = $this->createErrorFormat('CANNOT_CREATE_INVESTOR_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
             $this->response->statusCode(500);                                    
         }
         else {
-var_dump($this->data);
-            if (!empty($result['Investor']['requireNewAccessToken'])) {
-                $apiResult = ['requireNewAccessToken' => true];
-                $this->Investor->apiVariableNameOutAdapter($apiResult);
-                $resultJson = json_encode($apiResult);
-            }
-            else {
-                $this->response->statusCode(204);
-            }
+            $this->response->statusCode(201);
         }
         
         $this->response->type('json');
