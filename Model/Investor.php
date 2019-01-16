@@ -886,7 +886,7 @@ class Investor extends AppModel {
      */ 
     function beforeSave($options = array()) {
 
-// Store telephone number without spaces
+        // Store telephone number without spaces
         if (!empty($this->data['Investor']['investor_dateOfBirth'])) {
             $this->data['Investor']['investor_dateOfBirth'] = $this->formatDateBeforeSave($this->data['Investor']['investor_dateOfBirth']);
         }
@@ -896,8 +896,7 @@ class Investor extends AppModel {
         
         // Observe that username is not saved to the Investor model, but only required for generating the "investor_identity"
         if (!$this->id && !isset($this->data[$this->alias][$this->primaryKey])) {
-            $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['investor_email']); 
-            unset($this->data['Investor']['email']);
+            $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['username']); 
         }    
     }
 
@@ -946,6 +945,9 @@ class Investor extends AppModel {
 
 
     /**
+     * CHECKING OF THE CONFIRMATION THE CODE (IN MESSAGE OBJECT) AS SENT VIA SMS IS 
+     * NOT TAKEN INTO CONSIDERATION.
+     * 
      * Create a new 'Investor' object with the minimum set of data: email/username, password
      * and telephone
      * 
@@ -959,17 +961,17 @@ class Investor extends AppModel {
                 $userData['Investor'][$key] = $userItem;
             }
         }        
-        
+        // Require the minimum set of data for creating the Investor object
         if (empty($userData['Investor']['investor_email']) || 
-            empty($userData['Investor']['investor_password']) ||
+            empty($userData['Investor']['password']) ||
             empty($userData['Investor']['investor_telephone'])) {
                 return false;
         }
-        
+
         if ($this->save($userData, $validate = true)) {
-            $investorId = $this->id;
-            
+            $investorId = $this->id;           
             $this->Check = ClassRegistry::init('Check');
+            
             if (!$this->Check->api_addCheck($investorId, ['telephone', 'email', 'identity'])) {
                 $this->delete($investorId);
                 return false;
@@ -978,15 +980,15 @@ class Investor extends AppModel {
 
             $this->User = ClassRegistry::init('User');
 
-            if (!$this->User->api_addUser($investorId, $userData['Investor']['investor_email'], 
-                                                  $userData['Investor']['investor_password'], 
+            if (!$this->User->api_addUser($investorId, $userData['Investor']['username'], 
+                                                  $userData['Investor']['password'], 
                                                   $userData['Investor']['investor_email'])) {
                 $this->Check->delete($checkId);
                 $this->delete($investorId);
+                echo __FILE__ . " " . __LINE__ ."\n<br>";
                 return false;
             }
             $userId = $this->User->id;
-
    /*          
             $this->Pmessage = ClassRegistry::init('Pmessage');
             if (!$this->Pmessage->addPmessage($investorId)) {

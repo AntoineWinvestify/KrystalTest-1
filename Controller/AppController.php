@@ -167,7 +167,7 @@ class AppController extends Controller {
     public function beforeFilter() {
 
         if (Configure::read('debug')) {
- //           var_dump($this->request);
+            var_dump($this->request);
         } 
      
         $jwt = $this->request->header('AuthToken'); 

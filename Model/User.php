@@ -475,8 +475,8 @@ class User extends AppModel {
         $userData['role_id'] = ROLE_INVESTOR;   
         $userData['investor_id'] = $investorId;  
         $userData['active'] = true;
-   
-        if ($this->save($userData, $validate = true)) { 
+
+        if ($this->save($userData, $validate = true)) {
             return $this->id;
         }
         return false;
