@@ -52,21 +52,20 @@ class AppModel extends Model {
      * @var array
      */
     private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
-                           'linkedaccount_status' => 'linkedaccount_status',
-                                'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing                     
+                                'investor_dateOfBirth' => 'investor_date_of_birth',
+                                'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
+                                'linkedaccount_status' => 'linkedaccount_status',
+                                'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing
+                                'investor_postCode' => 'investor_postcode',
+                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
                                 'company_countryName' => 'company_country_name',
                                 'company_privacyUrl' => 'company_privacy_url',
                                 'investor_approvalCode' => 'approval_code',
                                 'investor_surname' => 'investor_surnames',
                                 'investor_email' => 'email',
-                                'investor_postCode' => 'investor_postcode',                                
-                                'investor_accredited' => 'accredit_investor',
-                                'investor_dateOfBirth' => 'investor_date_of_birth',
-                                'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
                                 'accountDisplayName' => 'account_display_name',
                                 'displayName' => 'display_name',
                                 'usertoken_refreshToken' => 'refresh_token',
-                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
                                 'linkedaccount_accountIdentity' => 'linkedaccount_identity',
                                 'linkedaccount_accountDisplayName' => 'linkedaccount_platform_display_name',
                                 'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
@@ -75,7 +74,7 @@ class AppModel extends Model {
                                 'accountowner_password' => 'linkedaccount_password',
                                 'accountCheck'  => 'linkedaccount_linkingstatus',
                                 'requireNewAccessToken'=> 'require_new_access_token',
-                              
+                                'investor_accredited' => 'accredited_investor',
  
                               ];
 
@@ -358,6 +357,7 @@ class AppModel extends Model {
      * database variable. 
      * Typically used as filtering condition of a find operation
      * Example  'investor_date_of_birth' ==> 'investor_dateOfBirth'
+     * Note that it does NOT do recursion into arrays
      *  
      *  @param array $inputArray 
      *  @return boolean
@@ -383,6 +383,7 @@ class AppModel extends Model {
      * failed.
      * 
      * Example   'investor_dateOfBirth' ==> 'investor_date_of_birth'
+     * Note that it does NOT do recursion into arrays
      *       
      *  @code 
      * 
@@ -407,7 +408,7 @@ class AppModel extends Model {
         return true;
     }   
     
-        /**
+    /**
      *
      * 	Creates a new instance of class with name company, like zank, or comunitae....
      *

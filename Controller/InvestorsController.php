@@ -580,13 +580,12 @@ function linkAccount() {
      * @return mixed false or the database identifier of the new 'Investor' object
      */
     public function v1_add() { 
-
+        $this->AppModel = ClassRegistry::init('AppModel');
         $data = $this->request->data;                                           // holds all the new investor data
-        var_dump($data); 
-        $this->AppModel->apiVariableNameInAdapter($this->request->data);        
-        var_dump($data);       
+        $newData = $data['data'];
+        $this->AppModel->apiVariableNameInAdapter($newData);             
         
-        $result = $this->Investor->api_addInvestor($data);
+        $result = $this->Investor->api_addInvestor($newData);
         if (!($result)) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
@@ -604,5 +603,8 @@ function linkAccount() {
         $this->response->body($resultJson); 
         return $this->response;               
     }          
+    
+ 
+    
     
 }

@@ -390,8 +390,8 @@ class AppController extends Controller {
         array_multisort(array_map('filemtime', $files), SORT_NUMERIC, SORT_ASC, $files);
         return $files[0];
     }
-
-    public function sessionOLD() {
+/*
+    public function session() {
         $this->autoRender = FALSE;
         Configure::write('debug', 2);
         echo "Now = : " . date('Y-m-d H:i:s', strtotime(now)) . "<br>";
@@ -409,7 +409,7 @@ class AppController extends Controller {
         $this->print_r2($this->Session->read());
 
 //	$this->Session->delete('Config.language');
-    }
+    }*/
 
     /** DOES NOT WORK WITH $x=1
      * 	Round up to an integer, then to the nearest multiple of 5
