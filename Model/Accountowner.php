@@ -151,9 +151,13 @@ class Accountowner extends AppModel {
         }
 
         $newCounterValue = $resultCounter['Accountowner']['accountowner_linkedAccountCounter'] - 1;
-        $data = array('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue);
+        if ($newCounterValue == 0) {
+            $data = array('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue, 'accountowner_status' => WIN_ACCOUNTOWNER_NOT_ACTIVE);
+        } else {
+            $data = array('id' => $accountownerId, 'accountowner_linkedAccountCounter' => $newCounterValue);
+        }
         if ($this->save($data, $validate = true)) {
-            $this->Investor = ClassRegistry::init('Investor');
+           /*$this->Investor = ClassRegistry::init('Investor');
             $this->Investor->decreaseLinkedAccounts($resultCounter['Accountowner']['id']);
 
             $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
@@ -166,7 +170,7 @@ class Accountowner extends AppModel {
 
             $this->Linkedaccount->updateAll(
                     array('Linkedaccount.linkedaccount_isControlledBy' => $newAliasState), array('Linkedaccount.accountowner_id' => $accountownerId)
-            );
+            );*/
             return true;
         }
         return false;

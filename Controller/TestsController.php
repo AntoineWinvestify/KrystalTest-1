@@ -328,8 +328,8 @@ exit;*/
    
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP PATCH/PUT.
-     * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
-     * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
+     * Format PATCH /api/1.0/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
+     * Example PATCH /api/1.0/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
      *
      * @param integer $id The database identifier of the requested 'Investor' resource
      * 

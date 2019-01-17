@@ -107,7 +107,7 @@ class AppController extends Controller {
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
     protected $investorId = 290;                      // Investor id from the user. We get it from the token
     protected $language = 'en';                        // Language for translations.  We get it from the token
-    protected $roleName;                        // Name of the user role
+    protected $roleName = 'Investor';                        // Name of the user role
     protected $action;                           // The 'action' of a POST operation
     
     
@@ -167,7 +167,7 @@ class AppController extends Controller {
      */
     public function beforeFilter() {
         if (Configure::read('debug')) {
-  //         var_dump($this->request);
+  //        var_dump($this->request);
         } 
 
         // do authentication for webtoken. 

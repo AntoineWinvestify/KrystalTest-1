@@ -101,13 +101,15 @@ class LinkedaccountsController extends AppController {
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
-    public function v1_edit($id) {
-       print_r($id);
-       exit;
-        $newPass = $this->listOfQueryParams['accountowner_password'];
+    public function v1_edit() {
+        $id = $this->request->params['id'];
+        $RequestData = $this->request->data;
+        $this->Linkedaccount->apiVariableNameInAdapter($RequestData);
+        $newPass = $RequestData['accountowner_password'];      
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
         $feedback = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);
+
         return json_enconde($feedback);     
     }
     
@@ -161,7 +163,8 @@ class LinkedaccountsController extends AppController {
      * @param int $id
      * @return string
      */
-    public function v1_delete($id){
+    public function v1_delete(){
+        $id = $this->request->params['id']; 
         return $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
     }
     
@@ -173,17 +176,19 @@ class LinkedaccountsController extends AppController {
      *  
      * @return string
      */
-    public function v1_pre_check() {
-        $companyId = $this->listOfQueryParams['company_id'];
+    public function v1_precheck() {
+        /*$companyId = $this->listOfQueryParams['company_id'];
         $username = $this->listOfQueryParams['accountowner_username'];
-        $password = $this->listOfQueryParams['accountowner_password'];           
-                
-        $accounts = $this->Linkedaccount->api_precheck($this->investorId, $companyId, $username, $password);
+        $password = $this->listOfQueryParams['accountowner_password'];    */       
+        echo 'qwerty';
+        $this->print_r2($this->request);
+        exit;
+        /*$accounts = $this->Linkedaccount->api_precheck($this->investorId, $companyId, $username, $password);
         foreach ($accounts['accounts'] as $key => $account) {
             $this->Linkedaccount->apiVariableNameOutAdapter($accounts['accounts'][$key]);
         }
         $accounts = json_encode($accounts);
-        return $accounts;
+        return $accounts;*/
     }
 
 }
