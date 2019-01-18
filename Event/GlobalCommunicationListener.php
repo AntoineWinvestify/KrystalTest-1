@@ -80,10 +80,12 @@ public function implementedEvents() {
 	$configuredEvents = Configure::read('event');
 
 	foreach ($configuredEvents as $key => $value) {
-		if ($value == true) {
-			$selectedEvents[$key] = $allImplementedEvents[$key];
-		}
-	}	
+            if ($value == true) {
+                if (array_key_exists($key, $allImplementedEvents)) {
+                    $selectedEvents[$key] = $allImplementedEvents[$key];
+                }
+            }
+	}
 	return ($selectedEvents);
 }
 

@@ -21,6 +21,8 @@
  * @package
  */
 
+App::uses('AppShell', 'Console/Command');
+
 class GearmanClientExampleShell extends AppShell {
     protected $GearmanClient;
 
@@ -35,6 +37,11 @@ class GearmanClientExampleShell extends AppShell {
     public function main() {
         $this->GearmanClient->addServers();
         $this->GearmanClient->setFailCallback($this, "verifyFailCollectingData");
+    }
+    
+    public function gearmanConnection() {
+        $this->GearmanClient->addServers('127.0.0.1');
+        return $this->GearmanClient->doNormal("reverse", "Hello World!");
     }
     
     public function example() {

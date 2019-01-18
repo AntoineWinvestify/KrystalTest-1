@@ -25,9 +25,9 @@
  * 2017-08-25
  * Created
  * 
+ * 
  * 2017-10-24 version_0.2
  * Integration of parsing amortization tables with Gearman and fileparser
- *
  * 
  * 2017-03-11 version 0.3
  * Header added in amortization tables.
@@ -38,7 +38,6 @@
 
 /**
  * Contains the code required for accessing the website of "Finbee".
- * Parser AmortizationTables                                            [OK, tested]
  * function calculateLoanCost()						[Not OK]
  * function collectCompanyMarketplaceData()				[Not OK]
  * function companyUserLogin()						[OK, tested]
@@ -527,7 +526,7 @@ class finbee extends p2pCompany {
 // Do whatever is needed for this subsclass
     }
 
-    /**
+     /**
      * Download investment, cash flow files and control variables
      * 
      * @param string $str It is the web converted to string of the company.
@@ -858,7 +857,7 @@ class finbee extends p2pCompany {
                         $clone = $table->cloneNode(TRUE); //Clone the table
                         $AmortizationTable->appendChild($AmortizationTable->importNode($clone, TRUE));
                         $AmortizationTableString = $AmortizationTable->saveHTML();
-                        $this->tempArray[$this->loanIds[$this->i - 1]] =  $AmortizationTableString;
+                        $this->tempArray[$this->loanIds[$this->i - 1]] = $AmortizationTableString;
                         echo $AmortizationTableString;
                     }
                 }
@@ -875,6 +874,7 @@ class finbee extends p2pCompany {
         }
     }
 
+    
     /**
      *
      * 	Checks if the user can login to its portal. Typically used for linking a company account

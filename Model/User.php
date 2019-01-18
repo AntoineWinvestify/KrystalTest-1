@@ -72,6 +72,15 @@ class User extends AppModel {
         )
 */
     );
+ 
+    public $hasMany = array(
+        'Usertoken' => array(
+            'className' => 'Usertoken',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        )
+    );    
     
     public $belongsTo = array(
         'Role' => array(
@@ -134,7 +143,7 @@ class User extends AppModel {
 
         $this->Investor = ClassRegistry::init('Investor');
 
-        /* Deletes a record that has not yet been confirmed */
+        // Deletes a record that has not yet been confirmed 
         $tempUserData = $this->isUncomfirmedAccount($username);
 
         if (!empty($tempUserData)) {
@@ -208,7 +217,7 @@ class User extends AppModel {
      * @param string	$username   name of the user
      * @return array                [0] requested code
      *                              [1] number of times a code has been requested 	
-     */
+     *//*
     public function readConfirmationCode($username) {
         $resultUser = $this->find('all', array('conditions' => array('User.username' => $username),
             'recursive' => 0,
@@ -217,7 +226,7 @@ class User extends AppModel {
         $codeInformation[0] = $resultUser[0]['Investor']['investor_tempCode'];
         $codeInformation[1] = $resultUser[0]['Investor']['investor_numberOfCodesSent'];
         return $codeInformation;
-    }
+    }*/
 
     /**
      * 	Reset the (counter) information related to a confirmation code used in the process of account registration/confirmation
@@ -275,7 +284,7 @@ class User extends AppModel {
      * 
      *  @param 	string	$username The username
      *  @return 	array   $userData the user data of an unconfirmed account 
-     */
+     *//*
     public function isUncomfirmedAccount($username) {
 
         $resultUser = $this->find("all", array('conditions' => array('username' => $username),
@@ -290,7 +299,7 @@ class User extends AppModel {
 
         $resultUser = [];
         return $resultUser;
-    }
+    }*/
 
     /**
      *
@@ -337,7 +346,7 @@ class User extends AppModel {
      *
      * 	Generates and stores a new password which the user MUST change
      *
-     */
+     *//*
     public function generateNewPassword($id) {
 
         $newRandomPassword = substr(md5(rand()), 0, 5) . date("Hs") . "!";
@@ -352,7 +361,7 @@ class User extends AppModel {
             'newRandomPassword' => $newRandomPassword
                 )
         );
-    }
+    }*/
 
     /**
      * Get the pfp admins of a company
@@ -444,9 +453,76 @@ class User extends AppModel {
         if (empty($result)) { 
             return false;
         }
-        else {
-            return true;
-        }  
+        return true;
     }  
+    
+      
+    
+    /**
+     * Create a new 'User' object
+     * 
+     * @param int $investorId The database reference of the Investor object
+     * @param string $userName The username of the new user
+     * @param string $userPassword The password of the new user
+     * @param string $email The email of the new user
+     * @return mixed | false or Database reference of User object 
+     */
+    public function api_addUser($investorId, $userName, $userPassword, $email) {  
+        
+        $userData['username'] = $userName;
+        $userData['password'] = $userPassword;
+        $userData['email'] = $email; 
+        $userData['role_id'] = ROLE_INVESTOR;   
+        $userData['investor_id'] = $investorId;  
+        $userData['active'] = true;
+
+        if ($this->save($userData, $validate = true)) {
+            return $this->id;
+        }
+        return false;
+    }      
+    
+    /**
+     * A JWT is deleted
+     * 
+     * @param string $refreshToken An array of 1 or more tokens to be deleted, i.e. 
+     * they can no longer be used to request new access tokens
+     * @return boolean
+     */
+    public function api_logout($refreshToken) {
+        $this->Usertoken->api_deleteUserToken($refreshToken);
+        return true;
+    }  
+    
+    /**
+     * A new refreshtoken is prepared which can be used in the future to
+     * renew existing JWT.   
+     * 
+     * @param int $userId The internal database reference of the User object
+     * @return mixed refreshToken or false
+     */
+    public function api_getNewToken($userId) {
+
+        $token = $this->Usertoken->api_addUserToken($userId);
+        if (!empty($token)) {
+            return $token;
+        } 
+        return false;
+    }    
+
+    
+    /**
+     * A new access token is generated
+     * 
+     * @param string $refreshToken The refheshToken for which a new access token is to be generated
+     * @return boolean ! JWT False in case of internal error.
+     */
+    public function api_getNewAccessToken($refreshToken) {
+        $token = $this->Usertoken->api_getNewAccessUserToken($refreshToken);
+        if (!empty($token)) {
+            return $token;
+        } 
+        return false;
+    }       
     
 }

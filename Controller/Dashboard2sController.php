@@ -67,9 +67,7 @@ class Dashboard2sController extends AppController {
         //echo 1;
         //$executionStartTime = microtime(true);
         //Request data
-        $idArray = explode(" ", $this->request->data['id']);
-        $linkedAccount = $idArray[0]; //Link account id
-        $userInvestmentData = $idArray[1];
+        $linkedAccount = $this->request->data['id']; //Link account id
         $logo = $this->request->data['logo']; //Pfp Logo
         $name = $this->request->data['name']; //Pfp Name
 
@@ -132,6 +130,7 @@ class Dashboard2sController extends AppController {
 
         $this->Investment->virtualFields = [
             'MyInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
+            'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
             'InterestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
             'OutstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
             'ProgressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
@@ -345,4 +344,7 @@ class Dashboard2sController extends AppController {
         $this->layout = 'azarus_private_layout';
     }
 
+    
+    
+    
 }

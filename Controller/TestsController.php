@@ -109,17 +109,17 @@ class TestsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-        Configure::write('debug', 0);        
- //       $this->autoRender = false; 
+        Configure::write('debug', 2);        
+        $this->autoRender = false; 
         
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","api_index","v1_index","v1_view",
-            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
+        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying","editCheck","precheck","v1_index","v1_view",
+            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod","search2",
             "testLocation", "mytest", "mytest1", "readSize", "testReadFullAmortizationTable", "testAddPayment", "testAddPayment",
             "testDateDiff","deleteFromUser","find", "index", "view", "edit", "delete", "add", "indexv1company", "viewv1company",
             "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "linkedaccount",
             "recursiveSearchOutgoing", "recursiveSearchIncoming" , "hashTest", "readInvestor", "writeInvestor", "testDateDiff", "deleteFromUser",
-            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));
+            "xlsxConvert", "read", "pdfTest", "testLocation", "testChildModel", "mytest", "mytest1", "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));       
     }
 
     public function pruebaYield() {
@@ -191,6 +191,17 @@ exit;*/
         $this->Accountowner->save($data);*/
     } 
     
+    public function editCheck() {
+    echo __FILE__ . " " . __LINE__ . "\n";        
+    //$this->App = ClassRegistry::init('App');
+    
+
+    exit;
+    }
+   
+    
+    
+    
     public function tooltip() {
 
         $tooltip = $this->Tooltip->getTooltip(array(15, 16, 17, 18, 19, 20, 49, 50, 51, 52, 54, 55), 'en', 25);
@@ -259,8 +270,8 @@ exit;*/
                   '_serialize' => ['data']]
                    );          
     }  
-     
-    
+  
+  
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
      * Format GET /v1/investors.json&_fields=x,y,z
@@ -271,15 +282,26 @@ exit;*/
      */
     public function v1_index(){
 
-        if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                    'Investor.investor_address1',  'Investor.investor_address2',
-                                    'Investor.investor_city',  'Investor.investor_telephone',
-                                    'Investor.investor_postCode',  'Investor.investor_email'  
-                                    ];
-        } 
-
+        
+        
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+        if (!empty($this->request->pass)) {                 // Format for collecting a graphics file  
+            switch ($this->request->pass[1]) {
+                case "lists":
+                    $this->getDashboardlists($this->request->pass[2]);
+                    break;      
+                case "graphics":
+                    $this->getDashboardgraphics($this->request->pass[2]);
+                    break;
+                default:
+                    $this->response->statusCode(400);   
+                    $this->response->type('json'); 
+                    return $this->response; 
+            }
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+return $this->response; 
+        }
+        
         foreach ($this->listOfFields as $field) {
             $tempField = explode("_", $field);
 
@@ -287,7 +309,9 @@ exit;*/
                 $this->listOfFields[] = "Check.check_" . $tempField[1]; 
             }  
         } 
-        
+echo __FILE__ . " " . __LINE__ . " \n<br>";     
+exit;
+
         $this->Investor->contain('Investor', 'Check');
         $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
@@ -324,8 +348,8 @@ exit;*/
    
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP PATCH/PUT.
-     * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
-     * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
+     * Format PATCH /api/1.0/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
+     * Example PATCH /api/1.0/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
      *
      * @param integer $id The database identifier of the requested 'Investor' resource
      * 
@@ -385,12 +409,12 @@ exit;*/
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;         
-    }
+    } 
 
 
 
     /* to delete */
-    public function editCheck() {
+    public function editCheck1() {
         
         
         Configure::write('debug', 2);        
@@ -525,6 +549,8 @@ exit;*/
     }    
     
     
+ 
+  
     
     public function recursiveSearchIncoming() {   
     Configure::write('debug', 2);        
@@ -619,11 +645,41 @@ echo "Using a component<br>";
     $this->ApiAdapter->normalizeOutgoingJson($jsonArray); 
     pr($jsonArray);   
     }   
-    
-
+/*  
+5c2de18a-d924-4c20-a398-0b7f6d15f83e
+5c2de18a-2858-4e5b-8742-0b7f6d15f83e
+5c2de18a-dc00-4551-9860-0b7f6d15f83e
+*/    
 
     
 function search2($array, $key){
+    App::uses('CakeText', 'Utility');
+    $this->Role = ClassRegistry::init('Role');
+    $roleName = "superAdmin";
+    
+
+    
+    $roleId = $this->Role->translateRoleName2RoleId($roleName);
+    var_dump($roleId);
+    echo "AAAAAAAAAAAAAA";
+    $roleId1 = Hash::extract($roleId, 'Sector');
+    var_dump($roleId1);
+    $roleId2 = Hash::extract($roleId1, '{n}.sectors_href');
+    var_dump($roleId2);
+    
+    $dummy = $this->getSectorsByRole($roleId = 4); 
+    $dummy1 = Hash::extract($dummy, '{n}.Sector');
+    var_dump($dummy);
+    
+    var_dump($dummy1);    
+    exit;
+    
+    
+    
+    
+    
+    
+    
     echo "MM";
     if( array_key_exists($key, $array) ){
         print("<br> ----------------- FOUND <u>{$key}</u> with value: {$array[$key]}");
@@ -797,7 +853,24 @@ function search2($array, $key){
     public function mytest() {
         $this->autoRender = false;
         Configure::write('debug', 2);
-        $this->Investmentslice = ClassRegistry::init('Investmentslice');
+        
+        $this->Investor = ClassRegistry::init('Investor'); 
+        
+        $newList = ['Investor' => ['id' => 1,
+                    'investor_telephone' => '+3455555555',
+                    'investor_name' => 'US'
+             ]];
+        var_dump($newList);
+        $result = $this->Investor->save($newList, $validate = true);
+        
+        
+        var_dump($result);
+        exit;
+        
+        
+        
+        
+
         $this->Globalamortizationtable = ClassRegistry::init('Globalamortizationtable');
 
         $filterConditions = array("date" => "2018-01-11",
@@ -807,13 +880,6 @@ function search2($array, $key){
         if ($this->Userinvestmentdata->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
             echo __FILE__ . " " . __LINE__ . " Userinvestmentdata deleted ";
         }
-
-
-
-
-        //       $result = $this->Globalamortizationtable->saveAmortizationtable($amortizationData, 3);   
-
-
 
         $result = $this->Globalamortizationtable->find("all", array("recursive" => 2,
             "conditions" => array("Globalamortizationtable.id" => 17))
@@ -839,8 +905,6 @@ function search2($array, $key){
     public function mytestOld() {
 
         $this->autoRender = false;
-
-
 
         $this->Queue2->addToQueueDashboard2("39048098ab409be490A", $queueInfo = null, $queueStatus = 11, $queueId = null, $queueType = 1);
 

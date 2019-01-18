@@ -40,21 +40,20 @@
  * 
  */
 
+App::uses('AppController', 'Controller');
 
 class InvestorsController extends AppController {
 
     var $name = 'Investors';
-    var $helpers = array('Js', 'Text', 'Session');
+    var $helpers = array('Text');
     var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence','Ocr');
     var $error;
 
     
-function beforeFilter() {
-        parent::beforeFilter();
+    function beforeFilter() {
+            parent::beforeFilter();
 
-//	$this->Security->requireAuth();
-//	$this->Auth->allow(array('cronAnalyzeUserDatas'));
-}
+    }
 
    
 
@@ -99,15 +98,16 @@ function deleteLinkedAccount() {
 }
 
     
-/**
- * Read the cheack data
- * @param type $investorId
- * @return type
- */
-public function readCheckData($investorId) {
-    $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
-    return $checkData;
-}
+    /**
+     * Read the check data
+     * 
+     * @param type $investorId
+     * @return type
+     */
+    public function readCheckData($investorId) {
+        $checkData = $this->Investor->Check->find('all', array('conditions' => array('investor_id' => $investorId)));
+        return $checkData;
+    }
     
     
     
@@ -420,6 +420,197 @@ function linkAccount() {
     }
 
 
+    
+    
+    /** THIS METHOD SHALL NOT BE ACCESIBLE TO INVESTOR PROFILE. DEFINE USING CONFIG DATA
+     * This methods terminates the HTTP GET.
+     * Format GET /api/1.0/investors.json&_fields=x,y,z
+     * Example GET /api/1.0/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
+     * 
+     * @param -
+     * 
+     */
+    public function v1_index(){
+      
+        if (empty($this->listOfFields)) {
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                     'Investor.investor_address1',  'Investor.investor_address2',
+                                     'Investor.investor_city',  'Investor.investor_telephone',
+                                     'Investor.investor_postCode',  'Investor.investor_email'  
+                                    ];
+        } 
+
+        foreach ($this->listOfFields as $field) {
+            $tempField = explode("_", $field);
+
+            if (count($tempField == 2)) {
+                $this->listOfFields[] = "Check.check_" . $tempField[1]; 
+            }  
+        } 
+      
+        $this->Investor->contain('Investor', 'Check');
+        $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
+                                                          'fields' => $this->listOfFields,
+                                                          'recursive' => 0]);
+
+        $numberOfResults = count($results);    
+
+        $j = 0;
+        foreach ($results as $resultItem) { 
+            foreach ($resultItem['Investor'] as $key => $value) {
+                if ($key === 'id') {   
+                    continue;
+                } 
+                $rootName = explode("_", $key, 2);
+
+                if ($numberOfResults == 1) {
+                    $apiResult[$key]['value'] = $value;  
+                    $apiResult[$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];    
+                }
+                else {
+                    $apiResult[$j][$key]['value'] = $value;  
+                    $apiResult[$j][$key]['read-only'] = $resultItem['Check']['check_' . $rootName[1]];   
+                } 
+            }
+            $j++;
+        }
+ 
+        $this->Investor->apiVariableNameOutAdapter($apiResult);
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   ); 
+    }     
+    
+    /**
+     * This methods terminates the HTTP GET.
+     * Format GET api/v1/investors/[investorId]&fields=x,y,z
+     * Example GET api/v1/investors/1.json&_fields=investor_name,investor_surname
+     * 
+     * @param integer $id The database identifier of the requested 'Investor' resource
+     * 
+     */
+    public function v1_view($id){
+        // somehow, $id is not loaded
+        $id = $this->request->params['id'];
+        if (empty($this->listOfFields)) {
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
+                                     'Investor.investor_address1', 'Investor.investor_address2',
+                                     'Investor.investor_city', 'Investor.investor_telephone',
+                                     'Investor.investor_postCode', 'Investor.investor_email'  
+                                    ];
+        }
+
+        foreach ($this->listOfFields as $field) {
+            $tempField = explode("_", $field);
+            if (count($tempField) == 2) {
+                $this->listOfFields[] = "Check.check_" . $tempField[1];
+            }       
+        } 
+
+        $this->Investor->contain('Investor', 'Check');
+        $result = $this->Investor->findById($id, $fields = $this->listOfFields, $recursive = 0);
+
+        if (!empty($result)) {
+            foreach ($result['Investor'] as $key => $value) {
+                $apiResult[$key]['value'] = $value;                 
+                if ($key === 'id') {
+                     continue;
+                } 
+                $rootName = explode("_", $key, 2); 
+                $apiResult[$key]['read-only'] = $result['Check']['check_' . $rootName[1]];    
+            } 
+        }
+        
+        $this->Investor->apiVariableNameOutAdapter($apiResult);
+        $this->set(['data' => $apiResult,
+                  '_serialize' => ['data']]
+                   );          
+    }     
+    
+
+   
+    /** 
+     * This methods handles the HTTP PATCH message
+     * Format PATCH /api/1.0/investors/[investorId].json ....
+     * Example PATCH /api/1.01/investors/1.json
+     * fields are conveyed in the message body.
+     * 
+     * @param integer $id The database identifier of the requested 'Investor' object
+     * 
+     */
+    public function v1_edit($id) { 
+        // somehow, $id is not loaded
+
+        $data = $this->request->data;
+        $dataNew = $data['data'];
+        $dataNew['id'] = $this->request->params['id'];
+        
+        $this->Investor->apiVariableNameInAdapter($dataNew);
+        $result = $this->Investor->save($dataNew, $validate = true);
+
+        if (!($result)) {
+            $validationErrors = $this->Investor->validationErrors;
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('NO_WRITE_ACCESS', 
+                                                        "It is not allowed to modify read-only fields", 
+                                                        $validationErrors);
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(403);                                   // 403 Forbidden  
+        }
+        else {
+            if (!empty($result['Investor']['requireNewAccessToken'])) {
+                $apiResult = ['requireNewAccessToken' => true];
+                $this->Investor->apiVariableNameOutAdapter($apiResult);
+                $resultJson = json_encode($apiResult);
+            }
+            else {
+                $this->response->statusCode(204);
+            }
+        }
+        
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
+    }     
+
+    /** Simple version is OK
+     * This methods terminates the HTTP POST for defining a new investor.
+     * Format POST /api/1.0/investors.json
+     * Example POST /api/1.0/investors.json
+     * All the userdata is located in the POST body as a json 
+     * 
+     * @return mixed false or the database identifier of the new 'Investor' object
+     */
+    public function v1_add() { 
+        $this->AppModel = ClassRegistry::init('AppModel');
+        $data = $this->request->data;                                           // holds all the new investor data
+        $newData = $data['data'];
+ 
+        $this->AppModel->apiVariableNameInAdapter($newData);    
+        $result = $this->Investor->api_addInvestor($newData);
+        
+        if (!($result)) {
+            $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('CANNOT_CREATE_INVESTOR_OBJECT', 
+                                                        "The system encountered an undefined error, try again later on");
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(500);                                    
+        }
+        else {
+            $this->response->statusCode(201);
+        }
+        
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
+    }          
+    
+ 
     
     
 }

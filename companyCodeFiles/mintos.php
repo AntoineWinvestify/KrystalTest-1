@@ -44,8 +44,6 @@
  * 2017-10-24 version_0.8
  * Integration of parsing amortization tables with Gearman and fileparser
  *
- * 2017-03-11 Version_0.9
- * Download all investment in function getPfpFiles
  */
 
 /**

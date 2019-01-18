@@ -41,4 +41,20 @@ class Role extends AppModel {
             'foreignKey' => 'role_id',
             ),
     );
+    public $actsAs = array('Containable');
+    
+    /**
+     * 
+     * Translates the role_name to its role_id
+     * 
+     * @param string $roleName Name of the role to translate
+     * @return int id of the role
+     */
+    function translateRoleName2RoleId($roleName) {
+
+        $roleMenuData = $this->findByRoleName($roleName, $fields = ['Role.role_name', 'Role.id']);
+        return($roleMenuData['Role']['id']);
+    
+    }
+   
 }

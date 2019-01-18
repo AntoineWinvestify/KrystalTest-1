@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                         |
@@ -94,7 +93,7 @@
  *
  */
 App::uses('Controller', 'Controller');
-
+App::import('Vendor', 'Firebase', array('file' => 'firebase' . DS . 'php-jwt' . DS .'src' . DS . 'JWT.php'));
 class AppController extends Controller {
 
     protected $listOfFields;                    // Array that holds the list of requested fields
@@ -105,27 +104,58 @@ class AppController extends Controller {
                                                 // that case all entries are considered as OR condition
     
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
-    protected $investorId;                      // Investor id from the user. We get it from the token
+    protected $action;                          // The 'action' of a POST operation
+    protected $investorId;                      // The investorId as obtained in the JWT
+    protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
+    protected $refreshToken;                    // The token required for refreshing, as obtainted from JWT
+    protected $accountDisplayName;              // The display name of the user as obtained frm JWT
     protected $language;                        // Language for translations.  We get it from the token
-    protected $roleName;                        // Name of the user role
+
     
     
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
-        'Security',
-        'Session',
-        'Acl',
-        'Auth' => array(
-            /* 				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller */
+  //      'Security',
+ //       'Session', 
+        
+         'Auth' => array(
+            'authenticate' => array(
+                'Form' => array(
+                    'fields' => array(
+                        'username' => 'username',
+                        'password' => 'password'
+                    ),
+                    'userModel' => 'User',
+                    'scope' => array(
+                        'User.active' => 1,
+                    )
+                ),
+                'BzUtils.JwtToken' => array(
+                    'fields' => array(
+                        'username' => 'username',
+                        'password' => 'password',
+                    ),
+                    'header' => 'AuthToken',
+                    'userModel' => 'User',
+                    'scope' => array(
+                        'User.active' => 1
+                    )
+                )
+            )  
+        ),       
+      
+       'Acl',
+   /*     'Auth' => array(
+            //				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller 
             'loginRedirect' => array('controller' => 'marketplaces',
                 'action' => 'showMarketPlace'
             ),
             'logoutRedirect' => array('controller' => 'users',
                 'action' => 'loginRedirect'
             ),
-        ),
-        'Cookie',
+        ),*/ 
     );
+    
     var $uses = array('User', 'Role', 'Sector');
 
     /**
@@ -138,26 +168,22 @@ class AppController extends Controller {
     public function beforeFilter() {
 
         if (Configure::read('debug')) {
-            $this->print_r2($this->request);
+            var_dump($this->request);
         } 
      
         $jwt = $this->request->header('AuthToken'); 
-         
-   /*     
-        $this->Cookie->name = 'p2pManager';
-        $this->Cookie->time = 3600;  // or '1 hour'
-        $this->Cookie->secure = false;  // i.e. only sent if using secure HTTPS
-        $this->Cookie->key = 'qSI232qs*&sXOw!adre@34SAv!@*(XSL#$%)asGb$@11~_+!@#HKis~#^';
-        $this->Cookie->httpOnly = true;
-        $this->Cookie->type('rijndael');
-
-        $this->Security->blackHoleCallback = '_blackHole';
-        $this->Security->requireSecure();
-
         
-      */  
+        if (!empty($jwt)) {
+            $tokenObject = JWT::decode($jwt, Configure::read('Security.salt'), $allowed_algs = ['HS256']);      
+            $this->investorId = $tokenObject->sub;   
+            $this->roleName = $tokenObject->role;  
+            $this->language = $tokenObject->language;
+            $this->refreshToken = $tokenObject->refresh_token;
+            $this->accountDisplayName = $tokenObject->account_display_name; 
+        }
+  
 // Load the application configuration file. Now it is available to the *whole* application	 
-        Configure::load('p2pGestor.php', 'default');
+/*        Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
         require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');
         $runtime = new Winvestify();
@@ -201,21 +227,7 @@ class AppController extends Controller {
         //Investment Status in marketplace
         $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
 
-/*
-        //Country for excel export
-        $this->countryArray = array(0 => __('Choose One'),
-            '-Países Bálticos' => array(
-                'LV' => 'Letonia',
-                'LT' => 'Lituania'
-            ),
-            '-Resto Europa' => array(
-                'ES' => 'España',
-                'IT' => 'Italia',
-                'FR' => 'Francia',
-                'DE' => 'Alemania',
-                'NL' => 'Países Bajos')
-        );
-*/
+
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
@@ -238,26 +250,6 @@ class AppController extends Controller {
         );
 
         $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
-
-        $this->tooltipSinglePfpData = array(
-            "Zank" => __('zank tooltip'),
-            "Comunitae" => __('comunitae tooltip'),
-            "Growly" => __('growly tooltip'),
-            "MyTripleA" => __('mytriplea tooltip'),
-            "Arboribus" => __('arboribus tooltip'),
-            "Loanbook" => __('loanbook tooltip'),
-            "eCrowdInvest" => __('ecrowd tooltip'),
-            "Circulantis" => __('circulantis tooltip'),
-            "Colectual" => __('colectual tooltip'),
-            "Lendix" => __('lendix tooltip'),
-            "Bondora" => __('bondora tooltip'),
-            "Mintos" => __('mintos tooltip'),
-            "Twino" => __('twino tooltip'),
-            "Finanzarel" => __('finanzarel tooltip'),
-            "Finbee" => __('finbee tooltip'),
-        );
-
-        $this->set('tooltipSinglePfpData', $this->tooltipSinglePfpData);
 
         if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
             $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
@@ -297,35 +289,29 @@ class AppController extends Controller {
                 throw new
                 FatalErrorException(__('You cannot access this page directly'));
             }
-        }
+        } 
+ 
         if ($this->Auth->user()) {
             $sectorExist = $this->Session->read('sectorsMenu');
             if (empty($sectorExist)) {
                 $roleId = $this->Auth->User('role_id');
-                /* $this->Role = ClassRegistry::init('Role');
-                  $sectors = $this->Role->getSectorsByRole($roleId); */
+                // $this->Role = ClassRegistry::init('Role');
+                //  $sectors = $this->Role->getSectorsByRole($roleId); 
                 $sectors = $this->getSectorsByRole($roleId);
                 $this->Session->write('sectorsMenu', $sectors);
             }
         }
 
-        $fileName = APP . "Config" . DS . "googleCode.php";                    // file for Google Analytics
-        $fileName1 = APP . "Config" . DS . "googleCode1.php";                   // file to disable Google Analytics
-
         switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
             case WIN_LOCAL_TEST_ENVIRONMENT:
             case WIN_REMOTE_TEST_ENVIRONMENT:
-                rename($fileName, $fileName1);
+     //           rename($fileName, $fileName1);
             case WIN_LIVE_ENVIRONMENT:
-               rename ($fileName1, $fileName);       
+   //            rename ($fileName1, $fileName);       
             default:
         }  
-        
-//echo __FILE__ . " " . __LINE__ ."<br>\n"; 
-        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
-        
-        
-        
+  */       
+    $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message 
     }
 
     /**
@@ -405,7 +391,7 @@ class AppController extends Controller {
         array_multisort(array_map('filemtime', $files), SORT_NUMERIC, SORT_ASC, $files);
         return $files[0];
     }
-
+/*
     public function session() {
         $this->autoRender = FALSE;
         Configure::write('debug', 2);
@@ -424,7 +410,7 @@ class AppController extends Controller {
         $this->print_r2($this->Session->read());
 
 //	$this->Session->delete('Config.language');
-    }
+    }*/
 
     /** DOES NOT WORK WITH $x=1
      * 	Round up to an integer, then to the nearest multiple of 5
@@ -585,6 +571,7 @@ class AppController extends Controller {
     /**
      * Function to get the sectors for the leftnavigationmenu by User's role
      * We do a three table query using the joins option
+     * 
      * @param int $roleId It is the user's role id
      * @return boolean|array Return false if there is not roleId or the array with the sectors
      */
@@ -622,34 +609,34 @@ class AppController extends Controller {
 
         $sectors = $this->Sector->find('all', $options);
         return $sectors;
-        }
+    }
 
-        /**
-         * 
-         * This function check if the user request fulfill the permissions assigned to his role.
-         * If is true, the petition is done without problems, if we have at least a data that doesn't fulfill the permissions,
-         * we stop the petition and return an error.
-         * @param int $request The type of request, can be read, write, delete, ....
-         * @param array $data   The data to check.
-         * @param string $role  The role of the user.
-         * @return boolean
-         */
-        public function api_accessFilter($request, $data, $role){
-        //Filter json
-        return true;
+    /**
+     * 
+     * This function check if the user request fulfill the permissions assigned to his role.
+     * If is true, the petition is done without problems, if we have at least a data that doesn't fulfill the permissions,
+     * we stop the petition and return an error.
+     * @param int $request The type of request, can be read, write, delete, ....
+     * @param array $data   The data to check.
+     * @param string $role  The role of the user.
+     * @return boolean
+     */
+    public function api_accessFilter($request, $data, $role){
+    //Filter json
+    return true;
     }
   
     
-     /**
-      * Formats the error information into the error object for the API-V1
-      * 
-      * @param string $errorName Short one word description of error
-      * @param string $errorMessage The message in clear language which may be displayed to the user
-      * @param array $validationErrors This is an array with all the error messages per variable 
-      * @return array 
-      */   
+    /**
+     * Formats the error information into the error object for the API-V1
+     * 
+     * @param string $errorName Short one word description of error
+     * @param string $errorMessage The message in clear language which may be displayed to the user
+     * @param array $validationErrors This is an array with all the error messages per variable 
+     * @return array 
+     */   
     public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
-        
+  
         foreach ($validationErrors as $key => $item) {
             $tempArray['field'] = $key;
             $tempArray['issue'] = $item[0];
@@ -658,34 +645,32 @@ class AppController extends Controller {
 
         $errorArray['error_name'] = $errorName;
         $errorArray['error_message'] = $errorMessage;
-        $errorArray['error_details'] = $errorDetails;
+        if (!empty($validationErrors)) {
+            $errorArray['error_details'] = $errorDetails;
+        }
         return ($errorArray);    
     }
     
     
-     /**
-      * Loads the class variables $listOfFields, $listOfQueryParams, action
-      * and the query parameters converted to CakePHP Filtering Conditions
-      * for Model operations
-      * 
-      * @param - 
-      * @return boolean
-      */   
+    /**
+     * Loads the class variables $listOfFields, $listOfQueryParams, $action
+     * and the query parameters ($filterConditionQueryParms) converted to 
+     * CakePHP Filtering Conditions for Model operations
+     * 
+     * @param - 
+     * @return true
+     */   
     public function  loadParameterFields(){ 
-        $this->Investor = ClassRegistry::init('Investor');
+        $this->AppModel = ClassRegistry::init('AppModel');
         $this->listOfQueryParams = $this->request->query; 
 
         if (array_key_exists('_fields', $this->listOfQueryParams )){              
             $this->listOfFields = explode(",", $this->listOfQueryParams['_fields']);
-            $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack          
+            $this->AppModel->apiFieldListAdapter($this->listOfFields);         
             unset($this->listOfQueryParams['_fields']);
         }
-        if (array_key_exists('_action', $this->listOfQueryParams )){              
-            $this->action = $this->listOfQueryParams['_action'];
-            $this->Investor->apiFieldListAdapter($this->action);                // Very dirty hack            
-            unset($this->listOfQueryParams['_action']);
-        }       
-        $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
+       
+        $this->AppModel->apiVariableNameInAdapter($this->listOfQueryParams);
 
         foreach($this->listOfQueryParams as $key => $value) {
             $parms = explode(",", $value); 
@@ -706,12 +691,66 @@ class AppController extends Controller {
             } 
         }
 
-        $this->filterConditionQueryParms = ['OR' => $orCondition,
-                                           'AND' => $andCondition];
+        if (!empty($orCondition)) {
+            $this->filterConditionQueryParms['OR'] = $orCondition;
+        }
+        if (!empty($andCondition)) {
+            $this->filterConditionQueryParms['AND'] = $andCondition;
+        }        
+        
+        if (Configure::read('debug')) {
+                if (!empty($this->listOfQueryParams)) {
+                    echo "listOfQueryParams =\n<br>";
+                    var_dump($this->listOfQueryParams);
+                }
+                 if (!empty($this->listOfFields)) {
+                     echo "listOfFields = \n<br>";
+                    var_dump($this->listOfFields);
+                }
+                if (!empty($this->filterConditionQueryParms)) {
+                    echo "filterConditionQueryParms = \n<br>";
+                    var_dump($this->filterConditionQueryParms);
+                }
+                if (!empty($this->request->data)) {
+                    echo "request->data = \n<br>";
+                    var_dump($this->request->data);
+                }
+        }     
         return true;
     }
     
+ 
     
+    /**
+     * Generate a random string, using a cryptographically secure 
+     * pseudorandom number generator (random_int)
+     * 
+     * For PHP 7, random_int is a PHP core function
+     * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+     * 
+     * @param int $length      How many characters do we want?
+     * @param string $keyspace A string of all possible characters
+     *                         to select from
+     * @return string
+     */
+    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $pieces = [];
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $pieces []= $keyspace[random_int(0, $max)];
+        }
+        return implode('', $pieces);
+    }   
+    
+    /**
+     * Generate a link based on the api.
+     * 
+     * @param string $endpoint                                                 endpoint that reference the link example: linkedaccounts
+     * @param string $rel                                                      Action of the url like delete, edit, ...
+     * @param string $parameter                                                Extra parameter, normally the id ex: /api/1.0/linkedaccounts/2.json  the 2.json
+     * @return string
+     */
     function generateLink($endpoint, $rel, $parameter) {
         $this->endpointsVersion = Configure::read('generateLink');
         $version = $this->endpointsVersion[$endpoint];

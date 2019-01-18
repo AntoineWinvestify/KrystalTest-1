@@ -845,6 +845,7 @@ protected $countries = [
      * 
      *  @param  FILE            FQDN of the file to analyze
      *  @param  array           $configuration  Array that contains the configuration data of a specific "document"
+     *  @param  highestRow      Last written row, we need for offsetEnd
      *  @return array           $parsedData
      *          false in case an error occurred
      */
@@ -1026,6 +1027,51 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
         }
         return $tempArray;    
     }
+    
+    /*public function getFirstRow($file, $configParam) {
+        $extension = $this->getExtensionFile($file);
+        $inputType = $this->getInputFileType($extension);
+        $data = $this->convertExcelByParts($file, $configParam["chunkInit"], $configParam["chunkSize"], $inputType);
+        print_r($data[1]);
+        return $data[1];
+    }*/
+    
+    /*function convertExcelByParts($filePath, $chunkInit, $chunkSize, $inputFileType = null) {
+        if (empty($inputFileType)) {
+            $inputFileType = "Excel2007";
+        }
+        if (empty($chunkInit)) {
+            $chunkInit = 1;
+        }
+        if (empty($chunkSize)) {
+            $chunkSize = 500;
+        }
+        $objReader = PHPExcel_IOFactory::createReader($inputFileType);
+        
+        /**  Create a new Instance of our Read Filter  **/
+        //$chunkFilter = new readFilterWinvestify();
+        /**  Tell the Read Filter, the limits on which rows we want to read this iteration  **/
+        //$chunkFilter->setRows($chunkInit,$chunkSize);
+        /**  Tell the Reader that we want to use the Read Filter that we've Instantiated  **/
+        /*$objReader->setReadFilter($chunkFilter);
+        
+        $objPHPExcel = $objReader->load($filePath);
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+        echo "sheetDAta <br>";
+        var_dump($sheetData);
+        return $sheetData;
+    }*/
+    
+    /*public function getInputFileType($extension) {
+        
+        switch($extension) {
+            case "xlsx":
+                $inputType = "Excel2007";
+                break;
+        }
+        return $inputType;
+    }*/
+   
 
 
 
@@ -1421,6 +1467,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
               return $currencyIndex;
             }
         }
+        echo HTML_ENDOFLINE;
     }
 
     /**
@@ -1449,6 +1496,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      */
     private function getTransactionDetail($input, $config) {
 
+        $found = null;
         foreach ($config as $configKey => $item) {
             $configItemKey = key($item);
             $configItem = $item[$configItemKey];
@@ -1522,7 +1570,6 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function extractDataFromString($input, $search, $separator, $mandatory = 0) {
-
         $position = stripos($input, $search);
         if ($position !== false) {  // == TRUE
             if ($mandatory == 2){    
@@ -1545,7 +1592,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
             $length1 = $position1;
         }
         else { // FALSE
-            $length1 = 100;                 // ficticious value
+            $length1 = 150;                 // ficticious value
         }       
         $start = $start + $length;
         $finish = $length1 - $start;
@@ -1563,7 +1610,11 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      *
      */
     private function getRowData($input, $field, $overwrite) {
-
+        
+        echo 'ENTRO';
+        echo $input . HTML_ENDOFLINE;
+        echo $field . HTML_ENDOFLINE;
+        
         if (empty($input)) {
             return $field;
         }

@@ -64,6 +64,7 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  */
 	public function __construct(ComponentCollection $collection, $settings) {
 		parent::__construct($collection, $settings);
+                
 		if (empty($this->settings['parameter']) && empty($this->settings['header'])) {
 			throw new CakeException(__d('bz_utils', 'You need to specify token parameter and/or header'));
 		}
@@ -76,9 +77,10 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @param CakeResponse $response response object.
  * @return mixed.  False on login failure.  An array of User data on success.
  */
-	public function authenticate(CakeRequest $request, CakeResponse $response) {
+	public function authenticate(CakeRequest $request, CakeResponse $response) {          
 		$user = $this->getUser($request);
-		if (!$user) {
+
+		if (!$user) {                    
 			$response->statusCode(401);
 			$response->send();
 		}
@@ -92,8 +94,9 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @return mixed Either false or an array of user information
  */
 	public function getUser(CakeRequest $request) {
-		if (!empty($this->settings['header'])) {
+		if (!empty($this->settings['header'])) {                 
 			$token = $request->header($this->settings['header']);
+
 			if ($token) {
 				return $this->_findUser($token, null);
 			}
@@ -102,6 +105,7 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
 			$token = $request->query[$this->settings['parameter']];
 			return $this->_findUser($token);
 		}
+ 
 		return false;
 	}
 
@@ -113,10 +117,11 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  * @return Mixed Either false on failure, or an array of user data.
  */
 	public function _findUser($username, $password = null) {
+
 		try {
-			$decoded = Firebase\JWT\JWT::decode($username, Configure::read('Security.salt'), array('HS256'));
-			return json_decode(json_encode($decoded), true);
-		} catch (UnexpectedValueException $e) {
+			$decoded = JWT::decode($username, Configure::read('Security.salt'), array('HS256'));
+                        return json_decode(json_encode($decoded), true);
+		} catch (UnexpectedValueException $e) {      
 			return false;
 		}
 	}

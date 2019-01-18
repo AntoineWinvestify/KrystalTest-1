@@ -223,13 +223,13 @@ class Linkedaccount extends AppModel {
          * @return boolean true
          */
 	public function beforeFind($queryData) {
-                if(!empty($queryData['conditions']['linkedaccount_status'])){
-                    switch ($queryData['conditions']['linkedaccount_status']) {
+                if(!empty($queryData['conditions']['Linkedaccount.linkedaccount_status'])){
+                    switch ($queryData['conditions']['Linkedaccount.linkedaccount_status']) {
                         case 'ACTIVE':
-                            $queryData['conditions']['linkedaccount_status'] = WIN_LINKEDACCOUNT_ACTIVE;
+                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_ACTIVE;
                             break;
                         case 'SUSPENDED':
-                            $queryData['conditions']['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
+                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
                             break;
                         default:
                             break;
@@ -428,7 +428,7 @@ class Linkedaccount extends AppModel {
      * @return array   If mono account, return always an array of size 1. Return account and a field that tells if 
      *                  that account is already linked.
      */
-    public function api_precheck($investorId, $companyId, $username, $password) {        
+    public function precheck($investorId, $companyId, $username, $password) {        
        
         $alreadyLinked = false;
         //Begin to check if that account already exist.
@@ -479,7 +479,7 @@ class Linkedaccount extends AppModel {
         if ($multiAccountCheck) {
             $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
             foreach ($accounts as $accountKey => $account) {
-                $accounts[$accountKey]['accountCheck'] = false;
+                $accounts[$accountKey]['accountCheck'] = false;                 //This field is not in db, is only for the frontend, it tell if the account is already linked or not.
                 foreach ($accountsLinked as $accountLinked) {
                     //Check the accounts already linked with the accounts to link, if we have them in $accountLinked, mark them in $accounts as already linked.
                     if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {        
@@ -525,23 +525,26 @@ class Linkedaccount extends AppModel {
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
                
         $indexList = $this->find('all', $params = array('recursive' => -1,
-            'conditions' => array('linkaccount_id' => $linkaccountId),
-            'fields' => array('id', 'accountowner_id'))
+            'conditions' => array('Linkedaccount.id' => $linkaccountId),
+            'fields' => array('Linkedaccount.id', 'Linkedaccount.accountowner_id', 'Linkedaccount.linkedaccount_status'))
         );
 
         if (empty($indexList)) {
             return json_encode($return['feedback_message_user'] = 'Account removal failed.');
         }
+        else if($indexList[0]['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_NOT_ACTIVE){
+            return json_encode($return['feedback_message_user'] = 'Account not found.');
+        }
 
         //Check if the investor is the propreary pf the account.
         $this->Accountowner = ClassRegistry::init('Accountowner');
         $accountOwner = $this->Accountowner->find('first',array(
-           'conditions' => array('id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
+           'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
         ));
         if($accountOwner == false){
             return json_encode($return['feedback_message_user'] = 'Account removal failed.');
         }
-       
+
         if ($roleName == 'Investor') {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_AND_DELETED_BY_USER;
         } 
@@ -549,13 +552,14 @@ class Linkedaccount extends AppModel {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_DELETED_BY_SYSTEM;
         }
 
+        $newData['id'] = $linkaccountId; 
         $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
-        $this->updateAll($newData, $linkaccountId);
-      
-        foreach ($indexList as $index) {
-            $this->Accountowner->accountDeleted($index['accountowner_id']);
-        }
+        $this->save($newData);
 
+        foreach ($indexList as $index) {
+            $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
+        }
+        
         return json_encode($return['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.');
     }
 
@@ -616,5 +620,22 @@ class Linkedaccount extends AppModel {
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
-
+    
+    /**
+     * Return the accountOwners of an given investor with the related linkedaccounts.
+     * 
+     * @param int $linkedaccountId                                             Id of the linkedaccount
+     * @param array $linkedaccountFields                                       Request fields 
+     * @return array
+     */
+    public function api_readLinkedaccount($linkedaccountId, $linkedaccountFields) {
+        
+        $linkedaccount = $this->Linkedaccount->find('first', array('recursive' => -1,
+                'conditions' => array('Linkedaccount.id' => $linkedaccountId),
+                'fields' => $linkedaccountFields
+            )); 
+        return $linkedaccount;
+        
+    }
+    
 }

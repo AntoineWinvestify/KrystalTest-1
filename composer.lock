@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "hash": "8322048304b950462679ee2de1400cac",
@@ -110,7 +110,7 @@
                 "event-dispatcher",
                 "event-emitter"
             ],
-            "time": "2017-07-17 17:39:19"
+            "time": "2017-07-17T17:39:19+00:00"
         },
         {
             "name": "facebook/webdriver",
@@ -170,7 +170,7 @@
                 "selenium",
                 "webdriver"
             ],
-            "time": "2018-05-16 17:37:13"
+            "time": "2018-05-16T17:37:13+00:00"
         },
         {
             "name": "firebase/php-jwt",
@@ -626,7 +626,7 @@
             "keywords": [
                 "unoconv"
             ],
-            "time": "2013-06-25 10:09:59"
+            "time": "2013-06-25T10:09:59+00:00"
         },
         {
             "name": "phpcasperjs/phpcasperjs",
@@ -672,7 +672,7 @@
                 "phpunit",
                 "test"
             ],
-            "time": "2017-04-04 03:15:58"
+            "time": "2017-04-04T03:15:58+00:00"
         },
         {
             "name": "phpoffice/phpspreadsheet",
@@ -860,7 +860,7 @@
                 "psr-16",
                 "simple-cache"
             ],
-            "time": "2017-10-23 01:57:42"
+            "time": "2017-10-23T01:57:42+00:00"
         },
         {
             "name": "smalot/pdfparser",
@@ -942,7 +942,7 @@
                 "MIT"
             ],
             "description": "cURL wrapper for PHP. Supports parallel and non-blocking requests. For high speed crawling, see stil/curl-robot.",
-            "time": "2017-05-20 15:13:54"
+            "time": "2017-05-20T15:13:54+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1265,7 +1265,7 @@
                 "filesystem",
                 "iterator"
             ],
-            "time": "2017-11-27 13:52:08"
+            "time": "2017-11-27T13:52:08+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -1306,7 +1306,7 @@
             "keywords": [
                 "template"
             ],
-            "time": "2015-06-21 13:50:34"
+            "time": "2015-06-21T13:50:34+00:00"
         },
         {
             "name": "phpunit/php-timer",
@@ -1355,7 +1355,7 @@
             "keywords": [
                 "timer"
             ],
-            "time": "2017-02-26 11:10:40"
+            "time": "2017-02-26T11:10:40+00:00"
         },
         {
             "name": "phpunit/php-token-stream",
@@ -1893,7 +1893,7 @@
                 "phpcs",
                 "standards"
             ],
-            "time": "2014-12-04 22:32:15"
+            "time": "2014-12-04T22:32:15+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",

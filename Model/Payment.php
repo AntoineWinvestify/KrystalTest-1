@@ -63,7 +63,7 @@ var $validate = array(
 
 
 
-    /*
+    /**
      * 
      * Update the corresponding fields in the 'paymenttotal' table 
      * 

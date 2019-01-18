@@ -43,7 +43,7 @@ class GearmanWorkerExampleShell extends AppShell {
             $this->GearmanWorker->addFunction('json_test', array($this, 'my_json_test'));
             $this->GearmanWorker->addFunction('reverse', array($this, 'my_reverse_function'));
             $this->GearmanWorker->addFunction('typeError', array($this, 'tryTypeError'));
-            $this->GearmanWorker->addFunction('Error', array($this, 'tryErrorGearman'));
+            $this->GearmanWorker->addFunction('error', array($this, 'tryErrorGearman'));
             $this->GearmanWorker->addFunction('fatalError', array($this, 'fatalErrorUnrecoverable'));
             $this->GearmanWorker->addFunction('testException', function(GearmanJob $job) {
                 throw new Exception('Boom');
@@ -118,6 +118,7 @@ class GearmanWorkerExampleShell extends AppShell {
     }
     
     public function tryTypeError($job) {
+        $this->job = $job;
         $this->typeErrorFunction(true);
     }
     
@@ -126,6 +127,7 @@ class GearmanWorkerExampleShell extends AppShell {
     }
     
     public function tryErrorGearman($job) {
+        $this->job = $job;
         $this->tryErrorOnGearman();
     }
     

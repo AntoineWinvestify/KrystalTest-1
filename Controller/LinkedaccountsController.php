@@ -1,5 +1,4 @@
 <?php
-
 /*
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2019, http://www.winvestify.com                         |
@@ -47,26 +46,27 @@ class LinkedaccountsController extends AppController {
     
     /** 
      * This methods terminates the HTTP GET.
-     * Format GET /v1/linkedaccounts?[status]
-     * Example GET /v1/linkedaccounts?linkedaccount_status=ACTIVE
-     *             /v1/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
+     * Format GET /api/1.0/linkedaccounts?[status]
+     * Example GET /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE
+     *             /api/1.0/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
      * @return string
      * 
      */
     public function v1_index() {
         
         $linkedaccountStatus = $this->listOfQueryParams;
-        
+
         $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->language);
         $accounts['tooltip_display_name'] = $tooltips[ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME];
         $accounts['service_status'] = "ACTIVE";
         $accounts['service_status_display_message'] = "You are using the maximum number of linkedaccounts. If you like to link more accounts, please upgrade your subscription";
         $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $linkedaccountStatus);
+        
         $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
         foreach ($accounts['data'] as $key => $account) {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
-            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['id']);
-            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
+            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['Linkedaccount']['id'] . '.json');
+            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['Linkedaccount']['id'] . '.json');
             //HOW GET POLLING RESOURCE ID?
         }
         $accounts = json_encode($accounts);  
@@ -77,8 +77,8 @@ class LinkedaccountsController extends AppController {
     
     /**
      * This methods terminates the HTTP GET.
-     * Format GET /v1/linkedaccounts/[linkedaccountId]
-     * Example GET /v1/linkedaccounts/945
+     * Format GET /api/1.0/linkedaccounts/[linkedaccountId]
+     * Example GET /api/1.0/linkedaccounts/945
      * 
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
@@ -96,16 +96,17 @@ class LinkedaccountsController extends AppController {
 
     /**
      * This methods terminates the HTTP PATCH/PUT
-     * Format PATCH /v1/linkedaccounts/[linkedaccountId]?[accountowner_password]
-     * Example PATCH /v1/linkedaccounts/945?accountowner_password=123456;
+     * Format PATCH /api/1.0/linkedaccounts/[linkedaccountId]?[accountowner_password]
+     * Example PATCH /api/1.0/linkedaccounts/945?accountowner_password=123456;
      *  
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
-    public function v1_edit($id) {
-        
-        
-        $newPass = $this->listOfQueryParams['accountowner_password'];
+    public function v1_edit() {
+        $id = $this->request->params['id'];
+        $RequestData = $this->request->data;
+        $this->Linkedaccount->apiVariableNameInAdapter($RequestData);
+        $newPass = $RequestData['accountowner_password'];      
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
         $feedback = json_enconde($this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass));
@@ -116,8 +117,8 @@ class LinkedaccountsController extends AppController {
     
     /**
      * This methods terminates the HTTP POST
-     * Format POST /v1/linkedaccounts?['company_id']&['accountowner_username']&['accountowner_password']&['linkedaccount']=[['linkedaccount_identity']&['linkedaccount_accountDisplayName']&['linkedaccount_currency']]
-     * Example POST /v1/linkedaccounts?company_id=25&linkedaccount_username=pfpaccount&linkedaccount_password=pfppassword&linkedaccount=[linkedaccount_username=978&linkedaccount_platform_display_name=Klaus[EUR]&linkedaccount_currency=EUR]
+     * Format POST /api/1.0/linkedaccounts?['company_id']&['accountowner_username']&['accountowner_password']&['linkedaccount']=[['linkedaccount_identity']&['linkedaccount_accountDisplayName']&['linkedaccount_currency']]
+     * Example POST /api/1.0/linkedaccounts?company_id=25&linkedaccount_username=pfpaccount&linkedaccount_password=pfppassword&linkedaccount=[linkedaccount_username=978&linkedaccount_platform_display_name=Klaus[EUR]&linkedaccount_currency=EUR]
      * 
      * @return string
      */
@@ -160,7 +161,7 @@ class LinkedaccountsController extends AppController {
                 return $this->response; 
             }
         } 
-        else{ //Link fail
+        else { //Link fail
             //ERROR LINQUEAR CUENTA
         }
     }
@@ -168,6 +169,7 @@ class LinkedaccountsController extends AppController {
     /**
      * Format DELETE api/1.0/linkedaccounts/[linkedaccountId]
      * Example DELETE api/1.0//linkedaccounts/945
+     * 
      * @param int $id
      * @return string
      */
@@ -182,8 +184,8 @@ class LinkedaccountsController extends AppController {
     
     /**
      * This methods terminates the HTTP POST
-     * Format POST api/1.0/linkedaccounts?['company_id']&['accountowner_username']&['accountowner_password']
-     * Example POST api/1.0/linkedaccounts?company_id=25&linkedaccount_username=pfpaccount&linkedaccount_password=pfppassword
+     * Format POST api/1.0/linkedaccounts?['company_id']&['accountowner_username']&['accountowner_password']??????
+     * Example POST api/1.0/linkedaccounts?company_id=25&linkedaccount_username=pfpaccount&linkedaccount_password=pfppassword?????????
      *  
      * @return string
      */
