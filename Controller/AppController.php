@@ -109,7 +109,7 @@ class AppController extends Controller {
     protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
     protected $refreshToken;                    // The token required for refreshing, as obtainted from JWT
     protected $accountDisplayName;              // The display name of the user as obtained frm JWT
-  
+
     
     
     public $components = array('DebugKit.Toolbar',
@@ -668,11 +668,7 @@ class AppController extends Controller {
             $this->AppModel->apiFieldListAdapter($this->listOfFields);         
             unset($this->listOfQueryParams['_fields']);
         }
-        if (array_key_exists('_action', $this->listOfQueryParams )){              
-            $this->action = $this->listOfQueryParams['_action'];
-            $this->AppModel->apiFieldListAdapter($this->action);              
-            unset($this->listOfQueryParams['_action']);
-        }       
+       
         $this->AppModel->apiVariableNameInAdapter($this->listOfQueryParams);
 
         foreach($this->listOfQueryParams as $key => $value) {
@@ -694,8 +690,12 @@ class AppController extends Controller {
             } 
         }
 
-        $this->filterConditionQueryParms = ['OR' => $orCondition,
-                                           'AND' => $andCondition];
+        if (!empty($orCondition)) {
+            $this->filterConditionQueryParms['OR'] = $orCondition;
+        }
+        if (!empty($andCondition)) {
+            $this->filterConditionQueryParms['AND'] = $andCondition;
+        }        
         
         if (Configure::read('debug')) {
                 if (!empty($this->listOfQueryParams)) {
@@ -714,8 +714,7 @@ class AppController extends Controller {
                     echo "request->data = \n<br>";
                     var_dump($this->request->data);
                 }
-        }
-        
+        }     
         return true;
     }
     

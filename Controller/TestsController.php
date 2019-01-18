@@ -270,8 +270,8 @@ exit;*/
                   '_serialize' => ['data']]
                    );          
     }  
-     
-    
+  
+  
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
      * Format GET /v1/investors.json&_fields=x,y,z
@@ -282,15 +282,26 @@ exit;*/
      */
     public function v1_index(){
 
-        if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                    'Investor.investor_address1',  'Investor.investor_address2',
-                                    'Investor.investor_city',  'Investor.investor_telephone',
-                                    'Investor.investor_postCode',  'Investor.investor_email'  
-                                    ];
-        } 
-
+        
+        
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+        if (!empty($this->request->pass)) {                 // Format for collecting a graphics file  
+            switch ($this->request->pass[1]) {
+                case "lists":
+                    $this->getDashboardlists($this->request->pass[2]);
+                    break;      
+                case "graphics":
+                    $this->getDashboardgraphics($this->request->pass[2]);
+                    break;
+                default:
+                    $this->response->statusCode(400);   
+                    $this->response->type('json'); 
+                    return $this->response; 
+            }
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+return $this->response; 
+        }
+        
         foreach ($this->listOfFields as $field) {
             $tempField = explode("_", $field);
 
@@ -298,7 +309,9 @@ exit;*/
                 $this->listOfFields[] = "Check.check_" . $tempField[1]; 
             }  
         } 
-        
+echo __FILE__ . " " . __LINE__ . " \n<br>";     
+exit;
+
         $this->Investor->contain('Investor', 'Check');
         $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
@@ -396,12 +409,12 @@ exit;*/
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;         
-    }
+    } 
 
 
 
     /* to delete */
-    public function editCheck() {
+    public function editCheck1() {
         
         
         Configure::write('debug', 2);        

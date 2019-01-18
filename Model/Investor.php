@@ -893,7 +893,7 @@ class Investor extends AppModel {
         if (!empty($this->data['Investor']['investor_telephone'])) {
             $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
         } 
-        
+       
         // Observe that username is not saved to the Investor model, but only required for generating the "investor_identity"
         if (!$this->id && !isset($this->data[$this->alias][$this->primaryKey])) {
             $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['username']); 
