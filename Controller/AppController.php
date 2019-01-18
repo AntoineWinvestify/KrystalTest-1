@@ -1,5 +1,4 @@
 <?php
-
 /**
  * +-----------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                         |
@@ -105,17 +104,19 @@ class AppController extends Controller {
                                                 // that case all entries are considered as OR condition
     
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
-    protected $investorId;                      // Investor id from the user. We get it from the token
-    protected $language;                        // Language for translations.  We get it from the token
-    protected $roleName;                        // Name of the user role
     protected $action;                          // The 'action' of a POST operation
-    
+    protected $investorId;                      // The investorId as obtained in the JWT
+    protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
+    protected $refreshToken;                    // The token required for refreshing, as obtainted from JWT
+    protected $accountDisplayName;              // The display name of the user as obtained frm JWT
+    protected $language;                        // Language for translations.  We get it from the token
+
     
     
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
   //      'Security',
- //       'Session',
+ //       'Session', 
         
          'Auth' => array(
             'authenticate' => array(
@@ -143,7 +144,6 @@ class AppController extends Controller {
             )  
         ),       
       
-        
        'Acl',
    /*     'Auth' => array(
             //				'authorize' 	=> 'Controller', isAuthorized method not implemented in controller 
@@ -154,8 +154,8 @@ class AppController extends Controller {
                 'action' => 'loginRedirect'
             ),
         ),*/ 
-   //     'Cookie',
     );
+    
     var $uses = array('User', 'Role', 'Sector');
 
     /**
@@ -166,27 +166,22 @@ class AppController extends Controller {
      * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
+
         if (Configure::read('debug')) {
-  //        var_dump($this->request);
+            var_dump($this->request);
         } 
-
-        // do authentication for webtoken. 
-        // obtain all the relevant information, like investorId, language
-        // should also check for issuer, exp, invalid signature, etc, etc, 
-
-   /*     
-        $this->Cookie->name = 'p2pManager';
-        $this->Cookie->time = 3600;  // or '1 hour'
-        $this->Cookie->secure = false;  // i.e. only sent if using secure HTTPS
-        $this->Cookie->key = 'qSI232qs*&sXOw!adre@34SAv!@*(XSL#$%)asGb$@11~_+!@#HKis~#^';
-        $this->Cookie->httpOnly = true;
-        $this->Cookie->type('rijndael');
-
-        $this->Security->blackHoleCallback = '_blackHole';
-        $this->Security->requireSecure();
-
+     
+        $jwt = $this->request->header('AuthToken'); 
         
-      */  
+        if (!empty($jwt)) {
+            $tokenObject = JWT::decode($jwt, Configure::read('Security.salt'), $allowed_algs = ['HS256']);      
+            $this->investorId = $tokenObject->sub;   
+            $this->roleName = $tokenObject->role;  
+            $this->language = $tokenObject->language;
+            $this->refreshToken = $tokenObject->refresh_token;
+            $this->accountDisplayName = $tokenObject->account_display_name; 
+        }
+  
 // Load the application configuration file. Now it is available to the *whole* application	 
 /*        Configure::load('p2pGestor.php', 'default');
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
@@ -231,9 +226,8 @@ class AppController extends Controller {
 
         //Investment Status in marketplace
         $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
-*/
 
-/*
+
         $this->set('durationPublic', $durationPublic);
         $this->durationPublic = $durationPublic;
 
@@ -295,8 +289,8 @@ class AppController extends Controller {
                 throw new
                 FatalErrorException(__('You cannot access this page directly'));
             }
-        }*/
-        /*
+        } 
+ 
         if ($this->Auth->user()) {
             $sectorExist = $this->Session->read('sectorsMenu');
             if (empty($sectorExist)) {
@@ -316,11 +310,8 @@ class AppController extends Controller {
    //            rename ($fileName1, $fileName);       
             default:
         }  
-  */      
-//        echo __FILE__ . " " . __LINE__ ."<br>\n"; 
-        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message
-  echo __FILE__ . " " . __LINE__ . " \n";       
-        
+  */       
+    $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message 
     }
 
     /**
@@ -400,7 +391,7 @@ class AppController extends Controller {
         array_multisort(array_map('filemtime', $files), SORT_NUMERIC, SORT_ASC, $files);
         return $files[0];
     }
-
+/*
     public function session() {
         $this->autoRender = FALSE;
         Configure::write('debug', 2);
@@ -419,7 +410,7 @@ class AppController extends Controller {
         $this->print_r2($this->Session->read());
 
 //	$this->Session->delete('Config.language');
-    }
+    }*/
 
     /** DOES NOT WORK WITH $x=1
      * 	Round up to an integer, then to the nearest multiple of 5
@@ -670,20 +661,16 @@ class AppController extends Controller {
      * @return true
      */   
     public function  loadParameterFields(){ 
-        $this->Investor = ClassRegistry::init('Investor');
+        $this->AppModel = ClassRegistry::init('AppModel');
         $this->listOfQueryParams = $this->request->query; 
 
         if (array_key_exists('_fields', $this->listOfQueryParams )){              
             $this->listOfFields = explode(",", $this->listOfQueryParams['_fields']);
-            $this->Investor->apiFieldListAdapter($this->listOfFields);          // Very dirty hack          
+            $this->AppModel->apiFieldListAdapter($this->listOfFields);         
             unset($this->listOfQueryParams['_fields']);
         }
-        if (array_key_exists('_action', $this->listOfQueryParams )){              
-            $this->action = $this->listOfQueryParams['_action'];
-            $this->Investor->apiFieldListAdapter($this->action);                // Very dirty hack            
-            unset($this->listOfQueryParams['_action']);
-        }       
-        $this->Investor->apiVariableNameInAdapter($this->listOfQueryParams);
+       
+        $this->AppModel->apiVariableNameInAdapter($this->listOfQueryParams);
 
         foreach($this->listOfQueryParams as $key => $value) {
             $parms = explode(",", $value); 
@@ -704,24 +691,35 @@ class AppController extends Controller {
             } 
         }
 
-        $this->filterConditionQueryParms = ['OR' => $orCondition,
-                                           'AND' => $andCondition];
+        if (!empty($orCondition)) {
+            $this->filterConditionQueryParms['OR'] = $orCondition;
+        }
+        if (!empty($andCondition)) {
+            $this->filterConditionQueryParms['AND'] = $andCondition;
+        }        
         
         if (Configure::read('debug')) {
                 if (!empty($this->listOfQueryParams)) {
+                    echo "listOfQueryParams =\n<br>";
                     var_dump($this->listOfQueryParams);
                 }
                  if (!empty($this->listOfFields)) {
+                     echo "listOfFields = \n<br>";
                     var_dump($this->listOfFields);
                 }
                 if (!empty($this->filterConditionQueryParms)) {
+                    echo "filterConditionQueryParms = \n<br>";
                     var_dump($this->filterConditionQueryParms);
-                }                
-        }
-        
+                }
+                if (!empty($this->request->data)) {
+                    echo "request->data = \n<br>";
+                    var_dump($this->request->data);
+                }
+        }     
         return true;
     }
     
+ 
     
     /**
      * Generate a random string, using a cryptographically secure 

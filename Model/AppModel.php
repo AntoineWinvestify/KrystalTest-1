@@ -74,6 +74,7 @@ class AppModel extends Model {
                                 'accountowner_password' => 'linkedaccount_password',
                                 'accountCheck'  => 'linkedaccount_linkingstatus',
                                 'requireNewAccessToken'=> 'require_new_access_token',
+                                'investor_accredited' => 'accredited_investor',
  
                               ];
 
@@ -357,6 +358,7 @@ class AppModel extends Model {
      * database variable. 
      * Typically used as filtering condition of a find operation
      * Example  'investor_date_of_birth' ==> 'investor_dateOfBirth'
+     * Note that it does NOT do recursion into arrays
      *  
      *  @param array $inputArray 
      *  @return boolean
@@ -382,6 +384,7 @@ class AppModel extends Model {
      * failed.
      * 
      * Example   'investor_dateOfBirth' ==> 'investor_date_of_birth'
+     * Note that it does NOT do recursion into arrays
      *       
      *  @code 
      * 
@@ -406,7 +409,7 @@ class AppModel extends Model {
         return true;
     }   
     
-        /**
+    /**
      *
      * 	Creates a new instance of class with name company, like zank, or comunitae....
      *
@@ -424,5 +427,31 @@ class AppModel extends Model {
         $newComp = new $newClass;
         return $newComp;
     }  
+  
+    
+   
+    /**
+     * Generate a random string, using a cryptographically secure 
+     * pseudorandom number generator (random_int)
+     * 
+     * For PHP 7, random_int is a PHP core function
+     * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+     * 
+     * @param int $length      How many characters do we want?
+     * @param string $keyspace A string of all possible characters
+     *                         to select from
+     * @return string
+     */
+    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $pieces = [];
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $pieces []= $keyspace[random_int(0, $max)];
+        }
+        return implode('', $pieces);
+    }   
+    
+       
     
 }

@@ -65,7 +65,7 @@ class InvestorTest extends CakeTestCase {
                 'investor_name' => 'John'
                 ];        
         $data = ['investor_telephone' => '+34666555444',
-                'investor_password' => 'myPassword_12s',
+                'investor_password' => '8870mit_1A',
                 'investor_email' => 'user' . mt_rand(0, 100000) . '@winvestify.com',
                 'investor_name' => 'John',
                 'investor_surname' => 'Doe',
@@ -91,9 +91,10 @@ class InvestorTest extends CakeTestCase {
         $message3 = "Regular format of data for Saving to DB 'User' NOT approved";
         $this->assertEquals($infoUser['User']['username'], $data['investor_email'], $message3);    
         
-	
-//	$originalPassword = Security::rijndael($infoUser['User']['password'], Configure::read('Security.salt'), 'decrypt');
-//        $this->assertEquals($data['investor_password'], $originalPassword, $message3); // password is encrypted in DB
+/*	
+	$originalPassword = Security::rijndael($infoUser['User']['password'], Configure::read('Security.salt'), 'decrypt');
+        $this->assertEquals($data['investor_password'], $originalPassword, $message3); // password is encrypted in DB
+*/
         
         $this->assertEquals($infoUser['User']['email'], $data['investor_email'], $message3);         
         $this->assertEquals($infoUser['User']['role_id'], ROLE_INVESTOR, $message3);  

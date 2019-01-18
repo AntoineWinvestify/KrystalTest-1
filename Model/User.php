@@ -72,6 +72,15 @@ class User extends AppModel {
         )
 */
     );
+ 
+    public $hasMany = array(
+        'Usertoken' => array(
+            'className' => 'Usertoken',
+            'foreignKey' => 'user_id',
+            'fields' => '',
+            'order' => '',
+        )
+    );    
     
     public $belongsTo = array(
         'Role' => array(
@@ -337,7 +346,7 @@ class User extends AppModel {
      *
      * 	Generates and stores a new password which the user MUST change
      *
-     */
+     *//*
     public function generateNewPassword($id) {
 
         $newRandomPassword = substr(md5(rand()), 0, 5) . date("Hs") . "!";
@@ -352,7 +361,7 @@ class User extends AppModel {
             'newRandomPassword' => $newRandomPassword
                 )
         );
-    }
+    }*/
 
     /**
      * Get the pfp admins of a company
@@ -466,13 +475,54 @@ class User extends AppModel {
         $userData['role_id'] = ROLE_INVESTOR;   
         $userData['investor_id'] = $investorId;  
         $userData['active'] = true;
-   
-        if ($this->save($userData, $validate = true)) { 
+
+        if ($this->save($userData, $validate = true)) {
             return $this->id;
         }
         return false;
     }      
     
+    /**
+     * A JWT is deleted
+     * 
+     * @param string $refreshToken An array of 1 or more tokens to be deleted, i.e. 
+     * they can no longer be used to request new access tokens
+     * @return boolean
+     */
+    public function api_logout($refreshToken) {
+        $this->Usertoken->api_deleteUserToken($refreshToken);
+        return true;
+    }  
     
+    /**
+     * A new refreshtoken is prepared which can be used in the future to
+     * renew existing JWT.   
+     * 
+     * @param int $userId The internal database reference of the User object
+     * @return mixed refreshToken or false
+     */
+    public function api_getNewToken($userId) {
+
+        $token = $this->Usertoken->api_addUserToken($userId);
+        if (!empty($token)) {
+            return $token;
+        } 
+        return false;
+    }    
+
+    
+    /**
+     * A new access token is generated
+     * 
+     * @param string $refreshToken The refheshToken for which a new access token is to be generated
+     * @return boolean ! JWT False in case of internal error.
+     */
+    public function api_getNewAccessToken($refreshToken) {
+        $token = $this->Usertoken->api_getNewAccessUserToken($refreshToken);
+        if (!empty($token)) {
+            return $token;
+        } 
+        return false;
+    }       
     
 }

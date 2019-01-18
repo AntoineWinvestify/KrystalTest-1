@@ -80,10 +80,13 @@ class GlobalEmailListener implements CakeEventListener {
         Configure::load('p2pGestor.php', 'default');
         $configuredEvents = Configure::read('event');
         foreach ($configuredEvents as $key => $value) {
-            if ($value == true && !empty($allImplementedEvents[$key])) {
-                $selectedEvents[$key] = $allImplementedEvents[$key];
+            if ($value == true) {
+                if (array_key_exists($key, $allImplementedEvents)) {
+                    $selectedEvents[$key] = $allImplementedEvents[$key];
+                }
             }
         }
+
         return ($selectedEvents);
     }
 

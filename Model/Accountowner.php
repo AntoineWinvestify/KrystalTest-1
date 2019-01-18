@@ -80,7 +80,8 @@ class Accountowner extends AppModel {
     }
 
     /**
-     * Create a new accountowner for a linked account of an investor. If accountowner already exists then its reference is returned
+     * Create a new accountowner for a linked account of an investor. If accountowner already exists then its 
+     * reference is returned
      *
      * @param int $companyId            Database Identifier of PFP company where the linked account resides
      * @param int $investorId           Database Identifier of investor

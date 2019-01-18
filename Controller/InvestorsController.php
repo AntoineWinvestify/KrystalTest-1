@@ -531,20 +531,25 @@ function linkAccount() {
     
 
    
-    /** PENDING: ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP PATCH/PUT.
-     * Format PUT /v1/investors/[investorId].json?param1=value11&param2=value2&param3=value3....
-     * Example PUT /v1/investors/1.json?investor_name=Antoine&investor_surname=De Poorter
-     *
-     * @param integer $id The database identifier of the requested 'Investor' resource
+    /** 
+     * This methods handles the HTTP PATCH message
+     * Format PATCH /api/1.0/investors/[investorId].json ....
+     * Example PATCH /api/1.01/investors/1.json
+     * fields are conveyed in the message body.
+     * 
+     * @param integer $id The database identifier of the requested 'Investor' object
      * 
      */
     public function v1_edit($id) { 
         // somehow, $id is not loaded
-        $id = $this->request->params['id'];
-        $data = $this->listOfQueryParams;
-        $data['id'] = $id;
-        $result = $this->Investor->save($data, $validate = true);
+
+        $data = $this->request->data;
+        $dataNew = $data['data'];
+        $dataNew['id'] = $this->request->params['id'];
+        
+        $this->Investor->apiVariableNameInAdapter($dataNew);
+        $result = $this->Investor->save($dataNew, $validate = true);
+
         if (!($result)) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
@@ -553,10 +558,9 @@ function linkAccount() {
                                                         "It is not allowed to modify read-only fields", 
                                                         $validationErrors);
             $resultJson = json_encode($formattedError);
-            $this->response->statusCode(403);                                       // 403 Forbidden  
+            $this->response->statusCode(403);                                   // 403 Forbidden  
         }
         else {
-            var_dump($this->data);
             if (!empty($result['Investor']['requireNewAccessToken'])) {
                 $apiResult = ['requireNewAccessToken' => true];
                 $this->Investor->apiVariableNameOutAdapter($apiResult);
@@ -572,41 +576,41 @@ function linkAccount() {
         return $this->response;               
     }     
 
-    /** PENDING: ERROR HANDLING TOWARDS HTTP STILL TO TEST
+    /** Simple version is OK
      * This methods terminates the HTTP POST for defining a new investor.
      * Format POST /api/1.0/investors.json
      * Example POST /api/1.0/investors.json
-     *
+     * All the userdata is located in the POST body as a json 
+     * 
      * @return mixed false or the database identifier of the new 'Investor' object
      */
-    public function v1_add($id) { 
-        // somehow, $id is not loaded
-        $id = $this->request->params['id'];
-        $data = $this->listOfQueryParams;// holds all the new investor data
-var_dump($data);       
-        $data['id'] = $id;
-        $result = $this->Investor->api_addUser($data);
+    public function v1_add() { 
+        $this->AppModel = ClassRegistry::init('AppModel');
+        $data = $this->request->data;                                           // holds all the new investor data
+        $newData = $data['data'];
+ 
+        $this->AppModel->apiVariableNameInAdapter($newData);    
+        $result = $this->Investor->api_addInvestor($newData);
+        
         if (!($result)) {
+            $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
             $formattedError = $this->createErrorFormat('CANNOT_CREATE_INVESTOR_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
             $this->response->statusCode(500);                                    
         }
         else {
-var_dump($this->data);
-            if (!empty($result['Investor']['requireNewAccessToken'])) {
-                $apiResult = ['requireNewAccessToken' => true];
-                $this->Investor->apiVariableNameOutAdapter($apiResult);
-                $resultJson = json_encode($apiResult);
-            }
-            else {
-                $this->response->statusCode(204);
-            }
+            $this->response->statusCode(201);
         }
         
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;               
     }          
+    
+ 
+    
     
 }
