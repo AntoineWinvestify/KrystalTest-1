@@ -174,7 +174,7 @@ class AppController extends Controller {
         
         if (!empty($jwt)) {
             $tokenObject = JWT::decode($jwt, Configure::read('Security.salt'), $allowed_algs = ['HS256']);      
-            $this->InvestorId = $tokenObject->sub;   
+            $this->investorId = $tokenObject->sub;   
             $this->roleName = $tokenObject->role;  
             $this->language = $tokenObject->language;
             $this->refreshToken = $tokenObject->refresh_token;

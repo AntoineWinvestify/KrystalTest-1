@@ -192,7 +192,7 @@ function readInvestmentData($company) {
      * Example GET /api/1.0/dashboard.json&investor_country=SPAIN&_fields=investor_name,investor_surname
      * 
      * Other format:
-     * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentifcation}?period=year
+     * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
      * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
      * 
      * @param -
@@ -426,7 +426,7 @@ $i = 0;
         $this->Tooltip = ClassRegistry::init('Tooltip');
 
         $tooltipIdentifiers = [
-            LOANID,
+            INVESTMENT_LIST_LOANID,
             INVESTMENT_LIST_INVESTMENTDATE, 
             INVESTMENT_LIST_MYINVESTMENT, 
             INVESTMENT_LIST_INTEREST, 

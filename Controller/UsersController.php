@@ -1003,7 +1003,7 @@ var_dump($apiResult);
         $userData['Role']['role_name'] = $this->roleName;        
         $userData['Role']['id'] = $this->Role->translateRoleName2RoleId($this->roleName);
         $userData['Investor']['investor_language'] = $this->language;
-        $userData['Investor']['id'] = $this->InvestorId;
+        $userData['Investor']['id'] = $this->investorId;
         $userData['Investor']['investor_name'] = $this->accountDisplayName;
 
         $token = $this->getNewJWT($userData, WIN_REFRESH_TOKEN, $this->refreshToken);
