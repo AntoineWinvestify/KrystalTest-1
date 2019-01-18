@@ -434,12 +434,14 @@ class Linkedaccount extends AppModel {
         //Begin to check if that account already exist.
         $this->Accountowner = ClassRegistry::init('Accountowner');
         $accountOwner = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
+
         if (Configure::read('debug')) {
             print_r($accountOwner);
         }
         $this->Company = ClassRegistry::init('Company');
         $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
         $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in technical freatures
+
         if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
             $multiAccountCheck = true;
         } 
@@ -490,12 +492,15 @@ class Linkedaccount extends AppModel {
         } 
         else {
             $accounts = $newComp->companyUserLogin($username, $password);
-            if($accounts){
+            if($accounts == true){
+                unlink($accounts);
+                $accounts = array();
                 $accounts[0]['accountCheck'] = $alreadyLinked;
                 $accounts[0]['linkedaccount_accountIdentity'] = $username;
                 $accounts[0]['linkedaccount_accountDisplayName'] = $username;
             }
-        }      
+        }   
+
         if(empty($accounts)){
             //ERROR LOGIN 
             $error = array();
@@ -607,7 +612,7 @@ class Linkedaccount extends AppModel {
         } 
         else {
             //New Accountowner
-            $newAccountOwnerId = $this->Accountowner->createAccountOwner($this->investorId, $companyId, $username, $password);
+            $newAccountOwnerId = $this->Accountowner->createAccountOwner($investorId, $companyId, $username, $password);
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }

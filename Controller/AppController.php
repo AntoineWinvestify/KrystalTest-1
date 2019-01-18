@@ -137,36 +137,12 @@ class AppController extends Controller {
      */
     public function beforeFilter() {
 
- //       echo __FILE__ . " " . __LINE__ ."<br>\n";
- //  $this->print_r2($this->request);
-   //     $this->print_r2($this);
-//echo "status of login = " . $this->Auth->login() . "!!\n";
-
- /*       $this->Auth->authenticate = array(
-            'Form' => array(
-                'fields' => array(
-                    'username' => 'username',
-                    'password' => 'password'
-                ),
-                'userModel' => 'User',
-                'scope' => array(
-                    'User.active' => 1,
-                )
-            ),
-            'BzUtils.JwtToken' => array(
-                'fields' => array(
-                    'username' => 'username',
-                    'password' => 'password',
-                ),
-                'header' => 'AuthToken',
-                'userModel' => 'User',
-                'scope' => array(
-                    'User.active' => 1
-                )
-            )
-        );
-        
-  */     
+        if (Configure::read('debug')) {
+            $this->print_r2($this->request);
+        } 
+     
+        $jwt = $this->request->header('AuthToken'); 
+         
    /*     
         $this->Cookie->name = 'p2pManager';
         $this->Cookie->time = 3600;  // or '1 hour'
