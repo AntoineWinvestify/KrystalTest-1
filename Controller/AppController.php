@@ -109,6 +109,7 @@ class AppController extends Controller {
     protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
     protected $refreshToken;                    // The token required for refreshing, as obtainted from JWT
     protected $accountDisplayName;              // The display name of the user as obtained frm JWT
+    protected $language;                        // Language for translations.  We get it from the token
 
     
     
@@ -720,9 +721,36 @@ class AppController extends Controller {
     
  
     
+    /**
+     * Generate a random string, using a cryptographically secure 
+     * pseudorandom number generator (random_int)
+     * 
+     * For PHP 7, random_int is a PHP core function
+     * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+     * 
+     * @param int $length      How many characters do we want?
+     * @param string $keyspace A string of all possible characters
+     *                         to select from
+     * @return string
+     */
+    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $pieces = [];
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $pieces []= $keyspace[random_int(0, $max)];
+        }
+        return implode('', $pieces);
+    }   
     
-    
-    
+    /**
+     * Generate a link based on the api.
+     * 
+     * @param string $endpoint                                                 endpoint that reference the link example: linkedaccounts
+     * @param string $rel                                                      Action of the url like delete, edit, ...
+     * @param string $parameter                                                Extra parameter, normally the id ex: /api/1.0/linkedaccounts/2.json  the 2.json
+     * @return string
+     */
     function generateLink($endpoint, $rel, $parameter) {
         $this->endpointsVersion = Configure::read('generateLink');
         $version = $this->endpointsVersion[$endpoint];

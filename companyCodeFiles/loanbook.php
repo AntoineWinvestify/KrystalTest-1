@@ -416,6 +416,9 @@ class loanbook extends p2pCompany {
         $this->i = 0;
         $this->j = 0;
         $this->loanArray;
+        $this->loanArray[0] = array ('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
+            'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Tipe investment', 'I' => 'Payment time',
+            'J' => 'Nominal interest', 'K' => 'Loan start', 'L' => 'payments', 'M' => 'Initial duration');
         $this->UserLoansId = array();
         $this->loanArray[0] = array('A' => 'Loan id', 'B' => 'Purpose', 'C' => 'Amount', 'D' => 'Loan Location',
             'E' => 'Loan rating', 'F' => 'Initial TAE', 'G' => 'Time left', 'H' => 'Loan Type', 'I' => 'Payment time',
@@ -1364,7 +1367,8 @@ class loanbook extends p2pCompany {
                 if (empty($this->tempUrl['InvesmentUrl'])) {
                     $this->tempUrl['InvesmentUrl'] = array_shift($this->urlSequence);
                 }
-                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j];
+                echo 'LOAN ID' . $this->UserLoansId[$this->j - 1];
+                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j - 1];
                 $this->j++;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);

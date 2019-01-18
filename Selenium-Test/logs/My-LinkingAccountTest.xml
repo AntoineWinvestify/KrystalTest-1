@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" tests="2" assertions="1" failures="0" errors="1" time="69.283942">
+    <testcase name="testLinkingComunitaeIncorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="12" assertions="1" time="26.763377">
+      <system-out>[2017-07-13 10:31:26]: Starting execution of test My\LinkingAccountTest::testLinkingComunitaeIncorrect
+[2017-07-13 10:31:26]: [WebDriver] Loading URL "http://cake_branch"
+[2017-07-13 10:31:53]: Finished execution of test My\LinkingAccountTest::testLinkingComunitaeIncorrect
+[2017-07-13 10:31:53]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingComunitaeIncorrect" (session 53a2da37-4ee0-4e1d-8ca4-0c4c4cbd632f)
+</system-out>
+    </testcase>
+    <testcase name="testLinkingZankIncorrect" class="My\LinkingAccountTest" file="/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php" line="94" assertions="0" time="42.520565">
+      <error type="Facebook\WebDriver\Exception\TimeOutException">My\LinkingAccountTest::testLinkingZankIncorrect
+Facebook\WebDriver\Exception\TimeOutException: Error locating more than one elements
+
+/var/www/html/cake_branch/app/Selenium-Test/vendor/facebook/webdriver/lib/WebDriverWait.php:84
+/var/www/html/cake_branch/app/Selenium-Test/tests/LinkingAccountTest.php:119
+</error>
+      <system-out>[2017-07-13 10:32:16]: Starting execution of test My\LinkingAccountTest::testLinkingZankIncorrect
+[2017-07-13 10:32:16]: [WebDriver] Loading URL "http://cake_branch"
+[2017-07-13 10:32:58]: Finished execution of test My\LinkingAccountTest::testLinkingZankIncorrect
+[2017-07-13 10:32:59]: 
+[2017-07-13 10:32:59]: [WARN] Test failed on page "http://cake_branch/investors/userProfileDataPanel", taking page snapshots:
+[2017-07-13 10:32:59]: Screenshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingZankIncorrect-2017-07-13-10-32-58.png"
+[2017-07-13 10:32:59]: HTML snapshot: "/var/www/html/cake_branch/app/Selenium-Test/logs/My-LinkingAccountTest-testLinkingZankIncorrect-2017-07-13-10-32-58.html"
+[2017-07-13 10:32:59]: 
+[2017-07-13 10:32:59]: Destroying "firefox" WebDriver for "My\LinkingAccountTest::testLinkingZankIncorrect" (session c88f65d0-3191-4102-91b8-2a08e3732772)
+</system-out>
+    </testcase>
+  </testsuite>
+</testsuites>

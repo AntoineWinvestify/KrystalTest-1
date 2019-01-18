@@ -24,15 +24,15 @@
 /*
   holds the logic of an individual investment
 
-  2017-10-18		version 0.1
-  initial version
+2017-10-18		version 0.1
+initial version
 
   2017-11-06		version 0.2
     getDefaulted                [Tested local, OK]
     getDefaultedByOutstanding   [Tested local, OK]
     getDefaultedRange           [Tested local, OK]
 
-  Pending:
+Pending:
 
 
  */
@@ -40,6 +40,8 @@
 class Investment extends AppModel {
     
     var $name = 'Investment';
+
+    
     public $hasMany = array(
         'Payment' => array(
             'className' => 'Payment',
@@ -58,7 +60,9 @@ class Investment extends AppModel {
             'foreignKey' => 'investment_id',
             'fields' => '',
             'order' => '',
-        ),
+        ),       
+        
+        
     );
 
 /**
@@ -87,7 +91,7 @@ var $validate = array(
         return $investmentId;
         }
     }
-
+    
     public function getInvestmentIdByLoanId($loanIds) {
         $fields = array('Investment.investment_loanId', 'Investment.id');
         $conditions = array('investment_loanId ' => $loanIds);

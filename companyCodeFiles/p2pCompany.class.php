@@ -1437,8 +1437,9 @@ class p2pCompany {
         }
         $folderCreated = false;
         if (!file_exists($dir)) {
-            $folderCreated = mkdir($dir, 0770, true);
-        } else {
+            $folderCreated = mkdir($dir, 0777, true);
+        }
+        else {
             $folderCreated = true;
         }
         if ($folderCreated) {
@@ -1930,10 +1931,6 @@ class p2pCompany {
      * Transform an array amortization table to a html structure with <table> tag
      * array stricture
      * array (                  //<table>
-     *                          //  <tr>
-     *                          //    <td>key1</td>
-     *                          //    <td>key2</td>
-     *                          //  <tr>
      *  [0] => array (          //  <tr>
      *      [key1] => value1    //      <td>value1</td> 
      *      [key2] => value2    //      <td>value2</td> 
@@ -2799,8 +2796,45 @@ class p2pCompany {
      */
     public function getParserAmortizationConfigParms() {
         return $this->amortizationConfigParms;
+    }     
+    
+    function getValuesTestHeaderTransaction() {
+        return $this->valuesTestHeaderTransaction;
     }
 
+    function getValuesTestHeaderInvestment() {
+        return $this->valuesTestHeaderInvestment;
+    }
+
+    function setValuesTestHeaderTransaction($valuesTestHeaderTransaction) {
+        $this->valuesTestHeaderTransaction = $valuesTestHeaderTransaction;
+    }
+
+    function setValuesTestHeaderInvestment($valuesTestHeaderInvestment) {
+        $this->valuesTestHeaderInvestment = $valuesTestHeaderInvestment;
+    }
+    
+    function getConfigParamTestTransaction() {
+        return $this->configParamTestTransaction;
+    }
+
+    function getConfigParamTestInvestment() {
+        return $this->configParamTestInvestment;
+    }
+
+    function setConfigParamTestTransaction($configParamTestTransaction) {
+        $this->configParamTestTransaction = $configParamTestTransaction;
+    }
+
+    function setConfigParamTestInvestment($configParamTestInvestment) {
+        $this->configParamTestInvestment = $configParamTestInvestment;
+    }
+
+    
+        
+    
+    
+    
     /**
      * Function to start the casper object
      * @param string $url It is the url where casper open initially

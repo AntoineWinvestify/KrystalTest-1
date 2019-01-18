@@ -90,6 +90,9 @@ class GlobalEmailListener implements CakeEventListener {
         return ($selectedEvents);
     }
 
+
+
+
     /**
      *
      * Send a confirmation to the newly registered person on the platform

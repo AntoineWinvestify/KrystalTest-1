@@ -67,9 +67,7 @@ class Dashboard2sController extends AppController {
         //echo 1;
         //$executionStartTime = microtime(true);
         //Request data
-        $idArray = explode(" ", $this->request->data['id']);
-        $linkedAccount = $idArray[0]; //Link account id
-        $userInvestmentData = $idArray[1];
+        $linkedAccount = $this->request->data['id']; //Link account id
         $logo = $this->request->data['logo']; //Pfp Logo
         $name = $this->request->data['name']; //Pfp Name
 

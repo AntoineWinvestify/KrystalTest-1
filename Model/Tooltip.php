@@ -37,11 +37,11 @@
 
 class Tooltip extends AppModel {
 
-    public $actsAs = array(
+    /*public $actsAs = array(
         'Translate' => array(
             'tooltip_text'
         )
-    );
+    );*/
     public $hasMany = array(
         'Tooltipincompany' => array(
             'className' => 'Tooltipincompany',
@@ -150,7 +150,7 @@ class Tooltip extends AppModel {
     /**
      * Get tooltips from model and format the array for the api
      * 
-     * @param array $tooltipIdentifier
+     * @param array of int $tooltipIdentifier
      * @param string $locale
      * @param int $company
      * @return array

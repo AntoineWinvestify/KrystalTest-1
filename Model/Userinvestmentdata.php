@@ -54,17 +54,15 @@ class Userinvestmentdata extends AppModel {
                                                 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
                                         "fields" => array("id"),
         ));
-        
+
         //Get last Userinvestmentdata table row for a linked account id
         $resultInvestorData = array();
         foreach ($linkedAccountsId as $linkedAccountId) {
-            //echo $linkedAccountId['Linkedaccount']['id'];
             $resultInvestorData[] = $this->find("first", array("recursive" => -1,
                 "conditions" => array("linkedaccount_id" => $linkedAccountId['Linkedaccount']['id']),
                 "fields" => array("*"),
                 "order" => "date DESC",
             ));
-            
         }
         return $resultInvestorData;
     }
