@@ -48,9 +48,9 @@ class LinkedaccountsController extends AppController {
     
     /** 
      * This methods terminates the HTTP GET.
-     * Format GET /v1/linkedaccounts?[status]
-     * Example GET /v1/linkedaccounts?linkedaccount_status=ACTIVE
-     *             /v1/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
+     * Format GET /api/1.0/linkedaccounts?[status]
+     * Example GET /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE
+     *             /api/1.0/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
      * @return string
      * 
      */
@@ -63,6 +63,7 @@ class LinkedaccountsController extends AppController {
         $accounts['service_status'] = "ACTIVE";
         $accounts['service_status_display_message'] = "You are using the maximum number of linkedaccounts. If you like to link more accounts, please upgrade your subscription";
         $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $linkedaccountStatus);
+        
         $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
         foreach ($accounts['data'] as $key => $account) {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
@@ -70,38 +71,45 @@ class LinkedaccountsController extends AppController {
             $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
             //HOW GET POLLING RESOURCE ID?
         }
-        $accounts = json_encode($accounts);
+        $accounts = json_encode($accounts);  
         return $accounts;
     }
     
     /**
      * This methods terminates the HTTP GET.
-     * Format GET /v1/linkedaccounts/[linkedaccountId]
-     * Example GET /v1/linkedaccounts/945
+     * Format GET /api/1.0/linkedaccounts/[linkedaccountId]
+     * Example GET /api/1.0/linkedaccounts/945
      * 
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
     public function v1_view($id) {
         $fields = $this->listOfQueryParams['fields'];
+        $linkedaccount = $this->Linkedaccount->api_readLinkedaccount($id, $fields);
+        $linkedaccount = $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount);
+        $linkedaccount = json_encode($linkedaccount);
+        return $linkedaccount;
+        
     }
 
 
     /**
      * This methods terminates the HTTP PATCH/PUT
-     * Format PATCH /v1/linkedaccounts/[linkedaccountId]?[accountowner_password]
-     * Example PATCH /v1/linkedaccounts/945?accountowner_password=123456;
+     * Format PATCH /api/1.0/linkedaccounts/[linkedaccountId]?[accountowner_password]
+     * Example PATCH /api/1.0/linkedaccounts/945?accountowner_password=123456;
      *  
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
-    public function v1_edit($id) {
-        
-        
-        $newPass = $this->listOfQueryParams['accountowner_password'];
+    public function v1_edit() {
+        $id = $this->request->params['id'];
+        $RequestData = $this->request->data;
+        $this->Linkedaccount->apiVariableNameInAdapter($RequestData);
+        $newPass = $RequestData['accountowner_password'];      
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
         $feedback = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);
+
         return json_enconde($feedback);     
     }
     
@@ -155,7 +163,8 @@ class LinkedaccountsController extends AppController {
      * @param int $id
      * @return string
      */
-    public function v1_delete($id){
+    public function v1_delete(){
+        $id = $this->request->params['id']; 
         return $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
     }
     
@@ -167,17 +176,19 @@ class LinkedaccountsController extends AppController {
      *  
      * @return string
      */
-    public function v1_pre_check() {
-        $companyId = $this->listOfQueryParams['company_id'];
+    public function v1_precheck() {
+        /*$companyId = $this->listOfQueryParams['company_id'];
         $username = $this->listOfQueryParams['accountowner_username'];
-        $password = $this->listOfQueryParams['accountowner_password'];           
-                
-        $accounts = $this->Linkedaccount->api_precheck($this->investorId, $companyId, $username, $password);
+        $password = $this->listOfQueryParams['accountowner_password'];    */       
+        echo 'qwerty';
+        $this->print_r2($this->request);
+        exit;
+        /*$accounts = $this->Linkedaccount->api_precheck($this->investorId, $companyId, $username, $password);
         foreach ($accounts['accounts'] as $key => $account) {
             $this->Linkedaccount->apiVariableNameOutAdapter($accounts['accounts'][$key]);
         }
         $accounts = json_encode($accounts);
-        return $accounts;
+        return $accounts;*/
     }
 
 }
