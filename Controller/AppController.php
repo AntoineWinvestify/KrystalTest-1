@@ -744,6 +744,15 @@ class AppController extends Controller {
         }
         return implode('', $pieces);
     }   
+    
+    /**
+     * Generate a link based on the api.
+     * 
+     * @param string $endpoint                                                 endpoint that reference the link example: linkedaccounts
+     * @param string $rel                                                      Action of the url like delete, edit, ...
+     * @param string $parameter                                                Extra parameter, normally the id ex: /api/1.0/linkedaccounts/2.json  the 2.json
+     * @return string
+     */
     function generateLink($endpoint, $rel, $parameter) {
         $this->endpointsVersion = Configure::read('generateLink');
         $version = $this->endpointsVersion[$endpoint];

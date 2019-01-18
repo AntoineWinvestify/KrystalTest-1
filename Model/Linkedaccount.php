@@ -477,7 +477,7 @@ class Linkedaccount extends AppModel {
         if ($multiAccountCheck) {
             $accounts = $newComp->companyUserLoginMultiAccount($username, $password);
             foreach ($accounts as $accountKey => $account) {
-                $accounts[$accountKey]['accountCheck'] = false;
+                $accounts[$accountKey]['accountCheck'] = false;                 //This field is not in db, is only for the frontend, it tell if the account is already linked or not.
                 foreach ($accountsLinked as $accountLinked) {
                     //Check the accounts already linked with the accounts to link, if we have them in $accountLinked, mark them in $accounts as already linked.
                     if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {        
