@@ -198,7 +198,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                                     echo "All information \n";
                                     print_r($data);
                                 }
-                                $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" . $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference']);
+                                $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" . $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference'] . ".-; ");
                                 if (Configure::read('debug')) {
                                     echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                                 }
@@ -224,7 +224,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                                 echo "All information \n";
                                 print_r($data);
                             }
-                            $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" . $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference']);
+                            $this->GearmanClient->addTask($service['gearmanFunction'], json_encode($data), null, $data["queue_id"] . ".-;" . $nameServiceKey . ".-;" . $job['Queue2']['queue2_userReference'] . ".-; ");
                             if (Configure::read('debug')) {
                                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Sending the information to Worker\n";
                             }
@@ -356,6 +356,7 @@ class ConsolidationClientShell extends GearmanClientShell {
             $this->userReference[$data[0]] = $data[2];
         }
         $dataWorker = json_decode($task->data(), true);
+        print_r($dataWorker);
         if (!empty($dataWorker['statusCollect'])) {
             foreach ($dataWorker['statusCollect'] as $linkaccountId => $status) {
                 if ($linkaccountId == 'investor') {

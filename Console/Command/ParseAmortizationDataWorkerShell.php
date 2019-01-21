@@ -95,7 +95,7 @@ class ParseAmortizationDataWorkerShell extends GearmanWorkerShell {
                 $i++;
             }
             $this->callbackInit($tempArray[$linkedAccountKey], $companyHandle, $callbacks);
-            if (empty($tempArray[$linkedAccountKey])) {
+            if (empty($tempArray[$linkedAccountKey]) && !empty($files)) {
                 $dataQueue['statusCollect'][$linkedAccountKey] = "0";
                 $errors[$linkedAccountKey] = $this->tempArray[$i]['global']['error'];
             }

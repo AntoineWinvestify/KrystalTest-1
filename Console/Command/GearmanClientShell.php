@@ -159,8 +159,8 @@ class GearmanClientShell extends AppShell {
      * @return boolean It's true if the deleted was successful
      */
     public function deleteFolderByDateAndLinkaccountId($queueId, $linkAccountId) {
-        $configPath = Configure::read('files');
-        $partialPath = $configPath['investorPath'];
+        $configPath = Configure::read();
+        $partialPath = $configPath['investorFiles'];
         $flow = constant("WIN_ERROR_" . $this->flowName);
         $date = date("Ymd", strtotime($this->date));
         $path = $this->userReference[$queueId] . DS . $date . DS . $linkAccountId;
@@ -412,12 +412,18 @@ class GearmanClientShell extends AppShell {
      * @param int $numberOfCompanies It is the number of companies in the actual flow
      */
     public function requeueFailedCompany($queueId, $linkaccountId, $restartStatus, $errorStatus, $numberOfCompanies) {
+        $moreInfo = "";
+        if(!is_array($this->gearmanErrors[$queueId][$linkaccountId])){
+            $moreInfo = $this->gearmanErrors[$queueId][$linkaccountId];
+            unset($this->gearmanErrors);
+        }
+        $this->gearmanErrors = array();
         $this->deleteFolderByDateAndLinkaccountId($queueId, $linkaccountId); //1 = $todaydate
         $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] = constant("WIN_ERROR_" . $this->flowName);
         $this->gearmanErrors[$queueId][$linkaccountId]['typeOfError'] = "ERROR on flow " . $this->flowName . " and linkAccountId " . $linkaccountId ;
         $this->gearmanErrors[$queueId][$linkaccountId]['detailedErrorInformation'] = "ERROR on " . $this->flowName
-                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId'] ;
-        print_r($this->gearmanErrors);
+                . " with type of error: " . $this->gearmanErrors[$queueId][$linkaccountId]['typeErrorId'] . " AND subtype " . $this->gearmanErrors[$queueId][$linkaccountId]['subtypeErrorId']
+                . " /n Message: $moreInfo";
         $this->saveGearmanError($this->gearmanErrors[$queueId][$linkaccountId]);
         $data = [];
         $newData = $this->getFailStatus($queueId, $restartStatus, $errorStatus);

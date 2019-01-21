@@ -267,7 +267,7 @@ class Fileparser {
                 "detail" => "Compensation_positive",
                 "transactionType" => WIN_CONCEPT_TYPE_INCOME,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensationPositive"    
+                "type" => "payment_platformCompensationPositive"    
                 ],
             16 => [
                 "detail" => "Income_secondary_market",
@@ -393,7 +393,7 @@ class Fileparser {
                 "detail" => "Compensation_negative",  
                 "transactionType" => WIN_CONCEPT_TYPE_COST,
                 "account" => "PL",
-                "type" => "globalcashflowdata_platformCompensationNegative",
+                "type" => "payment_platformCompensationNegative",
                 ],
             38 => [     // This is the "normal case" for disinvestments WITH a loan id (LoanBook)
                 "detail" => "Disinvestment_primary_market", 
@@ -472,7 +472,30 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "payment_secondaryMarketSell",
             ],
-
+            49 =>[
+                "detail" => "Default_interest_income_rebuy",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "DefaultInterestIncomeRebuy",
+            ],
+            /*50 =>[
+                "detail" => "Secondary_market_investment",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_secondaryMarketSell",
+            ],*/
+            50 =>[
+                "detail" => "Reversed_late_payment",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "payment_reversedLatePayment",
+            ],
+            51 => [
+                "detail" => "Reversed_commission",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_reversedCommission"    
+                ],
 
         
             105 => [
@@ -2044,7 +2067,7 @@ echo __FUNCTION__ . " " . __LINE__ . " Memory = " . memory_get_usage (false)  . 
      * @param string $separator         Decimal separator, can be "," or ".".
      * @return  string                  The manipulated number as a string
      */
-    public function handleNumber($input, $multiplyFactor, $decimals, $separator) {
+    public function handleNumber($input, $multiplyFactor, $decimals, $separator = ".") {
         $cleanInput = preg_replace("/[^0-9,.-]/", "",$input);
         if($separator === "."){
            $cleanInput =  str_replace(",", "", $cleanInput);

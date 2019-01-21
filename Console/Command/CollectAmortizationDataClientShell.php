@@ -55,7 +55,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
             $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES),
                                                   WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES,
                                                 $jobsInParallel);            
-            
+
             $linkedaccountsResults = [];
             $queueInfos = [];
             print_r($pendingJobs);
@@ -88,7 +88,7 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                         $linkAccountIds[] = $linkedAccountId;
                         $loanIdsPerCompany[$linkedAccountId] = $finalLoanIds;
                     }
-                    $filterConditions = array('id' => $linkAccountIds); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
+                    $filterConditions = array('id' => $queueInfo['companiesInFlow']); //, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE);
                     $linkedaccountsResults[] = $this->Linkedaccount->getLinkedaccountDataList($filterConditions);
                     //foreach ($queueInfo['loanIds'] as $key => $loanId) {
                     /*foreach ($loanIds as $key => $loanId) {
@@ -137,15 +137,43 @@ class CollectAmortizationDataClientShell extends GearmanClientShell {
                             echo "Type of access for company" . $typeAccessKey . "\n";
                             echo "All information \n";
                             print_r($data);
-                        }
+                        }                       
                         $this->GearmanClient->addTask($typeAccessKey, json_encode($data), null, $data["queue_id"] . ".-;" . $typeAccessKey . ".-;" . $pendingJobs[$key]['Queue2']['queue2_userReference']);
-                    }
+                        }
                 }
 
                 $this->GearmanClient->runTasks();
-                
-                // ######################################################################################################                
 
+                // ######################################################################################################           
+                foreach ($pendingJobs as $jobToDeleteSlice) {
+                    $queue2JsonDecoded = json_decode($jobToDeleteSlice['Queue2']["queue2_info"], true);
+                    foreach($queue2JsonDecoded['companiesInFlow'] as $linkAccountId){
+                        $path = Configure::read('dashboard2Files') . $jobToDeleteSlice['Queue2']['queue2_userReference'] . DS . $queue2JsonDecoded['date'] . DS . $linkAccountId . DS;
+                        $folder = new Folder($path);
+                        $pathToJsonFile = $folder->findRecursive("finishedToday" . ".*");
+                        if(isset($pathToJsonFile[0])){
+                            echo "Finished investment finded, deleting fron slice db \n";                      
+                            $jsonFile = fopen($pathToJsonFile[0], "r");
+                            $jsonInfo = fread($jsonFile, filesize($pathToJsonFile[0]));
+                            $jsonInfo = json_decode($jsonInfo, true);
+                            echo "Slice to delete: ";
+                            print_r($jsonInfo);
+                            
+                            $this->Investmentslice = ClassRegistry::init('Investmentslice');
+                            foreach($jsonInfo as $sliceId => $loanID){
+                                echo "Deleting $sliceId \n";
+                                $this->Investmentslice->delete($sliceId);
+                            }
+                            
+                        }
+                    }
+                }
+                //Delete the slice of investment that finisehd today.
+               /* if(isset($baseDirectory)){
+                    
+                }*/
+                
+                
                 $this->verifyStatus(WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED, "Data successfuly downloaded", WIN_QUEUE_STATUS_DATA_EXTRACTED, WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED);
                 $numberOfIteration++;
             }

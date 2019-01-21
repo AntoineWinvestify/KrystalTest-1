@@ -76,14 +76,12 @@ class Urlsequence extends AppModel
 *		
 */
 public function getUrlsequence($companyId, $sequence) {
-
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 	$filteringConditions = array('company_id'			=> $companyId,
 								'urlsequence_sequence'	=> $sequence);
 
-	$sequenceList = $this->find('all', $params = array('recursive'	=> -1,
-													  'order'		=> 'Urlsequence.urlsequence_sequenceNumber ASC',
-													  'conditions'  => $filteringConditions,
-													));
+	$sequenceList = $this->getData($filteringConditions,null,'Urlsequence.urlsequence_sequenceNumber ASC');
+
 	foreach ($sequenceList as $sequence) {
 		$tempSequence[] = $sequence['Urlsequence']['urlsequence_URL'];
 	}

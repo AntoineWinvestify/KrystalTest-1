@@ -66,13 +66,19 @@
 class circulantis extends p2pCompany {
 
 // CIRCULANTIS
-// MOVIMIENTO                                                                   REFERENCIA IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
-// Traspaso                                                                     H03337	   1,000.00	5/9/2016   1,000.00	          0             0       	1,000.00
-// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....	F180626     0          7/31/2017    572.18          66.34           15,049.39	     15,687.91
-// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....	P154197	100	5/29/2017	2,936.42	300	12,264.55	15,500.97
-// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....	C112205	159.63	5/30/2017	3,096.05	0	12,409.21	15,505.26
+// MOVIMIENTO                                                                                              REFERENCIA     IMPORTE â‚¬	FECHA	   DISPONIBLE â‚¬   OFERTADO â‚¬    INVERTIDO â‚¬    TOTAL â‚¬
+// Traspaso                                                                                                 H03337         1,000.00	5/9/2016    1,000.00	          0             0       	1,000.00
+// OperaciÃ³n formalizada ID Puja: 180626, ID Subasta: 1893,Mayentis S.L....                                F180626           0         7/31/2017    572.18          66.34           15,049.39	     15,687.91
+// OperaciÃ³n realizada ID Puja: 154197, ID Subasta: 1637,TradiciÃ³n Alimentaria, S.L....                   P154197          100	5/29/2017    2,936.42        300	12,264.55	15,500.97
+// OperaciÃ³n cobrada ID Puja: 112205, ID Subasta: 1247,Construcciones y Excavaciones Erri-Berri, S.L....   C112205	     159.63	5/30/2017    3,096.05	      0 	12,409.21	15,505.26
+   
+      
+    protected $dashboard2ConfigurationParameters = [
+        'outstandingPrincipalRoundingParm' => '0.01',                            // This *optional* parameter is used to determine what we 
+    ];                                                  
     protected $valuesTransaction = [
-         "A" => [
+         [
+             "A" => [
             [
                 "type" => "original_concept", // Winvestify standardized name   OK
                 "inputData" => [// trick to get the complete cell data as purpose
@@ -142,10 +148,20 @@ class circulantis extends p2pCompany {
             /* "E" => "disponible",
               "F" => "ofertado",*/
              // "G" => "invertido",
-             /* "H" => "total" */
-    ];
-    protected $valuesTransaction2 = [
-         "A" => [
+             /*"H" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],*/
+             ],
+        [
+          "A" => [
             [
                 "type" => "original_concept", // Winvestify standardized name   OK
                 "inputData" => [// trick to get the complete cell data as purpose
@@ -180,19 +196,39 @@ class circulantis extends p2pCompany {
                 "inputData" => [// List of all concepts that the platform can generate format ["concept string platform", "concept string Winvestify"]
                     "input2" => "#current.original_concept",
                     "input3" => [
-                        "Alta en Circulantis" => "Cash_deposit",
-                        "Traspaso" => "Cash_deposit",
-                        "Traspaso" => "Cash_withdrawal",
-                        "OperaciÃ³n realizada" => "Primary_market_investment_preactive",
-                        "OperaciÃ³n formalizada" => "Primary_market_investment_active_verification",
-                        "OperaciÃ³n cobrada" => "Principal_and_interest_payment",
-                        "OperaciÃ³n cobrada parcialmente" => "Partial_principal_and_interest_payment"
+                        "Alta en Circulantis" => "dummy_concept",
+                        "Traspaso" => "dummy_concept",
+                        "Traspaso" => "dummy_concept",
+                        "OperaciÃ³n realizada" => "dummy_concept",
+                        "OperaciÃ³n formalizada" => "dummy_concept",
+                        "OperaciÃ³n cobrada" => "Capital_repayment",
+                        "OperaciÃ³n cobrada parcialmente" => "Partial_principal_repayment"
                     ],
                 ],
                 "functionName" => "getComplexTransactionDetail",
             ]
         ],
-        "C" => [
+       /* "C" => [
+            [
+                "type" => "amount", // This is *mandatory* field which is required for the 
+                "inputData" => [// "transactionDetail"
+                    "input2" => "", // and which BY DEFAULT is a Winvestify standardized variable name.
+                    "input3" => ".", // and its content is the result of the "getAmount" method
+                    "input4" => 4
+                ],
+                "functionName" => "getAmount",
+            ],
+        ],*/
+        "D" => [
+            [
+                "type" => "date", // Winvestify standardized name 
+                "inputData" => [
+                    "input2" => "d/m/Y",
+                ],
+                "functionName" => "normalizeDate",
+            ]
+        ], 
+            "G" => [
             [
                 "type" => "amount", // This is *mandatory* field which is required for the 
                 "inputData" => [// "transactionDetail"
@@ -203,21 +239,11 @@ class circulantis extends p2pCompany {
                 "functionName" => "getAmount",
             ],
         ],
-        "D" => [
-            [
-                "type" => "date", // Winvestify standardized name 
-                "inputData" => [
-                    "input2" => "d/m/Y",
-                ],
-                "functionName" => "normalizeDate",
-            ]
-        ],
-            /* "E" => "disponible",
-              "F" => "ofertado",*/
-             // "G" => "invertido",
-             /* "H" => "total" */
+        ]
+        
     ];
-    protected $valuesInvestment2 = [// All types/names will be defined as associative index in array
+
+    protected $valuesInvestment = [// All types/names will be defined as associative index in array
         [
             "A" => [
                 "name" => "investment_debtor"                              // Winvestify standardized name  OK
@@ -406,31 +432,33 @@ class circulantis extends p2pCompany {
     protected $compareHeaderConfigParam = array(
         'separatorChar' => ";",
         'chunkInit' => 1,
-        'chunkSize' => 1
+        'chunkSize' => 2
     );
     protected $investmentHeader = array(
         'A' => 'NOMBRE EMISOR/DEUDOR',
         'B' => 'RATING',
-        'C' => 'IMPORTE â‚¬',
+        'C' => 'IMPORTE €',
         'D' => 'INTERES %',
         'E' => 'VENCIMIENTO',
         'F' => 'ESTADO',
         'G' => 'FONDOS INVERTIDOS %',
-        'H' => 'IMPORTE COBRO â‚¬',
+        'H' => 'IMPORTE COBRO €',
         'I' => 'ID SUBASTA',
         'J' => 'ID PUJA',
-        'F' => 'FECHA INICIO SUBASTA',
+        'K' => 'FECHA INICIO SUBASTA'
     );
+    
     protected $transactionHeader = array(
         'A' => 'MOVIMIENTO',
         'B' => 'REFERENCIA',
-        'C' => 'IMPORTE â‚¬',
+        'C' => 'IMPORTE €',
         'D' => 'FECHA',
-        'E' => 'DISPONIBLE â‚¬',
-        'F' => 'OFERTADO â‚¬',
-        'G' => 'INVERTIDO â‚¬',
-        'H' => 'TOTAL â‚¬',
+        'E' => 'DISPONIBLE €',
+        'F' => 'OFERTADO €',
+        'G' => 'INVERTIDO €',
+        'H' => 'TOTAL €',
     );
+
 
     function __construct() {
         $this->typeFileTransaction = "csv";
@@ -1440,6 +1468,9 @@ class circulantis extends p2pCompany {
                 } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                     return $this->getError(__LINE__, __FILE__, $headerError);
                 }
+                $this->numFileTransaction++;
+                $this->fileName2 = $this->nameFileTransaction . $this->numFileTransaction . "." . $this->typeFileTransaction;
+                copy ($this->getFolderPFPFile() . DS . $this->fileName , $this->getFolderPFPFile() . DS . $this->fileName2);
                 return $tempArray["global"];
         }
     }

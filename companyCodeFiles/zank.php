@@ -1895,6 +1895,8 @@ class zank extends p2pCompany {
                 $this->loanTotalIds = $this->loanIds;
                 $this->loanKeys = array_keys($this->loanIds);
                 $this->loanIds = array_values($this->loanIds);
+                    
+
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl();  // needed so I can read the csrf code
                 break;
@@ -1902,7 +1904,12 @@ class zank extends p2pCompany {
                 //Change account
                 $this->credentials['_username'] = $this->user;
                 $this->credentials['_password'] = $this->password;
-
+                if (empty($this->loanTotalIds) || empty($this->loanIds)) {
+                    $this->tempArray['tables'] = null;
+                    $this->tempArray['correctTables'] = null;
+                    $this->tempArray['errorTables'] = null;
+                    return $this->tempArray;
+                }
                 // get login page
                 $dom = new DOMDocument;
                 libxml_use_internal_errors(true);
@@ -2173,7 +2180,7 @@ class zank extends p2pCompany {
      */
     public function translateTypeOfInvestment($inputData) {
         $data = WIN_INVESTMENT_TYPE_MANUALINVESTMENT;
-        $inputData = mb_strtoupper($inputData, "UTF-8");
+        $inputData =mb_strtoupper(trim($inputData), "UTF-8");
         switch ($inputData) {
             case "AUTO":
                 $data = WIN_INVESTMENT_TYPE_AUTOMATEDINVESTMENT;

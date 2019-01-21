@@ -244,39 +244,46 @@ class ParseDataClientShell extends GearmanClientShell {
 
                         if ($mapResult == true) {
                             $this->userResult[$queueIdKey][$platformKey] = WIN_STATUS_COLLECT_CORRECT;
+                            unset($newLoans);
                             $newLoans = $platformResult['amortizationTablesOfNewLoans'];
 
-                            // Check if some loanIds from yesterday exist that could NOT be collected
-                            $tempName = explode("/", $baseDirectory);
-                            $this->print_r2($tempName);
-                            $elementsInPath = count($tempName);
+                            //Search all active investment without amortization table
+                            $filterConditions = array('linkedaccount_id' => $platformKey, 'investment_statusOfLoan' => array(WIN_LOANSTATUS_ACTIVE, WIN_LOANSTATUS_VERIFYACTIVE), 'investment_amortizationTableAvailable !=' => WIN_AMORTIZATIONTABLES_AVAILABLE);
+                            $investmentIdList = $this->Investment->getData($filterConditions, array('id','investment_loanId'));
 
-                            $yesterdayTimeStamp = strtotime('-1 day', strtotime($tempName[$elementsInPath - 4]));
-                            $yesterday = date("Ymd", $yesterdayTimeStamp);
+                            //Search the slice id of that investments
+                            unset($idList);
+                            foreach($investmentIdList as $list){
+                                $idList[] = $list['Investment']['id'];
+                            }
+                            $filterConditions = array('investment_id' => $idList);
+                            unset($sliceList);
+                            $sliceList = $this->Investmentslice->getData($filterConditions, array('id', 'investmentslice_identifier'));
+                            unset($loanIdsWithoutTable);
+                            foreach($sliceList as $list){
+                                $loanIdsWithoutTable[$list['Investmentslice']['id']] = $list['Investmentslice']['investmentslice_identifier'];
+                            }
 
-                            $tempName[$elementsInPath - 4] = $yesterday;
-                            $tempName[$elementsInPath - 1] = "badLoanIds.json";
-                            $yesterdayPath = implode($tempName, "/");
-
-                            $fileYesterday = new File($yesterdayPath);
-                            $jsonLoanIdsYesterday = $fileYesterday->read(true, 'r');
-                            $loanIdsYesterday = json_decode($jsonLoanIdsYesterday, true);
-
-                            if (!empty($loanIdsYesterday)) {
+                            unset($finalLoanIds);
+                            if (!empty($loanIdsWithoutTable) && !empty($newLoans)) {
                                 echo "merging two arrays\n";
-                                $finalLoanIds = $newLoans + $loanIdsYesterday;
+                                $finalLoanIds = $newLoans + $loanIdsWithoutTable;
                             }
-                            else {
+                            else if(!empty($newLoans)){
                                 $finalLoanIds = $newLoans;
+                            } else if(!empty($loanIdsWithoutTable)){
+                                $finalLoanIds = $loanIdsWithoutTable;
                             }
-
+                                                                           
                             if (!empty($finalLoanIds)) {
                                 echo "Writing the file 'LoanIds.json'\n";
                                 file_put_contents($baseDirectory . "loanIds.json", json_encode(($finalLoanIds)));
                                 $newFlowState = WIN_QUEUE_STATUS_DATA_EXTRACTED;
                             }
                             else {
-                                $newFlowState = WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION;
+                                if($newFlowState != WIN_QUEUE_STATUS_DATA_EXTRACTED){
+                                    $newFlowState = WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION;
+                                }
                             }
                         }
                         else {
@@ -547,20 +554,13 @@ class ParseDataClientShell extends GearmanClientShell {
                             echo "THIS IS AN ACTIVE LOAN\n";
                             $investmentListToCheck = $platformData['parsingResultInvestments'][$dateTransaction[0]['investment_loanId']][0];
                             //$loanStatus = WIN_LOANSTATUS_ACTIVE;            // status could also be WIN_LOANSTATUS_WAITINGTOBEFORMALIZED
-                        }
-                            
-                        if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
+                        } else if (isset($platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']])) {
                             echo "THIS IS AN ALREADY EXPIRED LOAN\n";
                             $investmentListToCheck = $platformData['parsingResultExpiredInvestments'][$dateTransaction[0]['investment_loanId']][0];
                             //$loanStatus = WIN_LOANSTATUS_FINISHED;
                         }
                         $platformData['workingNewLoans'] = array_map('trim', $platformData['workingNewLoans']);
-                        /*print_r($dateTransaction);
-                        echo $dateTransaction[1]["internalName"] == "payment_capitalRepayment";
-                        echo " ------ ";
-                        echo in_array(trim($dateTransaction[0]['investment_loanId']), $platformData['workingNewLoans']);
-                        print_r($platformData['workingNewLoans']);
-                        exit;*/
+
                         //THIS CONDITIONS CREATE A NEW LOAN
                         if (in_array(trim($dateTransaction[0]['investment_loanId']), $platformData['workingNewLoans']) &&
                                 ($dateTransaction[0]["internalName"] == "investment_myInvestment" || 
@@ -619,6 +619,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                     break;
                             }
                             $database['investment']['investment_isNew'] = true;
+
                         }
                         else {  // Not a new loan, so a loan which (should) exist(s) in our database, but can be in any state
                             echo "Updating loan in the shadow DB table\n";
@@ -671,6 +672,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         // load all the transaction data
                         foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
                             echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                            unlink($conceptChars);
                             if (isset($transactionData['conceptChars'])) {
                                 $conceptChars = explode(",", $transactionData['conceptChars']);
 
@@ -755,7 +757,7 @@ class ParseDataClientShell extends GearmanClientShell {
 //echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
                                 }
                             }
-
+                            unlink($transactionData['conceptChars']);
 
                             echo __LINE__ . " Memory usage before transactionData of $dateKey " . memory_get_usage() . " *-*-*-*-*-*-*-*\n";
                             foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
@@ -934,9 +936,26 @@ class ParseDataClientShell extends GearmanClientShell {
                         if ($database['investment']['investment_statusOfLoan'] == WIN_LOANSTATUS_FINISHED) {
                             $amortizationTablesNotNeeded[] = $database['investment']['investment_loanId'];
                         }
+
+                        
+                        $dateToDeleteAfter1 = new DateTime(date($finishDate));
+                        $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
+                        if ($dateKey == $lastDateToCalculate) {
+                            $tempBackupCopyId = $this->copyInvestment($investmentId);
+                            echo __FUNCTION__ . " " . __LINE__ . " Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";
+                            echo __FUNCTION__ . " " . __LINE__ . " Create a backup copy for dateKey = $dateKey, and backupCopyId = " . $tempBackupCopyId . "\n";
+
+                            $this->Investment->save(array("id" => $investmentId,
+                                "investment_backupCopyId" => $tempBackupCopyId,
+                            ));
+                        }
+                        
+                        
                         if(empty($database['investment']['date'])){
                             $database['investment']['date'] = $dateKey;
-                        }               
+                        }              
+
+                        
                         if (empty($investmentId)) {     // The investment data is not yet stored in the database, so store it
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Investment Data... ";
                             $resultCreate = $this->Investment->createInvestment($database['investment']);
@@ -953,9 +972,9 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                         else {
+                             
                             $database['investment']['id'] = $investmentId;
                             echo __FUNCTION__ . " " . __LINE__ . ": " . "Writing NEW data to already existing investment ... ";
-                            print_r($database);
                             $result = $this->Investment->save($database['investment']);
                             if ($result) {
                                 echo "Saving existing loan with investmentId = $investmentId, Done\n";
@@ -967,19 +986,8 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
 
-                        $dateToDeleteAfter1 = new DateTime(date($finishDate));
-                        $lastDateToCalculate = $dateToDeleteAfter1->format('Y-m-d');
 
-                        if ($dateKey == $lastDateToCalculate) {
-                            $tempBackupCopyId = $this->copyInvestment($investmentId);
-                            echo __FUNCTION__ . " " . __LINE__ . " Original investmentId = $investmentId and lastDateToCalculate = $lastDateToCalculate\n";
-                            echo __FUNCTION__ . " " . __LINE__ . " Create a backup copy for dateKey = $dateKey, and backupCopyId = " . $tempBackupCopyId . "\n";
 
-                            $this->Investment->save(array("id" => $investmentId,
-                                "investment_backupCopyId" => $tempBackupCopyId,
-                                "date" => $dateKey
-                            ));
-                        }
 
                         echo 'save payment';
                         echo __FUNCTION__ . " " . __LINE__ . ": " . "Trying to write the new Payment Data for investment with id = $investmentId... ";
@@ -1021,13 +1029,13 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
-                    $internalVariablesToHandle = array(10001,
-                        10006, 10007, 10008,
-                        10009, 10010, 10011,
-                        10012, 10013, 10016,
-                        10017, 10018, 10019,
-                        10020, 10021, 10022,
-                        10023, 10024);
+                    $internalVariablesToHandle = array(
+                        10001, 10006, 10007, 10008, 10009, 10010, 
+                        10011, 10012, 10013, 10016, 10017, 10018, 
+                        10019, 10020, 10021, 10022, 10023, 10024, 
+                        10025, 10026, 10027, 10028, 10029, 10030, 
+                        10031, 10032, 10033
+                        );
                     foreach ($internalVariablesToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
@@ -1203,8 +1211,9 @@ class ParseDataClientShell extends GearmanClientShell {
             $results = $this->Investment->getData($filter, $field = null, $order = null, $limit = null, $type = "all");
 
             echo __FILE__ . " " . __LINE__ . " The following investments have backupIds ";
-            print_r($results);
 
+            
+            //Backup investment only
             foreach ($results as $result) {
                 $this->restoreInvestment($result['Investment']['investment_backupCopyId'], $result['Investment']['id']);
 
@@ -1217,11 +1226,16 @@ class ParseDataClientShell extends GearmanClientShell {
                 if (!empty($investmentData)) {
                     $this->Investment->delete($result['Investment']['id'], $cascade = false);
                 }
-
-                $filterConditions = array("date" => $lastDateToCalculate,
-                    "investment_id" => $result['Investment']['id']);
+            }
+            
+            
+                //Delete data from today.
+                $filterConditions = array("date" => $lastDateToCalculate);
                 echo __FILE__ . " " . __LINE__ . " \n";
                 print_r($filterConditions);
+                if ($this->Investment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
+                    echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
+                }
                 if ($this->Payment->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Payment deleted \n";
                 }
@@ -1234,7 +1248,8 @@ class ParseDataClientShell extends GearmanClientShell {
                 if ($this->Roundingerrorcompensation->deleteAll($filterConditions, $cascade = false, $callbacks = false)) {
                     echo __FILE__ . " " . __LINE__ . " Roundingerrorcompensation deleted \n";
                 }
-            }
+                
+                
             // *Maximum* only one object of each type belonging to userinvestmentdata object shall be deleted
             echo __FILE__ . " " . __LINE__ . " \n";
             $filterConditions = array("date" => $lastDateToCalculate,
@@ -1559,8 +1574,8 @@ class ParseDataClientShell extends GearmanClientShell {
             "recursive" => -1));
 
         $this->Investment->create();
-        $result['investment_ backupCopyId'] = 0;
-        $result['id'] = $restoreToInvestmentId;
+        $result['Investment']['investment_ backupCopyId'] = 0;
+        $result['Investment']['id'] = $restoreToInvestmentId;
         $this->Investment->save($result, $validate = true);
         $this->Investment->delete($restoreFromInvestmentId, $cascade = false);
     }

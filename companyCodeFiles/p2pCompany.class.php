@@ -1815,7 +1815,6 @@ class p2pCompany {
         if ($credentials) {
             //set data to be posted
             $request->getOptions()
-                    //->set(CURLOPT_HEADER, true) Esto fue una prueba, no funciona, quitar
                     ->set(CURLOPT_POSTFIELDS, $credentials);
         }
 
@@ -2881,10 +2880,11 @@ FRAGMENT
         include_once ($pathVendor . 'Classes' . DS . 'fileparser.php');
         $this->myParser = new Fileparser();
         $data = $this->myParser->getFirstRow($this->getFolderPFPFile() . DS . $this->fileName, $this->compareHeaderConfigParam);
-        echo "our config: ";
-        print_r($this->headerComparation);
-        echo "Have content(1 no, 2 yes//// Twino 3 no, 4 Yes): " . count($data);       
-       
+        if (Configure::read('debug')) {
+            echo "our config: ";
+            print_r($this->headerComparation);
+            echo "Have content(1 no, 2 yes//// Twino 3 no, 4 Yes): " . count($data);       
+        }
         if(count($data) === $this->compareHeaderConfigParam['chunkInit']){
             return WIN_ERROR_FLOW_EMPTY_FILE;
         }
@@ -2906,7 +2906,9 @@ FRAGMENT
                 return $this->compareSimple();                                  //Single sheet
             }
         }
-        echo "OK";
+        if (Configure::read('debug')) {
+            echo "OK";
+        }
         return false;
     }
 
@@ -2953,6 +2955,8 @@ FRAGMENT
     /**
      * Function to create a new loanIds.json with the amortizationTables that failed
      * and rename the old file loanIds to oldIdsLoan
+     * 
+     * This code help us with tracing errors in flow 3a, doesn't have other function.
      */
     public function verifyErrorAmortizationTable() {
 
@@ -2960,12 +2964,15 @@ FRAGMENT
         print_r($this->tempArray['correctTables']);
         echo "bads";
         print_r($this->tempArray['errorTables']);
+        echo 'Ended Today';
+        print_r($this->tempArray['finishedToday']);
+
+        $path = $this->getFolderPFPFile();
+
 
         if (!empty($this->tempArray['errorTables'])) {
-            $path = $this->getFolderPFPFile();
             $oldFilePath = $path . DS . "goodLoanIds.json";
             $badLoansPath = $path . DS . "badLoanIds.json";
-
             if (!empty($this->tempArray['correctTables'])) {
                 $idsJsonFile = fopen($oldFilePath, "a"); //oldLoanIds must be update, we cant delete this info
                 $jsonIds = json_encode($this->tempArray['correctTables']);
@@ -2973,16 +2980,22 @@ FRAGMENT
                 fclose($idsJsonFile);
             }
 
-            unlink($filePath);
             $idsJsonFile = fopen($badLoansPath, "w"); //badLoanIds must be replaced, we can delete this info
             $jsonIds = json_encode($this->tempArray['errorTables']);
             fwrite($badLoansPath, $jsonIds);
             fclose($idsJsonFile);
         }
+
+        if (!empty($this->tempArray['finishedToday'])) {
+            $finishedToday = $path . DS . "finishedToday.json";
+            echo "writing finished loans";
+            $idsJsonFile = fopen($finishedToday, "w");
+            $jsonIds = json_encode($this->tempArray['finishedToday']);
+            fwrite($idsJsonFile, $jsonIds);
+            fclose($idsJsonFile);
+        }
     }
 
-  
-    
     /** 
      * Read ControlVariables configuration file
      *     

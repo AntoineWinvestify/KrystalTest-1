@@ -291,14 +291,14 @@ class Queue2 extends AppModel {
                     $companyName = $data[0]['Company']['company_name'];
                 
                     // Generate an event
-                    $event = new CakeEvent("accountLinkingFullyFinished", $this, 
+                    /*$event = new CakeEvent("accountLinkingFullyFinished", $this, 
                                             array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
                                                 'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
                                                                            __('has been succesfully linked and analyzed and will be monitored from now on.') . " " .
                                                                            __('Your data is now available in your Winvestify Dashboard') 
-                                                ));
+                                                ));*/
 
-                    $this->getEventManager()->dispatch($event);
+                    //$this->getEventManager()->dispatch($event);
                 }
             }
         }

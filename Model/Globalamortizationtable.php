@@ -86,7 +86,6 @@ class Globalamortizationtable extends AppModel
         $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice');
         $this->Investmentslice = ClassRegistry::init('Investmentslice');
         $this->Investment = ClassRegistry::init('Investment');
-        $this->GlobalamortizationtablesInvestmentslice = ClassRegistry::init('GlobalamortizationtablesInvestmentslice');        
         $globalAmortizationtable = [];
         $investmentSliceIds = [];
        
