@@ -114,7 +114,7 @@ class WinFormulas {
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_currencyExchangeTransactionPerDay",
-                    "globaltotalsdata_writtenOff",
+                    //"globaltotalsdata_writtenOff",
                     "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
@@ -287,7 +287,7 @@ class WinFormulas {
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_currencyExchangeTransactionPerDay",
-                    "globaltotalsdata_writtenOff",
+                    //"globaltotalsdata_writtenOff",
                     "globaltotalsdata_incomeWithholdingTaxPerDay"
                     //need more data to take values from database
                 ],
