@@ -255,7 +255,8 @@ class Linkedaccount extends AppModel {
             $this->Queue2 = ClassRegistry::init('Queue2');
             $data = [];
             $linkaccountId = $this->id;
-            $investorId = $this->data['Linkedaccount']['investor_id'];
+            $accountowner = $this->Accountowner->getData(array('id' => $this->data['Linkedaccount']['accountowner_id']), array('investor_id'), null, null, 'first');
+            $investorId = $accountowner['Accountowner']['investor_id'];
             $data["companiesInFlow"][0] = $linkaccountId;
             $data["originExecution"] = WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT;
             $userReference = $this->Investor->getInvestorIdentityByInvestorId($investorId);
@@ -434,12 +435,11 @@ class Linkedaccount extends AppModel {
         //Begin to check if that account already exist.
         $this->Accountowner = ClassRegistry::init('Accountowner');
         $accountOwner = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
-        if (Configure::read('debug')) {
-            print_r($accountOwner);
-        }
+
         $this->Company = ClassRegistry::init('Company');
         $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
         $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in technical freatures
+
         if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
             $multiAccountCheck = true;
         } 
@@ -453,7 +453,7 @@ class Linkedaccount extends AppModel {
             }
 
             $accountOwnerId = $accountOwner['Accountowner']['id'];
-            $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId));         //Check for the active linkedaccounts from that accountowner
+            $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId,  'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE));         //Check for the active linkedaccounts from that accountowner
             } 
         else if (!empty($accountOwner) && !$multiAccountCheck) { //Not multiaccount company and already linked, can't link again
             if (Configure::read('debug')) {
@@ -490,12 +490,15 @@ class Linkedaccount extends AppModel {
         } 
         else {
             $accounts = $newComp->companyUserLogin($username, $password);
-            if($accounts){
+            if($accounts == true){
+                unlink($accounts);
+                $accounts = array();
                 $accounts[0]['accountCheck'] = $alreadyLinked;
                 $accounts[0]['linkedaccount_accountIdentity'] = $username;
                 $accounts[0]['linkedaccount_accountDisplayName'] = $username;
             }
-        }      
+        }   
+
         if(empty($accounts)){
             //ERROR LOGIN 
             $error = array();
@@ -525,10 +528,12 @@ class Linkedaccount extends AppModel {
         );
 
         if (empty($indexList)) {
-            return json_encode($return['feedback_message_user'] = 'Account removal failed.');
+            $return['feedback_message_user'] = 'Account removal failed.';
+            return $return;
         }
         else if($indexList[0]['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_NOT_ACTIVE){
-            return json_encode($return['feedback_message_user'] = 'Account not found.');
+            $return['feedback_message_user'] = 'Account not found.';
+            return $return;
         }
 
         //Check if the investor is the propreary pf the account.
@@ -537,7 +542,8 @@ class Linkedaccount extends AppModel {
            'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
         ));
         if($accountOwner == false){
-            return json_encode($return['feedback_message_user'] = 'Account removal failed.');
+            $return['feedback_message_user'] = 'Account removal failed.';
+            return $return;
         }
 
         if ($roleName == 'Investor') {
@@ -554,8 +560,8 @@ class Linkedaccount extends AppModel {
         foreach ($indexList as $index) {
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
-        
-        return json_encode($return['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.');
+        $return['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
+        return $return;
     }
 
 
@@ -583,7 +589,7 @@ class Linkedaccount extends AppModel {
             if ($this->save($linkedAccountData, $validation = true)) {
                 $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
                 $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
-                $this->Accountowner->save(array('accountowner_linkedAccountCounter' => $linkedaccountCount));
+                $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
                 return true; 
             } 
             else {
@@ -607,11 +613,11 @@ class Linkedaccount extends AppModel {
         $accountOwnerId = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
         if (!empty($accountOwnerId)) {
             //Not new Accountowner
-            return $this->addLinkedaccount($accountOwnerId, $identity, $displayName, $currency);
+            return $this->addLinkedaccount($accountOwnerId['Accountowner']['id'], $identity, $displayName, $currency);
         } 
         else {
             //New Accountowner
-            $newAccountOwnerId = $this->Accountowner->createAccountOwner($this->investorId, $companyId, $username, $password);
+            $newAccountOwnerId = $this->Accountowner->createAccountOwner($investorId, $companyId, $username, $password);
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
