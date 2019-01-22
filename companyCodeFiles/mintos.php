@@ -1229,7 +1229,7 @@ class mintos extends p2pCompany {
                 $boxes = $this->getElements($dom, 'ul', 'id', 'mintos-boxes');
                 $currencyDashboardFound = false;
                 
-                $currency = $this->mintosCurrencies[$this->currency];
+                $currency = $this->mintosCurrencies[$this->linkedaccountCurrency];
                 foreach($boxes as $keyBox => $box){
                     $boxValue = $box->nodeValue;
                     echo $boxValue;
@@ -1262,34 +1262,25 @@ class mintos extends p2pCompany {
                     if (!$this->hasElements) {
                         return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                     }
-                    /*foreach($divs as $key => $div){
-                        //echo $key . " => " . $div->nodeValue . SHELL_ENDOFLINE;
-                        $tempArray["global"]["profitibility"] = $this->getPercentage($divs[6]->nodeValue);
-                    }*/
-                    break;
 
+                    $lis = $box->getElementsByTagName('li');
+                    $this->verifyNodeHasElements($lis);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
+                    $divs = $lis[2]->getElementsByTagName('div');
+                    $this->verifyNodeHasElements($divs);
+                    if (!$this->hasElements) {
+                        return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
+                    }
+                    $tempArray["global"]["activeInvestment"] = trim($divs[2]->nodeValue);
+                    print_r($tempArray["global"]);
+                    break;
                 }
-                
-                if(!$eurDashboardFound){
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_CURRENCY);
-                }
-                
-                $lis = $boxes[0]->getElementsByTagName('li');
-                $this->verifyNodeHasElements($lis);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
-                $divs = $lis[2]->getElementsByTagName('div');
-                $this->verifyNodeHasElements($divs);
-                if (!$this->hasElements) {
-                    return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
-                }
-                $tempArray["global"]["activeInvestment"] = trim($divs[2]->nodeValue);
-                print_r($tempArray["global"]);
                 return $tempArray["global"];
         }
     }
-    
+
     /**
      * Get amortization tables of user investments
      * @param string $str It is the web converted to string of the company.

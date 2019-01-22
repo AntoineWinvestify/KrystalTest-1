@@ -106,10 +106,10 @@ class LinkedaccountsController extends AppController {
         $id = $this->request->params['id'];
         $RequestData = $this->request->data;
         $this->Linkedaccount->apiVariableNameInAdapter($RequestData);
-        $newPass = $RequestData['accountowner_password'];      
+        $newPass = $RequestData['accountowner_password'];   
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
-        $feedback = json_enconde($this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass));
+        $feedback = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);
         $this->response->type('json');
         $this->response->body($feedback); 
         return $this->response; 
@@ -143,26 +143,27 @@ class LinkedaccountsController extends AppController {
         else {
             $result = $this->Linkedaccount->api_addLinkedaccount($this->investorId, $companyId, $username, $password, $identity, $displayName);
         }      
-        
-        if (!empty($result)) { //Link OK
-            $this->accountOwnerFields = array('Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
-            $this->linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
-                'Linkedaccount.linkedaccount_alias', 'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
-            $accounts['data']['feedback_message_user'] = 'Account succefully linked.';
-            $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $this->accountOwnerFields, $this->linkedaccountFields, WIN_LINKEDACCOUNT_ACTIVE);
-            $accounts = $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
+
+        if ($result != false) { //Link OK        
+            $accounts = $this->Accountowner->api_readAccountowners($this->investorId, WIN_LINKEDACCOUNT_ACTIVE);
+            $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
+            $accounts['feedback_message_user'] = 'Account succefully linked.';
+
+
             foreach ($accounts['data'] as $key => $account) {
                 $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
                 $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['id']);
                 $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
+            }
                 $accounts = json_encode($accounts);
                 $this->response->type('json');
                 $this->response->body($accounts); 
                 return $this->response; 
-            }
         } 
-        else { //Link fail
-            //ERROR LINQUEAR CUENTA
+        else { //DB save fail
+                $this->response->type('json');
+                $this->response->body($error); 
+                return $this->response; 
         }
     }
     
@@ -176,6 +177,7 @@ class LinkedaccountsController extends AppController {
     public function v1_delete(){
         $id = $this->request->params['id']; 
         $return = $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
+        $return = json_encode($return);
         $this->response->type('json');
         $this->response->body($return); 
         return $this->response;  

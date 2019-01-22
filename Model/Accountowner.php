@@ -217,7 +217,6 @@ class Accountowner extends AppModel {
         $accountFinded = null;
 
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.company_id' => $companyId, 'Accountowner.accountowner_status' => WIN_ACCOUNTOWNER_ACTIVE);
-        print_r($filterConditions);
         $accounts = $this->find("all", $params = array('recursive' => -1,
             'conditions' => array($filterConditions)
                 )
@@ -303,10 +302,10 @@ class Accountowner extends AppModel {
             'conditions' => $filterConditions,
             'fields' => $accountOwnerFields,
         ));
-        
+
         foreach ($accounts as $key => $accountResult) {
             $linkedaccountsResult = $this->Linkedaccount->find("all", array('recursive' => -1,
-                'conditions' => array('Linkedaccount.linkedaccount_status' => $linkedaccountStatus['linkedaccount_status'],
+                'conditions' => array('Linkedaccount.linkedaccount_status' => $linkedaccountStatus,
                     'Linkedaccount.accountowner_id' => $accountResult['Accountowner']['id']),
                 'fields' => $linkedaccountFields
             ));
@@ -332,7 +331,7 @@ class Accountowner extends AppModel {
                 $i++;
             }
         }  
-        
+
         return $accountsResult;
     }
 
@@ -355,13 +354,16 @@ class Accountowner extends AppModel {
         
         //Login
         $accounts = $this->Linkedaccount->precheck($investorId, $companyId, $username, $newPass);
-        if (!empty($result) && $accounts != false) {
+
+        if (!empty($result) && $accounts != false && empty($accounts['error'])) {
             if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
                 $feedback['feedback_message_user'] = 'Your password has been succesfully changed';
+                $feedback = json_encode($feedback);
                 return $feedback;
             }
         }
-        $feedback['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password";
+        $feedback['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password.";
+        $feedback = json_encode($feedback);
         return $feedback;
     }
     
