@@ -120,7 +120,7 @@ function changeDisplayLanguage() {
      *
      */ 
     public function login() {
-
+//echo __FILE__ . " " . __LINE__ . "<br>";
         $this->request->data['User'] = $this->request->data ; 
 
 	if ($this->request->is('post')) {    

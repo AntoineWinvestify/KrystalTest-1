@@ -148,7 +148,8 @@ class Tooltip extends AppModel {
     }
 
     /**
-     * Get tooltips from model and format the array for the api
+     * Get tooltips from model. The resulting array returns the tooltips in 
+     * the format: "identifier" => "tooltip content". 
      * 
      * @param array of int $tooltipIdentifier
      * @param string $locale

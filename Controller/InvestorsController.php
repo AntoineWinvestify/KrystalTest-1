@@ -51,7 +51,7 @@ class InvestorsController extends AppController {
 
     
     function beforeFilter() {
-            parent::beforeFilter();
+        parent::beforeFilter();
 
     }
 

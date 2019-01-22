@@ -135,7 +135,7 @@ class AppController extends Controller {
                         'username' => 'username',
                         'password' => 'password',
                     ),
-                    'header' => 'AuthToken',
+                    'header' => 'Authorization',
                     'userModel' => 'User',
                     'scope' => array(
                         'User.active' => 1
@@ -171,7 +171,9 @@ class AppController extends Controller {
             var_dump($this->request);
         } 
      
-        $jwt = $this->request->header('AuthToken'); 
+        $tokenRough = $this->request->header('Authorization');   
+        $token1 = explode(" ", $tokenRough);
+        ((!empty($token1[1])) ? $jwt = $token1[1] : $jwt = $token1[0]);
         
         if (!empty($jwt)) {
             $tokenObject = JWT::decode($jwt, Configure::read('Security.salt'), $allowed_algs = ['HS256']);      
@@ -180,6 +182,7 @@ class AppController extends Controller {
             $this->language = $tokenObject->language;
             $this->refreshToken = $tokenObject->refresh_token;
             $this->accountDisplayName = $tokenObject->account_display_name; 
+//var_dump($tokenObject);            
         }
   
 // Load the application configuration file. Now it is available to the *whole* application	 

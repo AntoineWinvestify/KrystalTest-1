@@ -87,22 +87,21 @@ class Usertoken extends AppModel {
      * @return mixed false or new refreshToken
      */   
     public function api_getNewAccessUserToken($refreshToken) {
+        
         $result = $this->find('first', $params = ['conditions' => ['usertoken_refreshToken' => $refreshToken],
                                                'recursive' => -1
                                        ]);
+     
         if (empty($result)) {
             return false;
         }
 
-        if ($refreshToken == $result['Usertoken']['usertoken_refreshToken']) {
-            $this->id = $result['Usertoken']['id'];
-            $newToken = $this->random_str(100);
-            $this->save(['id' => $result['Usertoken']['id'], 
-                         'usertoken_refreshToken' => $newToken, 
-                         'usertoken_accessTokenRenewalCounter' => $result['Usertoken']['usertoken_accessTokenRenewalCounter'] + 1]);
-            return $newToken;
-        }
-        return false;        
+        $this->id = $result['Usertoken']['id'];
+        $newToken = $this->random_str(100);
+        $this->save(['id' => $result['Usertoken']['id'], 
+                     'usertoken_refreshToken' => $newToken, 
+                     'usertoken_accessTokenRenewalCounter' => $result['Usertoken']['usertoken_accessTokenRenewalCounter'] + 1]);
+        return $newToken;       
     }
 
  

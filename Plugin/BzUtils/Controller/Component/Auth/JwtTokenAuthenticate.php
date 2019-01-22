@@ -95,7 +95,10 @@ class JwtTokenAuthenticate extends BaseAuthenticate {
  */
 	public function getUser(CakeRequest $request) {
 		if (!empty($this->settings['header'])) {                 
-			$token = $request->header($this->settings['header']);
+			$token1 = $request->header($this->settings['header']);
+
+                        $token1 = explode(" ", $token1);
+                        ((!empty($token1[1])) ? $token = $token1[1] : $token = $token1[0]);
 
 			if ($token) {
 				return $this->_findUser($token, null);

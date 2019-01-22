@@ -518,10 +518,12 @@ class User extends AppModel {
      * @return boolean ! JWT False in case of internal error.
      */
     public function api_getNewAccessToken($refreshToken) {
+        
         $token = $this->Usertoken->api_getNewAccessUserToken($refreshToken);
+        
         if (!empty($token)) {
             return $token;
-        } 
+        }
         return false;
     }       
     

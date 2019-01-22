@@ -29,7 +29,7 @@ class DashboardsController extends AppController
 {
 	var $name = 'Dashboards';
 	var $helpers = array('Html', 'Form', 'Js', 'Text');
-	var $uses = array('Dashboard', 'Company', 'Linkedaccount');
+	var $uses = array('Dashboard', 'Company', 'Linkedaccount', 'Tooltip');
         protected $graphicsResults;         // contains the data of a graphic
         protected $investmentListsResult;   // contains the data of an investment list
 
@@ -340,7 +340,7 @@ function readInvestmentData($company) {
 
 
 
-    /**
+    /** HAY QUE DEFINIR LOS TOOLTIPS 
      * Read the data of an investment list
      * 
      * @param int  $linkedAccountId The object reference for the linked account
@@ -348,12 +348,12 @@ function readInvestmentData($company) {
      */  
     public function readActiveinvestmentsList($linkedAccountId)  {
         $this->Investment = ClassRegistry::init('Investment');
- //       $this->Tooltip = ClassRegistry::init('Tooltip');
-        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-        
+        $this->language = "en";
         $linkedAccountResult = $this->Linkedaccount->find("first", $param = 
                                             ['conditions' => ['id' => $linkedAccountId],
+                                                'fields' => ['linkedaccount_currency'],
                                                 'recursive' => -1]);
+        $currency = $linkedAccountResult['Linkedaccount']['linkedaccount_currency'];   
         
         $this->Investment->virtualFields = [
             'myInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
@@ -363,17 +363,16 @@ function readInvestmentData($company) {
         ];
         $conditions = ['investment_statusOfLoan' => 2,
                             'linkedaccount_id' => $linkedAccountId];
- //       var_dump($conditions);
+
         $investmentResults = $this->Investment->find('all', $params = [
                                                     'conditions' => $conditions,
-                                                    'limit'  => 2,
+                                            //        'limit'  => 2,
             'fields' => ['investment_loanId', 'myInvestmentFloat', 'date', 'interestFloat', 'interestFloat','outstandingFloat', 'progressFloat', 'investment_paymentStatus' ],
                                                     'recursive' => -1
             
         ]);
         $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
 
-$i = 0;
         foreach ($investmentResultsNormalized as $key => $item) {
             $i = 0;
             foreach ($item as $key1 => $value) {
@@ -391,7 +390,7 @@ $i = 0;
                     case 3:
                     case 6:
                         $temp[$key][$i]["value"]["amount"] = $value;
-                        $temp[$key][$i]["value"]["currency_code"] = "EUR";
+                        $temp[$key][$i]["value"]["currency_code"] = $currency;     
                         $i++;
                     break;
                     case 4:
@@ -407,11 +406,12 @@ $i = 0;
             }
         }
 
-        $this->investmentListsResult["data"] = $temp;
-
         $this->investmentListsResult["display_name"] = "Active Investments";
- //       $this->investmentsResults['header'] = $this->createActiveInvestmentsListHeader();
- //       $this->investmentsResults['tooltip_display_name'] = $this->Tooltip->getTooltip(INVESTMENT_LIST_GLOBALTOOLTIP, $this->language);
+        $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
+        
+        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP_TESTING ], $this->language);  
+        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP_TESTING];     
+        $this->investmentListsResult['data'] = $temp;
         return true;    
     }
      
@@ -423,9 +423,8 @@ $i = 0;
      * @return boolean
      */  
     public function createActiveInvestmentsListHeader()  { 
-        $this->Tooltip = ClassRegistry::init('Tooltip');
 
-        $tooltipIdentifiers = [
+        $tooltipIdentifiers1 = [
             INVESTMENT_LIST_LOANID,
             INVESTMENT_LIST_INVESTMENTDATE, 
             INVESTMENT_LIST_MYINVESTMENT, 
@@ -435,7 +434,16 @@ $i = 0;
             INVESTMENT_LIST_NEXTPAYMENT, 
             INVESTMENT_LIST_STATUS,
             ];
-         
+            $tooltipIdentifiers = [
+            40,
+            44, 
+            39,
+            51, 
+            43,
+            55,
+            54, 
+            55,
+            ];
         $displayHeaders = ["Loan ID", 
                            "Investment Date",
                            "My Investment",
@@ -444,16 +452,17 @@ $i = 0;
                            "Outstanding Principal",
                            "Next Payment",
                            "Status"];
-    
+
         $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language);
-        
+
+        $i = 0;
         foreach ($displayHeaders as $key => $displayHeader) {
-            $head[]['displayName'] = $displayHeader;
+            $header[$i]['displayName'] = $displayHeader;
             if (array_key_exists($tooltipIdentifiers[$key], $tooltips)) {
-                $head[]['tooltipDisplayName'] = $tooltips[$key];
+                $header[$i]['tooltipDisplayName'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
             }
+            $i++;
         }
-        var_dump($header);
         return $header;
     }    
         
