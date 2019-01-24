@@ -48,12 +48,12 @@ class LinkedaccountsController extends AppController {
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/linkedaccounts?[status]
      * Example GET /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE
-     *             /api/1.0/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
+     *             /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE,SUSPENDED
      * @return string
      * 
      */
     public function v1_index() {
-        
+
         $linkedaccountStatus = $this->listOfQueryParams;
 
         $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->language);

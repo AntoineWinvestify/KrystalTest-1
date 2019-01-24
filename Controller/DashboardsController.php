@@ -198,8 +198,8 @@ function readInvestmentData($company) {
      * @param -
      * 
      */
-    public function v1_index(){
-
+    public function v1_view(){
+        $id = $this->request->params['id'];
         if (!empty($this->request->pass)) {                 // Format for collecting a graphics item or investmentlist  
             switch ($this->request->pass[1]) {
                 case "lists":
@@ -273,13 +273,13 @@ function readInvestmentData($company) {
             case "current-graph-data":
                 $result = $this->readCurrentGraphData($this->request->pass[0]);
                 break;        
-            case "paymentdelays-graph-data":
+            case "payment-delays-graph-data":
                 $result = $this->readPaymentDelaysGraphData($this->request->pass[0]);
                 break;      
-            case "net_deposits-graph-data":
+            case "net-deposits-graph-data":
                 $result = $this->readNetDepositsGraphData($this->request->pass[0]);
                 break;
-            case "netannual returns-graph-data":
+            case "netannual-returns-graph-data":
                 $result = $this->readNetAnnualReturnsGraphData($this->request->pass[0]);
                 break;      
             case "nar-last365days-graph-data":
@@ -409,8 +409,8 @@ function readInvestmentData($company) {
         $this->investmentListsResult["display_name"] = "Active Investments";
         $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
         
-        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP_TESTING ], $this->language);  
-        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP_TESTING];     
+        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP], $this->language);  
+        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];     
         $this->investmentListsResult['data'] = $temp;
         return true;    
     }
@@ -424,7 +424,7 @@ function readInvestmentData($company) {
      */  
     public function createActiveInvestmentsListHeader()  { 
 
-        $tooltipIdentifiers1 = [
+        $tooltipIdentifiers = [
             INVESTMENT_LIST_LOANID,
             INVESTMENT_LIST_INVESTMENTDATE, 
             INVESTMENT_LIST_MYINVESTMENT, 
@@ -433,25 +433,18 @@ function readInvestmentData($company) {
             INVESTMENT_LIST_OUTSTANDINGPRINCIPAL,
             INVESTMENT_LIST_NEXTPAYMENT, 
             INVESTMENT_LIST_STATUS,
-            ];
-            $tooltipIdentifiers = [
-            40,
-            44, 
-            39,
-            51, 
-            43,
-            55,
-            54, 
-            55,
-            ];
-        $displayHeaders = ["Loan ID", 
-                           "Investment Date",
-                           "My Investment",
-                           "Interest", 
-                           "Instalment Progress",
-                           "Outstanding Principal",
-                           "Next Payment",
-                           "Status"];
+        ];
+
+        $displayHeaders = [
+            "Loan ID", 
+            "Investment Date",
+            "My Investment",
+            "Interest", 
+            "Instalment Progress",
+            "Outstanding Principal",
+            "Next Payment",
+            "Status"
+        ];
 
         $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language);
 
