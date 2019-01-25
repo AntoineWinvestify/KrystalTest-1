@@ -199,7 +199,40 @@ function readInvestmentData($company) {
      * 
      */
     public function v1_view(){
-        $id = $this->request->params['id'];
+        
+        //Call configuration
+        $pathVendor = Configure::read('winvestifyVendor');
+        Configure::load('dashboardConfig.php', 'default');
+        $dashboardConfig = Configure::read('Dashboard');
+        
+        //Save needed params and filters
+        $id = $this->request->id;
+        $type = $this->request->pass[0];
+        $function = $this->request->pass[1];
+
+        //1 is always the model used for the data search 2 is always the vendor used for formatting
+        $key1 = key($dashboardConfig[$type][$function][0]);
+        $key2 = key($dashboardConfig[$type][$function][1]); 
+
+        //Call formatter and model
+        $this->Searchmodel = ClassRegistry::init($key1);
+        include_once ($pathVendor . 'Classes' . DS . "$key2.php");
+        $this->formatter = new $key2();
+
+        //Save the functions name in another var to call it later
+        $searchModelFunction = $dashboardConfig[$type][$function][0][$key1];
+        $formatterFunction = $dashboardConfig[$type][$function][1][$key2];
+        
+        //Search the data and format it
+        $data = $this->Searchmodel->$searchModelFunction($id, $this->listOfQueryParams);
+        $result = $this->formatter->$formatterFunction($data);
+        
+        $resultJson = json_encode($result);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;
+        
+        /*exit;
         if (!empty($this->request->pass)) {                 // Format for collecting a graphics item or investmentlist  
             switch ($this->request->pass[1]) {
                 case "lists":
@@ -223,7 +256,7 @@ function readInvestmentData($company) {
         return $this->response; 
         }
         
-        // ALL THE REST OF THE GET METHOD
+        // ALL THE REST OF THE GET METHOD*/
 
     }
   

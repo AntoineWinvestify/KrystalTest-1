@@ -167,7 +167,7 @@ class AppController extends Controller {
     public function beforeFilter() {
  
         if (Configure::read('debug')) {
-            var_dump($this->request);
+            $this->print_r2($this->request);
         } 
      
         $tokenRough = $this->request->header('Authorization');   
