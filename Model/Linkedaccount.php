@@ -138,16 +138,16 @@ class Linkedaccount extends AppModel {
                                                         'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
                                                         'accountowner_id' => $accountOwnerId,
                                                         'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED
-        );
+                                                        );
 
-        if ($this->save($linkedAccountData, $validation = true)) {
-                $this->Accountowner->accountAdded ($accountOwnerId);
-            return true;
-        } 
-        else {
-            return false;
-        }
-    }
+            if ($this->save($linkedAccountData, $validation = true)) {
+                    $this->Accountowner->accountAdded ($accountOwnerId);
+                return true;
+            } 
+            else {
+                return false;
+            }
+        }   
         return false;
     }
     

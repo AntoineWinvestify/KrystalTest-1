@@ -40,20 +40,31 @@ class Usertoken extends AppModel {
      * logout action of the user.
      * 
      * @param array $refreshToken the object who contains the $refreshToken
-     * @return integer Number of Objects deleted
+     * @return integer Number of Objects deleted (0,....n)
      */   
-    public function api_deleteUsertoken($refreshToken) { 
+    public function api_deleteUsertoken($refreshToken) {
 
-        $result = $this->find('all', $params = ['conditions' => ['usertoken_refreshToken' => $refreshToken],
-                                               'recursive' => -1
-                                       ]);
-
+        if (is_array($refreshToken)) {
+            foreach ($refreshToken as $item) {
+                $temp[]['usertoken_refreshToken'] = $item;
+            }
+            $conditions = ['OR' => $temp];  
+            $conditions['AND'] = ACTIVE;
+        }
+        else {
+            $conditions['usertoken_refreshToken'] = $refreshToken; 
+            $conditions['usertoken_status'] = ACTIVE;
+        }
+      
+        $results = $this->find('all', $params = ['conditions' => $conditions,
+                                                 'recursive' => -1
+                                                ]);
         $i = 0;
-        foreach ($result as $token) {
-            if ($token['Usertoken']['usertoken_refreshToken'] === $refreshToken) {
-                $this->delete($token['Usertoken']['id']);
-                $i++;
-            }  
+        foreach ($results as $token) {
+            $this->clear();
+            $this->id = $token['Usertoken']['id'];
+            $this->saveField('usertoken_status', DELETED);
+            $i++;
         }
         return $i;    
     }
@@ -71,6 +82,7 @@ class Usertoken extends AppModel {
         $data['usertoken_refreshToken'] = $this->random_str(100);
         $data['usertoken_accessTokenRenewalCounter'] = 1;
         $data['user_id'] = $userId;
+        $data['usertoken_status'] = ACTIVE; 
         
         if ($this->save($data)) {
             return $data['usertoken_refreshToken'];
@@ -80,15 +92,16 @@ class Usertoken extends AppModel {
 
     
     /**
-     * Generate a new access token for the user. This is typically used to "extend" 
-     * the current "user session"
+     * Generate a new refreshToken for a new access token for the user. This is typically 
+     * used to "extend" the current "user session"
      * 
-     * @param array $refreshToken An array of 1 or more tokens to be deleted
+     * @param string $refreshToken An existing refreshToken.
      * @return mixed false or new refreshToken
      */   
     public function api_getNewAccessUserToken($refreshToken) {
         
-        $result = $this->find('first', $params = ['conditions' => ['usertoken_refreshToken' => $refreshToken],
+        $result = $this->find('first', $params = ['conditions' => ['usertoken_refreshToken' => $refreshToken,
+                                                                   'usertoken_status' => ACTIVE],
                                                'recursive' => -1
                                        ]);
      
