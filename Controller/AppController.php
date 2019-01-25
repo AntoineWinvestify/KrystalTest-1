@@ -102,8 +102,8 @@ class AppController extends Controller {
                                                 // in normalized, internal DB format
                                                 // An item in this array can be another array. In
                                                 // that case all entries are considered as OR condition
-    
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
+    
     protected $action;                          // The 'action' of a POST operation
     protected $investorId;                      // The investorId as obtained in the JWT
     protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
@@ -116,7 +116,6 @@ class AppController extends Controller {
     public $components = array('DebugKit.Toolbar',
         'RequestHandler',
   //      'Security',
- //       'Session', 
         
          'Auth' => array(
             'authenticate' => array(
@@ -166,7 +165,7 @@ class AppController extends Controller {
      * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
-
+ 
         if (Configure::read('debug')) {
             var_dump($this->request);
         } 
@@ -346,10 +345,10 @@ class AppController extends Controller {
      * 	Redirect an action to using https
      *
      */
-    function _blackHole($type) {
+ //   function _blackHole($type) {
 
 //	$this->redirect('https://' . env('SERVER_NAME') . env('REQUEST_URI'));
-    }
+  //  }
 
     /**
      * 

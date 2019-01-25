@@ -490,7 +490,7 @@ class User extends AppModel {
      * @return boolean
      */
     public function api_logout($refreshToken) {
-        $this->Usertoken->api_deleteUserToken($refreshToken);
+        $loggedOut = $this->Usertoken->api_deleteUserToken($refreshToken);
         return true;
     }  
     

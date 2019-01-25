@@ -64,24 +64,21 @@ If the current user is not logged in or the key doesn’t exist, null will be re
 ?>
 
 <?php
-//App::import('Vendor', 'Firebase', array('file' => 'firebase' . DS . 'php-jwt' . DS .'src' . DS . 'JWT.php'));
- 
  
 App::uses('CakeEvent', 'Event');
 App::uses('SimplePasswordHasher', 'Controller/Component/Auth');
 class UsersController extends AppController
 {
-	var $name = 'Users';
-	var $uses = array('User', 'Investor');
-  	var $error;
+    var $name = 'Users';
+    var $uses = array('User', 'Investor');
+    var $error;
 
 
 
 function beforeFilter() {
-	parent::beforeFilter(); // only call if the generic code for all the classes is required.
+    parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
-        $this->Auth->allow('login');
-
+    $this->Auth->allow('v1_login');
 }
 
 
@@ -116,13 +113,14 @@ function changeDisplayLanguage() {
 
     /**
      *	
-     *	Checking of login credentials and forwarding browser to default page	
-     *
+     *	Checking of login credentials and forwarding browser to default page
+     * 	
+     * @throws UnauthorizedException Email or password is wrong
      */ 
-    public function login() {
+    public function v1_login() {
 //echo __FILE__ . " " . __LINE__ . "<br>";
-        $this->request->data['User'] = $this->request->data ; 
-
+        $this->request->data['User'] = $this->request->data; 
+//echo __FILE__ . " " . __LINE__ . "<br>";
 	if ($this->request->is('post')) {    
             $isUserIdentified = $this->Auth->identify($this->request, $this->response);
 
@@ -136,63 +134,14 @@ function changeDisplayLanguage() {
                 return $this->response;                 
             }
             else {
-                throw new UnauthorizedException('Email or password is wrong');                   
+                
+ //               throw new MissingWidget('EMAIL or password is wrongAAAA');   
+//echo __FILE__ . " " . __LINE__ . "<br>";                   
+                throw new UnauthorizedException('Email or password is wrong!');                   
             }
 	}
     }
-
-
-/**
-*
-*	Shows the login panel
-*
-*//*
-public function loginOld()
-{
-	if ( $this->request->is('ajax')) {
-		$this->layout = 'ajax';
-		$this->disableCache();      exit;
-	}
-	else {
-		$this->layout = 'winvestify_publicLandingPageLayout';	
-	}
-	$error = false;
-	$this->set("error", $error);
-}
-
-
-public function loginRedirect22() {
-    $this->layout = "winvestify_login";
-    $error = false;
-    $this->set("error", $error);
-}
-*/
-
-    
-
-
-/**
-*	
-* logout of the user
-*
-*/
-public function logoutOld() {
-	$user = $this->Auth->user();		// get all the data of the authenticated user
-	$event = new CakeEvent('Controller.User_logout', $this, array('data' => $user,
-                            ));
-        
-	$this->getEventManager()->dispatch($event);
-	$this->Session->destroy();						// NOT NEEDED?
-	$this->Session->delete('Auth');
-        $this->Session->delete('Acl');
-        $this->Session->delete('sectorsMenu');
-        
-	return $this->redirect($this->Auth->logout());
-}
-
-
-
-
+ 
 
 /**
 *
@@ -447,27 +396,6 @@ public function registerPanelE() {
 ****************************  Testing functionality  ***************************
 ********************************************************************************
 */
-
-
-
-/**
-*
-*
-*//*
-public function testReadPreferredFollowers() {
-	
-Configure::write('debug', 2); 
-$this->autoRender = false;
-
-	$countryCode = "ES";
-
-	$this->Preferredfollower = ClassRegistry::init('Preferredfollower');
-	$result = $this->Preferredfollower->listPreferredFollowers($countryCode);
-	$this->print_r2($result);
-}
-*/
-
-
 
 
 /*
@@ -900,14 +828,17 @@ echo "startDate = $startDate and endDate = $endDate <br>";
             $payload['refresh_token'] = $this->User->api_getNewAccessToken($refreshToken);
             $payload['account_display_name'] = $this->accountDisplayName;
         }
-   
+        
+        if (!$payload['refresh_token']) {
+            throw new InternalServerError('temporary server problem');        
+            }
+        
         $token = JWT::encode($payload, Configure::read('Security.salt')); 
         return $token;
     }
 
 
     /**
-     * 
      * Check if a proposed username already exists in the system
      * This methods terminates the HTTP POST for actions
      * Format POST /api/1.0/users/pre-check
@@ -978,25 +909,24 @@ var_dump($apiResult);
  
 
     /**
-     *	
-     * logout of the user
+     * logout of the user. Remove the refreshtoken so it cannot be abused
      *
      */
-    public function logout() {
-    
-        $this->User->api_logout($this->data['refresh-token']);
-        $this->response->statusCode(200);         
+    public function v1_logout() {
+
+        $this->User->api_logout($this->refreshToken);
+        $this->response->statusCode(200);  
         return $this->response;
     }    
 
     
     /**
-     *	
-     *  a new access token for a user
+     * A new access token for a user
      * 
      * @param string $refreshToken The token to use for generating a new token
+     * @throws UnauthorizedException Authentication error
      */
-    public function refreshtoken() {
+    public function v1_refreshtoken() {
         // Collect the relevant user data for JWT generation 
 
         $this->Role = ClassRegistry::init('Role');
