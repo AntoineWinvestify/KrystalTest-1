@@ -191,7 +191,7 @@ class LinkedaccountsController extends AppController {
      *  
      * @return string
      */
-    public function precheck() {
+    public function v1_precheck() {
         $data = $this->request['data'];
         $this->Linkedaccount->apiVariableNameInAdapter($data);
 
