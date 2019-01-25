@@ -495,7 +495,7 @@ class twino extends p2pCompany {
 
     protected $transactionHeader = [
         'A' => "Processing Date",
-        'B' => "Booking Date",
+        'B' => "Transaction ID",
         'C' => "Type",
         'D' => "Description",
         'E' => "Loan Number",
@@ -673,7 +673,7 @@ class twino extends p2pCompany {
 
                     $this->getPFPFileMulticurl($this->statusDownloadUrl . $response['reportId'] . '/download', $this->tempUrl['refererInvestment'], false, false, $this->fileName);
                 } else {
-                    sleep(2);
+                    sleep(10);
                     echo 'Not ready yet' . SHELL_ENDOFLINE;
                     $next = $this->getCompanyWebpageMultiCurl($this->statusDownloadUrl . $response['reportId'] . '/status');
                     $this->idForSwitch--;
