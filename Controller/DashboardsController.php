@@ -372,7 +372,7 @@ function readInvestmentData($company) {
             
         ]);
         $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
-
+//var_dump($investmentResults);
         foreach ($investmentResultsNormalized as $key => $item) {
             $i = 0;
             foreach ($item as $key1 => $value) {
