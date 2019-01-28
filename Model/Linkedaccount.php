@@ -217,29 +217,29 @@ class Linkedaccount extends AppModel {
 
 
         /**
-         * beforeFind, starts a timer for a find operation.
-         *   
-         * @param array $queryData Array of query data (not modified)
-         * @return boolean true
-         */
-	public function beforeFind($queryData) {
-                if(!empty($queryData['conditions']['Linkedaccount.linkedaccount_status'])){
-                    switch ($queryData['conditions']['Linkedaccount.linkedaccount_status']) {
-                        case 'ACTIVE':
-                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_ACTIVE;
-                            break;
-                        case 'SUSPENDED':
-                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
-                            break;
-                        default:
-                            break;
-                    }
+     * beforeFind, starts a timer for a find operation.
+     *   
+     * @param array $queryData Array of query data (not modified)
+     * @return boolean true
+     */
+    public function beforeFind($queryData) {
+        if (!empty($queryData['conditions']['Linkedaccount.linkedaccount_status'])) {
+            foreach ($queryData['conditions']['Linkedaccount.linkedaccount_status'] as $key => $value) {
+                switch ($queryData['conditions']['Linkedaccount.linkedaccount_status'][$key]) {
+                    case 'ACTIVE':
+                        $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_ACTIVE;
+                        break;
+                    case 'SUSPENDED':
+                        $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
+                        break;
+                    default:
+                        break;
                 }
-		return $queryData;
-	}
-    
-    
-    
+            }
+        }
+        return $queryData;
+    }
+
     /**
      * Callback function
      * Add a new request on queue for the company that was linked from a user

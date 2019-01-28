@@ -297,18 +297,23 @@ class Accountowner extends AppModel {
             'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
         
-        
+
         $accounts = $this->find("all", array('recursive' => -1,
             'conditions' => $filterConditions,
             'fields' => $accountOwnerFields,
         ));
 
+        foreach($linkedaccountStatus as $status){
+            $linkedaccountSearchStatus[] = $status;
+        }
+        
         foreach ($accounts as $key => $accountResult) {
             $linkedaccountsResult = $this->Linkedaccount->find("all", array('recursive' => -1,
-                'conditions' => array('Linkedaccount.linkedaccount_status' => $linkedaccountStatus,
+                'conditions' => array('Linkedaccount.linkedaccount_status' => $linkedaccountSearchStatus,
                     'Linkedaccount.accountowner_id' => $accountResult['Accountowner']['id']),
                 'fields' => $linkedaccountFields
             ));
+
             foreach($linkedaccountsResult as $linkedaccountResult){
                 $accounts[$key]['Linkedaccount'][] = $linkedaccountResult;
             }
