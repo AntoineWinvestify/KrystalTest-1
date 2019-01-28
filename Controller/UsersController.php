@@ -118,9 +118,8 @@ function changeDisplayLanguage() {
      * @throws UnauthorizedException Email or password is wrong
      */ 
     public function v1_login() {
-//echo __FILE__ . " " . __LINE__ . "<br>";
         $this->request->data['User'] = $this->request->data; 
-//echo __FILE__ . " " . __LINE__ . "<br>";
+        
 	if ($this->request->is('post')) {    
             $isUserIdentified = $this->Auth->identify($this->request, $this->response);
 
@@ -133,10 +132,7 @@ function changeDisplayLanguage() {
                 $this->response->body($resultJson); 
                 return $this->response;                 
             }
-            else {
-                
- //               throw new MissingWidget('EMAIL or password is wrongAAAA');   
-//echo __FILE__ . " " . __LINE__ . "<br>";                   
+            else {           
                 throw new UnauthorizedException('Email or password is wrong!');                   
             }
 	}

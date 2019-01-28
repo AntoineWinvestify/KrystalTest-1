@@ -25,14 +25,7 @@
   2016-08-02	  version 2016_0.1
 
 
-
-
-
   Pending
-
-
-
-
 
 
  */
@@ -41,8 +34,7 @@
 class CompanysController extends AppController {
 
     var $name = 'Companys';
-    var $helpers = array('Session');
-    var $uses = array('Company', 'Poll');
+    var $uses = array('Company');
     var $error;
 
     function beforeFilter() {
@@ -54,45 +46,33 @@ class CompanysController extends AppController {
      * 	Add a new company
      * 	
      */
-    function addCompany() {
+    function v1_add() {
 
-        $userId = $this->Auth->user('id');
+
     }
 
     /**
-     *
-     * 	Modify one or more data of a company
+     * Modify one or more data of a company
      * 	
-     * 	
+     * @param int   $id The database identifier of the requested 'Company' resource
      */
-    function changeCompany() {
+    function v1_edit($id) {
 
-//	$userId = $this->Auth->user('id');	
+	
     }
 
     /**
-     *
-     * 	Deletes (make it "invisible" to normal admin) of a company
+     * Deletes (make it "invisible" to normal admin) of a company
      * 	
-     * 	
+     * @param int   $id The database identifier of the requested 'Company' resource
      */
-    function deleteCompany($companyId) {
+    function v1_delete($id) {
 
-//	$userId = $this->Auth->user('id');	
+
     }
 
-    /**
-     *  
-     * 	Get all the data of a company
-     * 	
-     */
-    function readCompany() {
 
-//	$userId = $this->Auth->user('id');	
-    }
-
-    /**
-     *  
+    /** 
      * 	Get all the data of a company
      * 	
      */
@@ -119,12 +99,9 @@ class CompanysController extends AppController {
 
         $this->set('companyResults', $companyResults);
 
-
-//	 Get the data for the rating system
     }
 
     /**
-     *  
      * 	Provides extra data about a company
      *
      */
@@ -158,7 +135,7 @@ class CompanysController extends AppController {
      * @return array $apiResult A list of elements of array "company"
      */
     public function v1_index(){       
-        $this->autoRender = false;
+
         $this->Company = ClassRegistry::init('Company');
 
         if (empty($this->listOfFields)) {
@@ -174,6 +151,7 @@ class CompanysController extends AppController {
                                                           'recursive' => -1]);
 
         $j = 0;
+      
         foreach ($results as $resultItem) { 
             $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
 
@@ -182,11 +160,14 @@ class CompanysController extends AppController {
             }
             $j++;
         }
-        
-        $this->Investor->apiVariableNameOutAdapter($apiResult);
-        $this->set(['data' => $apiResult,
-                  '_serialize' => ['data']]
-                   ); 
+
+        $resultJson = json_encode($apiResult);
+    
+        $this->response->statusCode(200);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+
+        return $this->response;          
     }
     
      /** 
@@ -195,13 +176,12 @@ class CompanysController extends AppController {
      * Example GET /v1/companies/1.json&_fields=company_name,company_countryName
      * 
      * @param int   $id The database identifier of the requested 'Company' resource
-     * @return array $apiResult A list of elements of array "company"
+     * @return array $apiResult A list of field (variables) of array "company"
      */   
    public function v1_view($id){
-        $this->autoRender = false;
-                    
-        $this->Company = ClassRegistry::init('Company');
-        
+
+        $id = $this->request->id;
+                
         if (empty($this->listOfFields)) {
             $this->listOfFields = ['company_name','company_url', 
                                     'company_country', 'company_countryName', 
@@ -214,8 +194,9 @@ class CompanysController extends AppController {
                                                           'fields' => $this->listOfFields, 
                                                           'recursive' => -1
                                                          ]);
-        
-        $this->Investor->apiVariableNameOutAdapter($apiResult)['Company'];
+         
+        $this->Company->apiVariableNameOutAdapter($apiResult['Company']);
+    
         $this->set(['data' => $apiResult['Company'],
                   '_serialize' => ['data']]
                    );      
