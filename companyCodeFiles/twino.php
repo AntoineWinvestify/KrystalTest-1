@@ -122,8 +122,8 @@ class twino extends p2pCompany {
                             7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
                             8 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"], // OK                                       
                             9 => ["INTEREST EXTENSION" => "Regular_gross_interest_income"],
-                            10 => ["PRINCIPAL REPURCHASE" => "Principal_buyback"],
-                            11 => ["INTEREST REPURCHASE" => "Interest_income_buyback"],
+                            10 => ["PRINCIPAL REPURCHASE" => "Capital_repayment"],
+                            11 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
                             12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
                             13 => ["INTEREST ACCRUED" => "Regular_gross_interest_income"],
                             //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
@@ -133,11 +133,6 @@ class twino extends p2pCompany {
                             16 => ["PRINCIPAL RECOVERY" => "Recoveries"],
                             17 => ["PRINCIPAL WRITEOFF" => "Write-off"],
                             18 => ["WITHDRAWAL" => "Cash_withdrawal"],
-                            19 => ["PRINCIPAL REPURCHASE" => "Capital_repayment"],
-                            20 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
-                            21 => ["INTEREST REPAYMENT" => "Regular_gross_interest_cost"], //
-                            22 => ["PRINCIPAL REPAYMENT" => "Capital_repayment_cost"],
-                            23 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"],
                             24 => ["INTEREST BUY_OUT" => "Regular_gross_interest_income"],
                             25 => ["SALE LOSS_ON_WRITEOFF" => "dummy_concept"]   //
                         ],
