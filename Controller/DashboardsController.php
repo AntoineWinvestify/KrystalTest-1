@@ -222,11 +222,11 @@ function readInvestmentData($company) {
         //Save the functions name in another var to call it later
         $searchModelFunction = $dashboardConfig[$type][$function][0][$key1];
         $formatterFunction = $dashboardConfig[$type][$function][1][$key2];
-        
+
         //Search the data and format it
         $data = $this->Searchmodel->$searchModelFunction($id, $this->listOfQueryParams);
         $result = $this->formatter->$formatterFunction($data);
-        
+
         $resultJson = json_encode($result);
         $this->response->type('json');
         $this->response->body($resultJson); 
@@ -373,124 +373,7 @@ function readInvestmentData($company) {
 
 
 
-    /** HAY QUE DEFINIR LOS TOOLTIPS 
-     * Read the data of an investment list
-     * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
-     */  
-    public function readActiveinvestmentsList($linkedAccountId)  {
-        $this->Investment = ClassRegistry::init('Investment');
-        $this->language = "en";
-        $linkedAccountResult = $this->Linkedaccount->find("first", $param = 
-                                            ['conditions' => ['id' => $linkedAccountId],
-                                                'fields' => ['linkedaccount_currency'],
-                                                'recursive' => -1]);
-        $currency = $linkedAccountResult['Linkedaccount']['linkedaccount_currency'];   
-        
-        $this->Investment->virtualFields = [
-            'myInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
-            'interestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
-            'outstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
-            'progressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
-        ];
-        $conditions = ['investment_statusOfLoan' => 2,
-                            'linkedaccount_id' => $linkedAccountId];
-
-        $investmentResults = $this->Investment->find('all', $params = [
-                                                    'conditions' => $conditions,
-                                            //        'limit'  => 2,
-            'fields' => ['investment_loanId', 'myInvestmentFloat', 'date', 'interestFloat', 'interestFloat','outstandingFloat', 'progressFloat', 'investment_paymentStatus' ],
-                                                    'recursive' => -1
-            
-        ]);
-        $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
-
-        foreach ($investmentResultsNormalized as $key => $item) {
-            $i = 0;
-            foreach ($item as $key1 => $value) {
-                switch ($i + 1) {
-                    case 1:
-                        $temp[$key][$i] = $value;
-                        $i++;
-                    break;
-                    case 2:
-                    case 7:
-                        $temp[$key][$i]['date'] = $value;
-                        $temp[$key][$i]['date_alias'] = str_replace("-", "", $value);
-                        $i++;
-                    break;   
-                    case 3:
-                    case 6:
-                        $temp[$key][$i]["value"]["amount"] = $value;
-                        $temp[$key][$i]["value"]["currency_code"] = $currency;     
-                        $i++;
-                    break;
-                    case 4:
-                    case 5:
-                        $temp[$key][$i]["value"]["percent"] = $value;
-                        $i++;
-                    break;           
-                    case 8:
-                        $temp[$key][$i]["value"]["delay"] = $value;
-                        $temp[$key][$i]["value"]["unit"] = "days";
-                    break;
-                }
-            }
-        }
-
-        $this->investmentListsResult["display_name"] = "Active Investments";
-        $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
-        
-        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP], $this->language);  
-        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];     
-        $this->investmentListsResult['data'] = $temp;
-        return true;    
-    }
-     
-     
-    /**
-     * Read the data of an investment list
-     * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
-     */  
-    public function createActiveInvestmentsListHeader()  { 
-
-        $tooltipIdentifiers = [
-            INVESTMENT_LIST_LOANID,
-            INVESTMENT_LIST_INVESTMENTDATE, 
-            INVESTMENT_LIST_MYINVESTMENT, 
-            INVESTMENT_LIST_INTEREST, 
-            INVESTMENT_LIST_INSTALLMENTPROGRESS,
-            INVESTMENT_LIST_OUTSTANDINGPRINCIPAL,
-            INVESTMENT_LIST_NEXTPAYMENT, 
-            INVESTMENT_LIST_STATUS,
-        ];
-
-        $displayHeaders = [
-            "Loan ID", 
-            "Investment Date",
-            "My Investment",
-            "Interest", 
-            "Instalment Progress",
-            "Outstanding Principal",
-            "Next Payment",
-            "Status"
-        ];
-
-        $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language);
-
-        $i = 0;
-        foreach ($displayHeaders as $key => $displayHeader) {
-            $header[$i]['displayName'] = $displayHeader;
-            if (array_key_exists($tooltipIdentifiers[$key], $tooltips)) {
-                $header[$i]['tooltipDisplayName'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
-            }
-            $i++;
-        }
-        return $header;
-    }    
+       
         
     
 } 
