@@ -134,4 +134,46 @@ class Userinvestmentdata extends AppModel {
             );
         $this->saveField($data['type'], $data['data']);
     }
+    
+    
+    
+    /**
+     * 
+     * 
+     * Read data for api.
+     * 
+     * 
+     */
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_activeInvestments"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @return boolean
+     */
+    public function readActiveInvestmentsGraphData($linkedAccountId, $period) {
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+        $conditions = ['linkedaccount_id' => $linkedAccountId];
+
+        switch ($period['period']) {
+            case "all":
+                break;
+            case "year":
+                App::uses('CakeTime', 'Utility');
+                $conditions['date >='] = CakeTime::format('-1 year', '%Y-%m-%d');
+                break;
+            default:
+                return false;
+        }
+
+        $result = $this->find('all', $param = [
+            'conditions' => $conditions,
+            'fields' => ['id', 'date',
+                'userinvestmentdata_numberActiveInvestments as value'
+            ],
+            'recursive' => -1,
+        ]);
+        return $result;
+    }
+
 }

@@ -28,14 +28,25 @@
 class dashboardFormatter {
     
 
-    function genericGrahpFormatter($data){
-        echo $data;
+    /**
+     * Generic formatter for Graphs
+     * @param type $data
+     * @return boolean
+     */
+    function genericGrahpDateFormatter($data, $companyId) {
+        $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
+        $this->graphicsResults = ["graphics_data" => ["dataset" =>
+                ["display_name" => $companyId,
+                    "data" => $resultNormalized]]];
+        return $this->graphicsResults;
     }
-    
-    
+
+    /**
+     * Generic formatter for most of the investment list
+     * @param array List of unformatted investment
+     * @return array List of formatted investment
+     */
     function genericInvestmentListFormatter($investmentResults) {
-        $this->companyId = $investmentResults['company_id'];
-        unset($investmentResults['company_id']);
         $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
         foreach ($investmentResultsNormalized as $key => $item) {
             foreach ($item as $key1 => $value) {
@@ -80,9 +91,43 @@ class dashboardFormatter {
                 }
             }
         }
-
+        return $temp;
+    }
+    
+    /**
+     * 
+     * Return the list of formatted active investment, with the correct display_name.
+     * @param array $investmentResults
+     * @param int $companyId
+     * @return array
+     */
+    public function activeInvestmentListFormatter($investmentResults, $companyId){
+        $temp = $this->genericInvestmentListFormatter($investmentResults);
+        
+        $this->companyId = $companyId;
         $this->Tooltip = ClassRegistry::init('Tooltip');
         $this->investmentListsResult["display_name"] = "Active Investments";
+        $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
+        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP], $this->language, $this->companyId);  
+        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];     
+        $this->investmentListsResult['data'] = $temp; 
+
+        return $this->investmentListsResult;
+    }
+    
+    /**
+     * 
+     * Return the list of formatted defaulted investment, with the correct display_name.
+     * @param array $investmentResults
+     * @param int $companyId
+     * @return array
+     */
+    public function defaultedInvestmentListFormatter($investmentResults, $companyId){
+        $temp = $this->genericInvestmentListFormatter($investmentResults);
+        
+        $this->companyId = $companyId;
+        $this->Tooltip = ClassRegistry::init('Tooltip');
+        $this->investmentListsResult["display_name"] = "Defaulted Investments";
         $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
         $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP], $this->language, $this->companyId);  
         $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];     
@@ -97,13 +142,11 @@ class dashboardFormatter {
     
     
     
-    
    
     /**
-     * Read the data of an investment list
+     * Read the headers and tooltips for the investment list.
      * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
+¡    * @return array
      */  
     public function createActiveInvestmentsListHeader()  { 
 

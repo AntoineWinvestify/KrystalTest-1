@@ -383,42 +383,26 @@ class Linkedaccount extends AppModel {
     }     
     
     
-        /**
-     * 	Callback Function
-     * 	Check if we can/need to send the Alias
-     * Problaby not necessary.
-     *
-     */
-    /*public function afterFind($results, $primary = false) {
-
-        if (!isset($results['Linkedaccount']['linkedaccount_isControlledBy'])) {
-            $linkedAccountResult = $this->find('first', $params = array(
-                                        'conditions' => array('Linkedaccount.id' => $results[]['id']),
-                                        'recursive' => -1,                          //int
-                                        'fields' => array('Linkedaccount.linkedaccount_isControlledBy'),
-                                        'callbacks' => false,
-                                        ));
-            $isControlledBy = $linkedAccountResult['Linkedaccount']['linkedaccount_isControlledBy'];
-        }
-        else {
-            $isControlledBy = $results['Linkedaccount']['linkedaccount_isControlledBy'];
-        }
-        
-        if ($isControlledBy == WIN_ALIAS_SYSTEM_CONTROLLED) {
-            if (isset($results['Linkedaccount']['linkedaccount_alias'])) {
-                unset($results['Linkedaccount']['linkedaccount_alias']);  
-            }
-        }
-        return $results;
-    }     */
- 
     /**
      * 
+     * Get the company id given a linkedaccount id
+     * @param int $id
+     * @return int
+     */
+    public function getCompanyFromLinkedaccount($id){
+        $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
+            'fields' => ['Accountowner.company_id'],'recursive' => 0]);
+        return $linkedAccountResult['Accountowner']['company_id'];
+    }
+    
+    
+    
+    /**
      * 
      *          API FUNCTIONS
+     * 
      */
-    
-    
+
     /**
      *
      * Check login, search for multiaccounts in pfp with it and check if you already linked that account/s.

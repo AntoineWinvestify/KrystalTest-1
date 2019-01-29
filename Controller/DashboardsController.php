@@ -188,8 +188,8 @@ function readInvestmentData($company) {
 
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
-     * Format GET /api/1.0/dashboards.json&_fields=x,y,z
-     * Example GET /api/1.0/dashboard.json&investor_country=SPAIN&_fields=investor_name,investor_surname
+     * Format GET /api/1.0/dashboards.json?_fields=x,y,z
+     * Example GET /api/1.0/dashboard.json?investor_country=SPAIN&_fields=investor_name,investor_surname
      * 
      * Other format:
      * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
@@ -198,17 +198,18 @@ function readInvestmentData($company) {
      * @param -
      * 
      */
-    public function v1_view(){
+    public function v1_viewCustom(){
         
         //Call configuration
         $pathVendor = Configure::read('winvestifyVendor');
         Configure::load('dashboardConfig.php', 'default');
         $dashboardConfig = Configure::read('Dashboard');
-        
+
         //Save needed params and filters
         $id = $this->request->id;
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
+        $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
 
         //1 is always the model used for the data search 2 is always the vendor used for formatting
         $key1 = key($dashboardConfig[$type][$function][0]);
@@ -225,7 +226,7 @@ function readInvestmentData($company) {
 
         //Search the data and format it
         $data = $this->Searchmodel->$searchModelFunction($id, $this->listOfQueryParams);
-        $result = $this->formatter->$formatterFunction($data);
+        $result = $this->formatter->$formatterFunction($data, $companyId);
 
         $resultJson = json_encode($result);
         $this->response->type('json');
@@ -247,135 +248,9 @@ function readInvestmentData($company) {
                     $this->response->statusCode(400);   
                     $this->response->type('json'); 
                     return $this->response; 
-            }
-
-        $resultJson = json_encode($result);
- 
-        $this->response->type('json');
-        $this->response->body($resultJson); 
-        return $this->response; 
-        }
-        
-        // ALL THE REST OF THE GET METHOD*/
+            }*/
 
     }
-  
-  
-    
-    /**
-     * Switch function for connecting a function to the collection of data for an investment list
-     * 
-     * @param string $investmentListName Name of investmentlist to collect
-     * @return boolean
-     */
-    public function readDashboardInvestmentLists($investmentListName) {
-        switch ($investmentListName) {
-            case "duplicityinvestmentslist":
-                $result = $this->readDuplicityInvestmentslist($this->request->pass[0]);
-                break;      
-            case "activeinvestmentslist":
-                $result = $this->readActiveInvestmentsList($this->request->pass[0]);
-                break;
-            case "defaultedinvestmentslist":
-                $result = $this->readDefaultedInvestmentsList($this->request->pass[0]);
-                break;                   
-            default:
-                $result = false;       
-        }
-        return $result;
-    }    
-    
-    
-    /**   We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies More info + Got it!
-     * Switch function for connecting a function to the collection of data for a graphic
-     * 
-     * @param string $graphicsName Name of graphic to collect
-     * @return boolean
-     */
-    public function readDashboardgraphics($graphicsName) {
-        switch ($graphicsName) {
-            case "nar-graph-data":
-                $result = $this->readNarGraphData($this->request->pass[0]);
-                break;      
-            case "cash-drag-graph-data":
-                $result = $this->readCashDragGraphData($this->request->pass[0]);
-                break;
-            case "active-investments-graph-data":
-                $result = $this->readActiveInvestmentsGraphData($this->request->pass[0]);
-                break;      
-            case "current-graph-data":
-                $result = $this->readCurrentGraphData($this->request->pass[0]);
-                break;        
-            case "payment-delays-graph-data":
-                $result = $this->readPaymentDelaysGraphData($this->request->pass[0]);
-                break;      
-            case "net-deposits-graph-data":
-                $result = $this->readNetDepositsGraphData($this->request->pass[0]);
-                break;
-            case "netannual-returns-graph-data":
-                $result = $this->readNetAnnualReturnsGraphData($this->request->pass[0]);
-                break;      
-            case "nar-last365days-graph-data":
-                $result = $this->readNarLast365daysGraphData($this->request->pass[0]);
-                break; 
-            case "financial-exposure-graph-data":
-                $result = $this->readFinancialExposureGraphData($this->request->pass[0]);
-                break;              
-            default:
-                $result = false;                               
-        }  
-        return $result;
-    }
-   
-    
-    
-    /**
-     * Read the historical data of the datum "userinvestmentdata_activeInvestments"
-     * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
-     */  
-    public function readActiveInvestmentsGraphData($linkedAccountId)  {
-        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
-        $this->listOfQueryParams['period'];
-        
-        $conditions = ['linkedaccount_id' => $linkedAccountId];
-  
-        switch ($this->listOfQueryParams['period']) {
-            case "all":              
-                break; 
-            case "year":
-                App::uses('CakeTime', 'Utility');   
-                $conditions['date >'] = CakeTime::format('-1 year', '%Y-%m-%d'); 
-                break;              
-            default:
-                return false;        
-        }
-
-        $result = $this->Userinvestmentdata->find('all', $param = [
-                            'conditions' => $conditions,
-                                'fields' => ['id', 'date', 
-                                'userinvestmentdata_numberActiveInvestments as value'
-                                            ],
-                             'recursive' => -1,
-        ]);       
-        
-        $resultNormalized = Hash::extract($result, '{n}.Userinvestmentdata');
- 
-        $this->graphicsResults = ["graphics_data" => ["dataset" => 
-                                                    ["display_name" => "Mintos",
-                                                       "data" => $resultNormalized]]];
-        return true;
-    }
-    
-
-      
-
-
-
-       
-        
-    
 } 
     
     

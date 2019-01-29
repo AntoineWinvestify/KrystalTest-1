@@ -256,7 +256,7 @@ var $validate = array(
      * @param int  $linkedAccountId The object reference for the linked account
      * @return boolean
      */
-    public function readDefaultedInvestmentsList($linkedAccountId, $filter) {
+    public function readDefaultedInvestmentsList($linkedAccountId, $filter = null) {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $linkedAccountResult = $this->Linkedaccount->find("first", $param = ['conditions' => ['Linkedaccount.id' => $linkedAccountId],
             'fields' => ['Linkedaccount.linkedaccount_currency', 'Accountowner.company_id'],
@@ -269,7 +269,7 @@ var $validate = array(
         ];
         $conditions = ['investment_statusOfLoan' => 2,
             'linkedaccount_id' => $linkedAccountId,
-            'investment_paymentStatus' => 90,
+            'investment_paymentStatus >' => 90,
                 ];
 
         $investmentResults = $this->find('all', $params = [
