@@ -82,9 +82,9 @@ class LinkedaccountsController extends AppController {
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
-    public function v1_view() {
+    public function v1_view() { 
         $id = $this->request->params['id'];
-        $linkedaccount = $this->Linkedaccount->api_readLinkedaccount($id/*, $fields*/);
+        $linkedaccount = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), null, null, null, 'first');
         $linkedaccount = $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount);
         $linkedaccount = json_encode($linkedaccount);
         $this->response->type('json');

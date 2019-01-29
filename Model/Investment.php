@@ -208,19 +208,28 @@ var $validate = array(
         return $slices['Investmentslice']; 
     }  
     
+    
+    /**
+     * 
+     * 
+     * 
+     * READING FUNCTION FOR API
+     * 
+     * 
+     * 
+     */
 
      /** HAY QUE DEFINIR LOS TOOLTIPS 
      * Read the data of an investment list
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @return boolean
-     */  
-    public function readActiveinvestmentsList($linkedAccountId, $filter)  {
+     */
+    public function readActiveinvestmentsList($linkedAccountId, $filter) {
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-        $linkedAccountResult = $this->Linkedaccount->find("first", $param = 
-                                            ['conditions' => ['Linkedaccount.id' => $linkedAccountId],
-                                                'fields' => ['Linkedaccount.linkedaccount_currency','Accountowner.company_id'],
-                                                'recursive' => 0]);
+        $linkedAccountResult = $this->Linkedaccount->find("first", $param = ['conditions' => ['Linkedaccount.id' => $linkedAccountId],
+            'fields' => ['Linkedaccount.linkedaccount_currency', 'Accountowner.company_id'],
+            'recursive' => 0]);
         $this->virtualFields = [
             'myInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
             'interestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
@@ -228,18 +237,50 @@ var $validate = array(
             'progressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
         ];
         $conditions = ['investment_statusOfLoan' => 2,
-                            'linkedaccount_id' => $linkedAccountId];
+            'linkedaccount_id' => $linkedAccountId];
 
         $investmentResults = $this->find('all', $params = [
-                                                    'conditions' => $conditions,
-                                            //        'limit'  => 2,
-            'fields' => ['investment_loanId', 'myInvestmentFloat', 'date', 'interestFloat', 'progressFloat','outstandingFloat', 'investment_nextPaymentDate', 'investment_paymentStatus' ],
-                                                    'recursive' => -1
-            
+            'conditions' => $conditions,
+            //        'limit'  => 2,
+            'fields' => ['investment_loanId', 'myInvestmentFloat', 'date', 'interestFloat', 'progressFloat', 'outstandingFloat', 'investment_nextPaymentDate', 'investment_paymentStatus'],
+            'recursive' => -1
         ]);
 
         $investmentResults['company_id'] = $linkedAccountResult['Accountowner']['company_id'];
-        return $investmentResults;       
+        return $investmentResults;
     }
-     
+
+    /** HAY QUE DEFINIR LOS TOOLTIPS 
+     * Read the data of an idefaulted nvestment list
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @return boolean
+     */
+    public function readDefaultedInvestmentsList($linkedAccountId, $filter) {
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $linkedAccountResult = $this->Linkedaccount->find("first", $param = ['conditions' => ['Linkedaccount.id' => $linkedAccountId],
+            'fields' => ['Linkedaccount.linkedaccount_currency', 'Accountowner.company_id'],
+            'recursive' => 0]);
+        $this->virtualFields = [
+            'myInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
+            'interestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
+            'outstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
+            'progressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
+        ];
+        $conditions = ['investment_statusOfLoan' => 2,
+            'linkedaccount_id' => $linkedAccountId,
+            'investment_paymentStatus' => 90,
+                ];
+
+        $investmentResults = $this->find('all', $params = [
+            'conditions' => $conditions,
+            //        'limit'  => 2,
+            'fields' => ['investment_loanId', 'myInvestmentFloat', 'date', 'interestFloat', 'progressFloat', 'outstandingFloat', 'investment_nextPaymentDate', 'investment_paymentStatus'],
+            'recursive' => -1
+        ]);
+
+        $investmentResults['company_id'] = $linkedAccountResult['Accountowner']['company_id'];
+        return $investmentResults;
+    }
+
 }

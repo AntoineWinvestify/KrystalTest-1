@@ -621,22 +621,4 @@ class Linkedaccount extends AppModel {
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
-    
-    /**
-     * Return the accountOwners of an given investor with the related linkedaccounts.
-     * 
-     * @param int $linkedaccountId                                             Id of the linkedaccount
-     * @param array $linkedaccountFields                                       Request fields 
-     * @return array
-     */
-    public function api_readLinkedaccount($linkedaccountId, $linkedaccountFields) {
-        
-        $linkedaccount = $this->Linkedaccount->find('first', array('recursive' => -1,
-                'conditions' => array('Linkedaccount.id' => $linkedaccountId),
-                'fields' => $linkedaccountFields
-            )); 
-        return $linkedaccount;
-        
-    }
-    
 }
