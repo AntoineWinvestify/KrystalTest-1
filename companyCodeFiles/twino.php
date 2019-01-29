@@ -113,28 +113,37 @@ class twino extends p2pCompany {
                         "input2" => "#current.original_concept",
                         "input3" => [
                             0 => ["FUNDING" => "Cash_deposit"], // OK
-                            1 => ["PRINCIPAL BUY_SHARES" => "Primary_market_investment"],
-                            2 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment"],
-                            3 => ["PRINCIPAL REPAYMENT" => "Capital_repayment"], //OK
-                            4 => ["PRINCIPAL BUYBACK" => "Principal_buyback"], // OK    
-                            5 => ["INTEREST BUYBACK" => "Interest_income_buyback"], // OK
-                            6 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
-                            7 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
-                            8 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"], // OK                                       
-                            9 => ["INTEREST EXTENSION" => "Regular_gross_interest_income"],
-                            10 => ["PRINCIPAL REPURCHASE" => "Capital_repayment"],
-                            11 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
-                            12 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
-                            13 => ["INTEREST ACCRUED" => "Regular_gross_interest_income"],
-                            //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
-                            //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
+                            1 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"],                                       
+                            2 => ["WITHDRAWAL" => "Cash_withdrawal"],
+                            3 => ["SALE LOSS_ON_WRITEOFF" => "dummy_concept"],
+                            
+                            4 => ["PRINCIPAL RECOVERY" => "Recoveries"],
+                            5 => ["PRINCIPAL WRITEOFF" => "Write-off"],
+                            6 => ["PRINCIPAL BUY_SHARES" => "Primary_market_investment"],
+                            7 => ["PRINCIPAL BUYBACK" => "Principal_buyback"], // OK   
+
+                            8 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment"],
+                            9 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"],
+                            10 => ["PRINCIPAL REPAYMENT" => "Capital_repayment"], //OK
+                            11 => ["PRINCIPAL REPAYMENT" => "Capital_repayment_cost"],
+                            //12 => ["PRINCIPAL REPURCHASE" => ""],
+                            13 => ["PRINCIPAL REPURCHASE" => "Capital_repayment"],
                             14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
                             15 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_negative"],
-                            16 => ["PRINCIPAL RECOVERY" => "Recoveries"],
-                            17 => ["PRINCIPAL WRITEOFF" => "Write-off"],
-                            18 => ["WITHDRAWAL" => "Cash_withdrawal"],
-                            24 => ["INTEREST BUY_OUT" => "Regular_gross_interest_income"],
-                            25 => ["SALE LOSS_ON_WRITEOFF" => "dummy_concept"]   //
+             
+                            16 => ["INTEREST BUYBACK" => "Interest_income_buyback"], // OK
+                            17 => ["INTEREST SCHEDULE" => "Regular_gross_interest_income"],
+                            18 => ["INTEREST EXTENSION" => "Regular_gross_interest_income"],
+                            19 => ["INTEREST EARLY_FULL_REPAYMENT" => "Regular_gross_interest_income"],
+                            20 => ["INTEREST ACCRUED" => "Regular_gross_interest_income"],
+                            21 => ["INTEREST BUY_OUT" => "Regular_gross_interest_income"],
+   
+                            22 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
+                            23 => ["INTEREST REPAYMENT" => "Regular_gross_interest_cost"], // 
+                            //24 => ["INTEREST REPURCHASE" => ""],
+                            25 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
+                            //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
+                            //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
                         ],
                     ],
                     "functionName" => "getComplexTransactionDetail",
