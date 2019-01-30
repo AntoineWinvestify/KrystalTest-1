@@ -71,7 +71,9 @@ class Dashboardoverviewdata extends AppModel {
      * @return boolean
      */
     public function genericGraphSearch($linkedAccountId, $period, $field){
-        $investorId = getInvestorFromLinkedaccount($linkedAccountId);
+        
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $investorId = $this->Linkedaccount->getInvestorFromLinkedaccount($linkedAccountId);
         $conditions = ['investor_id' => $investorId];
 
         switch ($period['period']) {

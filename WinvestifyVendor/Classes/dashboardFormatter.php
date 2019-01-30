@@ -99,7 +99,7 @@ class dashboardFormatter {
      * @return boolean
      */
     function paymentDelayGrahpFormatter($data, $companyId, $graphInfo) {
-        
+        $dataResult = array();
         $dataResult[0]['range_display_name'] = '1-7 days';
         $dataResult[1]['range_display_name'] = '8-30 days';
         $dataResult[2]['range_display_name'] = '31-60 days';

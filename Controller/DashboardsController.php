@@ -204,7 +204,7 @@ function readInvestmentData($company) {
         $pathVendor = Configure::read('winvestifyVendor');
         Configure::load('dashboardConfig.php', 'default');
         $dashboardConfig = Configure::read('Dashboard');
-
+        
         //Save needed params and filters
         $id = $this->request->id;
         $type = $this->request->pass[0];
@@ -213,7 +213,12 @@ function readInvestmentData($company) {
         if($dashboardConfig[$type][$function][2]['xAxis'] == 'currency'){
             $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id);
         }
-        
+        if(empty($dashboardConfig[$type]) || empty($dashboardConfig[$type][$function])){
+            $this->response->statusCode(400);   
+            $this->response->type('json'); 
+            return $this->response; 
+        }
+
         
         //1 is always the model used for the data search 2 is always the vendor used for formatting
         $key1 = key($dashboardConfig[$type][$function][0]);
@@ -235,25 +240,7 @@ function readInvestmentData($company) {
         $resultJson = json_encode($result);
         $this->response->type('json');
         $this->response->body($resultJson); 
-        return $this->response;
-        
-        /*exit;
-        if (!empty($this->request->pass)) {                 // Format for collecting a graphics item or investmentlist  
-            switch ($this->request->pass[1]) {
-                case "lists":
-                    $this->readDashboardInvestmentLists($this->request->pass[2]);
-                    $result = &$this->investmentListsResult;
-                    break;      
-                case "graphics":                 
-                    $this->readDashboardgraphics($this->request->pass[2]);
-                    $result = &$this->graphicsResults;
-                    break;
-                default:
-                    $this->response->statusCode(400);   
-                    $this->response->type('json'); 
-                    return $this->response; 
-            }*/
-
+        return $this->response;  
     }
 } 
     
