@@ -384,8 +384,8 @@ class Linkedaccount extends AppModel {
     
     
     /**
-     * 
      * Get the company id given a linkedaccount id
+     * 
      * @param int $id
      * @return int
      */
@@ -394,6 +394,30 @@ class Linkedaccount extends AppModel {
             'fields' => ['Accountowner.company_id'],'recursive' => 0]);
         return $linkedAccountResult['Accountowner']['company_id'];
     }
+    /**
+     * Get the investor id given a linkedaccount id
+     * 
+     * @param int $id
+     * @return int
+     */
+    public function getInvestorFromLinkedaccount($id){
+        $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
+            'fields' => ['Accountowner.investor_id'],'recursive' => 0]);
+        return $linkedAccountResult['Accountowner']['investor_id'];
+    }
+     
+    /**
+     * Get the linkedaccount_currency of a linkedaccount given the id
+     * 
+     * @param int $id
+     * @return int
+     */
+    public function getCurrency($id){
+        $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
+            'fields' => ['Linkedaccount.linkedaccount_currency'],'recursive' => -1]);
+        return $linkedAccountResult['Linkedaccount']['linkedaccount_currency'];
+    }
+    
     
     
     

@@ -61,4 +61,39 @@ class Dashboardoverviewdata extends AppModel {
         )
     );
     
+    
+    /**
+     * Generic search for a field to use in the graph of the api.
+     * 
+     * @param int $linkedAccountId
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $field
+     * @return boolean
+     */
+    public function genericGraphSearch($linkedAccountId, $period, $field){
+        $investorId = getInvestorFromLinkedaccount($linkedAccountId);
+        $conditions = ['investor_id' => $investorId];
+
+        switch ($period['period']) {
+            case "all":
+                break;
+            case "year":
+                App::uses('CakeTime', 'Utility');
+                $conditions['date >='] = CakeTime::format('-1 year', '%Y-%m-%d');
+                break;
+            default:
+                return false;
+        }
+
+        $result = $this->find('all', $param = [
+            'conditions' => $conditions,
+            'fields' => ['id', 'date',
+                "$field as value"
+            ],
+            'recursive' => -1,
+        ]);
+        return $result;
+    }
+    
+    
 }

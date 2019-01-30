@@ -210,7 +210,11 @@ function readInvestmentData($company) {
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
         $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
-
+        if($dashboardConfig[$type][$function][2]['xAxis'] == 'currency'){
+            $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id);
+        }
+        
+        
         //1 is always the model used for the data search 2 is always the vendor used for formatting
         $key1 = key($dashboardConfig[$type][$function][0]);
         $key2 = key($dashboardConfig[$type][$function][1]); 
@@ -219,14 +223,14 @@ function readInvestmentData($company) {
         $this->Searchmodel = ClassRegistry::init($key1);
         include_once ($pathVendor . 'Classes' . DS . "$key2.php");
         $this->formatter = new $key2();
-
+ 
         //Save the functions name in another var to call it later
         $searchModelFunction = $dashboardConfig[$type][$function][0][$key1];
         $formatterFunction = $dashboardConfig[$type][$function][1][$key2];
 
         //Search the data and format it
         $data = $this->Searchmodel->$searchModelFunction($id, $this->listOfQueryParams);
-        $result = $this->formatter->$formatterFunction($data, $companyId);
+        $result = $this->formatter->$formatterFunction($data, $companyId, $dashboardConfig[$type][$function][2]);
 
         $resultJson = json_encode($result);
         $this->response->type('json');

@@ -151,6 +151,7 @@ class Userinvestmentdata extends AppModel {
      * Read the historical data of the datum "userinvestmentdata_activeInvestments"
      * 
      * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readActiveInvestmentsGraphData($linkedAccountId, $period) {
@@ -162,6 +163,7 @@ class Userinvestmentdata extends AppModel {
      * Read the historical data of the datum "userinvestmentdata_totalNetDeposits"
      * 
      * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNetDepositsGraphData($linkedAccountId, $period) {
@@ -170,9 +172,10 @@ class Userinvestmentdata extends AppModel {
     }
     
     /**
-     * Read the historical data of the datum "userinvestmentdata_cashDrag"
+     * Read the historical data of the datum "userinvestmentdata_cashDrag"      //This field is not implemented yet
      * 
      * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readCashDragGraphData($linkedAccountId, $period) {
@@ -181,15 +184,171 @@ class Userinvestmentdata extends AppModel {
     }
     
     /**
+     * Read the historical data of the datum "userinvestmentdata_outstandingPrincipal"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readInvestedAssetsGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_outstandingPrincipal';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_reservedAssets"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readReservedFundsGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_reservedAssets';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_cashInPlatform"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readCashGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_cashInPlatform';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+
+    /**
+     * Read the historical data of the datum "userinvestmentdata_netAnnualReturnPastYear"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readNarPastYearGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_netAnnualReturnPastYear';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_netAnnualReturnPast12Months"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readNarLast365daysMultiGraphData($linkedAccountId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'userinvestmentdata_netAnnualReturnPast12Months';
+        $data['Dashboard'] = $this->genericGraphSearch($linkedAccountId, $period, $field);
+        $field = 'dashboardoverviewdata_netAnnualReturnPast12Months';
+        $data['GlobalDashboard'] = $this->Dashboardoverviewdata->genericGraphSearch($linkedAccountId, $period, $field); 
+        return $data;
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_netAnnualTotalFundsReturn"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readNarTotalFundsGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_netAnnualTotalFundsReturn';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_netReturnPast12Months"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readNetEarningsLast365daysGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_netReturnPast12Months';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+
+    /**
+     * Read the historical data of the datum "userinvestmentdata_netReturnPastYear"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readNetEarningsPastYearGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_netReturnPastYear';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+
+    /**
+     * Read the historical data of the datum "userinvestmentdata_netTotal"      //This field is not implemented yet
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return boolean
+     */
+    public function readNetEarningsTotalGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_netTotal';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }    
+    
+    /**
+     * Read the datum "userinvestmentdata_current"      //This field is not implemented yet
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                   //Not used
+     * @return boolean
+     */
+    public function readCurrentGraphData($linkedAccountId, $period) {
+        $data = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_current'], 'Date DESC', null, 'first');
+        return $data['Userinvestmentdata']['userinvestmentdata_current'];
+    }   
+    /**
+     * Read the datum "userinvestmentdata_exposure"      //This field is not implemented yet
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                   //Not used
+     * @return boolean
+     */
+    public function readExposureGraphData($linkedAccountId, $period) {
+        $data = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_exposure'], 'Date DESC', null, 'first');
+        return $data['Userinvestmentdata']['userinvestmentdata_exposure'];
+    }   
+    /**
+     * Read the datum "userinvestmentdata_exposure"      //This field is not implemented yet
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                   //Not used
+     * @return boolean
+     */
+    public function readPaymentDelayGraphData($linkedAccountId, $period) {
+        
+
+        $data['1-7'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_1-7'], 'Date DESC', null, 'first');
+        $data['8-30'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_8-30'], 'Date DESC', null, 'first');
+        $data['31-60'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_31-60'], 'Date DESC', null, 'first');
+        $data['61-90'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_61-90'], 'Date DESC', null, 'first');
+        $data['>90'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_>90'], 'Date DESC', null, 'first');
+
+        return $data;
+    }       
+    
+    
+    
+    
+    
+    /**
      * Generic search for a field to use in the graph of the api.
      * 
      * @param int $linkedAccountId
-     * @param string $period
+     * @param string $period                                                    Time period. For now can be "year" or "all"
      * @param string $field
      * @return boolean
      */
     public function genericGraphSearch($linkedAccountId, $period, $field){
-         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
         $conditions = ['linkedaccount_id' => $linkedAccountId];
 
         switch ($period['period']) {
