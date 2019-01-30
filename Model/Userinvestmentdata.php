@@ -234,7 +234,7 @@ class Userinvestmentdata extends AppModel {
     /**
      * Read the historical data of the datum "userinvestmentdata_netAnnualReturnPast12Months"
      * 
-     * @param int  $linkedAccountId The object reference for the linked account
+     * @param int  $linkedAccountId The object reference for the linked account             //Global historical not implemented
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */

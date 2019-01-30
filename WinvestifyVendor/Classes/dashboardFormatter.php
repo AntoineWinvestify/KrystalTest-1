@@ -29,10 +29,12 @@ class dashboardFormatter {
     
 
     /**
-     * Generic formatter for Graphs
+     * Generic formatter for Graphs. only accept one set of data.
      * 
-     * @param type $data
-     * @return boolean
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
      */
     function genericGrahpFormatter($data, $companyId, $graphInfo) {
         $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
@@ -48,10 +50,12 @@ class dashboardFormatter {
     }
 
     /**
-     * Generic formatter for Graphs
+     * Generic formatter for Graphs. This format accept two sets of data.
      * 
-     * @param type $data
-     * @return boolean
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
      */
     function genericMultiGrahpFormatter($data, $companyId, $graphInfo) {
         $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], '{n}.Userinvestmentdata');
@@ -75,8 +79,10 @@ class dashboardFormatter {
     /**
      *  Formatter for Gauge Graph
      * 
-     * @param type $data
-     * @return boolean
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
      */
     function gaugeGrahpFormatter($data, $companyId, $graphInfo) {
         $this->graphicsResults = 
@@ -95,8 +101,10 @@ class dashboardFormatter {
     /**
      *  Formatter for delays graph 
      * 
-     * @param type $data
-     * @return boolean
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
      */
     function paymentDelayGrahpFormatter($data, $companyId, $graphInfo) {
         $dataResult = array();
@@ -125,8 +133,10 @@ class dashboardFormatter {
     /**
      * Generic formatter for most of the investment list
      * 
-     * @param array List of unformatted investment
-     * @return array List of formatted investment
+     * @param array $investmentResults
+     * @param int   $companyId                                                  //Necesary for the tooltips                                               
+     * @param array $listInfo                                                  //Extra info for the list
+     * @return array
      */
     function genericInvestmentListFormatter($investmentResults, $companyId, $listInfo) {
         $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
