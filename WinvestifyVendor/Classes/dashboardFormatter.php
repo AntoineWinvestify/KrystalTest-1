@@ -33,7 +33,7 @@ class dashboardFormatter {
      * @param type $data
      * @return boolean
      */
-    function genericGrahpDateFormatter($data, $companyId) {
+    function genericGrahpFormatter($data, $companyId) {
         $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
         $this->graphicsResults = ["graphics_data" => ["dataset" =>
                 ["display_name" => $companyId,

@@ -145,6 +145,8 @@ class Userinvestmentdata extends AppModel {
      * 
      */
     
+    
+    
     /**
      * Read the historical data of the datum "userinvestmentdata_activeInvestments"
      * 
@@ -152,7 +154,42 @@ class Userinvestmentdata extends AppModel {
      * @return boolean
      */
     public function readActiveInvestmentsGraphData($linkedAccountId, $period) {
-        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+        $field = 'userinvestmentdata_numberActiveInvestments';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_totalNetDeposits"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @return boolean
+     */
+    public function readNetDepositsGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_totalNetDeposits';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+    
+    /**
+     * Read the historical data of the datum "userinvestmentdata_cashDrag"
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @return boolean
+     */
+    public function readCashDragGraphData($linkedAccountId, $period) {
+        $field = 'userinvestmentdata_cashDrag';
+        return $this->genericGraphSearch($linkedAccountId, $period, $field);   
+    }
+    
+    /**
+     * Generic search for a field to use in the graph of the api.
+     * 
+     * @param int $linkedAccountId
+     * @param string $period
+     * @param string $field
+     * @return boolean
+     */
+    public function genericGraphSearch($linkedAccountId, $period, $field){
+         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
         $conditions = ['linkedaccount_id' => $linkedAccountId];
 
         switch ($period['period']) {
@@ -169,7 +206,7 @@ class Userinvestmentdata extends AppModel {
         $result = $this->find('all', $param = [
             'conditions' => $conditions,
             'fields' => ['id', 'date',
-                'userinvestmentdata_numberActiveInvestments as value'
+                "$field as value"
             ],
             'recursive' => -1,
         ]);
