@@ -92,12 +92,16 @@ $this->out('read all the parameters.');
 
 
 */
+echo __FILE__ . " " . __LINE__ . "\n";
+
 
 	$host = "localhost";
 	$user = "root";
 	$pass = "8870mit";
-	$name = "alc";
+	$name = "winvestify_blog";
 
+        
+      
 $this->out('parameter read.');
 	$filename = $this->backup_tables($host, $user, $pass, $name);
 	
@@ -131,20 +135,104 @@ $this->out('parameter read.');
 function backup_tables($host,$user,$pass,$name,$tables = '*')
 {
 	$return = "";
-	
-  $link = mysql_connect($host,$user,$pass);
-  mysql_select_db($name,$link);
+        
+    $nameOriginalDatabase = "searchTest";
+    $nameWorkDatabase = "searchTest1";
+    
+echo __FILE__ . " " . __LINE__ . "\n";	
+  $link = mysqli_connect($host,$user,$pass);
 
-  //get all of the tables
+  mysqli_select_db($link, $nameWorkDatabase);
+$sqlCommand = "SELECT CONCAT('RENAME TABLE $1.', table_name, ' TO $2.', table_name, '; ') FROM information_schema.TABLES WHERE table_schema='$1';";
+ 
+
+//get all of the tables and reset its contents
   if($tables == '*')
   {
     $tables = array();
-    $result = mysql_query('SHOW TABLES');
-    while($row = mysql_fetch_row($result))
+    $result = mysqli_query($link, 'SHOW TABLES');
+    while($row = mysqli_fetch_row($result))
     {
       $tables[] = $row[0];
     }
   }
+  echo __FILE__ . " " . __LINE__ . "\n";
+  var_dump($tables);
+
+    foreach ($tables as $table) {
+        $result = mysqli_query($link, 'CREATE TABLE ' . $table."_temp" . ' LIKE ' . $table );
+        $result = mysqli_query($link, 'DROP TABLE ' . $table); 
+        $result = mysqli_query($link, 'RENAME TABLE ' . $table."_temp" . ' TO ' .   $table);
+    }
+    
+    
+    foreach ($tables as $table) {
+
+  //cycle through
+    foreach($tables as $table)
+    {
+        $result = mysql_query('SELECT * FROM '.$table);
+        $num_fields = mysql_num_fields($result);
+
+ //       $return.= 'DROP TABLE '.$table.';';
+        $row2 = mysql_fetch_row(mysql_query('SHOW CREATE TABLE '.$table));
+        $return.= "\n\n".$row2[1].";\n\n";
+        for ($i = 0; $i < $num_fields; $i++) {
+            while($row = mysql_fetch_row($result)) {
+                $return.= 'INSERT INTO '.$table.' VALUES(';
+                for($j=0; $j<$num_fields; $j++) {
+                    $row[$j] = addslashes($row[$j]);
+                    $row[$j] = ereg_replace("\n","\\n",$row[$j]);
+                    if (isset($row[$j])) { $return.= '"'.$row[$j].'"' ; } else { $return.= '""'; }
+                    if ($j<($num_fields-1)) { $return.= ','; }
+                }
+                $return.= ");\n";
+              }
+    }
+    $return.="\n\n\n";
+  }
+
+/*
+ * par1 database user
+ * par2 password
+ * par3 name of db_master
+ * par4 name of db
+ * 
+ * check permissions and users of db and db_master
+ * 
+
+ 
+  
+ 
+    
+    mysql -uroot -p8870mit -e "drop database if exists searchTest10"
+    mysqldump -u root -p8870mit db_master > temp.sql
+    mysql -C -u root -p8870mit -e "CREATE DATABASE IF NOT EXISTS searchTest10"
+    mysql -C -u root -p8870mit  db < temp10.sql
+  
+
+
+
+
+
+*/
+
+
+
+
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+  exit;
+  /*
   else
   {
     $tables = is_array($tables) ? $tables : explode(',',$tables);
@@ -183,7 +271,7 @@ function backup_tables($host,$user,$pass,$name,$tables = '*')
   	$handle = fopen($destinationFolder.$destinationFile,'w+');
   	fwrite($handle,$return);
   	fclose($handle);
-
+*/
 return ($destinationFolder.$destinationFile);
 }
 

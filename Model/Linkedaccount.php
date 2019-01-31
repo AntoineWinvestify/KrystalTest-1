@@ -217,29 +217,29 @@ class Linkedaccount extends AppModel {
 
 
         /**
-         * beforeFind, starts a timer for a find operation.
-         *   
-         * @param array $queryData Array of query data (not modified)
-         * @return boolean true
-         */
-	public function beforeFind($queryData) {
-                if(!empty($queryData['conditions']['Linkedaccount.linkedaccount_status'])){
-                    switch ($queryData['conditions']['Linkedaccount.linkedaccount_status']) {
-                        case 'ACTIVE':
-                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_ACTIVE;
-                            break;
-                        case 'SUSPENDED':
-                            $queryData['conditions']['Linkedaccount.linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
-                            break;
-                        default:
-                            break;
-                    }
+     * beforeFind, starts a timer for a find operation.
+     *   
+     * @param array $queryData Array of query data (not modified)
+     * @return boolean true
+     */
+    public function beforeFind($queryData) {
+        if (!empty($queryData['conditions']['Linkedaccount.linkedaccount_status'])) {
+            foreach ($queryData['conditions']['Linkedaccount.linkedaccount_status'] as $key => $value) {
+                switch ($queryData['conditions']['Linkedaccount.linkedaccount_status'][$key]) {
+                    case 'ACTIVE':
+                        $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_ACTIVE;
+                        break;
+                    case 'SUSPENDED':
+                        $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
+                        break;
+                    default:
+                        break;
                 }
-		return $queryData;
-	}
-    
-    
-    
+            }
+        }
+        return $queryData;
+    }
+
     /**
      * Callback function
      * Add a new request on queue for the company that was linked from a user
@@ -568,10 +568,10 @@ class Linkedaccount extends AppModel {
     /**
      * Add the linked account to the db.
      * 
-     * @param int $accountOwnerId                                               //Id from accountOwner
-     * @param string $linkedaccountIdentity                                     //Identity  from the linkedaccount, necessary for multiaccounts.
-     * @param string $linkedaccountPlatformDisplayName                          //How we will show the linkedaccount name to the user.
-     * @param string $linkedaccountCurrency                                     //Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner have different currency).
+     * @param int $accountOwnerId  Id from accountOwner
+     * @param string $linkedaccountIdentity Identity  from the linkedaccount, necessary for multiaccounts.
+     * @param string $linkedaccountPlatformDisplayName How we will show the linkedaccount name to the user.
+     * @param string $linkedaccountCurrency Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner have different currency).
      * @return boolean
      */
     public function addLinkedaccount($accountOwnerId, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, /*$linkedaccountAlias,*/$linkedaccountCurrency = 'EUR') { //[last field is by default €]
@@ -600,13 +600,13 @@ class Linkedaccount extends AppModel {
     /**
      * Add a new linkaccount for an investor. If accountOwner(same company and credentials) exited before, link the new linkedaccount with it, if not, create a new account owner.
      * 
-     * @param int $investorId                                                   //Id from investor.
-     * @param int $companyId                                                    //Company from the accountOwner
+     * @param int $investorId  Id from investor.
+     * @param int $companyId   Company from the accountOwner
      * @param string $username
-     * @param string $password                                                  //Username and password are the credentials to login in the pfp site.
-     * @param string $identity                                                  //Identity  from the linkedaccount, necessary for multiaccounts.
-     * @param string $displayName                                               //How we will show the linkedaccount name to the user.
-     * @param string $currency                                                  //Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner have different currency).
+     * @param string $password Username and password are the credentials to login in the pfp site.
+     * @param string $identity dentity  from the linkedaccount, necessary for multiaccounts.
+     * @param string $displayName How we will show the linkedaccount name to the user.
+     * @param string $currency Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner will have different currency).
      * @return boolean
      */
      public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {
@@ -621,12 +621,12 @@ class Linkedaccount extends AppModel {
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
-    
+   
     /**
      * Return the accountOwners of an given investor with the related linkedaccounts.
      * 
-     * @param int $linkedaccountId                                             Id of the linkedaccount
-     * @param array $linkedaccountFields                                       Request fields 
+     * @param int $linkedaccountId Id of the linkedaccount
+     * @param array $linkedaccountFields Request fields 
      * @return array
      */
     public function api_readLinkedaccount($linkedaccountId, $linkedaccountFields) {

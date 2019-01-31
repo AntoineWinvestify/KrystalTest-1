@@ -794,7 +794,8 @@ echo "startDate = $startDate and endDate = $endDate <br>";
      * @return string $token The generated JSON Webtoken
      */
     public function getNewJWT($userData, $typeOfToken, $refreshToken = NULL) {
-   
+        Configure::load('endpointsConfig.php', 'default'); 
+
         $initialMenuData = $this->getSectorsByRole($roleId = $userData['Role']['id']);
 
         foreach($initialMenuData as $item) {
@@ -812,9 +813,8 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         $payload['menu_options'] = $menuData;
         $payload['language'] = $userData['Investor']['investor_language'];
         $payload['role'] = $userData['Role']['role_name'];                    
-        $payload['pmessage'] = false; 
-
-        $payload['endpoints'] = 888;   
+        $payload['pub_message'] = false; 
+        $payload['endpoints'] = $endpoints = Configure::read("endpoints");   
         
         if ($typeOfToken == WIN_ACCESS_TOKEN) {
             $payload['refresh_token'] = $this->User->api_getNewToken($userData['id']);

@@ -130,8 +130,7 @@ class TestsController extends AppController {
     
     
     public function multilogin() {
-        $username = "kkukovetz@mli-ltd.com";
-        $password = "BarAlm17";
+
         $companyId = 25;
         
         $this->Company = ClassRegistry::init('Company');
@@ -149,8 +148,7 @@ class TestsController extends AppController {
     }
 
     public function linkedaccount() {
-        $username = "kkukovetz@mli-ltd.com";
-        $password = "BarAlm17";
+
         $companyId = 25;
         /*Configure::write('Investor_id',290);
         
@@ -192,8 +190,44 @@ exit;*/
     } 
     
     public function editCheck() {
-    echo __FILE__ . " " . __LINE__ . "\n";        
-    //$this->App = ClassRegistry::init('App');
+    $fields = get_class_vars('DATABASE_CONFIG');
+ echo __FILE__ . " " . __LINE__ . " \n<br>";
+    var_dump($fields);
+    
+    $fields1 = get_class_vars($this->request);
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+    var_dump($fields1);   
+    
+    
+    App::Import('ConnectionManager');
+    $ds = ConnectionManager::getDataSource('default');
+    $dsc = $ds->config;
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+    var_dump($dsc);
+    
+    App::uses('ConnectionManager', 'Model');
+    $dataSource = ConnectionManager::enumConnectionObjects();
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+    var_dump($dataSource);
+    
+    
+    exit;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        Configure::load('endpointsConfig.php', 'default'); 
+        $endpoints = Configure::read("endpoints");         
+        
+    echo __FILE__ . " " . __LINE__ . "\n";   
+    $this->print_r2($endpoints);
+
     
 
     exit;

@@ -41,19 +41,17 @@ class LinkedaccountsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-//	$this->Security->requireAuth();
     }
     
     /** 
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/linkedaccounts?[status]
      * Example GET /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE
-     *             /api/1.0/linkedaccounts?linkedaccount_status=[ACTIVE&SUSPENDED]
+     *             /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE,SUSPENDED
      * @return string
      * 
      */
     public function v1_index() {
-        
         $linkedaccountStatus = $this->listOfQueryParams;
 
         $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->language);
@@ -61,7 +59,7 @@ class LinkedaccountsController extends AppController {
         $accounts['service_status'] = "ACTIVE";
         $accounts['service_status_display_message'] = "You are using the maximum number of linkedaccounts. If you like to link more accounts, please upgrade your subscription";
         $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $linkedaccountStatus);
-        
+
         $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
         foreach ($accounts['data'] as $key => $account) {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
@@ -85,7 +83,7 @@ class LinkedaccountsController extends AppController {
      */
     public function v1_view() {
         $id = $this->request->params['id'];
-        $linkedaccount = $this->Linkedaccount->api_readLinkedaccount($id/*, $fields*/);
+        $linkedaccount = $this->Linkedaccount->api_readLinkedaccount($id /*, $fields*/);
         $linkedaccount = $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount);
         $linkedaccount = json_encode($linkedaccount);
         $this->response->type('json');
@@ -145,7 +143,7 @@ class LinkedaccountsController extends AppController {
         }      
 
         if ($result != false) { //Link OK        
-            $accounts = $this->Accountowner->api_readAccountowners($this->investorId, WIN_LINKEDACCOUNT_ACTIVE);
+            $accounts = $this->Accountowner->api_readAccountowners($this->investorId, array(WIN_LINKEDACCOUNT_ACTIVE));
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
             $accounts['feedback_message_user'] = 'Account succefully linked.';
 
@@ -191,7 +189,7 @@ class LinkedaccountsController extends AppController {
      *  
      * @return string
      */
-    public function precheck() {
+    public function v1_precheck() {
         $data = $this->request['data'];
         $this->Linkedaccount->apiVariableNameInAdapter($data);
 

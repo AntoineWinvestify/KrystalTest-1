@@ -198,8 +198,41 @@ function readInvestmentData($company) {
      * @param -
      * 
      */
-    public function v1_index(){
+    public function v1_view(){
+        
+        //Call configuration
+        $pathVendor = Configure::read('winvestifyVendor');
+        Configure::load('dashboardConfig.php', 'default');
+        $dashboardConfig = Configure::read('Dashboard');
+        
+        //Save the needed params and filters
+        $id = $this->request->id;
+        $type = $this->request->pass[0];
+        $function = $this->request->pass[1];
 
+        //1 is always the model used for the data search 2 is always the vendor used for formatting
+        $key1 = key($dashboardConfig[$type][$function][0]);
+        $key2 = key($dashboardConfig[$type][$function][1]); 
+
+        //Call formatter and model
+        $this->Searchmodel = ClassRegistry::init($key1);
+        include_once ($pathVendor . 'Classes' . DS . "$key2.php");
+        $this->formatter = new $key2();
+
+        //Save the function name in another var to call it later
+        $searchModelFunction = $dashboardConfig[$type][$function][0][$key1];
+        $formatterFunction = $dashboardConfig[$type][$function][1][$key2];
+
+        //Search the data and format it
+        $data = $this->Searchmodel->$searchModelFunction($id, $this->listOfQueryParams);
+        $result = $this->formatter->$formatterFunction($data);
+
+        $resultJson = json_encode($result);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;
+        
+        /*exit;
         if (!empty($this->request->pass)) {                 // Format for collecting a graphics item or investmentlist  
             switch ($this->request->pass[1]) {
                 case "lists":
@@ -223,7 +256,7 @@ function readInvestmentData($company) {
         return $this->response; 
         }
         
-        // ALL THE REST OF THE GET METHOD
+        // ALL THE REST OF THE GET METHOD*/
 
     }
   
@@ -273,13 +306,13 @@ function readInvestmentData($company) {
             case "current-graph-data":
                 $result = $this->readCurrentGraphData($this->request->pass[0]);
                 break;        
-            case "paymentdelays-graph-data":
+            case "payment-delays-graph-data":
                 $result = $this->readPaymentDelaysGraphData($this->request->pass[0]);
                 break;      
-            case "net_deposits-graph-data":
+            case "net-deposits-graph-data":
                 $result = $this->readNetDepositsGraphData($this->request->pass[0]);
                 break;
-            case "netannual returns-graph-data":
+            case "netannual-returns-graph-data":
                 $result = $this->readNetAnnualReturnsGraphData($this->request->pass[0]);
                 break;      
             case "nar-last365days-graph-data":
@@ -340,131 +373,7 @@ function readInvestmentData($company) {
 
 
 
-    /** HAY QUE DEFINIR LOS TOOLTIPS 
-     * Read the data of an investment list
-     * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
-     */  
-    public function readActiveinvestmentsList($linkedAccountId)  {
-        $this->Investment = ClassRegistry::init('Investment');
-        $this->language = "en";
-        $linkedAccountResult = $this->Linkedaccount->find("first", $param = 
-                                            ['conditions' => ['id' => $linkedAccountId],
-                                                'fields' => ['linkedaccount_currency'],
-                                                'recursive' => -1]);
-        $currency = $linkedAccountResult['Linkedaccount']['linkedaccount_currency'];   
-        
-        $this->Investment->virtualFields = [
-            'myInvestmentFloat' => '(CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . ')))',
-            'interestFloat' => 'CAST(`Investment.investment_nominalInterestRate` as decimal(30, ' . WIN_SHOW_DECIMAL . '))/100',
-            'outstandingFloat' => 'CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))',
-            'progressFloat' => 'CAST((((CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) - CAST(`Investment.investment_outstandingPrincipal` as decimal(30, ' . WIN_SHOW_DECIMAL . '))) / (CAST(`Investment.investment_myInvestment` as decimal(30,' . WIN_SHOW_DECIMAL . ')) + CAST(`Investment.investment_secondaryMarketInvestment` as decimal(30, ' . WIN_SHOW_DECIMAL . '))))*100 as decimal(30, ' . WIN_SHOW_DECIMAL . '))'
-        ];
-        $conditions = ['investment_statusOfLoan' => 2,
-                            'linkedaccount_id' => $linkedAccountId];
-
-        $investmentResults = $this->Investment->find('all', $params = [
-                                                    'conditions' => $conditions,
-                                            //        'limit'  => 2,
-            'fields' => ['investment_loanId', 'myInvestmentFloat', 'date', 'interestFloat', 'interestFloat','outstandingFloat', 'progressFloat', 'investment_paymentStatus' ],
-                                                    'recursive' => -1
-            
-        ]);
-        $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
-//var_dump($investmentResults);
-        foreach ($investmentResultsNormalized as $key => $item) {
-            $i = 0;
-            foreach ($item as $key1 => $value) {
-                switch ($i + 1) {
-                    case 1:
-                        $temp[$key][$i] = $value;
-                        $i++;
-                    break;
-                    case 2:
-                    case 7:
-                        $temp[$key][$i]['date'] = $value;
-                        $temp[$key][$i]['date_alias'] = str_replace("-", "", $value);
-                        $i++;
-                    break;   
-                    case 3:
-                    case 6:
-                        $temp[$key][$i]["value"]["amount"] = $value;
-                        $temp[$key][$i]["value"]["currency_code"] = $currency;     
-                        $i++;
-                    break;
-                    case 4:
-                    case 5:
-                        $temp[$key][$i]["value"]["percent"] = $value;
-                        $i++;
-                    break;           
-                    case 8:
-                        $temp[$key][$i]["value"]["delay"] = $value;
-                        $temp[$key][$i]["value"]["unit"] = "days";
-                    break;
-                }
-            }
-        }
-
-        $this->investmentListsResult["display_name"] = "Active Investments";
-        $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
-        
-        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP_TESTING ], $this->language);  
-        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP_TESTING];     
-        $this->investmentListsResult['data'] = $temp;
-        return true;    
-    }
-     
-     
-    /**
-     * Read the data of an investment list
-     * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
-     */  
-    public function createActiveInvestmentsListHeader()  { 
-
-        $tooltipIdentifiers1 = [
-            INVESTMENT_LIST_LOANID,
-            INVESTMENT_LIST_INVESTMENTDATE, 
-            INVESTMENT_LIST_MYINVESTMENT, 
-            INVESTMENT_LIST_INTEREST, 
-            INVESTMENT_LIST_INSTALLMENTPROGRESS,
-            INVESTMENT_LIST_OUTSTANDINGPRINCIPAL,
-            INVESTMENT_LIST_NEXTPAYMENT, 
-            INVESTMENT_LIST_STATUS,
-            ];
-            $tooltipIdentifiers = [
-            40,
-            44, 
-            39,
-            51, 
-            43,
-            55,
-            54, 
-            55,
-            ];
-        $displayHeaders = ["Loan ID", 
-                           "Investment Date",
-                           "My Investment",
-                           "Interest", 
-                           "Instalment Progress",
-                           "Outstanding Principal",
-                           "Next Payment",
-                           "Status"];
-
-        $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language);
-
-        $i = 0;
-        foreach ($displayHeaders as $key => $displayHeader) {
-            $header[$i]['displayName'] = $displayHeader;
-            if (array_key_exists($tooltipIdentifiers[$key], $tooltips)) {
-                $header[$i]['tooltipDisplayName'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
-            }
-            $i++;
-        }
-        return $header;
-    }    
+       
         
     
 } 

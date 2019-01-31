@@ -29,7 +29,7 @@ App::import('Shell','GearmanClient');
  */
 class ParseAmortizationDataClientShell extends GearmanClientShell {
     
-    public $uses = array('Amortizationtable', 'Globalamortizationtable', 'Company', 'Linkedaccount');  
+    public $uses = array('Amortizationtable', 'Globalamortizationtable', 'Company', 'Linkedaccount', 'Accountowner');  
     protected $fileName = "amortizationtable";
     
     /**
@@ -167,18 +167,22 @@ class ParseAmortizationDataClientShell extends GearmanClientShell {
             foreach ($tempArray as $linkedaccount => $amortizationData) {
                 $filterConditions = array('id' => $linkedaccount);
                 $result = $this->Linkedaccount->find("first", array('conditions' => $filterConditions,
-                                                                        'recursive' => -1,
-                                                                        'fields'  => 'company_id',
-                                                                       ));
+                    'recursive' => -1,
+                    'fields' => 'accountowner_id',
+                ));
+                $accountownerResult = $this->Accountowner->find("first", array('conditions' => array('id' => $result['Linkedaccount']['accountowner_id']),
+                    'recursive' => -1,
+                    'fields' => 'company_id',
+                ));
 
-                $filterConditions = array('id' => $result['Linkedaccount']['company_id']);       
+                $filterConditions = array('id' => $accountownerResult['Accountowner']['company_id']);       
                 $companyResult = $this->Company->getCompanyDataList($filterConditions);
 
-                $companyTechnicalFeatures = $companyResult[$result['Linkedaccount']['company_id']]['company_technicalFeatures'];  
+                $companyTechnicalFeatures = $companyResult[$accountownerResult['Accountowner']['company_id']]['company_technicalFeatures'];  
                 
                 // Does P2P have global, non-individualized amortization tables?
                 if (($companyTechnicalFeatures & WIN_GLOBAL_AMORTIZATION_TABLES) == WIN_GLOBAL_AMORTIZATION_TABLES) { 
-                    $this->Globalamortizationtable->saveGlobalAmortizationtable($amortizationData, $result['Linkedaccount']['company_id']);
+                    $this->Globalamortizationtable->saveGlobalAmortizationtable($amortizationData, $accountownerResult['Accountowner']['company_id']);
                 }                                                       
                 else {        
                     $this->Amortizationtable->saveAmortizationtable($amortizationData);

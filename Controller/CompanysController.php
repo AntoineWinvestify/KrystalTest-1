@@ -128,15 +128,13 @@ class CompanysController extends AppController {
     
     /** 
      * This methods terminates the HTTP GET.
-     * Format GET /v1/companies.json&_fields=x,y,z
-     * Example GET /v1/companies.json&company_country=ES,company_countryName=SPAIN&_fields=company_name,company_country,company_logoGUID
+     * Format GET /api/1.0/companies.json&_fields=x,y,z
+     * Example GET /api/1.0/companies.json&company_country=ES,company_countryName=SPAIN&_fields=company_name,company_country,company_logoGUID
      * 
      * @param -
      * @return array $apiResult A list of elements of array "company"
      */
     public function v1_index(){       
-
-        $this->Company = ClassRegistry::init('Company');
 
         if (empty($this->listOfFields)) {
             $this->listOfFields = ['id', 'company_name','company_url', 
@@ -170,10 +168,10 @@ class CompanysController extends AppController {
         return $this->response;          
     }
     
-     /** 
+    /** 
      * This methods terminates the HTTP GET.
-     * Format GET /v1/companies/[companyId]&fields=x,y,z
-     * Example GET /v1/companies/1.json&_fields=company_name,company_countryName
+     * Format GET /api/1.0/companies/[companyId]&fields=x,y,z
+     * Example GET /api/1.0/companies/1.json&_fields=company_name,company_countryName
      * 
      * @param int   $id The database identifier of the requested 'Company' resource
      * @return array $apiResult A list of field (variables) of array "company"
