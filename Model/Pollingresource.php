@@ -53,49 +53,36 @@ class Pollingresource extends AppModel
      * **** CALLBACK FUNCTIONS *****
      */
 
+        
     /**
      *  Rules are defined for what should happen after a database record has been read
-     * 	@param $results
-     *  @param $primary
+     * 	@param array $results Array that contains the returned results from the model’s find operation
+     *  @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
+     *                            or whether or not this model was queried as an association
      */
     public function afterFind($results, $primary = false) {
-        foreach ($results as $key => $val) {
-            if (isset($val['Investor']['investor_dateOfBirth'])) {
-                $results[$key]['Investor']['investor_dateOfBirth'] = $this->formatDateAfterFind(
-                        $val['Investor']['investor_dateOfBirth']);
-            }
-        }
-        return $results;
-
-        foreach ($results as $key => $val) {
-            if (isset($val['Ocr']['investor_iban'])) {
-                $results[$key]['Ocr']['investor_iban'] = $this->decryptDataAfterFind(
-                        $val['Ocr']['investor_iban']);
-            }
-               
+        // reset the field 'pollingresource_newValueExists' before returning results
+        if (isset($results['Pollingresource']['pollingresource_newValueExists'])) {
+            if ($results['Pollingresource']['pollingresource_newValueExists']) {
+                $this->id = $results['id'];
+                $this->saveField('pollingresource_newValueExists', false);
+            }  
         }
         return $results;
     }
 
+    
+    
     /**
      * 	Rules are defined for what should happen before a database record is created or updated.
      * 
-     * 	@param $options
+     * 	@param array $options
      */ 
-    function beforeSave($options = array()) {
-
-        // Store telephone number without spaces
-        if (!empty($this->data['Investor']['investor_dateOfBirth'])) {
-            $this->data['Investor']['investor_dateOfBirth'] = $this->formatDateBeforeSave($this->data['Investor']['investor_dateOfBirth']);
-        }
-        if (!empty($this->data['Investor']['investor_telephone'])) {
-            $this->data['Investor']['investor_telephone'] = str_replace(' ', '', $this->data['Investor']['investor_telephone']);
-        } 
-       
-        // Observe that username is not saved to the Investor model, but only required for generating the "investor_identity"
-        if (!$this->id && !isset($this->data[$this->alias][$this->primaryKey])) {
-            $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['username']); 
-        }    
+    function beforeSavexx($options = array()) {
+    
+        
+        
+        
     }
 
  
@@ -104,37 +91,14 @@ class Pollingresource extends AppModel
     /**
      * 	Rules are defined for what should happen after a database record is created or updated.
      * 
-     * 	@param $created
-     *  @param $options
+     * 	@param boolean $created True if a new record was created (rather than an update).
+     *  @param array $options
      */
-    function afterSave($created, $options = array()) {
- /*       if (!empty($this->data['Investor']['investor_tempCode'])) {    // A confirmation code has been generated
-            $event = new CakeEvent('confirmationCodeGenerated', $this, array('id' => $this->id,
-                'investor' => $this->data[$this->alias],
-            ));
-            $this->getEventManager()->dispatch($event);
-        }
+    function afterSavexx($created, $options = array()) {
 
-        if (!empty($this->data['Investor']['investor_accountStatus'])) {  // A user has succesfully and completely registered
-            if (($this->data['Investor']['investor_accountStatus'] & QUESTIONAIRE_FILLED_OUT) == QUESTIONAIRE_FILLED_OUT) {
-                $event = new CakeEvent('newUserCreated', $this, array('id' => $this->id,
-                    'investor' => $this->data[$this->alias],
-                ));
-                $this->getEventManager()->dispatch($event);
-            }
-        }
-        */
-
-        // Identify that the WebClient should request a new access token with the updated information
-        if (!$created) {
-            
-            if (!empty($this->data['Investor']['investor_language']) ||
-                    !empty($this->data['Investor']['investor_name']) ||
-                    !empty($this->data['Investor']['investor_surname']
-                    )) {           
-                $this->data['Investor']['requireNewAccessToken'] = true;
-            }
-        }
+        
+        
+        
     }
 
     
