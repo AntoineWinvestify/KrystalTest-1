@@ -94,8 +94,8 @@ class WinFormulas {
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
                     "globaltotalsdata_secondaryMarketSell",
-                    "globaltotalsdata_reversedCommission",
-                    //need more data to take values from database
+                    "globaltotalsdata_principalRepaymentGuarantee",
+                    "globaltotalsdata_interestIncomeGuarantee"
                 ],
                 "operation" => "add"
             ],
@@ -114,9 +114,7 @@ class WinFormulas {
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
-                    //"globaltotalsdata_writtenOff",
                     "globaltotalsdata_incomeWithholdingTaxPerDay",
-                    "globaltotalsdata_reversedLatePayment",
                     //need more data to take values from database
                 ],
                 "operation" => "add"
@@ -259,9 +257,9 @@ class WinFormulas {
                     "globaltotalsdata_incomeSecondaryMarket",
                     "globaltotalsdata_principalBuybackPerDay",
                     "globaltotalsdata_secondaryMarketSell",
-                    "globaltotalsdata_reversedCommission",
-                    //need more data to take values from database
-                ],
+                    "globaltotalsdata_principalRepaymentGuarantee",
+                    "globaltotalsdata_interestIncomeGuarantee"                
+                    ],
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
@@ -285,10 +283,7 @@ class WinFormulas {
                     "globaltotalsdata_commissionPaidPerDay",
                     "globaltotalsdata_taxVATPerDay",
                     "globaltotalsdata_currencyExchangeFeePerDay",
-                    //"globaltotalsdata_writtenOff",
                     "globaltotalsdata_incomeWithholdingTaxPerDay",
-                    "globaltotalsdata_reversedLatePayment",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -364,8 +359,7 @@ class WinFormulas {
                     "globaltotalsdata_defaultInterestIncomeRebuy",
                     "globaltotalsdata_recoveriesPerDay",
                     "globaltotalsdata_incomeSecondaryMarket",
-                    "globaltotalsdata_reversedCommission",
-                    //need more data to take values from database
+                    "globaltotalsdata_interestIncomeGuarantee"
                 ],
                 "operation" => "add"
             ],
@@ -374,23 +368,7 @@ class WinFormulas {
             "dateFinish" => "-0",
             "intervals" => "inclusive",
             "operation" => "add"
-        ],
-        /*"B" => [
-            "type" => [
-                "variables" => [
-                    //"globalcashflowdata_platformRecoveries",             
-                    //"globalcashflowdata_platformIncentivesAndBonus",             
-                    //"globalcashflowdata_platformCompensationPositive",             
-                    //need more data to take values from database
-                ],
-                "operation" => "add"
-            ],
-            "table" => "Globalcashflowdata",
-            "dateInit" => "-365",
-            "dateFinish" => "-0",
-            "intervals" => "inclusive",
-            "operation" => "add"
-        ],*/
+        ],        
         "B" => [
             "type" => [
                 "variables" => [
@@ -400,8 +378,6 @@ class WinFormulas {
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_incomeWithholdingTaxPerDay",
                     "globaltotalsdata_writtenOff",
-                    "globaltotalsdata_reversedLatePayment",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -415,7 +391,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_bankCharges",             
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -425,14 +400,6 @@ class WinFormulas {
             "intervals" => "inclusive",
             "operation" => "subtract"
         ],
-        /*"E" => [
-            "type" => "userinvestmentdata_writtenOff",
-            "table" => "Userinvestmentdata",
-            "dateInit" => "-0",
-            "dateFinish" => "-0",
-            "intervals" => "latest",
-            "operation" => "subtract"
-        ]*/
     ];
     
     protected $variablesFormula_netPastReturn = [
@@ -448,10 +415,9 @@ class WinFormulas {
                     "globaltotalsdata_defaultInterestIncome",
                     "globaltotalsdata_defaultInterestIncomeRebuy",
                     "globaltotalsdata_recoveriesPerDay",
-                    "globaltotalsdata_reversedCommission",
                     "globaltotalsdata_incomeSecondaryMarket",
-                    //need more data to take values from database
-                ],
+                    "globaltotalsdata_interestIncomeGuarantee"                
+                    ],
                 "operation" => "add"
             ],
             "table" => "Globaltotalsdata",
@@ -465,29 +431,7 @@ class WinFormulas {
             ],
             "intervals" => "inclusive",
             "operation" => "add"
-        ],
-        /*"B" => [
-            "type" => [
-                "variables" => [
-                    "globalcashflowdata_platformRecoveries",             
-                    //"globalcashflowdata_platformIncentivesAndBonus",             
-                    "globalcashflowdata_platformCompensationPositive",             
-                    //need more data to take values from database
-                ],
-                "operation" => "add"
-            ],
-            "table" => "Globalcashflowdata",
-            "dateInit" => [
-                "month" => "1",
-                "day" => "1"
-            ],
-            "dateFinish" => [
-                "month" => "12",
-                "day" => "31"
-            ],
-            "intervals" => "inclusive",
-            "operation" => "add"
-        ],*/
+        ], 
         "B" => [
             "type" => [
                 "variables" => [
@@ -497,8 +441,6 @@ class WinFormulas {
                     "globaltotalsdata_currencyExchangeFeePerDay",
                     "globaltotalsdata_incomeWithholdingTaxPerDay",
                     "globaltotalsdata_writtenOff",
-                    "globaltotalsdata_reversedLatePayment",
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -518,7 +460,6 @@ class WinFormulas {
             "type" => [
                 "variables" => [
                     "globalcashflowdata_bankCharges",                   
-                    //need more data to take values from database
                 ],
                 "operation" => "add"
             ],
@@ -533,21 +474,7 @@ class WinFormulas {
             ],
             "intervals" => "inclusive",
             "operation" => "subtract"
-        ],
-        /*"E" => [
-            "type" => "userinvestmentdata_writtenOff",
-            "table" => "Userinvestmentdata",
-            "dateInit" => [
-                "month" => "12",
-                "day" => "31"
-            ],
-            "dateFinish" => [
-                "month" => "12",
-                "day" => "31"
-            ],
-            "intervals" => "latest",
-            "operation" => "subtract"
-        ]*/
+        ],     
     ];
     
     protected $variablesFormula_B = [

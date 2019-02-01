@@ -115,7 +115,7 @@ class twino extends p2pCompany {
                             0 => ["FUNDING" => "Cash_deposit"], // OK
                             1 => ["PENALTY REPAYMENT" => "Late_payment_fee_income"],                                       
                             2 => ["WITHDRAWAL" => "Cash_withdrawal"],
-                            3 => ["SALE LOSS_ON_WRITEOFF" => "dummy_concept"],
+                            3 => ["SALE LOSS_ON_WRITEOFF" => "Write-off_income"],
                             
                             4 => ["PRINCIPAL RECOVERY" => "Recoveries"],
                             5 => ["PRINCIPAL WRITEOFF" => "Write-off"],
@@ -126,8 +126,7 @@ class twino extends p2pCompany {
                             9 => ["PRINCIPAL EARLY_FULL_REPAYMENT" => "Capital_repayment_cost"],
                             10 => ["PRINCIPAL REPAYMENT" => "Capital_repayment"], //OK
                             11 => ["PRINCIPAL REPAYMENT" => "Capital_repayment_cost"],
-                            //12 => ["PRINCIPAL REPURCHASE" => ""],
-                            13 => ["PRINCIPAL REPURCHASE" => "Capital_repayment"],
+                            12 => ["PRINCIPAL REPURCHASE" => "Principal_repayment_guarantee"],
                             14 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_positive"],
                             15 => ["PRINCIPAL CURRENCY_FLUCTUATION" => "Currency_fluctuation_negative"],
              
@@ -140,8 +139,7 @@ class twino extends p2pCompany {
    
                             22 => ["INTEREST REPAYMENT" => "Regular_gross_interest_income"], //
                             23 => ["INTEREST REPAYMENT" => "Regular_gross_interest_cost"], // 
-                            //24 => ["INTEREST REPURCHASE" => ""],
-                            25 => ["INTEREST REPURCHASE" => "Regular_gross_interest_income"],
+                            24 => ["INTEREST REPURCHASE" => "Interest_income_guarantee"],
                             //TAKE INTO ACCOUNT THAT IT COULD BE NEGATIVE
                             //NEEDS FURTHER INFORMATION, SPEAK WITH ANTOINE
                         ],

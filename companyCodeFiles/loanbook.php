@@ -124,7 +124,7 @@ class loanbook extends p2pCompany {
                             4 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
                             5 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
                             6 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            7 => ["Compensación-Compensación por incidencia administrativa" => "Reversed_commission"],
+                            7 => ["Compensación-Compensación por incidencia administrativa" => "Commission_income"],
                             8 => ["Comisión-Comisión pago por tarjeta" => "Bank_charges"],
                             9 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
                             
