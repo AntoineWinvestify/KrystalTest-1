@@ -70,7 +70,7 @@ function getNotificationsList()  {
 
 	$investorId = $this->Auth->user('Investor.id');
 	$filterConditions = array('notification_status' => READY_FOR_VISUALIZATION,
-							  'investor_id' 		=> $investorId,
+							  'investor_id' => $investorId,
 							 );
 
 	$resultNotifications = $this->Notification->getList($filterConditions);

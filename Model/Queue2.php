@@ -275,8 +275,8 @@ class Queue2 extends AppModel {
                 $originExecution = $queue2_infoDecoded['originExecution'];
                
                 if ($originExecution == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
-                    $filterConditions = array("queue2_info" => $this->data['Queue2']['queue2_info'], true);
-                    $result = $this->find("first", array(
+                    $filterConditions = array("queue2_info" => $this->data['Queue2']['queue2_info'], true);   // ???
+                    $result = $this->find("first", array(                                                     // ???
                                         "conditions" => $filterConditions,
                                         ));
                     
@@ -293,7 +293,7 @@ class Queue2 extends AppModel {
                     // Generate an event
                     /*$event = new CakeEvent("accountLinkingFullyFinished", $this, 
                                             array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
-                                                'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
+                                                 'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
                                                                            __('has been succesfully linked and analyzed and will be monitored from now on.') . " " .
                                                                            __('Your data is now available in your Winvestify Dashboard') 
                                                 ));*/
@@ -301,7 +301,64 @@ class Queue2 extends AppModel {
                     //$this->getEventManager()->dispatch($event);
                 }
             }
-        }
+        }    
+            
+            
+        if (isset($this->data['Queue2']['queue2_status'])) {    
+            $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+            $queue2_infoDecoded = json_decode($this->data['Queue2']['queue2_info'], true);
+            $originExecution = $queue2_infoDecoded['originExecution']; 
+            
+            if ($originExecution == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
+                $linkedaccount = $queue2_infoDecoded['companiesInFlow'][0];
+                $investorId = $this->Linkedaccount->getInvestorFromLinkedaccount($linkedaccount);
+                        
+                $isFinalEvent = false;
+                switch ($this->data['Queue2']['queue2_status']) {
+                    case WIN_QUEUE_STATUS_START_COLLECTING_DATA:
+                        $event = 'Model.Queue2.AccountAddedToQueue';
+                        break;
+                    
+                    case WIN_QUEUE_STATUS_DOWNLOADING_GLOBAL_DATA:
+                    case WIN_QUEUE_STATUS_START_PREPROCESS: 
+                    case WIN_QUEUE_STATUS_STARTING_PREPROCESS:
+                        $event = 'Model.Queue2.AccountDataCollection';
+                        break;
+                    
+                    case WIN_QUEUE_STATUS_EXTRACTING_DATA_FROM_FILE:
+                    case WIN_QUEUE_STATUS_DATA_EXTRACTED:
+                    case WIN_QUEUE_STATUS_DOWNLOADING_AMORTIZATION_TABLES : 
+                    case WIN_QUEUE_STATUS_AMORTIZATION_TABLES_DOWNLOADED:
+                    case WIN_QUEUE_STATUS_EXTRACTING_AMORTIZATION_TABLE_FROM_FILE:
+                    case WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED:  
+                    case WIN_QUEUE_STATUS_START_CONSOLIDATION:
+                    case WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED:
+                    case WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION:    
+                        $event = 'Model.Queue2.AccountAnalysisStarted' ;
+                        break;
+                    
+                    case WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED:
+                        $event = 'Model.Queue2.AccountAnalysisFinished';
+                        $isFinalEvent = true;
+                        break;                   
+
+                    case WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED:
+                        $event = 'Model.Queue2.ProcessingError';
+                        $isFinalEvent = true;
+                        break;
+                }
+
+                $event = new CakeEvent($event, $this, 
+                                       array(
+                                           'model' => "Queue2",
+                                           'isFinalEvent' => $isFinalEvent,
+                                           'userIdentification' => $investorId,
+                                           'modelData' => $this->data,
+                                           'id' => $this->data['Queue2']['id'],
+                                           ));
+                $this->getEventManager()->dispatch($event);               
+            }    
+        }     
     }   
     
 

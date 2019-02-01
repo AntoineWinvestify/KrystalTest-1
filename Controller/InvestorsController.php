@@ -531,11 +531,11 @@ function linkAccount() {
     
 
    
-    /** 
+    /** MISSING: CHECK THAT THE ID CORRESPONDS TO THE SUB FIELD IN THE JWT
      * This methods handles the HTTP PATCH message
      * Format PATCH /api/1.0/investors/[investorId].json ....
      * Example PATCH /api/1.01/investors/1.json
-     * fields are conveyed in the message body.
+     * fields are conveyed in the message body as json
      * 
      * @param integer $id The database identifier of the requested 'Investor' object
      * 
@@ -545,7 +545,12 @@ function linkAccount() {
 
         $data = $this->request->data;
         $dataNew = $data['data'];
-        $dataNew['id'] = $this->request->params['id'];
+        
+        if ($this->investorId <> $this->request->params['id']) {        
+            throw new UnauthorizedException('You are not authorized to access the requested resource');      
+        }
+            
+        $dataNew['id'] = $this->request->params['id']; 
         
         $this->Investor->apiVariableNameInAdapter($dataNew);
         $result = $this->Investor->save($dataNew, $validate = true);
@@ -576,7 +581,7 @@ function linkAccount() {
         return $this->response;               
     }     
 
-    /** Simple version is OK
+    /** Simple version is OK, ie. for defining *manually* new investors
      * This methods terminates the HTTP POST for defining a new investor.
      * Format POST /api/1.0/investors.json
      * Example POST /api/1.0/investors.json

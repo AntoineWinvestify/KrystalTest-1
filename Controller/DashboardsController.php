@@ -58,7 +58,7 @@ function beforeFilter() {
         Configure::load('dashboardConfig.php', 'default');
         $dashboardConfig = Configure::read('Dashboard');
         
-        //Save needed params and filters
+        //Save the needed params and filters
         $id = $this->request->id;
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
@@ -81,8 +81,8 @@ function beforeFilter() {
         $this->Searchmodel = ClassRegistry::init($key1);
         include_once ($pathVendor . 'Classes' . DS . "$key2.php");
         $this->formatter = new $key2();
- 
-        //Save the functions name in another var to call it later
+
+        //Save the function name in another var to call it later
         $searchModelFunction = $dashboardConfig[$type][$function][0][$key1];
         $formatterFunction = $dashboardConfig[$type][$function][1][$key2];
 
@@ -122,34 +122,39 @@ function beforeFilter() {
             //Search tooltip if the field ave one
             if(!empty($value['tooltip'])){
                 $this->Tooltip = ClassRegistry::init('Tooltip');
-                $tooltips = $this->Tooltip->getTooltip(1/*$value['tooltip']*/, $this->language, $companyId);
-                print_r($tooltips);
-                exit;
-                $data['data'][$key]['tooltip_display_name'];
+                $tooltips = $this->Tooltip->getTooltip( array($value['tooltip']), $this->language, $companyId);
+                $data['data'][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
             }
-            
+
             //Search value
             $model = $value['value']['model'];
             $this->model = ClassRegistry::init($model);
-            $field = $value['value']['field'];
-            $data['data'][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
-            if($value['value']['type'] == 'currency'){      //Seacrh for the currency
-                $data['data'][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
-            };
-            if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need multiply them-
-                $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount']*100;
-            };
-            $data['data'][$key]['icon'] = $value['icon'];
-            foreach($value['graphLinksParams'] as $key2 => $linkParam){
-                $data['data']['graph_data'][$key2]['url'] = $this->generateLink('dashboards', null, $linkParam['link'])['href'];
-                $data['data']['graph_data'][$key2]['option_display_name'] = $linkParam['displayName'];
-                if($key2 == 0){
-                    $data['data']['graph_data'][$key2]['default'] = true;
+            if(!empty($value['value'])){
+                $field = $value['value']['field'];
+                $data['data'][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
+                if($value['value']['type'] == 'currency'){      //Seacrh for the currency
+                    $data['data'][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
+                };
+                if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need multiply them-
+                    $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount']*100;
                 }
             }
-        }
-        
-        
+            if(!empty($value['icon'])){
+                $data['data'][$key]['icon'] = $value['icon'];
+            }
+            foreach($value['graphLinksParams'] as $key2 => $linkParam){
+                $data['data'][$key]['graph_data'][$key2]['url'] = $this->generateLink('dashboards', null, $linkParam['link'])['href'];
+                if(!empty($linkParam['displayName'])){
+                    $data['data'][$key]['graph_data'][$key2]['option_display_name'] = $linkParam['displayName'];
+                }
+                if($key2 == 0){
+                    $data['data'][$key]['graph_data'][$key2]['default'] = true;
+                }
+                else{
+                    $data['data'][$key]['graph_data'][$key2]['default'] = false;
+                }
+            }
+        } 
         $resultJson = json_encode($data);
         $this->response->type('json');
         $this->response->body($resultJson); 

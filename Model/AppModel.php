@@ -75,7 +75,8 @@ class AppModel extends Model {
                                 'accountCheck'  => 'linkedaccount_linkingstatus',
                                 'requireNewAccessToken'=> 'require_new_access_token',
                                 'investor_accredited' => 'accredited_investor',
-                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state'
+                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
+                                'polling_new_value_exists' => 'pollingresource_newValueExists'
  
                               ];
 

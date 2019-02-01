@@ -41,7 +41,6 @@ class LinkedaccountsController extends AppController {
     function beforeFilter() {
         parent::beforeFilter();
 
-//	$this->Security->requireAuth();
     }
     
     /** 

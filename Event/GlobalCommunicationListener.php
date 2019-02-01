@@ -63,13 +63,13 @@ class GlobalCommunicationListener implements CakeEventListener {
     }
 
     
-/**
-* IMPLEMENTED EVENTS:
-* confirmationCodeGenerated			Send a SMS with a code
-* accountLinkingFullyFinished                   Send a transparent SMS
-* 
-*/
-public function implementedEvents() {
+    /**
+     * IMPLEMENTED EVENTS:
+     * confirmationCodeGenerated		Send a SMS with a code
+     * accountLinkingFullyFinished              Send a transparent SMS
+     * 
+     */
+    public function implementedEvents() {
 
 // Determine which events have been selected in the config file
 	$allImplementedEvents  =  array(
@@ -87,14 +87,14 @@ public function implementedEvents() {
             }
 	}
 	return ($selectedEvents);
-}
+    }
 
 
-/** 
-*
-* A user is registering and needs to confirm the registration using a code sent via SMS
-*
-*/
+    /** 
+     *
+     * A user is registering and needs to confirm the registration using a code sent via SMS
+     *
+     */
     public function sendConfirmationCode(CakeEvent $event) {
     
 	$adminData = Configure::read('SMSadmin');
@@ -131,22 +131,20 @@ public function implementedEvents() {
 		echo $e->getMessage();
 		CakeLog::write('SMS_LOG', 'writing error to log. error is ' . $e->getMessage());
 	}
-}	
+    }	
 
 
 
     /** 
-    *
-    * Generic interface to send a "transparent SMS" to the user.
-    *
-    * The following data must/shall be provided:
-    * investorReference     )*
-    * investor_id           ) At least one of the two
-    * messageContent        => mandatory
-    * 
-    * 
-    * 
-    */ 
+     * Generic interface to send a "transparent SMS" to the user.
+     *
+     * The following data must/shall be provided:
+     * investorReference     )*
+     * investor_id           ) At least one of the two
+     * messageContent        => mandatory
+     * 
+     * @param CakeEvent  $event  Contains the event data
+     */ 
     public function sendGenericSMS(CakeEvent $event) {
   
 	$adminData = Configure::read('SMSadmin');

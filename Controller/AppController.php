@@ -746,11 +746,11 @@ class AppController extends Controller {
     }   
     
     /**
-     * Generate a link based on the api.
+     * Generate a link for inclusion in results to be returned to API users
      * 
-     * @param string $endpoint                                                 endpoint that reference the link example: linkedaccounts
-     * @param string $rel                                                      Action of the url like delete, edit, ...
-     * @param string $parameter                                                Extra parameter, normally the id ex: /api/1.0/linkedaccounts/2.json  the 2.json
+     * @param string $endpoint endpoint that reference the link example: linkedaccounts
+     * @param string $rel Action of the url like delete, edit, ...
+     * @param string $parameter Extra optional parameter, normally the id ex: /api/1.0/linkedaccounts/2.json  the 2.json
      * @return string
      */
     function generateLink($endpoint, $rel, $parameter) {
@@ -764,6 +764,9 @@ class AppController extends Controller {
                 $link['method'] = 'DELETE';
                 break;
             case 'monitor':
+                $link['method'] = 'GET';
+                break;
+            case 'list':
                 $link['method'] = 'GET';
                 break;
         }
