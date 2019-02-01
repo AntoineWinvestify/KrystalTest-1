@@ -36,7 +36,7 @@ class dashboardFormatter {
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function genericGrahpFormatter($data, $companyId, $graphInfo) {
+    function genericGraphFormatter($data, $companyId, $graphInfo) {
         $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
         $this->graphicsResults = [
             "graphics_data" => [
@@ -57,7 +57,7 @@ class dashboardFormatter {
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function genericMultiGrahpFormatter($data, $companyId, $graphInfo) {
+    function genericMultiGraphFormatter($data, $companyId, $graphInfo) {
         $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], '{n}.Userinvestmentdata');
         $resultNormalized['GlobalDashboard'] = Hash::extract($data['GlobalDashboard'], '{n}.Dashboardoverviewdata');
 
@@ -84,7 +84,7 @@ class dashboardFormatter {
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function gaugeGrahpFormatter($data, $companyId, $graphInfo) {
+    function gaugeGraphFormatter($data, $companyId, $graphInfo) {
         $this->graphicsResults = 
             ["dataset" =>
                 [
@@ -106,7 +106,7 @@ class dashboardFormatter {
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function paymentDelayGrahpFormatter($data, $companyId, $graphInfo) {
+    function paymentDelayGraphFormatter($data, $companyId, $graphInfo) {
         $dataResult = array();
         $dataResult[0]['range_display_name'] = '1-7 days';
         $dataResult[1]['range_display_name'] = '8-30 days';
