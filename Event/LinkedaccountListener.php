@@ -68,7 +68,8 @@ var_dump($event->data);
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];     
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
-        $this->Linkedaccount->save($data, $validate = true);
+        $this->Linkedaccount->save($data, $params = ['validate' => true,
+                                                    'callbacks' => false]);
     }
    
     
@@ -87,7 +88,8 @@ var_dump($event->data);
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];         
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'ANALYZING';
-        $this->Linkedaccount->save($data, $validate = true);
+        $this->Linkedaccount->save($data, $params = ['validate' => true,
+                                                    'callbacks' => false]);
     }
 
     
@@ -107,7 +109,8 @@ var_dump($event->data);
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'MONITORED';
-        $this->Linkedaccount->save($data, $validate = true);
+        $this->Linkedaccount->save($data, $params = ['validate' => true,
+                                                    'callbacks' => false]);
     }
 
     
@@ -126,7 +129,8 @@ var_dump($event->data);
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
-        $this->Linkedaccount->save($data, $validate = true);
+        $this->Linkedaccount->save($data, $params = ['validate' => true,
+                                                    'callbacks' => false]);
     }
 
     

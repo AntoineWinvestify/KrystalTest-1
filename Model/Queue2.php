@@ -311,7 +311,7 @@ class Queue2 extends AppModel {
             
             if ($originExecution == WIN_ACTION_ORIGIN_ACCOUNT_LINKING) {
                 $linkedaccount = $queue2_infoDecoded['companiesInFlow'][0];
-                $investorId = $this->getInvestorFromLinkedaccount($linkedaccount);
+                $investorId = $this->Linkedaccount->getInvestorFromLinkedaccount($linkedaccount);
                         
                 $isFinalEvent = false;
                 switch ($this->data['Queue2']['queue2_status']) {

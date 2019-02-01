@@ -269,8 +269,8 @@ var_dump($this->data);
 
             if (isset($this->data['Linkedaccount']['linkedaccount_visualStatus'])) {
    echo __FILE__ . " " . __LINE__ . " \n<br>"; 
-//                $investorId = $this->getInvestorFromLinkedaccount($this->data['Linkedaccount']['id']);
- $investorId = 1;
+                $investorId = $this->getInvestorFromLinkedaccount($this->data['Linkedaccount']['id']);
+echo "investorId = $investorId<br>";
                 $event = new CakeEvent("Model.Linkedaccount.Analyzing", $this, 
                                        array(
                                            'model' => "Linkedaccount",
@@ -528,7 +528,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
     }
 
     /**
-     * 	Delete a an account that fulfills the filteringConditions
+     * 	Delete an account that fulfills the filteringConditions
      * 	
      * 	@param 		int 	$linkaccountId	Must indicate at least "investor_id"
      *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
@@ -551,7 +551,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             return $return;
         }
 
-        //Check if the investor is the propreary pf the account.
+        //Check if the investor is the owner pf the account.
         $this->Accountowner = ClassRegistry::init('Accountowner');
         $accountOwner = $this->Accountowner->find('first',array(
            'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
@@ -575,7 +575,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         foreach ($indexList as $index) {
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
-        $return['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
+        $return['feedback_message_user'] = 'The account has been succesfully removed from your Dashboard.';
         return $return;
     }
 

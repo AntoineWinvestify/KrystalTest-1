@@ -145,7 +145,7 @@ class LinkedaccountsController extends AppController {
         if ($result != false) { //Link OK        
             $accounts = $this->Accountowner->api_readAccountowners($this->investorId, array(WIN_LINKEDACCOUNT_ACTIVE));
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
-            $accounts['feedback_message_user'] = 'Account succefully linked.';
+            $accounts['feedback_message_user'] = 'Account successfully linked.';
 
 
             foreach ($accounts['data'] as $key => $account) {
@@ -153,10 +153,10 @@ class LinkedaccountsController extends AppController {
                 $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['id']);
                 $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['id']);
             }
-                $accounts = json_encode($accounts);
-                $this->response->type('json');
-                $this->response->body($accounts); 
-                return $this->response; 
+            $accounts = json_encode($accounts);
+            $this->response->type('json');
+            $this->response->body($accounts); 
+            return $this->response; 
         } 
         else { //DB save fail
                 $this->response->type('json');
