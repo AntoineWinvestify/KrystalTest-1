@@ -42,156 +42,9 @@ function beforeFilter() {
 
 }
 
-
-
-
-
-/**
-*
-*	Reads all the  data of ALL investments in all the companies where the investor
-*	has a linked account
-*
-*/
-function getDashboardData()  {
-
-	$this->layout = "azarus_private_layout";
-	
-	$this->Data = ClassRegistry::init('Data');
-	$this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-	
-	$investorReference = $this->Session->read('Auth.User.Investor.investor_identity');
-	$filterConditions = array('data_investorReference' => $investorReference);
-	
-	$dataResult = $this->Data->find("first", array( "recursive" => -1,
-							"conditions" => $filterConditions,
-                                                        "order"     => "created DESC",
-									));
-
-// Check if investor already has linked one or more accounts. 									
-	$resultLinkedaccounts = $this->Linkedaccount->find("count", array("investor_id" => $this->Session->read('Auth.User.Investor.id'),
-                                                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE
-                                                            ));
-																											
-	if ($resultLinkedaccounts > 0) {	// user has one or more linked accounts
-		$dashboardGlobals = JSON_decode($dataResult['Data']['data_JSONdata'], true);
-	
-		$this->set('dashboardGlobals', $dashboardGlobals);
-		$this->set('refreshDate', $dataResult['Data']['created']);
-		$this->set('investmentRefreshInProgress', $this->Session->read('investmentRefreshInProgress'));
-	
-		$dashboardGlobals = JSON_decode($dataResult['Data']['data_JSONdata'], true);
-	
-	
-// MY BALANCE
-		$labelsPieChart = array();
-		$dataPieChart = array();
-			foreach ($dashboardGlobals['investments'] as $key => $companyInvestment) {
-				$value = (int) $companyInvestment['global']['myWallet'] / 100;
-				$dataPieChart[] = $value;
-				$labelsPieChart[] = $key;
-				$this->set('pieChart1Empty', false);				
-			}
-		if (empty($labelsPieChart)) {
-                    $this->set('pieChart1Empty', true);
-		}
-                if (empty($dataPieChart)) {
-                    $dataPieChart[0] = "No data";
-                }
-		$this->set('labelsPieChart1', $labelsPieChart);
-		$this->set('dataPieChart1', $dataPieChart);
-	
-		
-// SALDO VIVO
-		$labelsPieChart = array();
-		$dataPieChart = array();
-			foreach ($dashboardGlobals['investments'] as $key => $companyInvestment) {
-				$value = (int) $companyInvestment['global']['activeInInvestments'] / 100;
-				$dataPieChart[] = $value;
-				$labelsPieChart[] = $key;
-				$this->set('pieChart2Empty', false);
-			}
-		if (empty($labelsPieChart)) {
-                    $this->set('pieChart2Empty', true);
-		}
-                if (empty($dataPieChart)) {
-                    $dataPieChart[0] = "No data";
-                }
-		$this->set('labelsPieChart2', $labelsPieChart);
-		$this->set('dataPieChart2', $dataPieChart);
-	
-	
-// DINERO INVERTIDO EN INVERSIONES ACTIVAS
-		$labelsPieChart = array();
-		$dataPieChart = array();
-			foreach ($dashboardGlobals['investments'] as $key => $companyInvestment) {
-				$value = (int) $companyInvestment['global']['totalInvestment'] / 100;
-				$dataPieChart[] = $value;
-				$labelsPieChart[] = $key;
-				$this->set('pieChart3Empty', false);
-			}
-		if (empty($labelsPieChart)) {
-                    $this->set('pieChart3Empty', true);
-		}
-                if (empty($dataPieChart)) {
-                    $dataPieChart[0] = "No data";
-                }
-		$this->set('labelsPieChart3', $labelsPieChart);
-		$this->set('dataPieChart3', $dataPieChart);
-		
-		
-		$this->set('dashboardGlobals', $dashboardGlobals);
-//		$this->print_r2($dashboardGlobals);
-	}
-	else {	// User does not have linked accounts
-		$noAccountsLinked = true; 
-	}
-	$this->set('noAccountsLinked', $noAccountsLinked);
-}
-
-
-
-
-
-/**
-*
-* Read the individual investment data of an investor for his/her dashboard
-*
-*/
-function readInvestmentData($company) {
-
-	if (! $this->request->is('ajax')) {
-		throw new
-			FatalErrorException(__('You cannot access this page directly'));
-	}
-
-	$this->layout = 'ajax';
-	$this->disableCache();
-
-	$this->Data = ClassRegistry::init('Data');
-
-	$investorReference = $this->Session->read('Auth.User.Investor.investor_identity');
-	$filterConditions = array('data_investorReference' => $investorReference);
-	
-	$dataResult = $this->Data->find("first", array( "recursive" => -1,
-							"conditions" => $filterConditions,
-                                        		"order"     => "created DESC",
-									));
-
-	$companyInvestmentDetails = JSON_decode($dataResult['Data']['data_JSONdata'], true);
-	$this->set('companyInvestmentDetails', 	$companyInvestmentDetails['investments'][$company]['investments']);
-}
-
-
-
-
-
-
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
-     * Format GET /api/1.0/dashboards.json?_fields=x,y,z
-     * Example GET /api/1.0/dashboard.json?investor_country=SPAIN&_fields=investor_name,investor_surname
-     * 
-     * Other format:
+     * Format:
      * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
      * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
      * 
@@ -238,6 +91,66 @@ function readInvestmentData($company) {
         $result = $this->formatter->$formatterFunction($data, $companyId, $dashboardConfig[$type][$function][2]);
 
         $resultJson = json_encode($result);
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;  
+    }
+    
+    
+    /** PENDING: ERROR HANDLING TOWARDS HTTP
+     * This methods terminates the HTTP GET.
+     * Format GET /api/1.0/dashboards.json?_fields=x,y,z
+     * Example GET /api/1.0/dashboard.json?investor_country=SPAIN&_fields=investor_name,investor_surname
+     * 
+     * Other format:
+     * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
+     * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
+     * 
+     * @param -
+     * 
+     */
+    public function v1_view(){
+        
+        Configure::load('dashboardConfig.php', 'default');
+        $dashboardConfig = Configure::read('DashboardMainData');
+        $id = $this->request->id;
+        $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
+
+        foreach($dashboardConfig as $key => $value){
+            $data['data'][$key]['display_name'] = $value['display_name'];
+            
+            //Search tooltip if the field ave one
+            if(!empty($value['tooltip'])){
+                $this->Tooltip = ClassRegistry::init('Tooltip');
+                $tooltips = $this->Tooltip->getTooltip(1/*$value['tooltip']*/, $this->language, $companyId);
+                print_r($tooltips);
+                exit;
+                $data['data'][$key]['tooltip_display_name'];
+            }
+            
+            //Search value
+            $model = $value['value']['model'];
+            $this->model = ClassRegistry::init($model);
+            $field = $value['value']['field'];
+            $data['data'][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
+            if($value['value']['type'] == 'currency'){      //Seacrh for the currency
+                $data['data'][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
+            };
+            if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need multiply them-
+                $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount']*100;
+            };
+            $data['data'][$key]['icon'] = $value['icon'];
+            foreach($value['graphLinksParams'] as $key2 => $linkParam){
+                $data['data']['graph_data'][$key2]['url'] = $this->generateLink('dashboards', null, $linkParam['link'])['href'];
+                $data['data']['graph_data'][$key2]['option_display_name'] = $linkParam['displayName'];
+                if($key2 == 0){
+                    $data['data']['graph_data'][$key2]['default'] = true;
+                }
+            }
+        }
+        
+        
+        $resultJson = json_encode($data);
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;  

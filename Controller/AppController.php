@@ -767,7 +767,9 @@ class AppController extends Controller {
                 $link['method'] = 'GET';
                 break;
         }
-        $link['rel'] = $rel;
+        if(!empty($rel)){
+            $link['rel'] = $rel;
+        }
         $link['href'] = 'api' . DS . $version . DS . $endpoint . DS . $parameter;
         return $link;
     }

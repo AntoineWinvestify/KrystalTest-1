@@ -248,7 +248,7 @@ class Linkedaccount extends AppModel {
      * @param array $option
      * @return boolean
      */
-    public function afterSave($created, $option = array()) {
+    public function afterSave($created, $options = array()) {
         
         if ($created) {
             $this->Investor = ClassRegistry::init('Investor');
@@ -428,7 +428,6 @@ class Linkedaccount extends AppModel {
      */
 
     /**
-     *
      * Check login, search for multiaccounts in pfp with it and check if you already linked that account/s.
      *  
      * @param int $companyId
@@ -537,10 +536,12 @@ class Linkedaccount extends AppModel {
 
         if (empty($indexList)) {
             $return['feedback_message_user'] = 'Account removal failed.';
+            $return['code'] = 403;
             return $return;
         }
         else if($indexList[0]['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_NOT_ACTIVE){
-            $return['feedback_message_user'] = 'Account not found.';
+            $return['code'] = 404;
+            $return['data']['feedback_message_user'] = 'Account not found.';
             return $return;
         }
 
@@ -568,7 +569,8 @@ class Linkedaccount extends AppModel {
         foreach ($indexList as $index) {
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
-        $return['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
+        $return['code'] = 200;
+        $return['data']['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
         return $return;
     }
 
@@ -595,10 +597,11 @@ class Linkedaccount extends AppModel {
             );
 
             if ($this->save($linkedAccountData, $validation = true)) {
+                $id = $this->id;
                 $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
                 $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
                 $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
-                return true; 
+                return $id;
             } 
             else {
                 return false;
