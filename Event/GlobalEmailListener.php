@@ -1,5 +1,4 @@
 <?php
-
 /*
   // +-----------------------------------------------------------------------+
   // | Copyright (C) 2016, http://winvestify.com                             |
@@ -86,17 +85,19 @@ class GlobalEmailListener implements CakeEventListener {
                 }
             }
         }
-
         return ($selectedEvents);
     }
 
-
+    function __construct() {
+        Configure::load('p2pGestor.php', 'default');
+        $this->adminData = Configure::read('admin');           
+    }
 
 
     /**
-     *
      * Send a confirmation to the newly registered person on the platform
-     *
+     * 
+     * @param CakeEvent $event
      */
     public function newUserCreatedEmail(CakeEvent $event) {
 
@@ -122,7 +123,12 @@ class GlobalEmailListener implements CakeEventListener {
             CakeLog::error($infoString);
         }
     }
-
+    
+    /**
+     * Send a Contact email
+     * 
+     * @param CakeEvent $event
+     */
     public function contactEmail(CakeEvent $event) {
         Configure::load('p2pGestor.php', 'default');
         $adminData = Configure::read('admin');
@@ -198,7 +204,6 @@ class GlobalEmailListener implements CakeEventListener {
         $adminData = Configure::read('admin');
 
         foreach ($event->data as $mail) {
-
             // Send contact text to pfp admin
             try {
                 $Email = new CakeEmail('smtp_Winvestify');

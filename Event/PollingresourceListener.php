@@ -36,13 +36,18 @@ class PollingresourceListener implements CakeEventListener {
 
     public function implementedEvents() {
 
-        $selectedEvents['Model.Notification.newNotificationReceived'] = 'newEventReceived';
+        $selectedEvents['Model.Notification.NewNotificationReceived'] = 'newEventReceived';
         $selectedEvents['Model.Linkedaccount.Queued'] = 'newEventReceived';
         $selectedEvents['Model.Linkedaccount.Analyzing'] = 'newEventReceived';
         $selectedEvents['Model.Linkedaccount.Monitored'] = 'newEventReceived';
-        $selectedEvents['Model.Pubmessage.readyForVisualization'] = 'newEventReceived'; 
+        $selectedEvents['Model.Pubmessage.ReadyForVisualization'] = 'newEventReceived'; 
         return ($selectedEvents);
     }
+    
+    function __construct() {
+        $this->Pollingresource = ClassRegistry::init('Pollingresource');     
+    }    
+    
 
     /** 
      * Set flag that value of monitored resource has changed
@@ -50,29 +55,34 @@ class PollingresourceListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function newEventReceived(CakeEvent $event) {
+ 
         $data = [];
-        
-        $Model = array_keys[$event->data];          // Only 1 index should exists
+
         $conditions = ['pollingresource_userIdentification' => $event->data['userIdentification'],
                        'pollingresource_status' => ACTIVE,
-                       'pollingresource_type' => $Model[0],
+                       'pollingresource_type' => $event->data['model'],
                        'pollingresource_resourceId' => $event->data['id']
                       ];
         // 0 or 1 entry will be returned
         $pollingResults = $this->Pollingresource->find("first", $params = ['conditions' => $conditions,
                                                                             'recursive' => -1
-                                            ]);
-        if (empty($pollingResults)) {
-            //create new polling resource
+                                                      ]);
+        
+        if (empty($pollingResults)) {               //create new polling resource object
             $data['Pollingresource']['pollingresource_status'] = ACTIVE;
             $data['Pollingresource']['pollingresource_interval'] = WIN_POLLING_INTERVAL; 
             $data['Pollingresource']['pollingresource_userIdentification'] = $event->data['userIdentification'];
-            $data['Pollingresource']['pollingresource_type'] = $Model;  
+            $data['Pollingresource']['pollingresource_type'] = $event->data['model'];  
+            $data['Pollingresource']['pollingresource_resourceId'] = $event->data['id'];
         }
-        else {  // pollingresource already exists, so just update the "change" flag
-            $data['Pollingresource']['Pollingresource']['id'] = $pollingResults['Pollingresource']['id'];
+        else {                                     // pollingresource already exists, so just update the "change" flag
+            $data['Pollingresource']['id'] = $pollingResults['Pollingresource']['id'];
         }
-
+        
+        if ($event->data['isFinalEvent']) {
+            $data['Pollingresource']['pollingresource_interval'] = 0;
+        }
+     
         $data['Pollingresource']['pollingresource_newValueExists'] = true;
         $this->Pollingresource->save($data, $validate = true); 
     }

@@ -36,19 +36,19 @@ class LinkedaccountListener implements CakeEventListener {
 
     
     public function implementedEvents() {
-        
-        $selectedEvents['Model.Queue2.accountAddedToQueue'] = 'accountAdded';
-        $selectedEvents['Model.Queue2.accountDataCollection'] = 'accountdataCollection';
-        $selectedEvents['Model.Queue2.accountDataCollection'] = 'accountdataCollection';   //???????
-        $selectedEvents['Model.Queue2.accountAnalysisStarted'] = 'accountAnalysisStarted';  
-        $selectedEvents['Model.Queue2.accountAnalysisFinished'] = 'accountAnalysisFinished'; 
-        $selectedEvents['Model.Queue2.processingError'] = 'accountlinkingProcessingError';
+
+        $selectedEvents['Model.Queue2.AccountAddedToQueue'] = 'accountQueued';
+        $selectedEvents['Model.Queue2.AccountDataCollection'] = 'accountQueued';
+        $selectedEvents['Model.Queue2.AccountDataCollection'] = 'accountQueued';   
+        $selectedEvents['Model.Queue2.AccountAnalysisStarted'] = 'accountAnalysisStarted';  
+        $selectedEvents['Model.Queue2.AccountAnalysisFinished'] = 'accountAnalysisFinished'; 
+        $selectedEvents['Model.Queue2.ProcessingError'] = 'accountlinkingProcessingError';  // ???????
         return ($selectedEvents);
     }
 
 
     function __construct() {
-        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');    
     }
 
 
@@ -58,23 +58,18 @@ class LinkedaccountListener implements CakeEventListener {
      * 
      * @param CakeEvent $event
      */
-    public function accountAdded(CakeEvent $event) {
-        $data['Linkedaccount']['id'] = $event->data['userIdentification'];
+    public function accountQueued(CakeEvent $event) {
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+var_dump($event->data);
+        $data = [];
+        
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
+        var_dump($queueInfo);       
+
+        $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];     
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
         $this->Linkedaccount->save($data, $validate = true);
     }
-
-    /**
-     * The system has 'received' the order from the user to link the account
-     * and the account data is being downloaded
-     * 
-     * @param CakeEvent $event
-     */
-    public function accountdataCollection(CakeEvent $event) {
-        $data['Linkedaccount']['id'] = $event->data['userIdentification'];
-        $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
-        $this->Linkedaccount->save($data, $validate = true);
-    }    
    
     
     /**
@@ -83,20 +78,34 @@ class LinkedaccountListener implements CakeEventListener {
      * @param CakeEvent $event
      */    
     public function accountAnalysisStarted(CakeEvent $event) {
-        $data['Linkedaccount']['id'] = $event->data['userIdentification'];
+
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+var_dump($event->data);
+        $data = [];
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
+        var_dump($queueInfo);       
+
+        $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];         
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'ANALYZING';
         $this->Linkedaccount->save($data, $validate = true);
     }
 
     
     /**
-     * The account data has been analyzed completely and account added to 
+     * The account data has been analyzed completely and account is added to 
      * regular update queue
      * 
      * @param CakeEvent $event
      */
     public function accountAnalysisFinished(CakeEvent $event) {
-        $data['Linkedaccount']['id'] = $event->data['userIdentification'];
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+var_dump($event->data);
+        $data = [];
+        
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
+        var_dump($queueInfo);       
+
+        $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'MONITORED';
         $this->Linkedaccount->save($data, $validate = true);
     }
@@ -108,7 +117,14 @@ class LinkedaccountListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function accountlinkingProcessingError(CakeEvent $event) {
-        $data['Linkedaccount']['id'] = $event->data['userIdentification'];
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+var_dump($event->data);
+        $data = [];
+        
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
+        var_dump($queueInfo);       
+
+        $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
         $this->Linkedaccount->save($data, $validate = true);
     }

@@ -202,12 +202,12 @@ class Linkedaccount extends AppModel {
     /**
      * Change the password on a PFP of a user's account
      * 
-     * @param type $linkaccountId id of the linkaccount
+     * @param type $linkedaccountId id of the linkedaccount
      * @param type $newPass new password
      * @return boolean 
      */
-    public function changePasswordLinkaccount($linkedAccountId, $newPass){
-        $filterConditions = array('id' => $linkedAccountId);
+    public function changePasswordLinkaccount($linkedaccountId, $newPass){
+        $filterConditions = array('id' => $linkedaccountId);
         $accountOwnerId = $this->find("first", $params = array('recursive' => -1,
                                                                'fields'    => array('accountowner_id'),
                                                                'conditions' => $filterConditions)
@@ -216,7 +216,7 @@ class Linkedaccount extends AppModel {
     }
 
 
-        /**
+    /**
      * beforeFind, starts a timer for a find operation.
      *   
      * @param array $queryData Array of query data (not modified)
@@ -242,28 +242,50 @@ class Linkedaccount extends AppModel {
 
     /**
      * Callback function
-     * Add a new request on queue for the company that was linked from a user
+     * Add a new request in Queue2 for the company that was by a user
      * 
-     * @param boolean $created
-     * @param array $option
+     * @param boolean $created True if a new record was created (rather than an update).
+     * @param array $options
      * @return boolean
      */
-    public function afterSave($created, $option = array()) {
-        
+    public function afterSave($created, $options = array()) {
+ echo __FILE__ . " " . __LINE__ . " \n<br>";       
         if ($created) {
             $this->Investor = ClassRegistry::init('Investor');
             $this->Queue2 = ClassRegistry::init('Queue2');
             $data = [];
-            $linkaccountId = $this->id;
+            $linkedaccountId = $this->id;
             $accountowner = $this->Accountowner->getData(array('id' => $this->data['Linkedaccount']['accountowner_id']), array('investor_id'), null, null, 'first');
             $investorId = $accountowner['Accountowner']['investor_id'];
-            $data["companiesInFlow"][0] = $linkaccountId;
+            $data["companiesInFlow"][0] = $linkedaccountId;
             $data["originExecution"] = WIN_QUEUE_ORIGIN_EXECUTION_LINKACCOUNT;
             $userReference = $this->Investor->getInvestorIdentityByInvestorId($investorId);
             $result = $this->Queue2->addToQueueDashboard2($userReference, json_encode($data));
             return $result;
         }
+        else {          // update of already existing object
+echo __FILE__ . " " . __LINE__ . " \n<br>";
+var_dump($this->data);
+
+            if (isset($this->data['Linkedaccount']['linkedaccount_visualStatus'])) {
+   echo __FILE__ . " " . __LINE__ . " \n<br>"; 
+//                $investorId = $this->getInvestorFromLinkedaccount($this->data['Linkedaccount']['id']);
+ $investorId = 1;
+                $event = new CakeEvent("Model.Linkedaccount.Analyzing", $this, 
+                                       array(
+                                           'model' => "Linkedaccount",
+                                           'isFinalEvent' => false,
+                                           'userIdentification' => $investorId,
+                                           'modelData' => $this->data,
+                                           'id' => $this->data['Linkedaccount']['id'],
+                                           ));
+                $this->getEventManager()->dispatch($event);
+echo __FILE__ . " " . __LINE__ . " \n<br>";                
+                return true;               
+            }  
+        }
     }
+    
     
     /**
      * 	Callback Function
@@ -291,14 +313,12 @@ class Linkedaccount extends AppModel {
     }
 
 
-   /**
-     *
+    /**
      * 	Disables the linked account(s) that fulfill $filterConditions. No action is taken in case account is NOT_ACTIVE 
      *  or already disabled.
      *
      * 	@param 		array   $filterConditions	
      *  @param          int     $originator         WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
-     *
      * 	@return 	boolean	true	Account(s) disabled
      * 				false	Error happened, account(s) not disabled
      */
@@ -338,18 +358,15 @@ class Linkedaccount extends AppModel {
     }   
     
     
-   /**
-     *
+    /**
      * 	Enables the linked account(s) that fulfill $filterConditions. 
      *  Only accounts that are disabled can be enabled. Note that if no disabled account(s) fulfill the 
      *  filteringConditions, a true is returned.
      *
      * 	@param 		array   $filterConditions	
      *  @param          int     $originator         WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
-     *
      * 	@return 	boolean	true	Account(s) enabled
-     * 				false	Error happened, account(s) could not be enabled
-     * 						
+     * 				false	Error happened, account(s) could not be enabled						
      */
     public function enableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
@@ -383,7 +400,7 @@ class Linkedaccount extends AppModel {
     }     
     
     
-        /**
+    /**
      * 	Callback Function
      * 	Check if we can/need to send the Alias
      * Problaby not necessary.
@@ -420,7 +437,6 @@ class Linkedaccount extends AppModel {
     
     
     /**
-     *
      * Check login, search for multiaccounts in pfp with it and check if you already linked that account/s.
      *  
      * @param int $companyId
@@ -483,8 +499,7 @@ class Linkedaccount extends AppModel {
                     if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {        
                         $accounts[$accountKey]['accountCheck'] = true;
                         break;
-                    }
-                    
+                    }  
                 }
             }
         } 
@@ -575,26 +590,27 @@ class Linkedaccount extends AppModel {
      * @return boolean
      */
     public function addLinkedaccount($accountOwnerId, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, /*$linkedaccountAlias,*/$linkedaccountCurrency = 'EUR') { //[last field is by default €]
-            $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
-                'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
-                'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
-                'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED,
-                'linkedaccount_accountIdentity' => $linkedaccountIdentity,
-                'linkedaccount_accountDisplayName' => $linkedaccountPlatformDisplayName,
-                //'linkedaccount_alias' => $linkedaccountAlias,                 
-                'accountowner_id' => $accountOwnerId,
-                'linkedaccount_currency' => $linkedaccountCurrency,
-            );
+ 
+        $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
+            'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
+            'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
+            'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED,
+            'linkedaccount_accountIdentity' => $linkedaccountIdentity,
+            'linkedaccount_accountDisplayName' => $linkedaccountPlatformDisplayName,
+            //'linkedaccount_alias' => $linkedaccountAlias,                 
+            'accountowner_id' => $accountOwnerId,
+            'linkedaccount_currency' => $linkedaccountCurrency,
+        );
 
-            if ($this->save($linkedAccountData, $validation = true)) {
-                $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
-                $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
-                $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
-                return true; 
-            } 
-            else {
-                return false;
-            }
+        if ($this->save($linkedAccountData, $validation = true)) {
+            $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
+            $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
+            $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
+            return true; 
+        } 
+        else {
+            return false;
+        }
     }
     
     /**
@@ -604,7 +620,7 @@ class Linkedaccount extends AppModel {
      * @param int $companyId   Company from the accountOwner
      * @param string $username
      * @param string $password Username and password are the credentials to login in the pfp site.
-     * @param string $identity dentity  from the linkedaccount, necessary for multiaccounts.
+     * @param string $identity Identity  from the linkedaccount, necessary for multiaccounts.
      * @param string $displayName How we will show the linkedaccount name to the user.
      * @param string $currency Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner will have different currency).
      * @return boolean
@@ -636,7 +652,6 @@ class Linkedaccount extends AppModel {
                 'fields' => $linkedaccountFields
             )); 
         return $linkedaccount;
-        
     }
     
 }

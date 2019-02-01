@@ -37,25 +37,11 @@ class Pollingresource extends AppModel
 {
 	var $name= 'Pollingresource';
 
-/*
- *	var $belongsTo = array(
-		'Poll' => array(
-			'className' => 'Poll',
-			'foreignKey' => 'poll_id',
-		)
-	);
-*/
 
-
-        
-        
-    /*
-     * **** CALLBACK FUNCTIONS *****
-     */
-
-        
+  
     /**
      *  Rules are defined for what should happen after a database record has been read
+     * 
      * 	@param array $results Array that contains the returned results from the model’s find operation
      *  @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
      *                            or whether or not this model was queried as an association
@@ -72,20 +58,14 @@ class Pollingresource extends AppModel
     }
 
     
-    
     /**
      * 	Rules are defined for what should happen before a database record is created or updated.
      * 
      * 	@param array $options
      */ 
     function beforeSavexx($options = array()) {
-    
-        
-        
-        
+       
     }
-
- 
 
 
     /**
@@ -95,12 +75,21 @@ class Pollingresource extends AppModel
      *  @param array $options
      */
     function afterSavexx($created, $options = array()) {
+  
+    }
 
+
+    
+    /**
+     * Deletes a Pollingresources object, i.e making it invisible 
+     * 
+     * @param int $id The identification of the object to delete
+     * @return boolean
+     */   
+    public function api_deletePollingresource($id) {
         
         
         
     }
-
-    
     
 }

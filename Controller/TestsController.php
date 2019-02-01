@@ -36,6 +36,7 @@ App::import('Vendor', 'PHPExcel', array('file' => 'PHPExcel' . DS . 'PHPExcel.ph
 App::import('Vendor', 'PHPExcel_IOFactory', array('file' => 'PHPExcel' . DS . 'PHPExcel' . DS . 'IOFactory.php'));
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
+App::uses('CakeEventListener', 'Event');
 
 //App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
@@ -190,6 +191,31 @@ exit;*/
     } 
     
     public function editCheck() {
+echo "Generate an event";
+    // Generate an event
+
+
+
+    $event = new CakeEvent("Model.Queue2.AccountAddedToQueue", $this, 
+                            array(
+                                'model' => "Queue2",
+                                'isFinalEvent' => false,
+                                'userIdentification' => 31445566,
+                                'modelData' => ['Queue2' => ['id' => 2147,
+                                    'queue2_type' => 1,
+                                    'queue2_userReference' => '39048098ab409be490A',
+                                    'queue2_info' => '{"originExecution":1,"date":"20180628","startDate":{"1036":null},"numberTries":0,"companiesInFlow":[1036]}',
+                                    'queue2_status' => 55,
+                                    'id' => 2147]],
+                                'id' => 2147
+                                )
+                                    );
+ echo __FILE__ . " " . __LINE__ . " \n<br>";
+    $this->getEventManager()->dispatch($event);
+ echo __FILE__ . " " . __LINE__ . " \n<br>";     
+exit;                                
+                                
+                                
     $fields = get_class_vars('DATABASE_CONFIG');
  echo __FILE__ . " " . __LINE__ . " \n<br>";
     var_dump($fields);

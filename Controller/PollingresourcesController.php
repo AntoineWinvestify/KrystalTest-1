@@ -33,15 +33,12 @@ App::uses('CakeEvent', 'Event');
 
 class PollingresourcesController extends AppController
 {
-	var $name = 'Pollingresources';
-	var $uses = array('');
+    var $name = 'Pollingresources';
+    var $uses = array('');
 	
-
-        
-        
+ 
     function beforeFilter() {
             parent::beforeFilter();
-
 
     }
 
@@ -94,19 +91,25 @@ class PollingresourcesController extends AppController
                                   ]; 
         } 
         
-        // Add condition of pollingresources_status = ACTIVE if not present
+        // Add condition of pollingresources_status = ACTIVE if not present, and belonging to user
         if (!empty($this->listOfQueryParams)) {
             if (array_key_exists('AND', $this->listOfQueryParams)) {
                 if (empty(array_key_exists('pollingresources_status', $data["AND"]) )) {
-                    $this->listOfQueryParams["AND"]['pollingresources_status'] = ACTIVE;
+                    $this->listOfQueryParams["AND"]['pollingresource_userIdentification'] = $this->investorId;
+                    $this->listOfQueryParams["AND"]['pollingresource_status'] = ACTIVE;
+                    $this->listOfQueryParams["AND"]['pollingresource_interval > '] = 0;
                 }
             }
             else {
                 if (array_key_exists('OR', $this->listOfQueryParams)) {
-                    $this->listOfQueryParams["AND"]['pollingresources_status'] = ACTIVE;    
+                    $this->listOfQueryParams["AND"]['pollingresource_userIdentification'] = $this->investorId;
+                    $this->listOfQueryParams["AND"]['pollingresource_status'] = ACTIVE; 
+                    $this->listOfQueryParams["AND"]['pollingresource_interval > '] = 0;
                 }
                 else {
-                    $this->listOfQueryParams['pollingresources_status'] = ACTIVE;  
+                    $this->listOfQueryParams['pollingresource_userIdentification'] = $this->investorId;
+                    $this->listOfQueryParams['pollingresource_status'] = ACTIVE; 
+                    $this->listOfQueryParams['pollingresource_interval > '] = 0;
                 }
             }    
         }        
@@ -143,8 +146,8 @@ class PollingresourcesController extends AppController
      */
     function v1_delete($id)  {
         $id = $this->request->id;
-                
-        $apiResult = $this->Pollingresource->delete($id);
+
+        $apiResult = $this->Pollingresource->api_deletePollingresource($id);
 
         $this->response->statusCode(204);
         return $this->response; 	
