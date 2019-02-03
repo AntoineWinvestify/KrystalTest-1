@@ -1,7 +1,7 @@
 <?php
 /**
 // +-----------------------------------------------------------------------+
-// | Copyright (C) 2009, http://yoursite                                   |
+// | Copyright (C) 2009, http://www.winvestify.com                         |
 // +-----------------------------------------------------------------------+
 // | This file is free software; you can redistribute it and/or modify     |
 // | it under the terms of the GNU General Public License as published by  |
@@ -81,8 +81,7 @@ class Notification extends AppModel
      *						the system will automatically create a "href" link
      *   @param string   $notificationDateTime   Date/time of publication of notification. If empty then 
      *                                              publication date/time is immediate   
-     * 	@return 	boolean	true
-     *                               false			
+     * 	@return boolean	true/false			
     */
     public function addNotification($filterConditions, $text, $icon , $extendedInfo, $notificationDateTime) {
 
@@ -104,9 +103,7 @@ class Notification extends AppModel
             if ($this->save($data, $validate = true)) {
                     return true;
             }
-            else {
-                    return false;
-            }
+            return false;
     }
 
 
@@ -138,14 +135,14 @@ class Notification extends AppModel
     /**
      *	Get a list of notifications according to the filteringConditions provided
      *
-     *	@param 		array 	$filteringConditions. 
-     *	@return		array	$notifications 	List of notifications with slogan texts only
+     *	@param array $filterConditions
+     *	@return	array $notifications 	List of notifications with slogan texts only
     */
     public function getList($filterConditions) {
             $result = $this->find("all", array('conditions' => $filterConditions, 
-                                                                            'recursive' => -1,
-                                                                            'fields'	=> array('id', 'notification_textShort', 'notification_icon')
-                                                    ));
+                                               'recursive' => -1,
+                                               'fields'	=> array('id', 'notification_textShort', 'notification_icon')
+                                               ));
             return $result;
     }
 
@@ -163,8 +160,8 @@ class Notification extends AppModel
     public function readNotificationContents($filterConditions) {
 
             $result = $this->find("first", array('conditions' => $filterConditions, 
-                                                                            'recursive' => -1,	
-                                                    ));
+                                                 'recursive' => -1,	
+                                 ));
 
             if (!empty($result)) {
                 $this->id = $result['Notification']['id'];

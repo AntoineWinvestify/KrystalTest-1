@@ -196,18 +196,21 @@ echo "Generate an event";
 
 
 
-    $event = new CakeEvent("Model.Queue2.AccountAddedToQueue", $this, 
+    $event = new CakeEvent("sendContactMessage", $this, 
                             array(
                                 'model' => "Queue2",
                                 'isFinalEvent' => false,
-                                'userIdentification' => 31445566,
+                                'investor_userReference' => "39048098ab409be490A", 
+                                'userIdentification' => 8831445566,
+                                'messageContent'        => __('Your account on platform'),
                                 'modelData' => ['Queue2' => ['id' => 2147,
                                     'queue2_type' => 1,
                                     'queue2_userReference' => '39048098ab409be490A',
                                     'queue2_info' => '{"originExecution":1,"date":"20180628","startDate":{"1036":null},"numberTries":0,"companiesInFlow":[1036]}',
-                                    'queue2_status' => 55,
-                                    'id' => 2147]],
-                                'id' => 2147
+                                    'queue2_status' => 75,
+                                    'id' => 2147
+                                    ]],
+                                'id' => 1
                                 )
                                     );
  echo __FILE__ . " " . __LINE__ . " \n<br>";
