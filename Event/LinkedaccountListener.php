@@ -59,12 +59,9 @@ class LinkedaccountListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function accountQueued(CakeEvent $event) {
-echo __FILE__ . " " . __LINE__ . " \n<br>";
-var_dump($event->data);
         $data = [];
         
         $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
-        var_dump($queueInfo);       
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];     
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';

@@ -137,6 +137,7 @@ function beforeFilter() {
                 };
                 if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need multiply them-
                     $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount']*100;
+                    $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount'] . '%';
                 }
             }
             if(!empty($value['icon'])){

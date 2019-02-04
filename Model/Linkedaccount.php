@@ -264,13 +264,8 @@ class Linkedaccount extends AppModel {
             return $result;
         }
         else {          // update of already existing object
-echo __FILE__ . " " . __LINE__ . " \n<br>";
-var_dump($this->data);
-
             if (isset($this->data['Linkedaccount']['linkedaccount_visualStatus'])) {
-   echo __FILE__ . " " . __LINE__ . " \n<br>"; 
                 $investorId = $this->getInvestorFromLinkedaccount($this->data['Linkedaccount']['id']);
-echo "investorId = $investorId<br>";
                 $event = new CakeEvent("Model.Linkedaccount.Analyzing", $this, 
                                        array(
                                            'model' => "Linkedaccount",
@@ -280,7 +275,6 @@ echo "investorId = $investorId<br>";
                                            'id' => $this->data['Linkedaccount']['id'],
                                            ));
                 $this->getEventManager()->dispatch($event);
-echo __FILE__ . " " . __LINE__ . " \n<br>";                
                 return true;               
             }  
         }
@@ -554,6 +548,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         if(empty($accounts)){
             //ERROR LOGIN 
             $error = array();
+            //$error['code'] = ;
             $error['error']['error_message'] = 'Error at login. User or password incorrect.';
             $error['error']['error_name'] = 'ERROR_PRECHECK';
             $error['error']['error_information_link'] = '';
@@ -615,7 +610,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
         $return['code'] = 200;
-        $return['data']['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
+        $return['data']['feedback_message_user'] = 'The account has been sucessfully been removed from your Dashboard.';
         return $return;
     }
 

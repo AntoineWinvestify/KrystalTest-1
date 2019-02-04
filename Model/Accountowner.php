@@ -387,12 +387,12 @@ class Accountowner extends AppModel {
         if (!empty($result) && $accounts != false && empty($accounts['error'])) {
             if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
                 $feedback['code'] = 200;
-                $feedback['data']['feedback_message_user'] = 'Your password has been succesfully changed';
+                $feedback['data']['feedback_message_user'] = 'Your password has been successfully changed.';
                 return $feedback;
             }
         }
         $feedback['code'] = 403;
-        $feedback['data']['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password.";
+        $feedback['data']['feedback_message_user'] = "Your password couldn't be successfully changed, try later or check your password.";
         return $feedback;
     }
     
