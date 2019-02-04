@@ -157,12 +157,11 @@ class AppController extends Controller {
     
     var $uses = array('User', 'Role', 'Sector');
 
+    
+    
     /**
      * 	This code is common to all the classes that actively define a method for the beforeFilter
      * 	callback.
-     * 	It includes:
-     * 		name of cookie
-     * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
  
