@@ -294,7 +294,7 @@ class Accountowner extends AppModel {
         $accountsResult = array();
         $accountOwnerFields = array('Accountowner.id', 'Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
         $linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
-            'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status');
+            'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status', 'Linkedaccount.linkedaccount_visualStatus');
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
         
 
@@ -332,14 +332,38 @@ class Accountowner extends AppModel {
                     }
                     $accountsResult['data'][$i][$key] = $field;  
                 }
-                $accountsResult['data'][$i]['linkedaccount_visual_state'] = 'ANALYZING';
                 $i++;
             }
         }  
 
         return $accountsResult;
     }
+    
+     /**
+     * Return the accountOwners of an given investor with the related linkedaccounts.
+     * 
+     * @param int $investorId                                                  Id of the investor
+     * @param int/array $linkedaccountStatus                                   Active or/and suspended
+     * @param int/array $accountOwnerStatus                                    Active or/and suspended
+     * @return array
+     */
+    public function api_readAccountowner($linkedaccountId) {
+        $accountsResult = array();
+        $fields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
+            'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status', 'Accountowner.company_id', 
+            'Accountowner.accountowner_username', 'Accountowner.accountowner_password', 'Linkedaccount.linkedaccount_visualStatus');
+        $filterConditions = array('Linkedaccount.id' => $linkedaccountId);
+       
+        $account = $this->Linkedaccount->find("first", array('recursive' => 0,
+            'conditions' => $filterConditions,
+            'fields' => $fields,
+        ));
 
+        $accountResult['data']['linkedaccount'] = array_merge ($account['Accountowner'], $account['Linkedaccount']) ;
+        return $accountResult;
+    }
+    
+    
      /**
      * Change the password on a PFP for a USER
      * 
@@ -362,13 +386,13 @@ class Accountowner extends AppModel {
 
         if (!empty($result) && $accounts != false && empty($accounts['error'])) {
             if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
-                $feedback['feedback_message_user'] = 'Your password has been succesfully changed';
-                $feedback = json_encode($feedback);
+                $feedback['code'] = 200;
+                $feedback['data']['feedback_message_user'] = 'Your password has been succesfully changed';
                 return $feedback;
             }
         }
-        $feedback['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password.";
-        $feedback = json_encode($feedback);
+        $feedback['code'] = 403;
+        $feedback['data']['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password.";
         return $feedback;
     }
     

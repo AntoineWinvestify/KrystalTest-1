@@ -249,7 +249,7 @@ class Linkedaccount extends AppModel {
      * @return boolean
      */
     public function afterSave($created, $options = array()) {
- echo __FILE__ . " " . __LINE__ . " \n<br>";       
+        
         if ($created) {
             $this->Investor = ClassRegistry::init('Investor');
             $this->Queue2 = ClassRegistry::init('Queue2');
@@ -430,12 +430,49 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
     }     */
  
     /**
+     * Get the company id given a linkedaccount id
      * 
+     * @param int $id
+     * @return int
+     */
+    public function getCompanyFromLinkedaccount($id){
+        $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
+            'fields' => ['Accountowner.company_id'],'recursive' => 0]);
+        return $linkedAccountResult['Accountowner']['company_id'];
+    }
+    /**
+     * Get the investor id given a linkedaccount id
+     * 
+     * @param int $id
+     * @return int
+     */
+    public function getInvestorFromLinkedaccount($id){
+        $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
+            'fields' => ['Accountowner.investor_id'],'recursive' => 0]);
+        return $linkedAccountResult['Accountowner']['investor_id'];
+    }
+     
+    /**
+     * Get the linkedaccount_currency of a linkedaccount given the id
+     * 
+     * @param int $id
+     * @return int
+     */
+    public function getCurrency($id){
+        $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
+            'fields' => ['Linkedaccount.linkedaccount_currency'],'recursive' => -1]);
+        return $linkedAccountResult['Linkedaccount']['linkedaccount_currency'];
+    }
+    
+    
+    
+    
+    /**
      * 
      *          API FUNCTIONS
+     * 
      */
-    
-    
+
     /**
      * Check login, search for multiaccounts in pfp with it and check if you already linked that account/s.
      *  
@@ -544,10 +581,12 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
 
         if (empty($indexList)) {
             $return['feedback_message_user'] = 'Account removal failed.';
+            $return['code'] = 403;
             return $return;
         }
         else if($indexList[0]['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_NOT_ACTIVE){
-            $return['feedback_message_user'] = 'Account not found.';
+            $return['code'] = 404;
+            $return['data']['feedback_message_user'] = 'Account not found.';
             return $return;
         }
 
@@ -575,7 +614,8 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         foreach ($indexList as $index) {
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
-        $return['feedback_message_user'] = 'The account has been succesfully removed from your Dashboard.';
+        $return['code'] = 200;
+        $return['data']['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
         return $return;
     }
 
@@ -602,15 +642,16 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             'linkedaccount_currency' => $linkedaccountCurrency,
         );
 
-        if ($this->save($linkedAccountData, $validation = true)) {
-            $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
-            $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
-            $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
-            return true; 
-        } 
-        else {
-            return false;
-        }
+            if ($this->save($linkedAccountData, $validation = true)) {
+                $id = $this->id;
+                $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
+                $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
+                $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
+                return $id;
+            } 
+            else {
+                return false;
+            }
     }
     
     /**
@@ -637,21 +678,4 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
-   
-    /**
-     * Return the accountOwners of an given investor with the related linkedaccounts.
-     * 
-     * @param int $linkedaccountId Id of the linkedaccount
-     * @param array $linkedaccountFields Request fields 
-     * @return array
-     */
-    public function api_readLinkedaccount($linkedaccountId, $linkedaccountFields) {
-        
-        $linkedaccount = $this->Linkedaccount->find('first', array('recursive' => -1,
-                'conditions' => array('Linkedaccount.id' => $linkedaccountId),
-                'fields' => $linkedaccountFields
-            )); 
-        return $linkedaccount;
-    }
-    
 }

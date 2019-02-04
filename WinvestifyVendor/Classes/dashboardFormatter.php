@@ -28,14 +28,117 @@
 class dashboardFormatter {
     
 
-    function genericGrahpFormatter($data){
-        echo $data;
+    /**
+     * Generic formatter for Graphs. only accept one set of data.
+     * 
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
+     */
+    function genericGraphFormatter($data, $companyId, $graphInfo) {
+        $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
+        $this->graphicsResults = [
+            "graphics_data" => [
+                "dataset" =>
+                ["display_name" => $graphInfo['displayName'],
+                    "x-axis_unit" => $graphInfo['xAxis'],
+                    "data" => $resultNormalized]
+            ]
+        ];
+        return $this->graphicsResults;
+    }
+
+    /**
+     * Generic formatter for Graphs. This format accept two sets of data.
+     * 
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
+     */
+    function genericMultiGraphFormatter($data, $companyId, $graphInfo) {
+        $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], '{n}.Userinvestmentdata');
+        $resultNormalized['GlobalDashboard'] = Hash::extract($data['GlobalDashboard'], '{n}.Dashboardoverviewdata');
+
+        $this->graphicsResults = [
+            "graphics_data" => [
+                "dataset" =>
+                ["display_name" => $graphInfo['displayName'],
+                    "x-axis_unit" => $graphInfo['xAxis'],
+                    "data" => $resultNormalized['Dashboard']],
+                "dataset_1" =>
+                ["display_name" => $graphInfo['displayName'],
+                    "x-axis_unit" => $graphInfo['xAxis'],
+                    "data" => $resultNormalized['GlobalDashboard']]
+            ]
+        ];
+        return $this->graphicsResults;
+    }
+
+    /**
+     *  Formatter for Gauge Graph
+     * 
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
+     */
+    function gaugeGraphFormatter($data, $companyId, $graphInfo) {
+        $this->graphicsResults = 
+            ["dataset" =>
+                [
+                "display_name" => $graphInfo['displayName'],
+                "data" => [
+                        "max_value" => $graphInfo["maxValue"],
+                        "percent" => $data
+                        ],
+                ]
+            ];
+        return $this->graphicsResults;
+    }
+
+    /**
+     *  Formatter for delays graph 
+     * 
+     * @param array $data
+     * @param $companyId                                                        //not used
+     * @param array $graphInfo                                                  /Extra info for the graph
+     * @return array
+     */
+    function paymentDelayGraphFormatter($data, $companyId, $graphInfo) {
+        $dataResult = array();
+        $dataResult[0]['range_display_name'] = '1-7 days';
+        $dataResult[1]['range_display_name'] = '8-30 days';
+        $dataResult[2]['range_display_name'] = '31-60 days';
+        $dataResult[3]['range_display_name'] = '61-90 days';
+        $dataResult[4]['range_display_name'] = '> 90 days';
+        
+        $dataResult[0]['percent'] = $data['1-7']['Userinvestmentdata']['userinvestmentdata_delay_1-7'];
+        $dataResult[1]['percent'] = $data['8-30']['Userinvestmentdata']['userinvestmentdata_delay_8-30'];
+        $dataResult[2]['percent'] = $data['31-60']['Userinvestmentdata']['userinvestmentdata_delay_31-60'];
+        $dataResult[3]['percent'] = $data['61-90']['Userinvestmentdata']['userinvestmentdata_delay_61-90'];
+        $dataResult[4]['percent'] = $data['>90']['Userinvestmentdata']['userinvestmentdata_delay_>90'];
+                
+        $this->graphicsResults = 
+            ["dataset" =>
+                [
+                "display_name" => $graphInfo['displayName'],
+                "data" => $dataResult,
+                ]
+            ];
+        return $this->graphicsResults;
     }
     
-    
-    function genericInvestmentListFormatter($investmentResults) {
-        $this->companyId = $investmentResults['company_id'];
-        unset($investmentResults['company_id']);
+    /**
+     * Generic formatter for most of the investment list
+     * 
+     * @param array $investmentResults
+     * @param int   $companyId                                                  //Necesary for the tooltips                                               
+     * @param array $listInfo                                                  //Extra info for the list
+     * @return array
+     */
+    function genericInvestmentListFormatter($investmentResults, $companyId, $listInfo) {
         $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
         foreach ($investmentResultsNormalized as $key => $item) {
             foreach ($item as $key1 => $value) {
@@ -80,30 +183,23 @@ class dashboardFormatter {
                 }
             }
         }
-
+        
+        $this->companyId = $companyId;
         $this->Tooltip = ClassRegistry::init('Tooltip');
-        $this->investmentListsResult["display_name"] = "Active Investments";
+        $this->investmentListsResult["display_name"] = $listInfo['displayName'];
         $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
         $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP], $this->language, $this->companyId);  
         $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];     
         $this->investmentListsResult['data'] = $temp; 
-
+        
+        
         return $this->investmentListsResult;
     }
     
-    
-    
-    
-    
-    
-    
-    
-   
     /**
-     * Read the data of an investment list
+     * Read the headers and tooltips for the investment list.
      * 
-     * @param int  $linkedAccountId The object reference for the linked account
-     * @return boolean
+¡    * @return array
      */  
     public function createActiveInvestmentsListHeader()  { 
 

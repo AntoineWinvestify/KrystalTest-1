@@ -160,8 +160,7 @@ class Tooltip extends AppModel {
         $tooltipFormatted = array();
         if (!empty($company)) {
             $tooltipsUnfiltered = $this->searchTooltipByCompany($company, $locale);
-            $tooltips = $this->filterTooltipByIdentifier($tooltipIdentifier, $tooltipsUnfiltered);
-            
+            $tooltips = $this->filterTooltipByIdentifier($tooltipIdentifier, $tooltipsUnfiltered);         
         }
         else {
             $tooltips = $this->searchGlobalTooltip($tooltipIdentifier, $locale);

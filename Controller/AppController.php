@@ -765,8 +765,13 @@ class AppController extends Controller {
             case 'monitor':
                 $link['method'] = 'GET';
                 break;
+            case 'list':
+                $link['method'] = 'GET';
+                break;
         }
-        $link['rel'] = $rel;
+        if(!empty($rel)){
+            $link['rel'] = $rel;
+        }
         $link['href'] = 'api' . DS . $version . DS . $endpoint . DS . $parameter;
         return $link;
     }
