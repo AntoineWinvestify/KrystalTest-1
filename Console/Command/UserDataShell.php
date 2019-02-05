@@ -823,6 +823,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
         return(bcadd($resultData['payment']['payment_latePaymentFeeIncome'], $resultData['globalcashflowdata']['globalcashflowdata_latePaymentFeeIncome'], 16));    
     }  
+    public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_commissionPaid'], $resultData['globalcashflowdata']['globalcashflowdata_commissionPaid'], 16));    
+    } 
     /**
      *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
      * 
@@ -1209,16 +1212,8 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         return($resultData['payment']['payment_delayedInterestIncome']);    
     } 
     
-    /**
-     *  Calculates the sum of the payment concept "Commission Paid" that happened during a day
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     *  @return string      accumulated amount
-     */
-    public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
-        return($resultData['payment']['payment_commissionPaid']);    
-    } 
+
+
     
 
 
