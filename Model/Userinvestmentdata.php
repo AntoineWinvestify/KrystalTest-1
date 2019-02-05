@@ -36,7 +36,13 @@ class Userinvestmentdata extends AppModel {
             'order' => '',
         ),
     );
-    
+    public $belongsTo = array(
+        'Globaldashboard' => array(
+            'className' => 'Globaldashboard',
+            'foreignKey' => 'globaldashboard_id'
+        )
+    );
+
     /**
      * Get data of the last linked accounts investments of an investor.
      * 

@@ -68,14 +68,19 @@ class Dashboardoverviewdata extends AppModel {
      * @param int $linkedAccountId
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @param string $field
+     * @param boolean                                                           //If true, the $id is investor_id, if empty the $id id linkedaccountid
      * @return boolean
      */
-    public function genericGraphSearch($linkedAccountId, $period, $field){
+    public function genericGraphSearch($id, $period, $field, $fromInvestor = null){
         
-        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
-        $investorId = $this->Linkedaccount->getInvestorFromLinkedaccount($linkedAccountId);
+        if(empty($fromInvestor)){
+            $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+            $investorId = $this->Linkedaccount->getInvestorFromLinkedaccount($id);      
+        } 
+        else{
+            $investorId = $id;
+        }
         $conditions = ['investor_id' => $investorId];
-
         switch ($period['period']) {
             case "all":
                 break;
