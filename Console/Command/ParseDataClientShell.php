@@ -1033,7 +1033,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
                     $internalVariablesToHandle = array(
-                        10001, 10006, 10007, 10008, 10009, 10010, 
+                        10001, 10006, 10010, 10007, 10008, 10009, 
                         10011, 10012, 10013, 10016, 10017, 10018, 
                         10019, 10020, 10021, 10022, 10023, 10024, 
                         10025, 10026, 10027, 10028, 10029,
@@ -1046,9 +1046,9 @@ class ParseDataClientShell extends GearmanClientShell {
                         $result = $calculationClassHandle->$functionToCall($transactionData, $database);
                         echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $functionToCall and Executing Calc. specific variables=>: orig. amount = " . $database[$varName[0]][$varName[1]] . " and new result = $result" . "\n";
                         if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                            if (!isset($database[$varName[0]][$varName[1]])) {
-                                $database[$dbTable][$transactionDataKey] = 0;
-                            }
+                           /*if (!isset($database[$varName[0]][$varName[1]])) {     //If is accumulative we shouldn't reset the variable.
+                                    $database[$dbTable][$transactionDataKey] = 0;
+                            }*/
                             $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                         }
                         else {

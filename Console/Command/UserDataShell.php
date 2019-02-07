@@ -192,7 +192,7 @@ class UserDataShell extends AppShell {
             $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
         if (isset($resultData['payment']['payment_currencyFluctuation'])) {
-            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuation'], 16);
         }
         if (isset($resultData['payment']['payment_secondaryMarketSell'])) {
             $result = bcsub($result, $resultData['payment']['payment_secondaryMarketSell'], 16);
@@ -539,19 +539,7 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /**
-     *  Get the amount which corresponds to the "Regular Gross Interest Income" concept
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      amount expressed as a string
-     */
-    public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
-    }
-    public function calculateRegularGrossInterestCost(&$transactionData, &$resultData) {
-        return -$transactionData['amount'];
-    }  
+
     /**
      *  Calculates the number of active investments. Various investments in the same loan 
      *  are counted as 1 investment
@@ -826,6 +814,9 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
         return(bcadd($resultData['payment']['payment_commissionPaid'], $resultData['globalcashflowdata']['globalcashflowdata_commissionPaid'], 16));    
     } 
+    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_regularGrossInterestIncome'], $resultData['globalcashflowdata']['globalcashflowdata_regularGrossInterestIncome'], 16)); 
+    }
     /**
      *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
      * 
@@ -862,16 +853,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return($resultData['payment']['payment_interestIncomeBuyback']);
     }    
     
-    /**
-     *  Calculates the sum of the payment concept "RegularGrossInterestIncome" that happened during a day
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     *  @return string      accumulated amount
-     */
-    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_regularGrossInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_regularGrossInterestIncome'], 16)); 
-    }
+
+ 
 
  
     /**
