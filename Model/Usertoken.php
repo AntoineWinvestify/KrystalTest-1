@@ -65,6 +65,7 @@ class Usertoken extends AppModel {
             $this->id = $token['Usertoken']['id'];
             $this->saveField('usertoken_status', DELETED);
             $i++;
+//echo __FILE__ . " " . __LINE__ . " Deleted<br>";            
         }
         return $i;    
     }

@@ -191,18 +191,18 @@ exit;*/
     } 
     
     public function editCheck() {
-echo "Generate an event";
+echo "Generate an event<br>";
     // Generate an event
 
-
-
-    $event = new CakeEvent("sendContactMessage", $this, 
+echo $this->Investor->createInvestorReference('+443344556688', 'myNewEmailAddress891@gmail.com'); 
+exit; 
+    $event = new CakeEvent("accountLinkingFullyFinished", $this, 
                             array(
                                 'model' => "Queue2",
                                 'isFinalEvent' => false,
                                 'investor_userReference' => "39048098ab409be490A", 
                                 'userIdentification' => 8831445566,
-                                'messageContent'        => __('Your account on platform'),
+                                'messageContent'        => __('Your account on platform XXXX1'),
                                 'modelData' => ['Queue2' => ['id' => 2147,
                                     'queue2_type' => 1,
                                     'queue2_userReference' => '39048098ab409be490A',
@@ -210,7 +210,7 @@ echo "Generate an event";
                                     'queue2_status' => 75,
                                     'id' => 2147
                                     ]],
-                                'id' => 1
+                           //     'id' => 1
                                 )
                                     );
  echo __FILE__ . " " . __LINE__ . " \n<br>";

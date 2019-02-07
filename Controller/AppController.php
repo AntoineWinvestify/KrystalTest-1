@@ -637,13 +637,13 @@ class AppController extends Controller {
      * @return array 
      */   
     public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
-  
-        foreach ($validationErrors as $key => $item) {
-            $tempArray['field'] = $key;
-            $tempArray['issue'] = $item[0];
-            $errorDetails[] = $tempArray;
+        if (!empty($validationErrors)) {
+            foreach ($validationErrors as $key => $item) {
+                $tempArray['field'] = $key;
+                $tempArray['issue'] = $item[0];
+                $errorDetails[] = $tempArray;
+            }
         }
-
         $errorArray['error_name'] = $errorName;
         $errorArray['error_message'] = $errorMessage;
         if (!empty($validationErrors)) {

@@ -76,6 +76,9 @@ class UsersController extends AppController
 
 
 function beforeFilter() {
+    if ($this->request->param['action'] == 'v1_refreshToken') {
+        echo "DDDDDDDDDDDDDD";
+    }
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
     $this->Auth->allow('v1_login');
@@ -119,7 +122,7 @@ function changeDisplayLanguage() {
      */ 
     public function v1_login() {
         $this->request->data['User'] = $this->request->data; 
-        
+      
 	if ($this->request->is('post')) {    
             $isUserIdentified = $this->Auth->identify($this->request, $this->response);
 
@@ -792,6 +795,7 @@ echo "startDate = $startDate and endDate = $endDate <br>";
      * @param int   $typeOfToken Value = WIN_ACCESS_TOKEN or WIN_REFRESH_TOKEN
      * @param string $refreshToken The token used to generate a new access token
      * @return string $token The generated JSON Webtoken
+     * @throws UnauthorizedException Incorrect Credentials 
      */
     public function getNewJWT($userData, $typeOfToken, $refreshToken = NULL) {
         Configure::load('endpointsConfig.php', 'default'); 
@@ -826,7 +830,8 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         }
         
         if (!$payload['refresh_token']) {
-            throw new InternalServerError('temporary server problem');        
+//echo __FILE__ . " " . __LINE__ . " <br>";
+            throw new UnauthorizedException('Incorrect Credentials');  
             }
         
         $token = JWT::encode($payload, Configure::read('Security.salt')); 
@@ -911,7 +916,7 @@ var_dump($apiResult);
     public function v1_logout() {
 
         $this->User->api_logout($this->refreshToken);
-        $this->response->statusCode(200);  
+        $this->response->statusCode(204);  
         return $this->response;
     }    
 
@@ -922,18 +927,17 @@ var_dump($apiResult);
      * @param string $refreshToken The token to use for generating a new token
      * @throws UnauthorizedException Authentication error
      */
-    public function v1_refreshtoken() {
+    public function v1_refreshToken() {
         // Collect the relevant user data for JWT generation 
-
+ ///echo __FILE__ . " " . __LINE__ . " <br>";        
         $this->Role = ClassRegistry::init('Role');
         $userData['Role']['role_name'] = $this->roleName;        
         $userData['Role']['id'] = $this->Role->translateRoleName2RoleId($this->roleName);
         $userData['Investor']['investor_language'] = $this->language;
         $userData['Investor']['id'] = $this->investorId;
         $userData['Investor']['investor_name'] = $this->accountDisplayName;
-
         $token = $this->getNewJWT($userData, WIN_REFRESH_TOKEN, $this->refreshToken);
-          
+//echo __FILE__ . " " . __LINE__ . " Token is empty and cannot be re-used<br>";  
         if (!empty($token)) {
             $result['token'] = $token;  
             $resultJson = json_encode($result);
@@ -943,6 +947,7 @@ var_dump($apiResult);
             return $this->response;
         }
         else {
+     //       echo __FILE__ . " " . __LINE__ . "<br>";
             throw new UnauthorizedException('Authentication error');  
         }
     }   

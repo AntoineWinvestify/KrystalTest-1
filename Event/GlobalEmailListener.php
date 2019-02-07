@@ -95,7 +95,7 @@ class GlobalEmailListener implements CakeEventListener {
 
 
     /**
-     * Send a confirmation to the newly registered person on the platform
+     * Send a confirmation email to the newly registered person on the platform
      * 
      * @param CakeEvent $event
      */
@@ -192,8 +192,6 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function newUserMail(CakeEvent $event) {
-        Configure::load('p2pGestor.php', 'default');
-        $this->adminData = Configure::read('admin');
 
         foreach ($event->data as $mail) {
             // Send contact text to pfp admin
@@ -221,7 +219,6 @@ class GlobalEmailListener implements CakeEventListener {
     public function billMail(CakeEvent $event) {
 
         foreach ($event->data as $mail) {
-
             // Send contact text to pfp admin
             try {
                 $Email = new CakeEmail('smtp_Winvestify');

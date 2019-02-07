@@ -40,10 +40,6 @@ PENDING:
 
 */
 
-
-
-
-App::uses('CakeEmail', 'Network/Email');
 App::uses('Security', 'Utility');
 App::uses('CakeEventListener', 'Event');
 
@@ -58,9 +54,12 @@ class GlobalCommunicationListener implements CakeEventListener {
         $runtime = new Winvestify();
         $runTimeParameters = $runtime->readRunTimeParameters();   
         $this->authKey = $runTimeParameters['runtimeconfiguration_smsProviderAuthKey'];        
-      
+
 	App::import('Vendor', 'php-rest-api-master', array('file'=>'autoload.php'));
         require APP . 'Vendor/php-rest-api-master/autoload.php';   
+        
+        $this->Investor = ClassRegistry::init('Investor');
+	$this->Investor->recursive = -1;
     }
 
     
@@ -97,9 +96,6 @@ class GlobalCommunicationListener implements CakeEventListener {
      *
      */
     public function sendConfirmationCode(CakeEvent $event) {
- 
-	$this->Investor = ClassRegistry::init('Investor');
-	$this->Investor->recursive = -1;	
 
 // First collect all the required data
 	$resultInvestor = $this->Investor->findById($event->data['id']);
@@ -113,7 +109,6 @@ class GlobalCommunicationListener implements CakeEventListener {
 
 	try {
 		$MessageResult = $MessageBird->messages->create($Message);
-
 	
 	} catch (\MessageBird\Exceptions\AuthenticateException $e) {
 		// That means that your accessKey is unknown
@@ -145,8 +140,6 @@ class GlobalCommunicationListener implements CakeEventListener {
      * @param CakeEvent  $event  Contains the event data
      */ 
     public function sendGenericSMS(CakeEvent $event) {
- 	
-	$this->Investor = ClassRegistry::init('Investor');
         
         if (isset($event->data['id'])) {
             $filterCondition = array('id' => $event->data['id']);
@@ -157,11 +150,10 @@ class GlobalCommunicationListener implements CakeEventListener {
             }
         }
 
-        $this->Investor->recursive = -1;
         $resultInvestor = $this->Investor->find("first", array(
                                     "conditions" => $filterCondition,
                                     ));            
-          
+      
 	$MessageBird         = new \MessageBird\Client($this->authKey);        
 	$Message             = new \MessageBird\Objects\Message();
 	$Message->originator = $this->adminData['genericSMSOriginator'];
@@ -186,7 +178,6 @@ class GlobalCommunicationListener implements CakeEventListener {
 		echo $e->getMessage();
 		CakeLog::write('SMS_LOG', 'writing error to log. error is ' . $e->getMessage());
 	} 
-  
     }
 
 

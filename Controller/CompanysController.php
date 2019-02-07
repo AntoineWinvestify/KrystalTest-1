@@ -149,16 +149,20 @@ class CompanysController extends AppController {
                                                           'recursive' => -1]);
 
         $j = 0;
-      
-        foreach ($results as $resultItem) { 
-            $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
 
-            foreach ($resultItem['Company'] as $key => $value) {
-                $apiResult[$j][$key] = $value;  
-            }
-            $j++;
+        if (empty($results)) {
+            $apiResult = ["data" => null];
         }
+        else {
+            foreach ($results as $resultItem) { 
+                $this->Company->apiVariableNameOutAdapter( $resultItem['Company']);
 
+                foreach ($resultItem['Company'] as $key => $value) {
+                    $apiResult[$j][$key] = $value;  
+                }
+                $j++;
+            }
+        }
         $resultJson = json_encode($apiResult);
     
         $this->response->statusCode(200);
@@ -179,7 +183,7 @@ class CompanysController extends AppController {
    public function v1_view($id){
 
         $id = $this->request->id;
-                
+           
         if (empty($this->listOfFields)) {
             $this->listOfFields = ['company_name','company_url', 
                                     'company_country', 'company_countryName', 
@@ -192,7 +196,7 @@ class CompanysController extends AppController {
                                                           'fields' => $this->listOfFields, 
                                                           'recursive' => -1
                                                          ]);
-         
+
         $this->Company->apiVariableNameOutAdapter($apiResult['Company']);
     
         $this->set(['data' => $apiResult['Company'],

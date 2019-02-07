@@ -590,7 +590,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             return $return;
         }
 
-        //Check if the investor is the owner pf the account.
+        //Check if the investor is the owner of the account.
         $this->Accountowner = ClassRegistry::init('Accountowner');
         $accountOwner = $this->Accountowner->find('first',array(
            'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),

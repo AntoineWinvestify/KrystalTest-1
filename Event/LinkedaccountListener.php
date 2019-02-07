@@ -61,14 +61,14 @@ class LinkedaccountListener implements CakeEventListener {
     public function accountQueued(CakeEvent $event) {
 
         $data = [];
-        
         $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
         var_dump($queueInfo);       
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];     
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                   // 'callbacks' => false
+            ]);
     }
    
     
@@ -85,7 +85,8 @@ class LinkedaccountListener implements CakeEventListener {
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];         
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'ANALYZING';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                  //  'callbacks' => false
+            ]);
     }
 
     
@@ -98,13 +99,13 @@ class LinkedaccountListener implements CakeEventListener {
     public function accountAnalysisFinished(CakeEvent $event) {
 
         $data = [];
-        
         $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);    
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'MONITORED';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                 //   'callbacks' => false
+            ]);
     }
 
     
@@ -116,13 +117,13 @@ class LinkedaccountListener implements CakeEventListener {
     public function accountlinkingProcessingError(CakeEvent $event) {
 
         $data = [];
-        
         $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);     
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                   // 'callbacks' => false
+            ]);
     }
 
     

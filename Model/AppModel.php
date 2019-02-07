@@ -54,15 +54,14 @@ class AppModel extends Model {
     private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
                                 'investor_dateOfBirth' => 'investor_date_of_birth',
                                 'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
-                                'linkedaccount_status' => 'linkedaccount_status',
-                                'check_dateOfBirth' => 'check_date_of_birth',        // Not a realistic value, just for testing
-                                'investor_postCode' => 'investor_postcode',
-                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code',
+                                'investor_approvalCode' => 'approval_code',
+                                'investor_postCode' => 'investor_postcode',      
+                                'investor_surname' => 'investor_surnames',
+                                'investor_accredited' => 'accredited_investor',        
                                 'company_countryName' => 'company_country_name',
                                 'company_privacyUrl' => 'company_privacy_url',
-                                'investor_approvalCode' => 'approval_code',
-                                'investor_surname' => 'investor_surnames',
-                                'investor_email' => 'email',
+                                'company_termsUrl' => 'company_terms_url',
+                                'company_logoGUID' => 'company_logo_GUID',
                                 'accountDisplayName' => 'account_display_name',
                                 'displayName' => 'display_name',
                                 'usertoken_refreshToken' => 'refresh_token',
@@ -70,12 +69,13 @@ class AppModel extends Model {
                                 'linkedaccount_accountDisplayName' => 'linkedaccount_platform_display_name',
                                 'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
                                 'linkedaccount_apiStatus' => 'linkedaccount_status',
+                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
+                                'linkedaccount_status' => 'linkedaccount_status',      
+                                'linkedaccount_currencyCode' => 'linkedaccount_currency_code',       
                                 'accountowner_username' => 'linkedaccount_username',
                                 'accountowner_password' => 'linkedaccount_password',
                                 'accountCheck'  => 'linkedaccount_linkingstatus',
                                 'requireNewAccessToken'=> 'require_new_access_token',
-                                'investor_accredited' => 'accredited_investor',
-                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
                                 'polling_new_value_exists' => 'pollingresource_newValueExists'
  
                               ];
@@ -124,10 +124,9 @@ class AppModel extends Model {
      * @return UUID
      */
     public function createInvestorReference($telephone, $username) {
-
         $hashTelephone = hash("crc32", $telephone);
         $hashUsername = hash("crc32", $username);
-        
+     
         $uuid = $hashTelephone . $hashUsername;
         /*$charid = strtoupper(md5(uniqid(rand(), true)));
         $hyphen = "-";
