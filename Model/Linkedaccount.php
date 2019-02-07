@@ -559,13 +559,14 @@ class Linkedaccount extends AppModel {
         return $return;
     }
 
+
     /**
-     * 	Delete an account that fulfills the filteringConditions
-     * 	
-     * 	@param 		int 	$linkaccountId	Must indicate at least "investor_id"
-     *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
-     * 	@return 	true	record(s) deleted
-     * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
+     * Delete a likedaccount given the id
+     * 
+     * @param type $investorId          Id of the investor that deletes the account
+     * @param type $linkaccountId       Id of the linkedaccount to delete
+     * @param type $roleName            Role of the user that want delete the account
+     * @return string|int               Feedback and html code
      */
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
                

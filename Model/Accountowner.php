@@ -292,7 +292,7 @@ class Accountowner extends AppModel {
      */
     public function api_readAccountowners($investorId, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
         $accountsResult = array();
-        $accountOwnerFields = array('Accountowner.id', 'Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
+        $accountOwnerFields = array('Accountowner.id', 'Accountowner.company_id', 'Accountowner.accountowner_username');
         $linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
             'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status', 'Linkedaccount.linkedaccount_visualStatus');
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
