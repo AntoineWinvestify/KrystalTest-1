@@ -576,7 +576,7 @@ class Linkedaccount extends AppModel {
         );
 
         if (empty($indexList)) {
-            $return['feedback_message_user'] = 'Account removal failed.';
+            $return['data']['feedback_message_user'] = 'Account removal failed.';
             $return['code'] = 403;
             return $return;
         }
@@ -586,13 +586,11 @@ class Linkedaccount extends AppModel {
             return $return;
         }
 
-        //Check if the investor is the owner of the account.
-        $this->Accountowner = ClassRegistry::init('Accountowner');
-        $accountOwner = $this->Accountowner->find('first',array(
-           'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
-        ));
-        if($accountOwner == false){
-            $return['feedback_message_user'] = 'Account removal failed.';
+        //Check if the investor is the owner of the account.  
+        $idCheck = $this->getInvestorFromLinkedaccount($linkaccountId);
+        if($idCheck !== $investorId){
+            $return['code'] = 403;
+            $return['data']['feedback_message_user'] = 'Account removal failed.';
             return $return;
         }
 
@@ -608,6 +606,7 @@ class Linkedaccount extends AppModel {
         $this->save($newData);
 
         foreach ($indexList as $index) {
+            $this->Accountowner = ClassRegistry::init('Accountowner');
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
         $return['code'] = 200;

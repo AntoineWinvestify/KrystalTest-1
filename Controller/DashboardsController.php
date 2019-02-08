@@ -128,6 +128,10 @@ class DashboardsController extends AppController {
                     $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
                 }
 
+                if($value['default_graph']){
+                     $data['data'][$blockKey][$key]['default_graph'] = true;
+                }
+                
                 //Search value
                 $model = $value['value']['model'];
                 $this->model = ClassRegistry::init($model);
