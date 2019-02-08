@@ -76,8 +76,9 @@ class AppModel extends Model {
                                 'accountowner_password' => 'linkedaccount_password',
                                 'accountCheck'  => 'linkedaccount_linkingstatus',
                                 'requireNewAccessToken'=> 'require_new_access_token',
-                                'polling_new_value_exists' => 'pollingresource_newValueExists'
- 
+                                'pollingresource_newValueExists' => 'pollingresource_new_value_exists',
+                                'pollingresource_userIdentification' => 'pollingresource_investor_id',
+                                'pollingresource_resourceId' => 'pollingresource_resource_id',
                               ];
 
     /**

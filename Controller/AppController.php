@@ -765,6 +765,8 @@ class AppController extends Controller {
             case 'monitor':
                 $link['method'] = 'GET';
                 break;
+            case 'self':
+                $link['method'] = 'GET';
             case 'list':
                 $link['method'] = 'GET';
                 break;

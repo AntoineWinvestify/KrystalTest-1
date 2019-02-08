@@ -615,7 +615,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
         $return['code'] = 200;
-        $return['data']['feedback_message_user'] = 'The account has been sucesfully been removed from your Dashboard.';
+        $return['data']['feedback_message_user'] = 'The account has been succesfully removed from your Dashboard.';
         return $return;
     }
 
