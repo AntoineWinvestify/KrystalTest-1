@@ -59,14 +59,15 @@ class LinkedaccountListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function accountQueued(CakeEvent $event) {
+
         $data = [];
-        
         $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];     
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                   // 'callbacks' => false
+            ]);
     }
    
     
@@ -77,16 +78,14 @@ class LinkedaccountListener implements CakeEventListener {
      */    
     public function accountAnalysisStarted(CakeEvent $event) {
 
-echo __FILE__ . " " . __LINE__ . " \n<br>";
-var_dump($event->data);
         $data = [];
-        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
-        var_dump($queueInfo);       
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);     
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0];         
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'ANALYZING';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                  //  'callbacks' => false
+            ]);
     }
 
     
@@ -97,17 +96,15 @@ var_dump($event->data);
      * @param CakeEvent $event
      */
     public function accountAnalysisFinished(CakeEvent $event) {
-echo __FILE__ . " " . __LINE__ . " \n<br>";
-var_dump($event->data);
+
         $data = [];
-        
-        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
-        var_dump($queueInfo);       
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);    
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'MONITORED';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                 //   'callbacks' => false
+            ]);
     }
 
     
@@ -117,17 +114,15 @@ var_dump($event->data);
      * @param CakeEvent $event
      */
     public function accountlinkingProcessingError(CakeEvent $event) {
-echo __FILE__ . " " . __LINE__ . " \n<br>";
-var_dump($event->data);
+
         $data = [];
-        
-        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);
-        var_dump($queueInfo);       
+        $queueInfo = json_decode($event->data['modelData']['Queue2']['queue2_info'], true);     
 
         $data['Linkedaccount']['id'] = $queueInfo['companiesInFlow'][0]; 
         $data['Linkedaccount']['linkedaccount_visualStatus'] = 'QUEUED';
         $this->Linkedaccount->save($data, $params = ['validate' => true,
-                                                    'callbacks' => false]);
+                                                   // 'callbacks' => false
+            ]);
     }
 
     

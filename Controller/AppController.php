@@ -157,12 +157,11 @@ class AppController extends Controller {
     
     var $uses = array('User', 'Role', 'Sector');
 
+    
+    
     /**
      * 	This code is common to all the classes that actively define a method for the beforeFilter
      * 	callback.
-     * 	It includes:
-     * 		name of cookie
-     * 		identify if mobile of desktop layout is to be used.???
      */
     public function beforeFilter() {
  
@@ -638,13 +637,13 @@ class AppController extends Controller {
      * @return array 
      */   
     public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
-  
-        foreach ($validationErrors as $key => $item) {
-            $tempArray['field'] = $key;
-            $tempArray['issue'] = $item[0];
-            $errorDetails[] = $tempArray;
+        if (!empty($validationErrors)) {
+            foreach ($validationErrors as $key => $item) {
+                $tempArray['field'] = $key;
+                $tempArray['issue'] = $item[0];
+                $errorDetails[] = $tempArray;
+            }
         }
-
         $errorArray['error_name'] = $errorName;
         $errorArray['error_message'] = $errorMessage;
         if (!empty($validationErrors)) {
@@ -766,6 +765,8 @@ class AppController extends Controller {
             case 'monitor':
                 $link['method'] = 'GET';
                 break;
+            case 'self':
+                $link['method'] = 'GET';
             case 'list':
                 $link['method'] = 'GET';
                 break;

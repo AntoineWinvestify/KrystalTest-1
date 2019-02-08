@@ -86,7 +86,7 @@ class Pollingresource extends AppModel
      * @param int $id The identification of the object to delete
      * @return boolean
      */   
-    public function api_deletePollingresource($id) {
+    public function api_deletePollingresourcexxxx($id) {
         
         
         

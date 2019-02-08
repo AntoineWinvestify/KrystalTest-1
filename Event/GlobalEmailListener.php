@@ -95,15 +95,11 @@ class GlobalEmailListener implements CakeEventListener {
 
 
     /**
-     * Send a confirmation to the newly registered person on the platform
+     * Send a confirmation email to the newly registered person on the platform
      * 
      * @param CakeEvent $event
      */
     public function newUserCreatedEmail(CakeEvent $event) {
-
-        Configure::load('p2pGestor.php', 'default');
-        $adminData = Configure::read('admin');
-
 // First collect all the required data, which btw is not a lot
         $this->Investor = ClassRegistry::init('Investor');
         $this->Investor->recursive = -1;
@@ -112,7 +108,7 @@ class GlobalEmailListener implements CakeEventListener {
 
         try {
             $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($resultInvestor['Investor']['investor_email'] => __("Client Winvestify")));
             $Email->subject(__("Thank you for registering at Winvestify"));
             $Email->template('newUser', 'standard_email_layout');
@@ -130,13 +126,11 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function contactEmail(CakeEvent $event) {
-        Configure::load('p2pGestor.php', 'default');
-        $adminData = Configure::read('admin');
         // Send contact text to server admin
         try {
             $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to(array($adminData['systemAdmin'] => __("Admin")));
+            $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->to(array($this->adminData['systemAdmin'] => __("Admin")));
             $Email->subject($event->data['subject']);
             $Email->template('adminContactform', 'standard_email_layout');
             $Email->viewVars(array('name' => $event->data['name'],
@@ -153,7 +147,7 @@ class GlobalEmailListener implements CakeEventListener {
         // Send contact text to user
         try {
             $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to($event->data['email']);
             $Email->subject($event->data['subject']);
             $Email->template('contactEmail', 'standard_email_layout');
@@ -176,13 +170,11 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function checkData(CakeEvent $event) {
-        Configure::load('p2pGestor.php', 'default');
-        $adminData = Configure::read('admin');
         // Send contact text to server admin
         try {
             $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to(array($adminData['winAdminCheck'] => __("Admin")));
+            $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->to(array($this->adminData['winAdminCheck'] => __("Admin")));
             $Email->subject("New user for your platform");
             $Email->template('winadminNewUserOcr', 'standard_email_layout');
             $Email->emailFormat('html');
@@ -200,14 +192,12 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function newUserMail(CakeEvent $event) {
-        Configure::load('p2pGestor.php', 'default');
-        $adminData = Configure::read('admin');
 
         foreach ($event->data as $mail) {
             // Send contact text to pfp admin
             try {
                 $Email = new CakeEmail('smtp_Winvestify');
-                $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+                $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
                 $Email->to($mail['Adminpfp']['adminpfp_email']);
                 $Email->subject(__("A new user want to register."));
                 $Email->template('pfpadminNewUserOcr', 'standard_email_layout');
@@ -227,15 +217,12 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function billMail(CakeEvent $event) {
-        Configure::load('p2pGestor.php', 'default');
-        $adminData = Configure::read('admin');
-        
-        foreach ($event->data as $mail) {
 
+        foreach ($event->data as $mail) {
             // Send contact text to pfp admin
             try {
                 $Email = new CakeEmail('smtp_Winvestify');
-                $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+                $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
                 $Email->to($mail['Adminpfp']['adminpfp_email']);
                 $Email->subject(__("You have a new bill."));
                 $Email->template('pfpadminNewBill', 'standard_email_layout');
@@ -258,8 +245,7 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */  
     public function appErrorEmail(CakeEvent $event) {
-        Configure::load('p2pGestor.php', 'default');
-        $adminData = Configure::read('admin');
+
         $subject = "";
         if (empty($event->data['Applicationerror']['applicationerror_typeErrorId'])) {
             $type = explode(':',$event->data['Applicationerror']['applicationerror_typeOfError'])[0];
@@ -272,8 +258,8 @@ class GlobalEmailListener implements CakeEventListener {
         }
         try {
             $Email = new CakeEmail('smtp_Winvestify');
-            $Email->from(array($adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to(array($adminData['systemAdmin'] => __("Admin")));
+            $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
+            $Email->to(array($this->adminData['systemAdmin'] => __("Admin")));
             $Email->subject($subject);
             $Email->template('applicationError', 'standard_email_layout');
             $Email->viewVars(array('applicationerrorFile' => $event->data['Applicationerror']['applicationerror_file'],

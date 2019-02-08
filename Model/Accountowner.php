@@ -286,8 +286,8 @@ class Accountowner extends AppModel {
      * Return the accountOwners of an given investor with the related linkedaccounts.
      * 
      * @param int $investorId                                                  Id of the investor
-     * @param int/array $linkedaccountStatus                                   Active or/and suspended
-     * @param int/array $accountOwnerStatus                                    Active or/and suspended
+     * @param int/array $linkedaccountStatus                                   Active or/and NOT_ACTIVE
+     * @param int/array $accountOwnerStatus                                    Active or/and NOT_ACTIVE
      * @return array
      */
     public function api_readAccountowners($investorId, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
@@ -343,8 +343,8 @@ class Accountowner extends AppModel {
      * Return the accountOwners of an given investor with the related linkedaccounts.
      * 
      * @param int $investorId                                                  Id of the investor
-     * @param int/array $linkedaccountStatus                                   Active or/and suspended
-     * @param int/array $accountOwnerStatus                                    Active or/and suspended
+     * @param int/array $linkedaccountStatus                                   Active or/and NOT_ACTIVE
+     * @param int/array $accountOwnerStatus                                    Active or/and NOT_ACTIVE
      * @return array
      */
     public function api_readAccountowner($linkedaccountId) {

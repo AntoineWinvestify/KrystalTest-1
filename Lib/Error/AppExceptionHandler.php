@@ -17,15 +17,23 @@
  */
 
 App::uses('ExceptionRenderer', 'Error');
-class AppExceptionRenderer extends ExceptionRenderer {
+class AppExceptionHandler extends ExceptionRenderer {
    function __construct($text) {
-      echo __FILE__ . " " . __LINE__ . " This is the constructorA<br>";  
+      echo __FILE__ . " " . __LINE__ . " This is the constructor for the applicayion specific handler<br>";  
       echo "text = $text";
+       $signatureInvalid =  new SignatureInvalid($error) ;  
+       $expiredException = new ExpiredException($error);
+        echo __FILE__ . " " . __LINE__ . "<br>"; 
+    //    exit;
 }    
     public function missingWidget($error) {   
         echo __FILE__ . " " . __LINE__ . "<br>"; 
     //    exit;
     }
+    
+   
+     
+    
 /*
 }
 class MissingWidgetException extends CakeException { 

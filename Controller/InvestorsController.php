@@ -46,7 +46,7 @@ class InvestorsController extends AppController {
 
     var $name = 'Investors';
     var $helpers = array('Text');
-    var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence','Ocr');
+    var $uses = array('Investor', 'Linkedaccount', 'Company', 'Urlsequence');
     var $error;
 
     
@@ -437,7 +437,8 @@ function linkAccount() {
                                      'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
                                      'Investor.investor_address1',  'Investor.investor_address2',
                                      'Investor.investor_city',  'Investor.investor_telephone',
-                                     'Investor.investor_postCode',  'Investor.investor_email'  
+                                     'Investor.investor_postCode',  'Investor.investor_email',
+                                     'Investor.investor_country', 'Investor.investor_language'
                                     ];
         } 
 
@@ -492,13 +493,17 @@ function linkAccount() {
      */
     public function v1_view($id){
         // somehow, $id is not loaded
+        if ($this->investorId <> $this->request->params['id']) {        
+            throw new UnauthorizedException('You are not authorized to access the requested resource');      
+        }
         $id = $this->request->params['id'];
         if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                     'Investor.investor_address1', 'Investor.investor_address2',
+            $this->listOfFields =   ['Pollingresource.investor_name', 'Pollingresource.investor_surname',      
+                                     'Pollingresource.investor_DNI', 'Pollingresource.polling_type', 
+                                     'Pollingresource.investor_address1', 'Pollingresource.polling_new_value_exists',
                                      'Investor.investor_city', 'Investor.investor_telephone',
-                                     'Investor.investor_postCode', 'Investor.investor_email'  
+                                     'Investor.investor_postCode', 'Investor.investor_email',
+                                     'Investor.investor_country', 'Investor.investor_language'
                                     ];
         }
 
@@ -542,19 +547,21 @@ function linkAccount() {
      */
     public function v1_edit($id) { 
         // somehow, $id is not loaded
-
-        $data = $this->request->data;
-        $dataNew = $data['data'];
-        
         if ($this->investorId <> $this->request->params['id']) {        
             throw new UnauthorizedException('You are not authorized to access the requested resource');      
         }
-            
-        $dataNew['id'] = $this->request->params['id']; 
         
-        $this->Investor->apiVariableNameInAdapter($dataNew);
-        $result = $this->Investor->save($dataNew, $validate = true);
+        $data = $this->request->data;
+        
+        if (!empty($data)) {
+            $dataNew = $data['data'];
 
+            $dataNew['id'] = $this->request->params['id']; 
+
+            $this->Investor->apiVariableNameInAdapter($dataNew);
+            $result = $this->Investor->save($dataNew, $validate = true);
+        }
+        
         if (!($result)) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
@@ -575,7 +582,6 @@ function linkAccount() {
                 $this->response->statusCode(204);
             }
         }
-        
         $this->response->type('json');
         $this->response->body($resultJson); 
         return $this->response;               
@@ -590,6 +596,11 @@ function linkAccount() {
      * @return mixed false or the database identifier of the new 'Investor' object
      */
     public function v1_add() { 
+ 
+        if ($this->roleName <> "superAdmin") {        
+            throw new UnauthorizedException('You are not authorized to access the requested resource');      
+        }   
+        
         $this->AppModel = ClassRegistry::init('AppModel');
         $data = $this->request->data;                                           // holds all the new investor data
         $newData = $data['data'];
@@ -606,7 +617,11 @@ function linkAccount() {
             $resultJson = json_encode($formattedError);
             $this->response->statusCode(500);                                    
         }
-        else {
+        else { // create the links
+            $account['feedback_message_user'] = 'Account successfully created.';
+            $account['data']['links'][] = $this->generateLink("investors", "edit", $result . '.json'); 
+            $account['data']['links'][] = $this->generateLink("investors", "delete" , $result . '.json');             
+            $resultJson = json_encode($account);           
             $this->response->statusCode(201);
         }
         
@@ -615,7 +630,41 @@ function linkAccount() {
         return $this->response;               
     }          
     
- 
-    
+  
+    /** Simple version is OK, i.e. for deling *manually* an investor
+     * This methods terminates the HTTP POST for defining a new investor.
+     * Format DELETE /api/1.0/investors.[investorId].json
+     * Example DELETE /api/1.0/investors/23.json
+     * 
+     * @return boolean
+     * @throws UnauthorizedException
+     */
+    public function v1_delete($id) { 
+
+        if ($this->roleName <> "superAdmin") {        
+            throw new UnauthorizedException('You are not authorized to access the requested resource');      
+        }         
+        $id = $this->request->params['id'];
+        $result = $this->Investor->api_deleteInvestor($id);
+        
+        if (!($result)) {
+            $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+
+            $formattedError = $this->createErrorFormat('CANNOT_DELETE_INVESTOR_OBJECT', 
+                                                        "The system encountered an undefined error, try again later on");
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(500);                                    
+        }
+        else { // create the links
+            $this->response->statusCode(200);
+            $return['feedback_message_user'] = "Account has been deleted";
+            $resultJson = json_encode($return);
+        }
+        
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
+    }          
     
 }

@@ -514,16 +514,16 @@ class User extends AppModel {
     /**
      * A new access token is generated
      * 
-     * @param string $refreshToken The refheshToken for which a new access token is to be generated
+     * @param string $refreshToken The refreshToken for which a new access token is to be generated
      * @return boolean ! JWT False in case of internal error.
      */
     public function api_getNewAccessToken($refreshToken) {
         
         $token = $this->Usertoken->api_getNewAccessUserToken($refreshToken);
         
-        if (!empty($token)) {
+        if (!empty($token)) { 
             return $token;
-        }
+        }   
         return false;
     }       
     

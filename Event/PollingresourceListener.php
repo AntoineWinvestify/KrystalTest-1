@@ -50,7 +50,7 @@ class PollingresourceListener implements CakeEventListener {
     
 
     /** 
-     * Set flag that value of monitored resource has changed
+     * Set flag indicating that the value of the monitored resource has changed
      * 
      * @param CakeEvent $event
      */

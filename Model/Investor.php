@@ -900,7 +900,7 @@ class Investor extends AppModel {
        
         // Observe that username is not saved to the Investor model, but only required for generating the "investor_identity"
         if (!$this->id && !isset($this->data[$this->alias][$this->primaryKey])) {
-            $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['username']); 
+            $this->data['Investor']['investor_identity'] = $this->createInvestorReference($this->data['Investor']['investor_telephone'], $this->data['Investor']['investor_email']); 
         }    
     }
 
@@ -964,34 +964,36 @@ class Investor extends AppModel {
             foreach ($userData as $key => $userItem) {
                 $userData['Investor'][$key] = $userItem;
             }
-        }        
+        } 
+      
         // Require the minimum set of data for creating the Investor object
         if (empty($userData['Investor']['investor_email']) || 
             empty($userData['Investor']['password']) ||
             empty($userData['Investor']['investor_telephone'])) {
                 return false;
         }
-
         if ($this->save($userData, $validate = true)) {
             $investorId = $this->id;           
             $this->Check = ClassRegistry::init('Check');
-            
+           
             if (!$this->Check->api_addCheck($investorId, ['telephone', 'email', 'identity'])) {
                 $this->delete($investorId);
+
                 return false;
             }
             $checkId = $this->Check->id;
 
             $this->User = ClassRegistry::init('User');
 
-            if (!$this->User->api_addUser($investorId, $userData['Investor']['username'], 
+            if (!$this->User->api_addUser($investorId, $userData['Investor']['investor_email'], 
                                                   $userData['Investor']['password'], 
                                                   $userData['Investor']['investor_email'])) {
-                $this->Check->delete($checkId);
+              
+                $this->Check->delete($checkId);                   
                 $this->delete($investorId);
-                echo __FILE__ . " " . __LINE__ ."\n<br>";
                 return false;
             }
+            
             $userId = $this->User->id;
    /*          
             $this->Pmessage = ClassRegistry::init('Pmessage');
@@ -1001,10 +1003,43 @@ class Investor extends AppModel {
                 $this->delete($investorId);               
                 return false;
             }
-   */ 
+   */           
             $this->id = $investorId;
             $this->save(array('user_id' => $userId));
             return $investorId;
         }   
     }
+    
+    
+    
+    
+    /**
+     * THIS IS NOT THE COMPLETE VERSION, IN WHICH WE SHOULD HAVE A STATE IN INVESTOR
+     * 
+     * @param int $investorId The id of the investor to be deleted
+     * @return boolean
+     */
+    public function api_deleteInvestor($investorId) {  
+        $this->Check = ClassRegistry::init('Check'); 
+        $this->User = ClassRegistry::init('User');    
+      
+        $resultInvestor = $this->find('first', $params = ['recursive' => -1,
+                                                  'conditions' => ['id' => $investorId]
+                                                 ]);
+
+        $resultCheck = $this->Check->find('first', $params = ['recursive' => -1,
+                                                  'conditions' => ['investor_id' => $investorId]
+                                                 ]);    
+       
+        if ($resultInvestor) {
+            $this->User->delete($resultInvestor['Investor']['user_id']);
+            $this->Check->delete($resultCheck['Check']['id']);
+            $this->delete($investorId);
+            return true;
+        }
+        
+        
+    }
+     
+    
 }

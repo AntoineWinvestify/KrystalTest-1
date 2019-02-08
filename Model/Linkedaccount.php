@@ -229,7 +229,7 @@ class Linkedaccount extends AppModel {
                     case 'ACTIVE':
                         $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_ACTIVE;
                         break;
-                    case 'SUSPENDED':
+                    case 'NOT_ACTIVE':
                         $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
                         break;
                     default:
@@ -295,7 +295,7 @@ class Linkedaccount extends AppModel {
                         $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'ACTIVE';
                         break;
                     case WIN_LINKEDACCOUNT_NOT_ACTIVE:
-                        $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'SUSPENDED';
+                        $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'NOT_ACTIVE';
                         break;
                     default:
                         $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'UNDEFINED';
@@ -586,7 +586,7 @@ class Linkedaccount extends AppModel {
             return $return;
         }
 
-        //Check if the investor is the owner pf the account.
+        //Check if the investor is the owner of the account.
         $this->Accountowner = ClassRegistry::init('Accountowner');
         $accountOwner = $this->Accountowner->find('first',array(
            'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
