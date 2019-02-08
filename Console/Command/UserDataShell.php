@@ -1547,17 +1547,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
     }
 
     
-    /**
-     * 
-     * @param  array $transactionData array with the current transaction data    
-     * @param  array $resultData array with all data so far calculated and to be written to DB
-     * @return string bonus amount
-     */
-    function calculatePlatformRecoveries(&$transactionData, &$resultData) {
-        //$result = $resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'];
-        //$result = bcadd($result, $transactionData['amount'], 16);
-        return $transactionData['amount'];
-    }
+
     
     function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
         return $transactionData['amount'];

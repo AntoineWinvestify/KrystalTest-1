@@ -1037,8 +1037,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         10011, 10012, 10013, 10016, 10017, 10018, 
                         10019, 10020, 10021, 10022, 10023, 10024, 
                         10025, 10026, 10027, 10028, 10029,
-                        10031, 10032, 10033, 10034
-                        );
+                        10031, 10032, 10033, 10034);
                     foreach ($internalVariablesToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
