@@ -783,10 +783,10 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return($resultData['payment']['payment_secondaryMarketSell']);    
     }
     public function calculateGlobalTotalReapymentGuarantee(&$transactionData, &$resultData) {
-        return($resultData['payment']['globaltotalsdata_principalRepaymentGuarantee']);    
+        return($resultData['payment']['payment_principalRepaymentGuarantee']);    
     }
     public function calculateGlobalTotalInterestIncomeGuarantee(&$transactionData, &$resultData) {
-        return($resultData['payment']['globaltotalsdata_interestIncomeGuarantee']);    
+        return($resultData['payment']['payment_interestIncomeGuarantee']);    
     }
     
     
