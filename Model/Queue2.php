@@ -284,9 +284,9 @@ class Queue2 extends AppModel {
                     $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
                     
                     $linkedAccountId = $queue2_infoDecoded['companiesInFlow'];
-                    $linkedAccountData = $this->Linkedaccount->getLinkedaccountDataList(['id' => $linkedAccountId]); 
+                    $linkedAccountData = $this->Linkedaccount->getLinkedaccountDataList(['Linkedaccount.id' => $linkedAccountId]); 
                     $this->Company = ClassRegistry::init('Company');
-                    $data = $this->Company->getData( ['id' => $linkedAccountData[0]['Linkedaccount']['company_id'] ]);
+                    $data = $this->Company->getData( ['Company.id' => $linkedAccountData[0]['Linkedaccount']['company_id'] ]);
 
                     $companyName = $data[0]['Company']['company_name'];
                 

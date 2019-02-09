@@ -286,13 +286,13 @@ class Accountowner extends AppModel {
      * Return the accountOwners of an given investor with the related linkedaccounts.
      * 
      * @param int $investorId                                                  Id of the investor
-     * @param int/array $linkedaccountStatus                                   Active or/and suspended
-     * @param int/array $accountOwnerStatus                                    Active or/and suspended
+     * @param int/array $linkedaccountStatus                                   Active or/and NOT_ACTIVE
+     * @param int/array $accountOwnerStatus                                    Active or/and NOT_ACTIVE
      * @return array
      */
     public function api_readAccountowners($investorId, $linkedaccountStatus = WIN_LINKEDACCOUNT_ACTIVE, $accountOwnerStatus = WIN_ACCOUNTOWNER_ACTIVE) {
         $accountsResult = array();
-        $accountOwnerFields = array('Accountowner.id', 'Accountowner.company_id', 'Accountowner.accountowner_username', 'Accountowner.accountowner_password');
+        $accountOwnerFields = array('Accountowner.id', 'Accountowner.company_id', 'Accountowner.accountowner_username');
         $linkedaccountFields = array('Linkedaccount.id', 'Linkedaccount.linkedaccount_accountIdentity', 'Linkedaccount.linkedaccount_accountDisplayName',
             'Linkedaccount.linkedaccount_currency', 'Linkedaccount.linkedaccount_status', 'Linkedaccount.linkedaccount_visualStatus');
         $filterConditions = array('Accountowner.investor_id' => $investorId, 'Accountowner.accountowner_status' => $accountOwnerStatus);
@@ -343,8 +343,8 @@ class Accountowner extends AppModel {
      * Return the accountOwners of an given investor with the related linkedaccounts.
      * 
      * @param int $investorId                                                  Id of the investor
-     * @param int/array $linkedaccountStatus                                   Active or/and suspended
-     * @param int/array $accountOwnerStatus                                    Active or/and suspended
+     * @param int/array $linkedaccountStatus                                   Active or/and NOT_ACTIVE
+     * @param int/array $accountOwnerStatus                                    Active or/and NOT_ACTIVE
      * @return array
      */
     public function api_readAccountowner($linkedaccountId) {
@@ -387,12 +387,12 @@ class Accountowner extends AppModel {
         if (!empty($result) && $accounts != false && empty($accounts['error'])) {
             if ($this->save(['id' => $accountownerId, 'accountowner_password' => $newPass])) {
                 $feedback['code'] = 200;
-                $feedback['data']['feedback_message_user'] = 'Your password has been succesfully changed';
+                $feedback['data']['feedback_message_user'] = 'Your password has been successfully changed.';
                 return $feedback;
             }
         }
         $feedback['code'] = 403;
-        $feedback['data']['feedback_message_user'] = "Your password couldn't be succesfully changed, try later or check your password.";
+        $feedback['data']['feedback_message_user'] = "Your password couldn't be successfully changed, try later or check your password.";
         return $feedback;
     }
     

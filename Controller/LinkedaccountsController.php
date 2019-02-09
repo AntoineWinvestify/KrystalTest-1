@@ -35,7 +35,7 @@
 class LinkedaccountsController extends AppController {
 
     var $name = 'Linkedaccounts';
-    var $uses = array('Linkedaccount', 'Accountowner', 'Tooltip');
+    var $uses = array('Linkedaccount', 'Accountowner', 'Tooltip', 'Pollingresource');
     var $error;
 
     function beforeFilter() {
@@ -142,7 +142,7 @@ class LinkedaccountsController extends AppController {
         $password = $data['accountowner_password'];
         $identity = $data['linkedaccount'][0]['linkedaccount_accountIdentity'];
         $displayName = $data['linkedaccount'][0]['linkedaccount_accountDisplayName'];
-        if ($this->$data['linkedaccount'][0]['linkedaccount_currency']) {
+        if (!empty($this->$data['linkedaccount'][0]['linkedaccount_currency'])) {
             $currency = $this->$data['linkedaccount'][0]['linkedaccount_currency'];
         }
 
@@ -161,18 +161,18 @@ class LinkedaccountsController extends AppController {
             $resourceId = $this->Pollingresource->getData(array('pollingresource_userIdentification' => $this->investorId,
                                                                 'pollingresource_status' => ACTIVE,
                                                                  'pollingresource_interval >' => 0,
-                                                                 'pollingresource_resourceId' => $account['data']['Linkedaccount']['id']), 
-            '                                           id', null, null, 'first')['Pollingresource']['id'];
-                          
+                                                                 'pollingresource_resourceId' => $account['data']['linkedaccount']['id']), 
+                                                                 'id', null, null, 'first');
+            $resourceId = $resourceId['Pollingresource']['id'];
             $account['feedback_message_user'] = 'Account successfully linked.';
             $this->Accountowner->apiVariableNameOutAdapter($account['data']);
             $this->Accountowner->apiVariableNameOutAdapter($account['data']['linkedaccount']);
             
             $account['data']['linkedaccount']['links'][] = $this->generateLink('linkedaccounts', 'edit', $account['data']['linkedaccount']['id']);
             $account['data']['linkedaccount']['links'][] = $this->generateLink('linkedaccounts', 'delete', $account['data']['linkedaccount']['id']);
-            $accounts['data']['links'][] = $this->generateLink('pollingresources', 'delete', $resourceId . '.json');
-            $accounts['data']['links'][] = $this->generateLink('pollingresources', 'monitor', $resourceId . '.json');
-                
+            $account['data']['linkedaccount']['links'][] = $this->generateLink('pollingresources', 'delete', $resourceId . '.json');
+            $account['data']['linkedaccount']['links'][] = $this->generateLink('pollingresources', 'monitor', $resourceId . '.json');
+            
             $account = json_encode($account);
             $this->response->type('json');
             $this->response->body($account); 

@@ -229,7 +229,7 @@ class Linkedaccount extends AppModel {
                     case 'ACTIVE':
                         $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_ACTIVE;
                         break;
-                    case 'SUSPENDED':
+                    case 'NOT_ACTIVE':
                         $queryData['conditions']['Linkedaccount.linkedaccount_status'][$key] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
                         break;
                     default:
@@ -264,13 +264,8 @@ class Linkedaccount extends AppModel {
             return $result;
         }
         else {          // update of already existing object
-echo __FILE__ . " " . __LINE__ . " \n<br>";
-var_dump($this->data);
-
             if (isset($this->data['Linkedaccount']['linkedaccount_visualStatus'])) {
-   echo __FILE__ . " " . __LINE__ . " \n<br>"; 
                 $investorId = $this->getInvestorFromLinkedaccount($this->data['Linkedaccount']['id']);
-echo "investorId = $investorId<br>";
                 $event = new CakeEvent("Model.Linkedaccount.Analyzing", $this, 
                                        array(
                                            'model' => "Linkedaccount",
@@ -280,7 +275,6 @@ echo "investorId = $investorId<br>";
                                            'id' => $this->data['Linkedaccount']['id'],
                                            ));
                 $this->getEventManager()->dispatch($event);
-echo __FILE__ . " " . __LINE__ . " \n<br>";                
                 return true;               
             }  
         }
@@ -301,7 +295,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
                         $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'ACTIVE';
                         break;
                     case WIN_LINKEDACCOUNT_NOT_ACTIVE:
-                        $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'SUSPENDED';
+                        $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'NOT_ACTIVE';
                         break;
                     default:
                         $results[$key]['Linkedaccount']['linkedaccount_apiStatus'] = 'UNDEFINED';
@@ -554,6 +548,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         if(empty($accounts)){
             //ERROR LOGIN 
             $error = array();
+            //$error['code'] = ;
             $error['error']['error_message'] = 'Error at login. User or password incorrect.';
             $error['error']['error_name'] = 'ERROR_PRECHECK';
             $error['error']['error_information_link'] = '';
@@ -564,13 +559,14 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         return $return;
     }
 
+
     /**
-     * 	Delete an account that fulfills the filteringConditions
-     * 	
-     * 	@param 		int 	$linkaccountId	Must indicate at least "investor_id"
-     *  @param          int     $originator     WIN_USER_INITIATED OR WIN_SYSTEM_INITIATED
-     * 	@return 	true	record(s) deleted
-     * 				false	no record(s) fulfilled $filteringConditions or incorrect filteringConditions
+     * Delete a likedaccount given the id
+     * 
+     * @param type $investorId          Id of the investor that deletes the account
+     * @param type $linkaccountId       Id of the linkedaccount to delete
+     * @param type $roleName            Role of the user that want delete the account
+     * @return string|int               Feedback and html code
      */
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
                
@@ -580,7 +576,7 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         );
 
         if (empty($indexList)) {
-            $return['feedback_message_user'] = 'Account removal failed.';
+            $return['data']['feedback_message_user'] = 'Account removal failed.';
             $return['code'] = 403;
             return $return;
         }
@@ -590,13 +586,11 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
             return $return;
         }
 
-        //Check if the investor is the owner of the account.
-        $this->Accountowner = ClassRegistry::init('Accountowner');
-        $accountOwner = $this->Accountowner->find('first',array(
-           'conditions' => array('Accountowner.id' => $indexList[0]['Linkedaccount']['accountowner_id'], 'investor_id' => $investorId),
-        ));
-        if($accountOwner == false){
-            $return['feedback_message_user'] = 'Account removal failed.';
+        //Check if the investor is the owner of the account.  
+        $idCheck = $this->getInvestorFromLinkedaccount($linkaccountId);
+        if($idCheck !== $investorId){
+            $return['code'] = 403;
+            $return['data']['feedback_message_user'] = 'Account removal failed.';
             return $return;
         }
 
@@ -612,10 +606,11 @@ echo __FILE__ . " " . __LINE__ . " \n<br>";
         $this->save($newData);
 
         foreach ($indexList as $index) {
+            $this->Accountowner = ClassRegistry::init('Accountowner');
             $this->Accountowner->accountDeleted($index['Linkedaccount']['accountowner_id']);
         }
         $return['code'] = 200;
-        $return['data']['feedback_message_user'] = 'The account has been succesfully removed from your Dashboard.';
+        $return['data']['feedback_message_user'] = 'The account has been sucessfully been removed from your Dashboard.';
         return $return;
     }
 

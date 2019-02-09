@@ -91,6 +91,10 @@ class Investor extends AppModel {
             'className' => 'Ocr',
             'ForeignKey' => 'investor_id',
             'associationForeignKey' => 'ocr_id',
+        ),
+        'Globaldashboard' => array(
+            'className' => 'Globaldashboard',
+            'ForeignKey' => 'investor_id',
         )
     );
     public $hasAndBelongsToMany = array(
