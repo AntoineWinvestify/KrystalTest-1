@@ -46,7 +46,6 @@ App::uses('CakeEventListener', 'Event');
 class GlobalCommunicationListener implements CakeEventListener {
 
     function __construct() {
-        Configure::load('p2pGestor.php', 'default'); 
         $this->adminData = Configure::read('admin');         
         
         $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)

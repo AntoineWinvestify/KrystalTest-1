@@ -76,7 +76,6 @@ class GlobalEmailListener implements CakeEventListener {
             'applicationErrorReported' => 'appErrorEmail',
         );
         
-        Configure::load('p2pGestor.php', 'default');
         $configuredEvents = Configure::read('event');
         foreach ($configuredEvents as $key => $value) {
             if ($value == true) {
@@ -89,7 +88,6 @@ class GlobalEmailListener implements CakeEventListener {
     }
 
     function __construct() {
-        Configure::load('p2pGestor.php', 'default');
         $this->adminData = Configure::read('admin');           
     }
 

@@ -76,9 +76,7 @@ class UsersController extends AppController
 
 
 function beforeFilter() {
-    if ($this->request->param['action'] == 'v1_refreshToken') {
-        echo "DDDDDDDDDDDDDD";
-    }
+
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
 
     $this->Auth->allow('v1_login');

@@ -925,7 +925,7 @@ class Investor extends AppModel {
     /**
      * Checks if a field is write protected
      * 
-     * @param type $check
+     * @param array $check An array with the data to be checked
      * @return boolean
      */
     public function writeProtected($check) { 

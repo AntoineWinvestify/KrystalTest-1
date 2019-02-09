@@ -217,5 +217,45 @@ class PollingresourcesController extends AppController
         return $this->response; 	
     }
 
+ 
+    /** 
+     * Simple version is OK, ie. for creating a Pollingresource. Used for testing purposes only
+     * This methods terminates the HTTP POST for defining a new investor.
+     * Format POST /api/1.0/pollingresources.json
+     * Example POST /api/1.0/pollingresources.json
+     * All the data is located in the POST body as a json 
+     * This command is limited to be used by superuser only
+     * 
+     * @return mixed false or the Links object of the new 'Investor' object
+     */
+    public function v1_add() { 
+ 
+        if ($this->roleName <> "superAdmin") {        
+            throw new UnauthorizedException('You are not authorized to access the requested resource');      
+        }   
+        
+        $result = $this->Investor->api_addPollingresource($this->request->data);
+        
+        if (!($result)) {
+            $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
+            $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
+            $formattedError = $this->createErrorFormat('CANNOT_CREATE_POLLINGRESOURCE_OBJECT', 
+                                                        "The system encountered an undefined error, try again later on");
+            $resultJson = json_encode($formattedError);
+            $this->response->statusCode(500);                                    
+        }
+        else { // create the links
+            $account['feedback_message_user'] = 'Account successfully created.';
+            $account['data']['links'][] = $this->generateLink("investors", "self", $result . '.json'); 
+            $account['data']['links'][] = $this->generateLink("investors", "delete" , $result . '.json');             
+            $resultJson = json_encode($account);           
+            $this->response->statusCode(201);
+        }
+        
+        $this->response->type('json');
+        $this->response->body($resultJson); 
+        return $this->response;               
+    }      
+    
 }

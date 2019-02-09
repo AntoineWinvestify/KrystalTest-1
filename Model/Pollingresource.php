@@ -35,28 +35,37 @@ Pending:
 
 class Pollingresource extends AppModel
 {
-	var $name= 'Pollingresource';
+    var $name= 'Pollingresource';
 
 
-  
-    /**
-     *  Rules are defined for what should happen after a database record has been read
+    /** 
+     * Call back 
+     * Rules are defined for what should happen after a database record has been read
+     * - Resets the pollingresource_newValueExists flag after it has been read
      * 
-     * 	@param array $results Array that contains the returned results from the model’s find operation
-     *  @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
-     *                            or whether or not this model was queried as an association
-     */
-    public function afterFind($results, $primary = false) {
-        // reset the field 'pollingresource_newValueExists' before returning results
-        if (isset($results['Pollingresource']['pollingresource_newValueExists'])) {
-            if ($results['Pollingresource']['pollingresource_newValueExists']) {
-                $this->id = $results['id'];
-                $this->saveField('pollingresource_newValueExists', false);
-            }  
-        }
-        return $results;
-    }
+     * @param array $results Array that contains the returned results from the model’s find operation
+     * @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
+     * @return array The (possibly modified) result(s) of the find operation
+     */    
+    function afterFind(array $results, $primary = null)  {
 
+        foreach ($results as $key => $result) {
+
+            if (isset($result['Pollingresource']['pollingresource_newValueExists'])) {
+                if ($result['Pollingresource']['pollingresource_newValueExists'] == 1) {
+                    $this->clear();
+                    $this->id = $result['Pollingresource']['id']; 
+                    $this->saveField('pollingresource_newValueExists', 0);
+                }
+            }
+        }     
+        return $results;
+    }  
+    
+    
+    
+    
+    
     
     /**
      * 	Rules are defined for what should happen before a database record is created or updated.
@@ -74,8 +83,8 @@ class Pollingresource extends AppModel
      * 	@param boolean $created True if a new record was created (rather than an update).
      *  @param array $options
      */
-    function afterSavexx($created, $options = array()) {
-  
+    function afterSave($created, $options = array()) {
+
     }
 
 
