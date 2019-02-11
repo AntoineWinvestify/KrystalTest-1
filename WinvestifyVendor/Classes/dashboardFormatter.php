@@ -91,7 +91,7 @@ class dashboardFormatter {
                 "display_name" => $graphInfo['displayName'],
                 "data" => [
                         "max_value" => $graphInfo["maxValue"],
-                        "percent" => $data
+                        "percent" => round($data, WIN_SHOW_DECIMAL)
                         ],
                 ]
             ];
@@ -140,6 +140,8 @@ class dashboardFormatter {
      */
     function genericInvestmentListFormatter($investmentResults, $companyId, $listInfo) {
         $investmentResultsNormalized = Hash::extract($investmentResults, '{n}.Investment');
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $currency = $this->Linkedaccount->getCurrency($listInfo['linkedaccountId']);
         foreach ($investmentResultsNormalized as $key => $item) {
             foreach ($item as $key1 => $value) {
                 switch ($key1) {
@@ -153,20 +155,20 @@ class dashboardFormatter {
                         $i++;
                         break;
                     case 'myInvestmentFloat':
-                        $temp[$key][3]["value"]["amount"] = $value;
+                        $temp[$key][3]["value"]["amount"] = round($value, WIN_SHOW_DECIMAL);
                         $temp[$key][3]["value"]["currency_code"] = $currency;
                         $i++;
                         break;
                     case 'interestFloat':
-                        $temp[$key][4]["value"]["percent"] = $value;
+                        $temp[$key][4]["value"]["percent"] = round($value, WIN_SHOW_DECIMAL);
                         $i++;
                         break;
                     case 'progressFloat':
-                        $temp[$key][5]["value"]["percent"] = $value;
+                        $temp[$key][5]["value"]["percent"] = round($value, WIN_SHOW_DECIMAL);
                         $i++;
                         break;
                     case 'outstandingFloat':
-                        $temp[$key][6]["value"]["amount"] = $value;
+                        $temp[$key][6]["value"]["amount"] = round($value, WIN_SHOW_DECIMAL);
                         $temp[$key][6]["value"]["currency_code"] = $currency;
                         $i++;
                         break;

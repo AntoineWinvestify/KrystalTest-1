@@ -65,12 +65,13 @@ class LinkedaccountsController extends AppController {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
             $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['Linkedaccount']['id'] . '.json');
             $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['Linkedaccount']['id'] . '.json');
-            if($account['linkedaccount_visualStatus'] !== 'MONITOR'){
+            if ($account['linkedaccount_visualStatus'] !== 'MONITOR') {
                 $resourceId = $this->Pollingresource->getData(array('pollingresource_userIdentification' => $this->investorId,
-                                           'pollingresource_status' => ACTIVE,
-                                            'pollingresource_interval >' => 0,
-                                            'pollingresource_resourceId' => $accounts['data'][$key]['Linkedaccount']['id']), 
-                'id', null, null, 'first')['Pollingresource']['id'];
+                                                                    'pollingresource_status' => ACTIVE,
+                                                                    'pollingresource_interval >' => 0,
+                                                                    'pollingresource_resourceId' => $accounts['data'][$key]['Linkedaccount']['id']), 
+                                                            'id', null, null, 'first')['Pollingresource']['id'];
+
                 $accounts['data'][$key]['links'][] = $this->generateLink('pollingresources', 'delete', $resourceId . '.json');
                 $accounts['data'][$key]['links'][] = $this->generateLink('pollingresources', 'monitor', $resourceId . '.json');
             }

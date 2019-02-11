@@ -55,7 +55,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_activeInvestments"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -79,7 +79,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_cashDrag"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -91,7 +91,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_outstandingPrincipal"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -103,7 +103,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_reservedAssets"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -115,7 +115,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_cashInPlatform"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -127,7 +127,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_netAnnualReturnPastYear"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -139,7 +139,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_netAnnualReturnPast12Months"
      * 
-     * @param int  $investorId The object reference for the linked account             //Global historical not implemented
+     * @param int  $investorId The object reference for the linvestor             //Global historical not implemented
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -152,7 +152,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_netAnnualTotalFundsReturn"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -164,7 +164,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_netReturnPast12Months"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -176,7 +176,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_netReturnPastYear"
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -188,7 +188,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the historical data of the datum "globaldashboard_netTotal"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @return boolean
      */
@@ -200,7 +200,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the datum "globaldashboard_current"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                   //Not used
      * @return boolean
      */
@@ -211,7 +211,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                   //Not used
      * @return boolean
      */
@@ -222,7 +222,7 @@ class Globaldashboard extends AppModel {
     /**
      * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
+     * @param int  $investorId The object reference for the investor
      * @param string $period                                                   //Not used
      * @return boolean
      */

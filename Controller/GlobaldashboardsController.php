@@ -44,8 +44,8 @@ function beforeFilter() {
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
      * Format:
-     * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
-     * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
+     * GET /api/1.0/globaldashboards/{investorId}/
+     * Example: GET /api/1.0/globaldashboards/1051/
      * 
      * @param -
      * 
@@ -97,13 +97,9 @@ function beforeFilter() {
     
     
     /** PENDING: ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP GET.
-     * Format GET /api/1.0/dashboards.json?_fields=x,y,z
-     * Example GET /api/1.0/dashboard.json?investor_country=SPAIN&_fields=investor_name,investor_surname
-     * 
-     * Other format:
-     * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
-     * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
+
+     * GET /api/1.0/globaldashboards/{investorId}/{graphicsIdentification}?period=year
+     * Example: GET /api/1.0/globaldashboards/1051/graphics/active-investments-graph-data?period=year
      * 
      * @param -
      * 
