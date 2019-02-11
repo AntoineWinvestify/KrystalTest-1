@@ -195,6 +195,7 @@ class PollingresourcesController extends AppController
      * Example DELETE /api/1.0/pollingresources/18.json
      * 
      * @param int   $id The database identifier of the 'Pollingresource' resource
+     * @return Object resp
      * @throws UnauthorizedException
      */
     function v1_delete($id)  {

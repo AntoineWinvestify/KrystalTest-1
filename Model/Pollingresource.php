@@ -54,7 +54,9 @@ class Pollingresource extends AppModel
                         'pollingresource_type', 
                         'pollingresource_value',
                         'pollingresource_resourceId',
-                        'pollingresource_links'
+                        'pollingresource_links',
+                        'modified',
+                        'created'
             ],              
         'superAdmin' => ['id', 
                         'pollingresources_userIdentification', 
@@ -63,7 +65,9 @@ class Pollingresource extends AppModel
                         'pollingresource_type', 
                         'pollingresource_value',
                         'pollingresource_resourceId',
-                        'pollingresource_links'            
+                        'pollingresource_links',
+                        'modified',
+                        'created'            
                       ],                
     ];
     
@@ -77,7 +81,7 @@ class Pollingresource extends AppModel
      * @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
      * @return array The (possibly modified) result(s) of the find operation. 
      */    
-    function afterFind(array $results, $primary = null)  {
+    function afterFind($results, $primary = false)  {
 
         foreach ($results as $key => $result) {
 
@@ -91,9 +95,6 @@ class Pollingresource extends AppModel
         }     
         return $results;
     }  
-    
-    
-    
     
     
     
@@ -113,7 +114,7 @@ class Pollingresource extends AppModel
      * 	@param boolean $created True if a new record was created (rather than an update).
      *  @param array $options
      */
-    function afterSave($created, $options = array()) {
+    function afterSavexx($created, $options = array()) {
 
     }
 
@@ -125,10 +126,9 @@ class Pollingresource extends AppModel
      * @param int $id The identification of the object to delete
      * @return boolean
      */   
-    public function api_deletePollingresourcexxxx($id) {
-        
-        
-        
+    public function api_deletePollingresource($id) {
+        $this->delete($id);
+        return;
     }
  
     

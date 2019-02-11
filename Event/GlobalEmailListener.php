@@ -69,7 +69,7 @@ class GlobalEmailListener implements CakeEventListener {
 // Determine which events have been selected in the config file
         $allImplementedEvents = array(
             'newUserCreated' => 'newUserCreatedEmail',
-            'Model.Email.sendMessage' => 'contactEmail',
+            'Model.Email.SendMessage' => 'contactEmail',
             'checkMessage' => 'checkData',
             'billMailEvent' => 'billMail',
             'pfpMail' => 'newUserMail',
@@ -84,6 +84,7 @@ class GlobalEmailListener implements CakeEventListener {
                 }
             }
         }
+
         return ($selectedEvents);
     }
 
@@ -124,46 +125,51 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function contactEmail(CakeEvent $event) {
-        // Send contact text to server admin  $event->data['userIdentification']
+  
+        $subjectContactForm = Configure::read('subjectContactForm');   
+
+        // Send contact text to server administrator    
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($this->adminData['systemAdmin'] => __("Admin")));
-            $Email->subject($event->data['modelData']['Email']['email_senderSubject']);
+            $Email->subject($subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']]);
             $Email->template('adminContactform', 'standard_email_layout');
             $Email->viewVars(array('name' => $event->data['modelData']['Email']['email_senderName'] . " " . 
                                                            $event->data['modelData']['Email']['email_senderSurname'],
                 'text' => $event->data['modelData']['Email']['email_senderText'],
-                'subject' => $event->data['modelData']['Email']['email_senderSubject'],
+                'subject' => $subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']],
                 'email' => $event->data['modelData']['Email']['email_senderEmail']));
             $Email->emailFormat('html');
-            $Email->send();
+            $Email->send();          
         } catch (Exception $e) {
             $infoString = __FILE__ . " " . __LINE__ . " Event: 'SendContactMessage'. Caught email exception: " . $e->getMessage() . "\n";
             CakeLog::error($infoString);
             echo $infoString;
         }
+        
         // Send contact text to user
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to($event->data['modelData']['Email']['email_senderEmail']);
-            $Email->subject($event->data['modelData']['Email']['email_senderSubject']);
+            $Email->subject($subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']]);
             $Email->template('contactEmail', 'standard_email_layout');
             $Email->viewVars(array('name' => $event->data['modelData']['Email']['email_senderName'] . " " . 
                                                            $event->data['modelData']['Email']['email_senderSurname'],
                 'text' => $event->data['modelData']['Email']['email_senderText'],
-                'subject' => $event->data['modelData']['Email']['email_senderSubject'],
+                'subject' => $subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']],
                 'email' => $event->data['modelData']['Email']['email_senderEmail']));
             $Email->emailFormat('html');
             $Email->send();
+            
         } catch (Exception $e) {
             $infoString = __FILE__ . " " . __LINE__ . " Event: 'sendContactMessage. Caught email exception: " . $e->getMessage() . "\n";
             CakeLog::error($infoString);
             echo $infoString;
         }
     }
-
+ 
     /**
      * Mail to pfp admins after checking all investor data
      * 

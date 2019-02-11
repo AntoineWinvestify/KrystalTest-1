@@ -228,25 +228,28 @@ $aclConfiguration = [
 echo "Generate an event<br>";
     // Generate an event
 
-echo $this->Investor->createInvestorReference('+443344556688', 'myNewEmailAddress891@gmail.com'); 
-exit; 
-    $event = new CakeEvent("accountLinkingFullyFinished", $this, 
+//echo $this->Investor->createInvestorReference('+443344556688', 'myNewEmailAddress891@gmail.com'); 
+//exit; 
+    $event = new CakeEvent("Model.Email.SendMessage", $this, 
                             array(
-                                'model' => "Queue2",
+                                'model' => "Email",
                                 'isFinalEvent' => false,
                                 'investor_userReference' => "39048098ab409be490A", 
                                 'userIdentification' => 8831445566,
                                 'messageContent'        => __('Your account on platform XXXX1'),
-                                'modelData' => ['Queue2' => ['id' => 2147,
-                                    'queue2_type' => 1,
-                                    'queue2_userReference' => '39048098ab409be490A',
-                                    'queue2_info' => '{"originExecution":1,"date":"20180628","startDate":{"1036":null},"numberTries":0,"companiesInFlow":[1036]}',
-                                    'queue2_status' => 75,
+                                'modelData' => ['Email' => ['id' => 2147,
+                                    'email_senderEmail' => "antoine@winvestify.com",
+                                    'email_senderName' => 'Antoine',
+                                    'email_senderSurname' => 'de Poorter',
+                                    'email_senderSubject' => 'feature',
+                                    'email_senderText' => "this is a dummy test",
+                                    'email_senderTelephone' => "+3344556677",
                                     'id' => 2147
                                     ]],
                            //     'id' => 1
                                 )
                                     );
+    
  echo __FILE__ . " " . __LINE__ . " \n<br>";
     $this->getEventManager()->dispatch($event);
  echo __FILE__ . " " . __LINE__ . " \n<br>";     

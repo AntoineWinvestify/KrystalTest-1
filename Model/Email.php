@@ -62,7 +62,7 @@ class Email extends AppModel
             ],
             'checkTelephoneNumber' => [
                 'rule' => 'checkTelephoneNumber',
-                'message' => 'The telephone number can only contain number and the + sign',
+                'message' => 'The telephone number can only contain numbers and the + sign',
             ]
         ],
         'email_senderCompany' => [        
@@ -75,7 +75,7 @@ class Email extends AppModel
             'length_rule' => ['rule' => ['minLength', 5, 2000],
                 'allowEmpty' => false,
                 'required'   => true,
-                'message' => 'Please add your text'
+                'message' => 'Please add your message'
             ],         
         ],
         'email_senderJobTitle' => [ 
@@ -106,7 +106,9 @@ class Email extends AppModel
                         'email_senderJobTitle',            
                         'email_senderSubject',             
                         'email_senderText', 
-                        'email_links'            
+                        'email_links',
+                        'modified',
+                        'created'            
                       ],
         
         'superAdmin' => ['id', 
@@ -118,7 +120,9 @@ class Email extends AppModel
                         'email_senderJobTitle',            
                         'email_senderSubject',             
                         'email_senderText', 
-                        'email_links'            
+                        'email_links',
+                        'modified',
+                        'created'
                       ],               
     ];    
     
@@ -165,7 +169,7 @@ class Email extends AppModel
     /**
      * Save the data which a user has provided via any type of ContactForm
      * 
-     * @param array $emailData   The data that forms the basic for an email
+     * @param array $emailData The data that forms the basis for an email
      * @return boolean
      */
     public function api_addEmail($emailData) {

@@ -53,7 +53,7 @@ class EmailsController extends AppController
      * Format GET /api/1.0/emails.json&_fields=config
      * Example GET /api/1.0/emails.json&_fields=config
      * 
-     * @return array $apiResult A list of configuration parameters
+     * @return Response A list of configuration parameters
      */
     function v1_index()  {
         if ($this->listOfFields <> ['config']) {
@@ -78,7 +78,7 @@ class EmailsController extends AppController
      * Format POST /api/1.0/emails.json
      * Example POST /api/1.0/emails.json
      * 
-     * @return array $apiResult A list of elements of array "Email"
+     * @return Response A list of fields related with the object creation
      */
     function v1_add() {
         $data = $this->request->data;
