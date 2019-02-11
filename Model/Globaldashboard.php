@@ -56,7 +56,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_activeInvestments"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readActiveInvestmentsGraphData($investorId, $period) {
@@ -68,7 +68,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_totalNetDeposits"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNetDepositsGraphData($investorId, $period) {
@@ -80,7 +80,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_cashDrag"      //This field is not implemented yet
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readCashDragGraphData($investorId, $period) {
@@ -92,7 +92,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_outstandingPrincipal"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readInvestedAssetsGraphData($investorId, $period) {
@@ -104,7 +104,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_reservedAssets"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readReservedFundsGraphData($investorId, $period) {
@@ -116,7 +116,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_cashInPlatform"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readCashGraphData($investorId, $period) {
@@ -128,7 +128,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_netAnnualReturnPastYear"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNarPastYearGraphData($investorId, $period) {
@@ -140,7 +140,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_netAnnualReturnPast12Months"
      * 
      * @param int  $investorId The object reference for the linked account             //Global historical not implemented
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period  Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNarLast365daysMultiGraphData($investorId, $period) {
@@ -153,7 +153,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_netAnnualTotalFundsReturn"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNarTotalFundsGraphData($investorId, $period) {
@@ -165,7 +165,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_netReturnPast12Months"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNetEarningsLast365daysGraphData($investorId, $period) {
@@ -177,7 +177,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_netReturnPastYear"
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period  Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNetEarningsPastYearGraphData($investorId, $period) {
@@ -189,7 +189,7 @@ class Globaldashboard extends AppModel {
      * Read the historical data of the datum "globaldashboard_netTotal"      //This field is not implemented yet
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period  Time period. For now can be "year" or "all"
      * @return boolean
      */
     public function readNetEarningsTotalGraphData($investorId, $period) {
@@ -201,7 +201,7 @@ class Globaldashboard extends AppModel {
      * Read the datum "globaldashboard_current"      //This field is not implemented yet
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                   //Not used
+     * @param string $period   //Not used
      * @return boolean
      */
     public function readCurrentGraphData($investorId, $period) {
@@ -212,7 +212,7 @@ class Globaldashboard extends AppModel {
      * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                   //Not used
+     * @param string $period   //Not used
      * @return boolean
      */
     public function readExposureGraphData($investorId, $period) {
@@ -223,7 +223,7 @@ class Globaldashboard extends AppModel {
      * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
      * 
      * @param int  $investorId The object reference for the linked account
-     * @param string $period                                                   //Not used
+     * @param string $period  //Not used
      * @return boolean
      */
     public function readPaymentDelayGraphData($investorId, $period) {
@@ -246,7 +246,7 @@ class Globaldashboard extends AppModel {
      * Generic search for a field to use in the graph of the api.
      * 
      * @param int $investorId
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period  Time period. For now can be "year" or "all"
      * @param string $field
      * @return boolean
      */

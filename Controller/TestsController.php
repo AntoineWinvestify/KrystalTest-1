@@ -189,8 +189,42 @@ exit;*/
 
         $this->Accountowner->save($data);*/
     } 
+
+    
     
     public function editCheck() {
+        
+ /*
+  * 
+  * each action shall return true or false which will determine if user is authorized to access the routse/field
+  * 
+  * 
+  * checkFields. first check if $this->listOfFields is defined. If not read it from the Model.
+  *             then check status of each variable with requested status
+  *             boolean true : requested API action is approved. 
+  *                     false: one or more fields did not fullfil permissions
+  * 
+  * addOwner    Modify $this->$filterConditionQueryParms to include the current user as owner,i.e. add $this->investorId
+  *
+  */
+
+  
+        
+$aclConfiguration = [
+    
+    
+    
+    
+    
+    ['actions' => ['addOwnUser', 'isOwner', 'checkFields']
+        
+    ]
+    
+    
+    
+    
+    
+];        
 echo "Generate an event<br>";
     // Generate an event
 

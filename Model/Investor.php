@@ -114,7 +114,7 @@ class Investor extends AppModel {
      */
     var $validate = [
         'investor_name' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 50],
                 'allowEmpty' => false,
                 'message' => 'Name validation error'
             ],
@@ -128,7 +128,7 @@ class Investor extends AppModel {
           'message' => 'Name validation error'), */
         ],
         'investor_surname' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 50],
                 'allowEmpty' => false,
                 'message' => 'Surname validation error'
             ],
@@ -142,7 +142,7 @@ class Investor extends AppModel {
           'message' => 'Surname validation error'), */
         ],
         'investor_DNI' => [
-            'length_rule' => ['rule' => ['minLength', 3],
+            'length_rule' => ['rule' => ['lengthBetween', 3, 20],
                 'allowEmpty' => false,
                 'message' => 'Id validation error'
             ],
@@ -164,7 +164,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_telephone' => [ 
-            'length_rule' => ['rule' => ['minLength', 4],
+            'length_rule' => ['rule' => ['lengthBetween', 4, 20],
                 'allowEmpty' => false,
                 'message' => 'Telephone validation error'
             ],
@@ -175,7 +175,7 @@ class Investor extends AppModel {
             ]            
         ],
         'investor_address1' => [ 
-            'length_rule' => ['rule' =>  ['minLength', 2],
+            'length_rule' => ['rule' =>  ['lengthBetween', 2, 60],
                 'allowEmpty' => false,
                 'message' => 'Address validation error'
             ],
@@ -186,7 +186,7 @@ class Investor extends AppModel {
             ]
         ],
          'investor_address2' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 60],
                 'allowEmpty' => false,
                 'message' => 'Address validation error'
             ],
@@ -197,7 +197,7 @@ class Investor extends AppModel {
             ]
         ],       
         'investor_postCode' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 45],
                 'allowEmpty' => false,
                 'message' => 'Postcode validation error'
             ],
@@ -208,7 +208,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_city' => [
-            'length_rule' => ['rule' => ['minLength', 2], 
+            'length_rule' => ['rule' => ['lengthBetween', 2, 45], 
                 'alphaNumeric',
                 'allowEmpty' => false,
                 'message' => 'City validation error'
@@ -220,7 +220,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_country' => [ 
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 3],
                 'allowEmpty' => false,
                 'message' => 'Country validation error'
             ],

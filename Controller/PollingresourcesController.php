@@ -43,8 +43,6 @@ class PollingresourcesController extends AppController
     }
 
 
-
-
     /** 
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/pollingresources/[pollingresourceId]&fields=x,y,z
@@ -97,10 +95,8 @@ class PollingresourcesController extends AppController
         $this->response->statusCode(200);
         $this->response->type('json');
         $this->response->body($resultJson); 
-
         return $this->response;  
-        
-        
+
     }
     
     
@@ -134,7 +130,7 @@ class PollingresourcesController extends AppController
             $idField = false;
         }
 
-        // Add condition of pollingresources_status = ACTIVE if not present, and belonging to user
+        // Add condition of pollingresources_status = ACTIVE if not present, and get only resources belonging to user
         if (!empty($this->listOfQueryParams)) {
             if (array_key_exists('AND', $this->listOfQueryParams)) {
                 if (empty(array_key_exists('pollingresources_status', $data["AND"]) )) {
@@ -179,7 +175,6 @@ class PollingresourcesController extends AppController
                 unset ($apiResult[$j]['id']);
             } 
             if ($linksField) {
-//          $apiResult[$j]['links'][] = $this->generateLink("pollingresources", "edit", $id . '.json'); // Not applicable to role "investor"
                 $apiResult[$j]['links'][] = $this->generateLink("pollingresources", "delete" , $id . '.json'); 
                 $apiResult[$j]['links'][] = $this->generateLink("pollingresources", "self" , $id . '.json');
             }
@@ -191,7 +186,6 @@ class PollingresourcesController extends AppController
         $this->response->statusCode(200);
         $this->response->type('json');
         $this->response->body($resultJson); 
-
         return $this->response;   	
     }
 
@@ -206,9 +200,9 @@ class PollingresourcesController extends AppController
     function v1_delete($id)  {
         $id = $this->request->id;
 
-        $resourceOwner = $this->Pollingresource->findById($id);
-        var_dump($resourceOwner);
-        if ($this->investorId <> $resourceOwner['Pollingresource']['pollingresource_userIdentification']) {
+        // Only pollingresource owner can delete it
+        $results = $this->Pollingresource->findById($id);
+        if ($this->investorId <> $results['Pollingresource']['pollingresource_userIdentification']) {
             throw new UnauthorizedException('You are not authorized to access the requested resource');      
         }
           
@@ -219,12 +213,12 @@ class PollingresourcesController extends AppController
 
  
     /** 
-     * Simple version is OK, ie. for creating a Pollingresource. Used for testing purposes only
-     * This methods terminates the HTTP POST for defining a new investor.
+     * Simple version for creating a Pollingresource. USED FOR TESTING PURPOSES ONLY
+     * This methods terminates the HTTP POST for defining a new Pollingresource object.
      * Format POST /api/1.0/pollingresources.json
      * Example POST /api/1.0/pollingresources.json
-     * All the data is located in the POST body as a json 
-     * This command is limited to be used by superuser only
+     * All the data is located in the POST body as a json object 
+     * This command can be used by superAdmin only
      * 
      * @return mixed false or the Links object of the new 'Investor' object
      */
@@ -234,11 +228,11 @@ class PollingresourcesController extends AppController
             throw new UnauthorizedException('You are not authorized to access the requested resource');      
         }   
         
-        $result = $this->Investor->api_addPollingresource($this->request->data);
+        $result = $this->Pollingresource->api_addPollingresource($this->request->data);
         
         if (!($result)) {
-            $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
-            $this->Investor->apiVariableNameOutAdapter($validationErrors);
+            $validationErrors = $this->Pollingresource->validationErrors;              // Cannot retrieve all validation errors
+            $this->Pollingresource->apiVariableNameOutAdapter($validationErrors);
 
             $formattedError = $this->createErrorFormat('CANNOT_CREATE_POLLINGRESOURCE_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
@@ -247,8 +241,8 @@ class PollingresourcesController extends AppController
         }
         else { // create the links
             $account['feedback_message_user'] = 'Account successfully created.';
-            $account['data']['links'][] = $this->generateLink("investors", "self", $result . '.json'); 
-            $account['data']['links'][] = $this->generateLink("investors", "delete" , $result . '.json');             
+            $account['data']['links'][] = $this->generateLink("pollingresources", "self", $result . '.json'); 
+            $account['data']['links'][] = $this->generateLink("pollingresources", "delete" , $result . '.json');             
             $resultJson = json_encode($account);           
             $this->response->statusCode(201);
         }

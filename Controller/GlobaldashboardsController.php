@@ -118,7 +118,7 @@ function beforeFilter() {
         foreach($dashboardConfig as $key => $value){
             $data['data'][$key]['display_name'] = $value['display_name'];
             
-            //Search tooltip if the field ave one
+            //Search tooltip if the field has one
             if(!empty($value['tooltip'])){
                 $this->Tooltip = ClassRegistry::init('Tooltip');
                 $tooltips = $this->Tooltip->getTooltip( array($value['tooltip']), $this->language, $companyId);
@@ -131,10 +131,10 @@ function beforeFilter() {
             if(!empty($value['value'])){
                 $field = $value['value']['field'];
                 $data['data'][$key]['value']['amount'] = $this->model->getData(array('investor_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
-                /*if($value['value']['type'] == 'currency'){      //Seacrh for the currency
+                /*if($value['value']['type'] == 'currency'){      //Search for the currency
                     $data['data'][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
                 };*/
-                if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need multiply them-
+                if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need to multiply them
                     $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount']*100;
                     $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount'] . '%';
                 }

@@ -37,7 +37,37 @@ class Pollingresource extends AppModel
 {
     var $name= 'Pollingresource';
 
-
+    var $defaultFields = [ 
+        'investor' => ['id', 
+                        'pollingresources_userIdentification', 
+                        'pollingresource_newValueExists', 
+                        'pollingresource_interval', 
+                        'pollingresource_type', 
+    //                  'pollingresource_value',
+    //                  'pollingresource_resourceId',
+    //                  'pollingresource_links'
+                      ],
+        'winAdmin' => ['id', 
+                        'pollingresources_userIdentification', 
+                        'pollingresource_newValueExists', 
+                        'pollingresource_interval', 
+                        'pollingresource_type', 
+                        'pollingresource_value',
+                        'pollingresource_resourceId',
+                        'pollingresource_links'
+            ],              
+        'superAdmin' => ['id', 
+                        'pollingresources_userIdentification', 
+                        'pollingresource_newValueExists', 
+                        'pollingresource_interval', 
+                        'pollingresource_type', 
+                        'pollingresource_value',
+                        'pollingresource_resourceId',
+                        'pollingresource_links'            
+                      ],                
+    ];
+    
+      
     /** 
      * Call back 
      * Rules are defined for what should happen after a database record has been read
@@ -45,7 +75,7 @@ class Pollingresource extends AppModel
      * 
      * @param array $results Array that contains the returned results from the model’s find operation
      * @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
-     * @return array The (possibly modified) result(s) of the find operation
+     * @return array The (possibly modified) result(s) of the find operation. 
      */    
     function afterFind(array $results, $primary = null)  {
 
@@ -100,5 +130,54 @@ class Pollingresource extends AppModel
         
         
     }
+ 
+    
+    
+    /** 
+     * Reads the list of defaultFields to read in case the webclient has not indicated any fields
+     * in its GET requests
+     * 
+     * @param $roleName The name of the role for whom the list of defaults fields is read
+     * @return array $list  An array with the names of the fields. The names are the internal names of the fields
+     */
+    public function getListOfDefaultFields($roleName) {
+        return $this->defaultFields[$roleName];        
+    }    
+
+
+    /** 
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another webclient
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Pollingresource object to be checked
+     * @return boolean   
+     */
+    public function isOwner($investorId, $id) {
+        
+        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id,
+                                                         'pollingresource_useridentification' => $investorId,
+                                                         'pollingresource_status' => ACTIVE],   
+                                                  'fields' => ['pollingresource_useridentification'],
+                                                  'recursive' => -1]);
+        
+        if ($result['Pollingresource']['pollingresource_useridentification'] == $investorId) {
+            return true;
+        }
+        return false;
+    }
+
+
+     
+    
+    
+    
+    
+    
+    
+    
+    
     
 }

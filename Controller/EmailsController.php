@@ -44,7 +44,7 @@ class EmailsController extends AppController
     function beforeFilter() {
         parent::beforeFilter();
 
-        $this->Auth->allow('v1_index', 'v1_add');       
+        $this->Auth->allow('v1_add');       
             
     }
     
@@ -53,7 +53,7 @@ class EmailsController extends AppController
      * Format GET /api/1.0/emails.json&_fields=config
      * Example GET /api/1.0/emails.json&_fields=config
      * 
-     * @return array $apiResult A list of elements of array "pollingresource"
+     * @return array $apiResult A list of configuration parameters
      */
     function v1_index()  {
         if ($this->listOfFields <> ['config']) {
@@ -78,12 +78,12 @@ class EmailsController extends AppController
      * Format POST /api/1.0/emails.json
      * Example POST /api/1.0/emails.json
      * 
-     * @return array $apiResult A list of elements of array "pollingresource"
+     * @return array $apiResult A list of elements of array "Email"
      */
     function v1_add() {
         $data = $this->request->data;
         $this->AppModel->apiVariableNameInAdapter($data);    
-        $result = $this->Investor->api_addInvestor($data);
+        $result = $this->Email->api_addEmail($data);
         
         if (!($result)) {
             $validationErrors = $this->Email->validationErrors;              // Cannot retrieve all validation errors
