@@ -69,7 +69,7 @@ class GlobalEmailListener implements CakeEventListener {
 // Determine which events have been selected in the config file
         $allImplementedEvents = array(
             'newUserCreated' => 'newUserCreatedEmail',
-            'sendContactMessage' => 'contactEmail',
+            'Model.Email.sendMessage' => 'contactEmail',
             'checkMessage' => 'checkData',
             'billMailEvent' => 'billMail',
             'pfpMail' => 'newUserMail',
@@ -124,17 +124,18 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function contactEmail(CakeEvent $event) {
-        // Send contact text to server admin
+        // Send contact text to server admin  $event->data['userIdentification']
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($this->adminData['systemAdmin'] => __("Admin")));
-            $Email->subject($event->data['subject']);
+            $Email->subject($event->data['modelData']['Email']['email_senderSubject']);
             $Email->template('adminContactform', 'standard_email_layout');
-            $Email->viewVars(array('name' => $event->data['name'],
-                'text' => $event->data['text'],
-                'subject' => $event->data['subject'],
-                'email' => $event->data['email']));
+            $Email->viewVars(array('name' => $event->data['modelData']['Email']['email_senderName'] . " " . 
+                                                           $event->data['modelData']['Email']['email_senderSurname'],
+                'text' => $event->data['modelData']['Email']['email_senderText'],
+                'subject' => $event->data['modelData']['Email']['email_senderSubject'],
+                'email' => $event->data['modelData']['Email']['email_senderEmail']));
             $Email->emailFormat('html');
             $Email->send();
         } catch (Exception $e) {
@@ -146,13 +147,14 @@ class GlobalEmailListener implements CakeEventListener {
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to($event->data['email']);
-            $Email->subject($event->data['subject']);
+            $Email->to($event->data['modelData']['Email']['email_senderEmail']);
+            $Email->subject($event->data['modelData']['Email']['email_senderSubject']);
             $Email->template('contactEmail', 'standard_email_layout');
-            $Email->viewVars(array('name' => $event->data['name'],
-                'text' => $event->data['text'],
-                'subject' => $event->data['subject'],
-                'email' => $event->data['email']));
+            $Email->viewVars(array('name' => $event->data['modelData']['Email']['email_senderName'] . " " . 
+                                                           $event->data['modelData']['Email']['email_senderSurname'],
+                'text' => $event->data['modelData']['Email']['email_senderText'],
+                'subject' => $event->data['modelData']['Email']['email_senderSubject'],
+                'email' => $event->data['modelData']['Email']['email_senderEmail']));
             $Email->emailFormat('html');
             $Email->send();
         } catch (Exception $e) {

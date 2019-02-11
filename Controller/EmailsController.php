@@ -95,7 +95,7 @@ class EmailsController extends AppController
             $this->response->statusCode(500);                                    
         }
         else { // create the links
-            $account['feedback_message_user'] = 'Email successfully created.';
+            $account['feedback_message_user'] = "Email successfully created. We'll get in touch with you as soon as possible";
             $account['data']['links'][] = $this->generateLink("emails", "edit", $result . '.json'); 
             $account['data']['links'][] = $this->generateLink("emails", "delete" , $result . '.json');             
             $resultJson = json_encode($account);           

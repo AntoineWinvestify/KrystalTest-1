@@ -52,7 +52,6 @@ class Email extends AppModel
                 'rule' => 'checkEmailSubject',
                 'required'   => true,
                 'message' => 'Please selected one of the possible subjects',
-                'on' => 'update'
             ]            
         ],
         'email_senderTelephone' => [
@@ -64,7 +63,6 @@ class Email extends AppModel
             'checkTelephoneNumber' => [
                 'rule' => 'checkTelephoneNumber',
                 'message' => 'The telephone number can only contain number and the + sign',
-                'on' => 'update'
             ]
         ],
         'email_senderCompany' => [        
@@ -100,28 +98,28 @@ class Email extends AppModel
         'investor' => [''],                           // means N/A                     
         
         'winAdmin' => ['id', 
-                        'email_name',
-                        'email_surname',            
+                        'email_senderName',
+                        'email_senderSurname',            
                         'email_senderEmail', 
                         'email_senderCompany',
-                        'email_telephone',
-                        'email_jobtitle',            
-                        'email_subject',             
-                        'email_text', 
+                        'email_senderTelephone',
+                        'email_senderJobTitle',            
+                        'email_senderSubject',             
+                        'email_senderText', 
                         'email_links'            
                       ],
         
         'superAdmin' => ['id', 
-                        'email_name',
-                        'email_surname',            
+                        'email_senderName',
+                        'email_senderSurname',            
                         'email_senderEmail', 
                         'email_senderCompany',
-                        'email_telephone',
-                        'email_jobtitle',            
-                        'email_subject',             
-                        'email_text', 
+                        'email_senderTelephone',
+                        'email_senderJobTitle',            
+                        'email_senderSubject',             
+                        'email_senderText', 
                         'email_links'            
-                      ],                
+                      ],               
     ];    
     
     
@@ -165,18 +163,42 @@ class Email extends AppModel
     
     
     /**
-     * Get the investor Identity by investor.id
+     * Save the data which a user has provided via any type of ContactForm
      * 
      * @param array $emailData   The data that forms the basic for an email
-     * @return boolean?
+     * @return boolean
      */
-    public function api_AddEmail($emailData) {
-        // save file
-        // if error return
-      
-        
-        
-        
+    public function api_addEmail($emailData) {
+
+        if ($this->save($emailData, $validate = true)) {
+            return true;
+        }
+        return false;   
     }
 
+    
+    
+    function afterSave($created, $options = array()) {
+
+        if ($created) {
+            $event = new CakeEvent("sendContactMessage", $this, 
+                                    array('id' => $this->id, 
+                                        'model' => 'Email', 
+                                        'modelData' => $this->data[$this->alias], 
+                                        'userIdentification' => 0,
+                                        'isFinalEvent => true')
+                                  );
+                    
+           
+            $this->getEventManager()->dispatch($event);
+        }
+        return true;
+    }    
+    
+    
+    
+    
+    
+    
+    
 }

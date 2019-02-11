@@ -209,7 +209,6 @@ class Investor extends AppModel {
         ],
         'investor_city' => [
             'length_rule' => ['rule' => ['lengthBetween', 2, 45], 
-                'alphaNumeric',
                 'allowEmpty' => false,
                 'message' => 'City validation error'
             ],
