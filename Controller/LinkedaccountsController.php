@@ -75,7 +75,6 @@ class LinkedaccountsController extends AppController {
                 $accounts['data'][$key]['links'][] = $this->generateLink('pollingresources', 'delete', $resourceId . '.json');
                 $accounts['data'][$key]['links'][] = $this->generateLink('pollingresources', 'monitor', $resourceId . '.json');
             }
-            //HOW GET POLLING RESOURCE ID?
         }
         $accounts = json_encode($accounts);  
         $this->response->type('json');
@@ -117,9 +116,9 @@ class LinkedaccountsController extends AppController {
         $newPass = $RequestData['accountowner_password'];   
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
-        $return = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);      
-        $this->response->statusCode($return['code']);
-        $returnJson = json_encode($return['data']);
+        $returnData = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);      
+        $this->response->statusCode($returnData['code']);
+        $returnJson = json_encode($returnData['data']);
         $this->response->type('json');
         $this->response->body($returnJson); 
         return $this->response;  

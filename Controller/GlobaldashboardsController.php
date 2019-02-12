@@ -65,7 +65,7 @@ function beforeFilter() {
         if($dashboardConfig[$type][$function][2]['xAxis'] == 'currency'){
             $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id);
         }*/
-        if(empty($dashboardConfig[$type]) || empty($dashboardConfig[$type][$function])){
+        if( empty($dashboardConfig[$type]) || empty($dashboardConfig[$type][$function]) ){
             $this->response->statusCode(400);   
             $this->response->type('json'); 
             return $this->response; 
@@ -115,7 +115,7 @@ function beforeFilter() {
             $data['data'][$key]['display_name'] = $value['display_name'];
             
             //Search tooltip if the field ave one
-            if(!empty($value['tooltip'])){
+            if( !empty($value['tooltip']) ){
                 $this->Tooltip = ClassRegistry::init('Tooltip');
                 $tooltips = $this->Tooltip->getTooltip( array($value['tooltip']), $this->language, $companyId);
                 $data['data'][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
@@ -124,7 +124,7 @@ function beforeFilter() {
             //Search value
             $model = $value['value']['model'];
             $this->model = ClassRegistry::init($model);
-            if(!empty($value['value'])){
+            if( !empty($value['value']) ){
                 $field = $value['value']['field'];
                 $data['data'][$key]['value']['amount'] = $this->model->getData(array('investor_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
                 /*if($value['value']['type'] == 'currency'){      //Seacrh for the currency
@@ -132,10 +132,9 @@ function beforeFilter() {
                 };*/
                 if($value['value']['type'] == 'percent'){       //Percent in our db are from 0-1 range, we need multiply them-
                     $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount']*100;
-                    $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount'] . '%';
                 }
             }
-            if(!empty($value['icon'])){
+            if( !empty($value['icon']) ){
                 $data['data'][$key]['icon'] = $value['icon'];
             }
             foreach($value['graphLinksParams'] as $key2 => $linkParam){
