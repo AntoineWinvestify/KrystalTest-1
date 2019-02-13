@@ -32,11 +32,11 @@ class dashboardFormatter {
      * Generic formatter for Graphs. only accept one set of data.
      * 
      * @param array $data
-     * @param $companyId                                                        //not used
+     * @param $dummy                                                            //not used
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function genericGraphFormatter($data, $companyId, $graphInfo) {
+    function genericGraphFormatter($data, $dummy, $graphInfo) {
         $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
         $this->graphicsResults = [
             "graphics_data" => [
@@ -53,11 +53,11 @@ class dashboardFormatter {
      * Generic formatter for Graphs. This format accept two sets of data.
      * 
      * @param array $data
-     * @param $companyId                                                        //not used
+     * @param $dummy                                                            //not used
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function genericMultiGraphFormatter($data, $companyId, $graphInfo) {
+    function genericMultiGraphFormatter($data, $dummy, $graphInfo) {
         $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], '{n}.Userinvestmentdata');
         $resultNormalized['GlobalDashboard'] = Hash::extract($data['GlobalDashboard'], '{n}.Dashboardoverviewdata');
 
@@ -80,11 +80,11 @@ class dashboardFormatter {
      *  Formatter for Gauge Graph
      * 
      * @param array $data
-     * @param $companyId                                                        //not used
+     * @param $dummy                                                            //not used
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function gaugeGraphFormatter($data, $companyId, $graphInfo) {
+    function gaugeGraphFormatter($data, $dummy, $graphInfo) {
         $this->graphicsResults = 
             ["dataset" =>
                 [
@@ -102,11 +102,11 @@ class dashboardFormatter {
      *  Formatter for delays graph 
      * 
      * @param array $data
-     * @param $companyId                                                        //not used
+     * @param $dummy                                                            //not used
      * @param array $graphInfo                                                  /Extra info for the graph
      * @return array
      */
-    function paymentDelayGraphFormatter($data, $companyId, $graphInfo) {
+    function paymentDelayGraphFormatter($data, $dummy, $graphInfo) {
         $dataResult = array();
         $dataResult[0]['range_display_name'] = '1-7 days';
         $dataResult[1]['range_display_name'] = '8-30 days';
