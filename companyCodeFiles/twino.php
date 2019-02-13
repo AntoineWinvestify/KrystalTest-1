@@ -697,22 +697,23 @@ class twino extends p2pCompany {
                     $headerError = $this->compareHeader();
                     if ($headerError === WIN_ERROR_FLOW_NEW_MIDDLE_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
-                    } else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
+                    } 
+                    else if ($headerError === WIN_ERROR_FLOW_NEW_FINAL_HEADER) {
                         return $this->getError(__LINE__, __FILE__, $headerError);
-                    } else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
+                    } 
+                    else if( $headerError === WIN_ERROR_FLOW_EMPTY_FILE ) {
                          unlink($this->getFolderPFPFile() . DS . $this->fileName);
                     }
-                /*} else {
-                    unlink($this->getFolderPFPFile() . DS . $this->fileName);
-                }*/
+
 
                 //Download
-                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["REPAID","SOLD","RECOVERED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment
+                $credentialsFile = '{"page":1,"pageSize":20,"query":{"sortOption":{"propertyName":"created","direction":"DESC"},"loanStatuses":["REPAID","RECOVERED"]}}'; // ADD ,"REPAID","SOLD","RECOVERED" to download all investment "SOLD" // Is bugged for now
                 $this->idForSwitch++;
                 $next = $this->getCompanyWebpageMultiCurl($this->tempUrl['ExportInvestment'], $credentialsFile, true);
 
                 break;
             case 7:
+   
                 //Download investment
                 echo $this->idForSwitch;
                 $response = json_decode($str, true);
@@ -754,7 +755,6 @@ class twino extends p2pCompany {
 
 
             case 9:
-
                 if (!$this->verifyFileIsCorrect()) {
                     echo 'error';
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_WRITING_FILE);

@@ -492,17 +492,7 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /**
-     *  Get the amount which corresponds to the "delayedInterestIncome" concept
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string
-     */
-    public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
-        echo "PRINCIPAL BUYBACK, amount =  " . $transactionData['amount'];
-        return $transactionData['amount'];
-    }
+
 
     /**
      *  Get the amount which corresponds to the "DelayedInterestIncomeBuyback" concept
