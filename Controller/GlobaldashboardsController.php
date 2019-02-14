@@ -37,6 +37,18 @@ class GlobaldashboardsController extends AppController {
 //	$this->Security->requireAuth();
     }
 
+    
+     /*public function index(){
+         //busca id
+         if($id){
+             view
+         }
+         else{
+             linkedaccount
+         }   
+         
+         }*/
+    
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
      * Format:
@@ -57,8 +69,8 @@ class GlobaldashboardsController extends AppController {
         $id = $this->request->id;
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
-        /* $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
-          if($dashboardConfig[$type][$function][2]['xAxis'] == 'currency'){
+        $linkedAccountList = $this->Linkedaccount->getListFromInvestorId($id);
+          /*if($dashboardConfig[$type][$function][2]['xAxis'] == 'currency'){
           $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id);
           } */
         if (empty($dashboardConfig[$type]) || empty($dashboardConfig[$type][$function])) {

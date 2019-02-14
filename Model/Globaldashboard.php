@@ -132,7 +132,7 @@ class Globaldashboard extends AppModel {
      * @return boolean
      */
     public function readNarPastYearGraphData($investorId, $period) {
-        $field = 'globaldashboard_netAnnualReturnPastYear';
+        $field = 'dashboardoverviewdata_netAnnualReturnPastYear';
         return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
     }
     
@@ -144,7 +144,7 @@ class Globaldashboard extends AppModel {
      * @return boolean
      */
     public function readNarLast365daysMultiGraphData($investorId, $period) {
-        $field = 'globaldashboard_netAnnualReturnPast12Months';
+        $field = 'dashboardoverviewdata_netAnnualReturnPast12Months';
         $data['Dashboard'] = $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
         return $data;
     }
@@ -157,7 +157,7 @@ class Globaldashboard extends AppModel {
      * @return boolean
      */
     public function readNarTotalFundsGraphData($investorId, $period) {
-        $field = 'globaldashboard_netAnnualTotalFundsReturn';
+        $field = 'dashboardoverviewdata_netAnnualTotalFundsReturn';
         return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
     }
     
@@ -169,7 +169,7 @@ class Globaldashboard extends AppModel {
      * @return boolean
      */
     public function readNetEarningsLast365daysGraphData($investorId, $period) {
-        $field = 'globaldashboard_netReturnPast12Months';
+        $field = 'dashboardoverviewdata_netReturnPast12Months';
         return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
     }
 
@@ -181,7 +181,7 @@ class Globaldashboard extends AppModel {
      * @return boolean
      */
     public function readNetEarningsPastYearGraphData($investorId, $period) {
-        $field = 'globaldashboard_netReturnPastYear';
+        $field = 'dashboardoverviewdata_netReturnPastYear';
         return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
     }
 
@@ -193,7 +193,7 @@ class Globaldashboard extends AppModel {
      * @return boolean
      */
     public function readNetEarningsTotalGraphData($investorId, $period) {
-        $field = 'globaldashboard_netTotal';
+        $field = 'dashboardoverviewdata_netTotal';
         return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
     }    
     

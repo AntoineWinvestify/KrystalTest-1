@@ -32,7 +32,7 @@ class DashboardsController extends AppController {
     protected $graphicsResults;         // contains the data of a graphic
     protected $investmentListsResult;   // contains the data of an investment list
 
-    function beforeFilter () {
+    function beforeFilter() {
 
         parent::beforeFilter();
 //	$this->Security->requireAuth();
@@ -47,7 +47,7 @@ class DashboardsController extends AppController {
      * @param -
      * 
      */
-    public function v1_viewCustom () {
+    public function v1_viewCustom() {
 
         //Call configuration
         $pathVendor = Configure::read('winvestifyVendor');
@@ -101,7 +101,7 @@ class DashboardsController extends AppController {
      * @param -
      * 
      */
-    public function v1_view () {
+    public function v1_view() {
 
         Configure::load('dashboardConfig.php', 'default');
         $dashboardConfigBlock = Configure::read('DashboardMainData');
