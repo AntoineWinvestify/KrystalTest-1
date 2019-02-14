@@ -39,7 +39,7 @@ class Pollingresource extends AppModel
 
     var $defaultFields = [ 
         'investor' => ['id', 
-                        'pollingresources_userIdentification', 
+                        'pollingresource_userIdentification', 
                         'pollingresource_newValueExists', 
                         'pollingresource_interval', 
                         'pollingresource_type', 
@@ -48,7 +48,7 @@ class Pollingresource extends AppModel
     //                  'pollingresource_links'
                       ],
         'winAdmin' => ['id', 
-                        'pollingresources_userIdentification', 
+                        'pollingresource_userIdentification', 
                         'pollingresource_newValueExists', 
                         'pollingresource_interval', 
                         'pollingresource_type', 
@@ -59,7 +59,7 @@ class Pollingresource extends AppModel
                         'created'
             ],              
         'superAdmin' => ['id', 
-                        'pollingresources_userIdentification', 
+                        'pollingresource_userIdentification', 
                         'pollingresource_newValueExists', 
                         'pollingresource_interval', 
                         'pollingresource_type', 
@@ -140,7 +140,7 @@ class Pollingresource extends AppModel
      * @param $roleName The name of the role for whom the list of defaults fields is read
      * @return array $list  An array with the names of the fields. The names are the internal names of the fields
      */
-    public function getListOfDefaultFields($roleName) {
+    public function getDefaultFields($roleName) {
         return $this->defaultFields[$roleName];        
     }    
 

@@ -561,11 +561,11 @@ class Linkedaccount extends AppModel {
 
 
     /**
-     * Delete a likedaccount given the id
+     * Delete a linkedaccount given the id
      * 
      * @param type $investorId          Id of the investor that deletes the account
      * @param type $linkaccountId       Id of the linkedaccount to delete
-     * @param type $roleName            Role of the user that want delete the account
+     * @param type $roleName            Role of the user that wants to delete the account
      * @return string|int               Feedback and html code
      */
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
@@ -637,16 +637,16 @@ class Linkedaccount extends AppModel {
             'linkedaccount_currency' => $linkedaccountCurrency,
         );
 
-            if ($this->save($linkedAccountData, $validation = true)) {
-                $id = $this->id;
-                $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
-                $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
-                $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
-                return $id;
-            } 
-            else {
-                return false;
-            }
+        if ($this->save($linkedAccountData, $validation = true)) {
+            $id = $this->id;
+            $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
+            $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
+            $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
+            return $id;
+        } 
+        else {
+            return false;
+        }
     }
     
     /**

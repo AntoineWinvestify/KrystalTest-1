@@ -241,6 +241,67 @@ class Investor extends AppModel {
         ]
     ];
 
+    
+   var $defaultFields = [ 
+        'investor' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_DateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_links'
+                      ],
+        'winAdmin' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_DateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_accredited',            
+                        'investor_links',
+                        'modified',
+                        'created'
+            ],              
+        'superAdmin' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_DateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_accredited',
+                        'investor_links',
+                        'modified',
+                        'created'            
+                      ],                
+    ];   
+    
+    
+    
+    
     public function checkOver18($check) {                                       //Calculate age for validation
         $birthDate = explode("/", $check['investor_dateOfBirth']);
         $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md") ? ((date("Y") - $birthDate[2]) - 1) : (date("Y") - $birthDate[2]));
@@ -1040,5 +1101,39 @@ class Investor extends AppModel {
         
     }
      
+ 
+    /**
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another webclient
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Investor object to be checked
+     * @return boolean  
+     */
+    public function isOwner($investorId, $id) {  
+        
+        if ($investorId == $id) {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /** 
+     * Reads the list of defaultFields to read in case the webclient has not indicated any fields
+     * in its GET requests
+     * 
+     * @param $roleName The name of the role for whom the list of defaults fields is read
+     * @return array $list  An array with the names of the fields. The names are the internal names of the fields
+     */
+    public function getDefaultFields($roleName) {
+        return $this->defaultFields[$roleName];        
+    }   
+    
+    
+    
+    
     
 }
