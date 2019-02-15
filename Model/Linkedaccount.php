@@ -1,54 +1,59 @@
 <?php
+
 /**
-// +-----------------------------------------------------------------------+
-// | Copyright (C) 2018, http://www.winvestify.com                         |
-// +-----------------------------------------------------------------------+
-// | This file is free software; you can redistribute it and/or modify     |
-// | it under the terms of the GNU General Public License as published by  |
-// | the Free Software Foundation; either version 2 of the License, or     |
-// | (at your option) any later version.                                   |
-// | This file is distributed in the hope that it will be useful           |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
-// | GNU General Public License for more details.                          |
-// +-----------------------------------------------------------------------+
-// | Author: Antoine de Poorter                                            |
-// +-----------------------------------------------------------------------+
-//
-* @author Antoine de Poorter
-* @version 0.2
-* @date 2018-05-08
-* @package
-*/
+  // +-----------------------------------------------------------------------+
+  // | Copyright (C) 2018, http://www.winvestify.com                         |
+  // +-----------------------------------------------------------------------+
+  // | This file is free software; you can redistribute it and/or modify     |
+  // | it under the terms of the GNU General Public License as published by  |
+  // | the Free Software Foundation; either version 2 of the License, or     |
+  // | (at your option) any later version.                                   |
+  // | This file is distributed in the hope that it will be useful           |
+  // | but WITHOUT ANY WARRANTY; without even the implied warranty of        |
+  // | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the          |
+  // | GNU General Public License for more details.                          |
+  // +-----------------------------------------------------------------------+
+  // | Author: Antoine de Poorter                                            |
+  // +-----------------------------------------------------------------------+
+  //
+ * @author Antoine de Poorter
+ * @version 0.2
+ * @date 2018-05-08
+ * @package
+ */
 /*
-2016-08-25	  version 2016_0.1
-function deleteLinkedaccount()					[Not yet OK, test new functionality]
-getLinkedaccountDataList()					[OK, tested]
-function linkNewAccount()					[not Ok, not tested]
+  2016-08-25	  version 2016_0.1
+  function deleteLinkedaccount()					[Not yet OK, test new functionality]
+  getLinkedaccountDataList()					[OK, tested]
+  function linkNewAccount()					[not Ok, not tested]
 
 
-2018-05-08	  version 2018_0.2                              [OK, tested]
- support for linkedaccount_status, linkedaccount_statusExtended and linkedaccount_statusExtendedOld fields
- 
+  2018-05-08	  version 2018_0.2                              [OK, tested]
+  support for linkedaccount_status, linkedaccount_statusExtended and linkedaccount_statusExtendedOld fields
+
  * 
-Pending:
+  Pending:
 
 
 
-*/
+ */
 
 
 class Linkedaccount extends AppModel {
 
     var $name = 'Linkedaccount';
-
     public $belongsTo = array(
         'Accountowner' => array(
-                'className' => 'Accountowner',
-                'foreignKey' => 'accountowner_id'
-            ));     
+            'className' => 'Accountowner',
+            'foreignKey' => 'accountowner_id'
+    ));
+    public $hasone = array(
+        'Userinvestmentdata' => array(
+            'className' => 'Userinvestmentdata',
+            'ForeignKey' => 'linkedaccount_id',
+        )
+    );
 
-    
     /**
      * 	Delete a an account that fulfills the filteringConditions
      * 	
@@ -60,28 +65,28 @@ class Linkedaccount extends AppModel {
     public function deleteLinkedaccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
         $indexList = $this->find('all', $params = array('recursive' => -1,
-                                                        'conditions' => $filterConditions,
-                                                        'fields' => array('id', 'accountowner_id'))
-                                );
+            'conditions' => $filterConditions,
+            'fields' => array('id', 'accountowner_id'))
+        );
 
         if (empty($indexList)) {
             return false;
         }
 
-        if ($originator == WIN_USER_INITIATED ) {
+        if ($originator == WIN_USER_INITIATED) {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_AND_DELETED_BY_USER;
         }
         else {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_DELETED_BY_SYSTEM;
         }
-     
-        $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
-        $this->updateAll($newData, $filterConditions);       
 
-        $this->Accountowner = ClassRegistry::init('Accountowner');  
-        
+        $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
+        $this->updateAll($newData, $filterConditions);
+
+        $this->Accountowner = ClassRegistry::init('Accountowner');
+
         foreach ($indexList as $index) {
-            $this->Accountowner->accountDeleted ($index['accountowner_id']);
+            $this->Accountowner->accountDeleted($index['accountowner_id']);
         }
 
         return true;
@@ -96,8 +101,8 @@ class Linkedaccount extends AppModel {
      */
     public function getLinkedaccountDataList($filterConditions) {
         $linkedaccountResults = $this->find("all", $params = array('recursive' => 1,
-                                                                'conditions' => $filterConditions)
-                                            );
+            'conditions' => $filterConditions)
+        );
         return $linkedaccountResults;
     }
 
@@ -111,9 +116,9 @@ class Linkedaccount extends AppModel {
     public function getLinkedaccountIdList($filterConditions) {
 
         $linkedaccountResults = $this->find("all", $params = array('recursive' => -1,
-                                                                    'fields' => array('company_id'),
-                                                                    'conditions' => $filterConditions)
-                                           );
+            'fields' => array('company_id'),
+            'conditions' => $filterConditions)
+        );
         return $linkedaccountResults;
     }
 
@@ -132,25 +137,25 @@ class Linkedaccount extends AppModel {
     public function createNewLinkedAccount($companyId, $investorId, $username, $password) {
 
         $accountOwnerId = $this->createAccountOwner($companyId, $investorId, $username, $password);
-        if ($accountOwnerId > 0) {    
-            $linkedAccountData['Linkedaccount'] = array('linkedaccount_status'   => WIN_LINKEDACCOUNT_ACTIVE,
-                                                    'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
-                                                        'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
-                                                        'accountowner_id' => $accountOwnerId,
-                                                        'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED
-                                                        );
+        if ($accountOwnerId > 0) {
+            $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
+                'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
+                'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
+                'accountowner_id' => $accountOwnerId,
+                'linkedaccount_isControlledBy' => WIN_ALIAS_SYSTEM_CONTROLLED
+            );
 
             if ($this->save($linkedAccountData, $validation = true)) {
-                    $this->Accountowner->accountAdded ($accountOwnerId);
+                $this->Accountowner->accountAdded($accountOwnerId);
                 return true;
-            } 
+            }
             else {
                 return false;
             }
-        }   
+        }
         return false;
     }
-    
+
     /**
      * Get linkedaccounts ids with 'nothing in process' for an investor
      * 
@@ -162,19 +167,19 @@ class Linkedaccount extends AppModel {
         $this->Investor = ClassRegistry::init('Investor');
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 // Find all the Accountowner objects of Investor   
-	$filterConditions = array('Investor.investor_identity' => $queueUserReference);
+        $filterConditions = array('Investor.investor_identity' => $queueUserReference);
 
-	$this->Investor->Behaviors->load('Containable');
-	$this->Investor->contain('Accountowner');  							// Own model is automatically included
-	$resultInvestorsData = $this->Investor->find("all", $params = array('recursive'     => 1,
-                                                                            'conditions'    => $filterConditions));
- // The result should contain information about Accountowner and LinkedAccount models      
+        $this->Investor->Behaviors->load('Containable');
+        $this->Investor->contain('Accountowner');         // Own model is automatically included
+        $resultInvestorsData = $this->Investor->find("all", $params = array('recursive' => 1,
+            'conditions' => $filterConditions));
+        // The result should contain information about Accountowner and LinkedAccount models      
         if (!isset($resultInvestorsData['Accountowner'])) {
             return [];
         }
-        
+
         $accountOwnerIds = array();
- // search through the obtained data array
+        // search through the obtained data array
         foreach ($resultInvestorsData['Linkedaccount'] as $account) {
             if ($account['accountowner_status'] == WIN_ACCOUNTOWNER_ACTIVE) {
                 $accountOwnerIds[] = ['id' => $account['id']];
@@ -183,22 +188,22 @@ class Linkedaccount extends AppModel {
         if (empty($accountOwnerIds)) {
             return [];
         }
-        
+
         $filterConditions = array(
             "OR" => $accountOwnerIds,
-            "AND" => array (array('linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS,
-                            'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
+            "AND" => array(array('linkedaccount_linkingProcess' => WIN_LINKING_NOTHING_IN_PROCESS,
+                    'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE),
         ));
 
         $linkedAccountsResults[] = $this->getLinkedaccountDataList($filterConditions);
-        
+
         $companyNothingInProcess = array();
         foreach ($linkedAccountsResults as $linkedAccountResult) {
             $companyNothingInProcess[] = $linkedAccountResult['Linkedaccount']['id'];
-            }
+        }
         return $companyNothingInProcess;
     }
-    
+
     /**
      * Change the password on a PFP of a user's account
      * 
@@ -206,15 +211,14 @@ class Linkedaccount extends AppModel {
      * @param type $newPass new password
      * @return boolean 
      */
-    public function changePasswordLinkaccount($linkedaccountId, $newPass){
+    public function changePasswordLinkaccount($linkedaccountId, $newPass) {
         $filterConditions = array('id' => $linkedaccountId);
         $accountOwnerId = $this->find("first", $params = array('recursive' => -1,
-                                                               'fields'    => array('accountowner_id'),
-                                                               'conditions' => $filterConditions)
-                                           );       
-        $this-> changeAccountPassword($accountOwnerId, $newPass);
+            'fields' => array('accountowner_id'),
+            'conditions' => $filterConditions)
+        );
+        $this->changeAccountPassword($accountOwnerId, $newPass);
     }
-
 
     /**
      * beforeFind, starts a timer for a find operation.
@@ -249,7 +253,7 @@ class Linkedaccount extends AppModel {
      * @return boolean
      */
     public function afterSave($created, $options = array()) {
-        
+
         if ($created) {
             $this->Investor = ClassRegistry::init('Investor');
             $this->Queue2 = ClassRegistry::init('Queue2');
@@ -266,21 +270,19 @@ class Linkedaccount extends AppModel {
         else {          // update of already existing object
             if (isset($this->data['Linkedaccount']['linkedaccount_visualStatus'])) {
                 $investorId = $this->getInvestorFromLinkedaccount($this->data['Linkedaccount']['id']);
-                $event = new CakeEvent("Model.Linkedaccount.Analyzing", $this, 
-                                       array(
-                                           'model' => "Linkedaccount",
-                                           'isFinalEvent' => false,
-                                           'userIdentification' => $investorId,
-                                           'modelData' => $this->data,
-                                           'id' => $this->data['Linkedaccount']['id'],
-                                           ));
+                $event = new CakeEvent("Model.Linkedaccount.Analyzing", $this, array(
+                    'model' => "Linkedaccount",
+                    'isFinalEvent' => false,
+                    'userIdentification' => $investorId,
+                    'modelData' => $this->data,
+                    'id' => $this->data['Linkedaccount']['id'],
+                ));
                 $this->getEventManager()->dispatch($event);
-                return true;               
-            }  
+                return true;
+            }
         }
     }
-    
-    
+
     /**
      * 	Callback Function
      * 	Decrypt the sensitive data provided by the investor
@@ -306,7 +308,6 @@ class Linkedaccount extends AppModel {
         return $results;
     }
 
-
     /**
      * 	Disables the linked account(s) that fulfill $filterConditions. No action is taken in case account is NOT_ACTIVE 
      *  or already disabled.
@@ -319,39 +320,38 @@ class Linkedaccount extends AppModel {
     public function disableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
         $indexList = $this->find('all', $params = array('recursive' => -1,
-                                                         'fields'    => array('id', 'linkedaccount_status','linkedaccount_statusExtended'),
-                                                        'conditions' => $filterConditions)
-                                );
+            'fields' => array('id', 'linkedaccount_status', 'linkedaccount_statusExtended'),
+            'conditions' => $filterConditions)
+        );
 
         if (empty($indexList)) {
             return false;
         }
 
-        if ($originator == WIN_USER_INITIATED ) {
+        if ($originator == WIN_USER_INITIATED) {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_TEMPORARILY_DISABLED_BY_USER;
         }
         else {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_TEMPORARILY_DISABLED_BY_SYSTEM;
-        } 
+        }
 
         $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
-    
+
         foreach ($indexList as $index) {
             if ($index['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_ACTIVE) {
                 $newData['linkedaccount_statusExtendedOld'] = $index['Linkedaccount']['linkedaccount_statusExtended'];
-                $newData['id'] =  $index['Linkedaccount']['id'];
+                $newData['id'] = $index['Linkedaccount']['id'];
                 $changedData[] = $newData;
             }
             else {
                 continue;
-            }   
+            }
         }
-       
-        $this->saveMany($changedData, array('validate' => true));        
+
+        $this->saveMany($changedData, array('validate' => true));
         return true;
-    }   
-    
-    
+    }
+
     /**
      * 	Enables the linked account(s) that fulfill $filterConditions. 
      *  Only accounts that are disabled can be enabled. Note that if no disabled account(s) fulfill the 
@@ -365,11 +365,11 @@ class Linkedaccount extends AppModel {
     public function enableLinkedAccount($filterConditions, $originator = WIN_USER_INITIATED) {
 
         $indexList = $this->find('all', $params = array('recursive' => -1,
-                                                         'fields'    => array('id', 'linkedaccount_status', 
-                                                             'linkedaccount_statusExtended', 'linkedaccount_statusExtendedOld',
-                                                                                ),
-                                                        'conditions' => $filterConditions)
-                                );
+            'fields' => array('id', 'linkedaccount_status',
+                'linkedaccount_statusExtended', 'linkedaccount_statusExtendedOld',
+            ),
+            'conditions' => $filterConditions)
+        );
 
         if (empty($indexList)) {
             return false;
@@ -381,86 +381,98 @@ class Linkedaccount extends AppModel {
             if ($index['Linkedaccount']['linkedaccount_statusExtended'] == WIN_LINKEDACCOUNT_NOT_ACTIVE_TEMPORARILY_DISABLED_BY_SYSTEM ||
                     $index['Linkedaccount']['linkedaccount_statusExtended'] == WIN_LINKEDACCOUNT_NOT_ACTIVE_TEMPORARILY_DISABLED_BY_USER) {
                 $newData['linkedaccount_statusExtended'] = $index['Linkedaccount']['linkedaccount_statusExtendedOld'];
-                $newData['id'] =  $index['Linkedaccount']['id'];
+                $newData['id'] = $index['Linkedaccount']['id'];
                 $changedData[] = $newData;
             }
             else {
                 continue;
-            }   
+            }
         }
 
-        $this->saveMany($changedData, array('validate' => true));       
+        $this->saveMany($changedData, array('validate' => true));
         return true;
-    }     
-    
-    
+    }
+
     /**
      * 	Callback Function
      * 	Check if we can/need to send the Alias
      * Problaby not necessary.
      *
      */
-    /*public function afterFind($results, $primary = false) {
+    /* public function afterFind($results, $primary = false) {
 
-        if (!isset($results['Linkedaccount']['linkedaccount_isControlledBy'])) {
-            $linkedAccountResult = $this->find('first', $params = array(
-                                        'conditions' => array('Linkedaccount.id' => $results[]['id']),
-                                        'recursive' => -1,                          //int
-                                        'fields' => array('Linkedaccount.linkedaccount_isControlledBy'),
-                                        'callbacks' => false,
-                                        ));
-            $isControlledBy = $linkedAccountResult['Linkedaccount']['linkedaccount_isControlledBy'];
-        }
-        else {
-            $isControlledBy = $results['Linkedaccount']['linkedaccount_isControlledBy'];
-        }
-        
-        if ($isControlledBy == WIN_ALIAS_SYSTEM_CONTROLLED) {
-            if (isset($results['Linkedaccount']['linkedaccount_alias'])) {
-                unset($results['Linkedaccount']['linkedaccount_alias']);  
-            }
-        }
-        return $results;
-    }     */
- 
+      if (!isset($results['Linkedaccount']['linkedaccount_isControlledBy'])) {
+      $linkedAccountResult = $this->find('first', $params = array(
+      'conditions' => array('Linkedaccount.id' => $results[]['id']),
+      'recursive' => -1,                          //int
+      'fields' => array('Linkedaccount.linkedaccount_isControlledBy'),
+      'callbacks' => false,
+      ));
+      $isControlledBy = $linkedAccountResult['Linkedaccount']['linkedaccount_isControlledBy'];
+      }
+      else {
+      $isControlledBy = $results['Linkedaccount']['linkedaccount_isControlledBy'];
+      }
+
+      if ($isControlledBy == WIN_ALIAS_SYSTEM_CONTROLLED) {
+      if (isset($results['Linkedaccount']['linkedaccount_alias'])) {
+      unset($results['Linkedaccount']['linkedaccount_alias']);
+      }
+      }
+      return $results;
+      } */
+
     /**
      * Get the company id given a linkedaccount id
      * 
      * @param int $id
      * @return int
      */
-    public function getCompanyFromLinkedaccount($id){
+    public function getCompanyFromLinkedaccount($id) {
         $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
-            'fields' => ['Accountowner.company_id'],'recursive' => 0]);
+            'fields' => ['Accountowner.company_id'], 'recursive' => 0]);
         return $linkedAccountResult['Accountowner']['company_id'];
     }
+
     /**
      * Get the investor id given a linkedaccount id
      * 
      * @param int $id
      * @return int
      */
-    public function getInvestorFromLinkedaccount($id){
+    public function getInvestorFromLinkedaccount($id) {
         $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
-            'fields' => ['Accountowner.investor_id'],'recursive' => 0]);
+            'fields' => ['Accountowner.investor_id'], 'recursive' => 0]);
         return $linkedAccountResult['Accountowner']['investor_id'];
     }
-     
+
+    /**
+     * Get the list of the linkedaccount from an investor
+     * 
+     * @param type $id
+     * return array
+     */
+    public function getListFromInvestorId($id) {
+        $linkedAccountResult = $this->find('list', array(
+            'conditions' => array('Accountowner.investor_id' => $id),
+            'fields' => 'Linkedaccount.id',
+            'recursive' => 0,
+        ));
+        return $linkedAccountResult;
+    }
+
     /**
      * Get the linkedaccount_currency of a linkedaccount given the id
      * 
      * @param int $id
      * @return int
      */
-    public function getCurrency($id){
+    public function getCurrency($id) {
         $linkedAccountResult = $this->find("first", $param = ['conditions' => ['Linkedaccount.id' => $id],
-            'fields' => ['Linkedaccount.linkedaccount_currency'],'recursive' => -1]);
+            'fields' => ['Linkedaccount.linkedaccount_currency'], 'recursive' => -1]);
         return $linkedAccountResult['Linkedaccount']['linkedaccount_currency'];
     }
-    
-    
-    
-    
+
     /**
      * 
      *          API FUNCTIONS
@@ -476,8 +488,8 @@ class Linkedaccount extends AppModel {
      * @return array   If mono account, return always an array of size 1. Return account and a field that tells if 
      *                  that account is already linked.
      */
-    public function precheck($investorId, $companyId, $username, $password) {        
-       
+    public function precheck($investorId, $companyId, $username, $password) {
+
         $alreadyLinked = false;
         //Begin to check if that account already exist.
         $this->Accountowner = ClassRegistry::init('Accountowner');
@@ -489,7 +501,7 @@ class Linkedaccount extends AppModel {
 
         if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
             $multiAccountCheck = true;
-        } 
+        }
         else {
             $multiAccountCheck = false;
         }
@@ -500,8 +512,8 @@ class Linkedaccount extends AppModel {
             }
 
             $accountOwnerId = $accountOwner['Accountowner']['id'];
-            $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId,  'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE));         //Check for the active linkedaccounts from that accountowner
-            } 
+            $accountsLinked = $this->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE));         //Check for the active linkedaccounts from that accountowner
+        }
         else if (!empty($accountOwner) && !$multiAccountCheck) { //Not multiaccount company and already linked, can't link again
             if (Configure::read('debug')) {
                 echo __FUNCTION__ . " " . __LINE__ . ": " . "Linkedaccount not multiaccount and Accountowner already exist, can't link again";
@@ -514,11 +526,11 @@ class Linkedaccount extends AppModel {
         $urlSequenceList = $this->Urlsequence->getUrlsequence($companyId, WIN_LOGIN_SEQUENCE);
         $newComp = $this->companyClass($multiAccount[0]['Company']['company_codeFile']);
         $newComp->setUrlSequence($urlSequenceList);
-        
-        /*$configurationParameters = array('tracingActive' => true,
-            'traceID' => $this->Auth->user('Investor.investor_identity'),
-        );
-        $newComp->defineConfigParms($configurationParameters);*/
+
+        /* $configurationParameters = array('tracingActive' => true,
+          'traceID' => $this->Auth->user('Investor.investor_identity'),
+          );
+          $newComp->defineConfigParms($configurationParameters); */
 
         $newComp->generateCookiesFile();
         if ($multiAccountCheck) {
@@ -527,25 +539,25 @@ class Linkedaccount extends AppModel {
                 $accounts[$accountKey]['accountCheck'] = false;                 //This field is not in db, is only for the frontend, it tell if the account is already linked or not.
                 foreach ($accountsLinked as $accountLinked) {
                     //Check the accounts already linked with the accounts to link, if we have them in $accountLinked, mark them in $accounts as already linked.
-                    if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {        
+                    if ($account['linkedaccount_accountIdentity'] == $accountLinked['Linkedaccount']['linkedaccount_accountIdentity']) {
                         $accounts[$accountKey]['accountCheck'] = true;
                         break;
-                    }  
+                    }
                 }
             }
-        } 
+        }
         else {
             $accounts = $newComp->companyUserLogin($username, $password);
-            if($accounts == true){
+            if ($accounts == true) {
                 unlink($accounts);
                 $accounts = array();
                 $accounts[0]['accountCheck'] = $alreadyLinked;
                 $accounts[0]['linkedaccount_accountIdentity'] = $username;
                 $accounts[0]['linkedaccount_accountDisplayName'] = $username;
             }
-        }   
+        }
 
-        if(empty($accounts)){
+        if (empty($accounts)) {
             //ERROR LOGIN 
             $error = array();
             //$error['code'] = ;
@@ -559,7 +571,6 @@ class Linkedaccount extends AppModel {
         return $return;
     }
 
-
     /**
      * Delete a likedaccount given the id
      * 
@@ -569,7 +580,7 @@ class Linkedaccount extends AppModel {
      * @return string|int               Feedback and html code
      */
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
-               
+
         $indexList = $this->find('all', $params = array('recursive' => -1,
             'conditions' => array('Linkedaccount.id' => $linkaccountId),
             'fields' => array('Linkedaccount.id', 'Linkedaccount.accountowner_id', 'Linkedaccount.linkedaccount_status'))
@@ -580,7 +591,7 @@ class Linkedaccount extends AppModel {
             $return['code'] = 403;
             return $return;
         }
-        else if($indexList[0]['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_NOT_ACTIVE){
+        else if ($indexList[0]['Linkedaccount']['linkedaccount_status'] == WIN_LINKEDACCOUNT_NOT_ACTIVE) {
             $return['code'] = 404;
             $return['data']['feedback_message_user'] = 'Account not found.';
             return $return;
@@ -596,12 +607,12 @@ class Linkedaccount extends AppModel {
 
         if ($roleName == 'Investor') {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_AND_DELETED_BY_USER;
-        } 
+        }
         else {
             $newData['linkedaccount_statusExtended'] = WIN_LINKEDACCOUNT_NOT_ACTIVE_DELETED_BY_SYSTEM;
         }
 
-        $newData['id'] = $linkaccountId; 
+        $newData['id'] = $linkaccountId;
         $newData['linkedaccount_status'] = WIN_LINKEDACCOUNT_NOT_ACTIVE;
         $this->save($newData);
 
@@ -614,7 +625,6 @@ class Linkedaccount extends AppModel {
         return $return;
     }
 
-
     /**
      * Add the linked account to the db.
      * 
@@ -624,8 +634,7 @@ class Linkedaccount extends AppModel {
      * @param string $linkedaccountCurrency Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner have different currency).
      * @return boolean
      */
-    public function addLinkedaccount($accountOwnerId, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, /*$linkedaccountAlias,*/$linkedaccountCurrency = 'EUR') { //[last field is by default €]
- 
+    public function addLinkedaccount($accountOwnerId, $linkedaccountIdentity, $linkedaccountPlatformDisplayName, /* $linkedaccountAlias, */ $linkedaccountCurrency = 'EUR') { //[last field is by default €]
         $linkedAccountData['Linkedaccount'] = array('linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE,
             'linkedaccount_statusExtended' => WIN_LINKEDACCOUNT_ACTIVE_AND_CREDENTIALS_VERIFIED,
             'linkedaccount_linkingProcess' => WIN_LINKING_WORK_IN_PROCESS,
@@ -637,18 +646,18 @@ class Linkedaccount extends AppModel {
             'linkedaccount_currency' => $linkedaccountCurrency,
         );
 
-            if ($this->save($linkedAccountData, $validation = true)) {
-                $id = $this->id;
-                $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
-                $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
-                $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
-                return $id;
-            } 
-            else {
-                return false;
-            }
+        if ($this->save($linkedAccountData, $validation = true)) {
+            $id = $this->id;
+            $result = $this->Accountowner->getData(array('id' => $accountOwnerId), array('accountowner_linkedAccountCounter'));
+            $linkedaccountCount = $result[0]['Accountowner']['accountowner_linkedAccountCounter'] + 1;
+            $this->Accountowner->save(array('id' => $accountOwnerId, 'accountowner_linkedAccountCounter' => $linkedaccountCount));
+            return $id;
+        }
+        else {
+            return false;
+        }
     }
-    
+
     /**
      * Add a new linkaccount for an investor. If accountOwner(same company and credentials) exited before, link the new linkedaccount with it, if not, create a new account owner.
      * 
@@ -661,16 +670,17 @@ class Linkedaccount extends AppModel {
      * @param string $currency Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner will have different currency).
      * @return boolean
      */
-     public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {
+    public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {
         $accountOwnerId = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
         if (!empty($accountOwnerId)) {
             //Not new Accountowner
             return $this->addLinkedaccount($accountOwnerId['Accountowner']['id'], $identity, $displayName, $currency);
-        } 
+        }
         else {
             //New Accountowner
             $newAccountOwnerId = $this->Accountowner->createAccountOwner($investorId, $companyId, $username, $password);
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
         }
     }
+
 }

@@ -41,8 +41,8 @@ class DashboardsController extends AppController {
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
      * Format:
-     * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
-     * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
+     * GET /api/1.1/dashboards/{linkedAccountId}
+     * Example: GET /api/1.1/dashboards/1051/
      * 
      * @param -
      * 
@@ -59,8 +59,9 @@ class DashboardsController extends AppController {
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
         $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
+        $dashboardConfig[$type][$function][2]['linkedaccountId'] = $id;         //Extra info for formatter function
         if ($dashboardConfig[$type][$function][2]['xAxis'] == 'currency') {
-            $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id);
+            $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id); //Extra info for formatter function
         }
         if (empty($dashboardConfig[$type]) || empty($dashboardConfig[$type][$function])) {
             $this->response->statusCode(400);
@@ -93,10 +94,6 @@ class DashboardsController extends AppController {
     }
 
     /** PENDING: ERROR HANDLING TOWARDS HTTP
-     * This methods terminates the HTTP GET.
-     * Format GET /api/1.0/dashboards.json?_fields=x,y,z
-     * Example GET /api/1.0/dashboard.json?investor_country=SPAIN&_fields=investor_name,investor_surname
-     * 
      * Other format:
      * GET /api/1.1/dashboards/{linkedAccountId}/{graphicsIdentification}?period=year
      * Example: GET /api/1.1/dashboards/1051/graphics/active-investments-graph-data?period=year
@@ -158,7 +155,8 @@ class DashboardsController extends AppController {
                     }
                     if ($key2 == 0) {
                         $data['data'][$blockKey][$key]['graph_data'][$key2]['default'] = true;
-                    } else {
+                    }
+                    else {
                         $data['data'][$blockKey][$key]['graph_data'][$key2]['default'] = false;
                     }
                 }

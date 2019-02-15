@@ -75,6 +75,10 @@ class Investor extends AppModel {
             'fields' => '',
             'order' => '',
         ),
+        'Globaldashboard' => array(
+            'className' => 'Globaldashboard',
+            'foreignKey' => 'investor_id',
+        )
     );
     public $hasOne = array(
         'User' => array(
@@ -92,10 +96,7 @@ class Investor extends AppModel {
             'ForeignKey' => 'investor_id',
             'associationForeignKey' => 'ocr_id',
         ),
-        'Globaldashboard' => array(
-            'className' => 'Globaldashboard',
-            'ForeignKey' => 'investor_id',
-        )
+
     );
     public $hasAndBelongsToMany = array(
         'Ocrfile' => array(

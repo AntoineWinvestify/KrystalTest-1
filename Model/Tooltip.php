@@ -61,15 +61,6 @@ class Tooltip extends AppModel {
 
         $this->Tooltipincompany->Behaviors->load('Containable');
         $this->Tooltipincompany->contain('Tooltip');
-        /*$this->Tooltipincompany->bindModel(
-                array('belongsTo' => array(
-                        'Tooltip' => array(
-                            'className' => 'Tooltip',
-                            'foreignKey' => 'tooltip_id'
-                        )
-                    )
-                )
-        );*/
 
         $companyFilter = array('company_id' => $companyId);
         $result = $this->Tooltipincompany->find('all', array('conditions' => $companyFilter,
