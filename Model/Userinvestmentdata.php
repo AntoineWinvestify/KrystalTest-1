@@ -53,7 +53,7 @@ class Userinvestmentdata extends AppModel {
      * @param string $investorId             investor database id.
      * @return array Last Userinvestmentdata rows for the linked accounts
      */
-    public function getLastInvestment ($investorId) {
+    public function getLastInvestment($investorId) {
 
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
 
@@ -83,7 +83,7 @@ class Userinvestmentdata extends AppModel {
      * @param string $investorIdentity investor identity number
      * @return array Global data
      */
-    public function getGlobalData ($investorIdentity) {
+    public function getGlobalData($investorIdentity) {
 
         $resultInvestorData = $this->find("all", array("recursive" => -1,
             "conditions" => array("userinvestmentdata_investorIdentity" => $investorIdentity),
@@ -101,7 +101,7 @@ class Userinvestmentdata extends AppModel {
      *                  array[1]    => detailed error information if array[0] = false
      *                                 id if array[0] = true		
      */
-    public function createUserInvestmentData ($userInvestmentData) {
+    public function createUserInvestmentData($userInvestmentData) {
         $this->create();
         if ($this->save($userInvestmentData, $validation = true)) {   // OK
             $userInvestmentDataId = $this->id;
@@ -125,7 +125,7 @@ class Userinvestmentdata extends AppModel {
         return $result;
     }
 
-    public function getInvestmentIdByLoanId ($loanIds) { // NOT NEEDED?? replace with getData
+    public function getInvestmentIdByLoanId($loanIds) { // NOT NEEDED?? replace with getData
         $fields = array('Investment.investment_loanReference', 'Investment.id');
         $conditions = array('investment_loanReference' => $loanIds);
         $investmentIds = $this->find('list', $params = array('recursive' => -1,
@@ -135,7 +135,7 @@ class Userinvestmentdata extends AppModel {
         return $investmentIds;
     }
 
-    public function saveDataByType ($linkedaccountId, $date, $data) {
+    public function saveDataByType($linkedaccountId, $date, $data) {
         $conditions = array(
             'linkedaccount_id' => $linkedaccountId,
             'date'
@@ -156,9 +156,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readActiveInvestmentsGraphData ($linkedAccountId, $period) {
+    public function readActiveInvestmentsGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_numberActiveInvestments';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -168,9 +168,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNetDepositsGraphData ($linkedAccountId, $period) {
+    public function readNetDepositsGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_totalNetDeposits';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -180,9 +180,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readCashDragGraphData ($linkedAccountId, $period) {
+    public function readCashDragGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_cashDrag';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -192,9 +192,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readInvestedAssetsGraphData ($linkedAccountId, $period) {
+    public function readInvestedAssetsGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_outstandingPrincipal';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -204,9 +204,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readReservedFundsGraphData ($linkedAccountId, $period) {
+    public function readReservedFundsGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_reservedAssets';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -216,9 +216,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readCashGraphData ($linkedAccountId, $period) {
+    public function readCashGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_cashInPlatform';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -228,9 +228,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNarPastYearGraphData ($linkedAccountId, $period) {
+    public function readNarPastYearGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_netAnnualReturnPastYear';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -240,9 +240,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account             //Global historical not implemented
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNarLast365daysMultiGraphData ($linkedAccountId, $period) {
+    public function readNarLast365daysMultiGraphData($linkedAccountId, $period) {
         $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
         $field = 'userinvestmentdata_netAnnualReturnPast12Months';
         $data['Dashboard'] = $this->genericGraphSearch($linkedAccountId, $period, $field);
@@ -256,9 +256,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNarTotalFundsGraphData ($linkedAccountId, $period) {
+    public function readNarTotalFundsGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_netAnnualTotalFundsReturn';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -268,9 +268,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNetEarningsLast365daysGraphData ($linkedAccountId, $period) {
+    public function readNetEarningsLast365daysGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_netReturnPast12Months';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -280,9 +280,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNetEarningsPastYearGraphData ($linkedAccountId, $period) {
+    public function readNetEarningsPastYearGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_netReturnPastYear';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -292,9 +292,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                    Time period. For now can be "year" or "all"
-     * @return boolean
+     * @return array
      */
-    public function readNetEarningsTotalGraphData ($linkedAccountId, $period) {
+    public function readNetEarningsTotalGraphData($linkedAccountId, $period) {
         $field = 'userinvestmentdata_netTotal';
         return $this->genericGraphSearch($linkedAccountId, $period, $field);
     }
@@ -304,9 +304,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                   //Not used
-     * @return boolean
+     * @return array
      */
-    public function readCurrentGraphData ($linkedAccountId, $period) {
+    public function readCurrentGraphData($linkedAccountId, $period) {
         $data = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_current'], 'Date DESC', null, 'first');
         return $data['Userinvestmentdata']['userinvestmentdata_current'];
     }
@@ -316,9 +316,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                   //Not used
-     * @return boolean
+     * @return array
      */
-    public function readExposureGraphData ($linkedAccountId, $period) {
+    public function readExposureGraphData($linkedAccountId, $period) {
         $data = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_exposure'], 'Date DESC', null, 'first');
         return $data['Userinvestmentdata']['userinvestmentdata_exposure'];
     }
@@ -328,9 +328,9 @@ class Userinvestmentdata extends AppModel {
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                   //Not used
-     * @return boolean
+     * @return array
      */
-    public function readPaymentDelayGraphData ($linkedAccountId, $period) {
+    public function readPaymentDelayGraphData($linkedAccountId, $period) {
 
 
         $data['1-7'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_1-7'], 'Date DESC', null, 'first');
@@ -342,16 +342,45 @@ class Userinvestmentdata extends AppModel {
         return $data;
     }
 
-    public function readDashboardList ($investorId, $dummy) {
-        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');    
-        $linkedAccountList = $this->Userinvestmentdata->find('list', array(
-            'conditions' => array ( 'Globaldashboard.investor_id' => $investorId),
-            'fields' => array( 'Linkedaccount.id', 'Linkedaccount.linkedaccount_accountDisplayName', 'Userinvestmentdata.userinvestmentdata_cashInPlatform'),
-            'recursive' => 2,
+    /**
+     * Read the list of each individual dashboard of a investor.
+     * 
+     * @param type $investorId
+     * @param type $dummy                                                       //Not used
+     * @return array                                                            //List of the individual dashboard for each linkedaccount
+     */
+    public function readDashboardList($investorId, $dummy) {
+        $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
+        $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
+        $this->Company = ClassRegistry::init('Company');
+
+        $linkedAccountList = $this->Linkedaccount->find('all', array(
+            'conditions' => array('Accountowner.investor_id' => $investorId),
+            'fields' => array('Linkedaccount.id', 'Accountowner.company_id', 'Linkedaccount.linkedaccount_accountDisplayName', 'Linkedaccount.linkedaccount_currency'),
+            'recursive' => 1,
         ));
-        print_r($linkedAccountList);
-        exit;
-        $this->getData();
+
+        foreach ($linkedAccountList as $key => $linkedaccount) {
+
+            $companyName = $this->Company->find('first', array(
+                'conditions' => array('Company.id' => $linkedaccount['Accountowner']['company_id']),
+                'fields' => 'Company.company_name',
+                'recursive' => -1,
+            ));
+
+            $kpisDataList[$key] = $this->Userinvestmentdata->find('first', array(
+                'conditions' => array('Userinvestmentdata.linkedaccount_id' => $linkedaccount['Linkedaccount']['id']),
+                'fields' => array('Userinvestmentdata.userinvestmentdata_netAnnualReturnPast12Months', 'userinvestmentdata_outstandingPrincipal',
+                    'userinvestmentdata_cashInPlatform', 'userinvestmentdata_reservedAssets'),
+                'recursive' => -1,
+                'order' => 'Userinvestmentdata.Date DESC'
+            ));
+            $kpisDataList[$key]['Userinvestmentdata']['pfp'] = $companyName['Company']['company_name'];
+            $kpisDataList[$key]['Userinvestmentdata']['linkedaccount_accountDisplayName'] = $linkedaccount['Linkedaccount']['linkedaccount_accountDisplayName'];
+            $kpisDataList[$key]['Userinvestmentdata']['linkedaccount_currency'] = $linkedaccount['Linkedaccount']['linkedaccount_currency'];
+        }
+
+        return $kpisDataList;
     }
 
     /**
@@ -360,9 +389,9 @@ class Userinvestmentdata extends AppModel {
      * @param int $linkedAccountId
      * @param string $period                                                    Time period. For now can be "year" or "all"
      * @param string $field
-     * @return boolean
+     * @return array
      */
-    public function genericGraphSearch ($linkedAccountId, $period, $field) {
+    public function genericGraphSearch($linkedAccountId, $period, $field) {
         $conditions = ['linkedaccount_id' => $linkedAccountId];
 
         switch ($period['period']) {

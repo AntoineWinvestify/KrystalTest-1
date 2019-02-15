@@ -31,24 +31,23 @@ class GlobaldashboardsController extends AppController {
     protected $graphicsResults;         // contains the data of a graphic
     protected $investmentListsResult;   // contains the data of an investment list
 
-    function beforeFilter () {
+    function beforeFilter() {
 
         parent::beforeFilter();
 //	$this->Security->requireAuth();
     }
 
-    
-     /*public function index(){
-         //busca id
-         if($id){
-             view
-         }
-         else{
-             linkedaccount
-         }   
-         
-         }*/
-    
+    /* public function index(){
+      //busca id
+      if($id){
+      view
+      }
+      else{
+      linkedaccount
+      }
+
+      } */
+
     /** PENDING: ERROR HANDLING TOWARDS HTTP
      * This methods terminates the HTTP GET.
      * Format:
@@ -58,7 +57,7 @@ class GlobaldashboardsController extends AppController {
      * @param -
      * 
      */
-    public function v1_viewCustom () {
+    public function v1_viewCustom() {
 
         //Call configuration
         $pathVendor = Configure::read('winvestifyVendor');
@@ -69,10 +68,9 @@ class GlobaldashboardsController extends AppController {
         $id = $this->request->id;
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
-        $linkedAccountList = $this->Linkedaccount->getListFromInvestorId($id);
-          /*if($dashboardConfig[$type][$function][2]['xAxis'] == 'currency'){
-          $dashboardConfig[$type][$function][2]['xAxis'] = $this->Linkedaccount->getCurrency($id);
-          } */
+        if ($dashboardConfig[$type][$function][2]['xAxis'] == 'currency') {
+            $dashboardConfig[$type][$function][2]['xAxis'] = 'EUR'/* $this->Linkedaccount->getCurrency($id) */;
+        }
         if (empty($dashboardConfig[$type]) || empty($dashboardConfig[$type][$function])) {
             $this->response->statusCode(400);
             $this->response->type('json');
@@ -95,9 +93,9 @@ class GlobaldashboardsController extends AppController {
 
         //Search the data and format it
         $data = $this->Searchmodel->$searchModelFunction($id, $this->listOfQueryParams);
-        $result = $this->formatter->$formatterFunction($data, null, $dashboardConfig[$type][$function][2]);
+        $resultData = $this->formatter->$formatterFunction($data, null, $dashboardConfig[$type][$function][2]);
 
-        $resultJson = json_encode($result);
+        $resultJson = json_encode($resultData);
         $this->response->type('json');
         $this->response->body($resultJson);
         return $this->response;
@@ -111,49 +109,67 @@ class GlobaldashboardsController extends AppController {
      * @param -
      * 
      */
-    public function v1_view () {
+    public function v1_view() {
 
         Configure::load('dashboardConfig.php', 'default');
-        $dashboardConfig = Configure::read('globalDashboardMainData');
+        $dashboardConfigBlock = Configure::read('globalDashboardMainData');
         $id = $this->request->id;
         //$companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);  Linkedaccount list
 
-        foreach ($dashboardConfig as $key => $value) {
-            $data['data'][$key]['display_name'] = $value['display_name'];
-
-            //Search tooltip if the field ave one
-            if (!empty($value['tooltip'])) {
+        //Prepare the data for each block
+        foreach ($dashboardConfigBlock as $blockKey => $dashboardConfig) {
+            $data['data'][$blockKey]['display_name'] = $dashboardConfig['display_name'];
+            if (!empty($dashboardConfig['tooltip'])) {
                 $this->Tooltip = ClassRegistry::init('Tooltip');
-                $tooltips = $this->Tooltip->getTooltip(array($value['tooltip']), $this->language, $companyId);
-                $data['data'][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                $tooltips = $this->Tooltip->getTooltip(array($dashboardConfig['tooltip']), $this->language, $companyId);
+                $data['data'][$blockKey]['tooltip_display_name'] = $tooltips[$value['tooltip']];
             }
 
-            //Search value
-            $model = $value['value']['model'];
-            $this->model = ClassRegistry::init($model);
-            if (!empty($value['value'])) {
-                $field = $value['value']['field'];
-                $data['data'][$key]['value']['amount'] = $this->model->getData(array('investor_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
-                /* if($value['value']['type'] == 'currency'){      //Seacrh for the currency
-                  $data['data'][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
-                  }; */
-                if ($value['value']['type'] == 'percent') {       //Percent in our db are from 0-1 range, we need multiply them-
-                    $data['data'][$key]['value']['amount'] = $data['data'][$key]['value']['amount'] * 100;
+            foreach ($dashboardConfig['data'] as $key => $value) {
+                $data['data'][$blockKey][$key]['display_name'] = $value['display_name'];
+
+                //Search tooltip if the field ave one
+                if (!empty($value['tooltip'])) {
+                    $this->Tooltip = ClassRegistry::init('Tooltip');
+                    $tooltips = $this->Tooltip->getTooltip(array($value['tooltip']), $this->language, $companyId);
+                    $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
                 }
-            }
-            if (!empty($value['icon'])) {
-                $data['data'][$key]['icon'] = $value['icon'];
-            }
-            foreach ($value['graphLinksParams'] as $key2 => $linkParam) {
-                $data['data'][$key]['graph_data'][$key2]['url'] = $this->generateLink('dashboards', null, $linkParam['link'])['href'];
-                if (!empty($linkParam['displayName'])) {
-                    $data['data'][$key]['graph_data'][$key2]['option_display_name'] = $linkParam['displayName'];
+                //Defalut graph 1 in the main globaldashboard view.
+                if ($value['default_graph']) {
+                    $data['data'][$blockKey][$key]['default_graph'] = true;
                 }
-                if ($key2 == 0) {
-                    $data['data'][$key]['graph_data'][$key2]['default'] = true;
+                //Search value of the data tho show
+                $model = $value['value']['model'];
+                $this->model = ClassRegistry::init($model);
+                if (!empty($value['value'])) {
+                    $field = $value['value']['field'];
+                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('investor_id' => $this->investorId), $field, 'date DESC', null, 'first')[$model][$field];
+                    if ($value['value']['type'] == 'currency') {      //Seacrh for the currency
+                        $data['data'][$blockKey][$key]['value']['currency_code'] = 'EUR'/* $this->Linkedaccount->getCurrency($id) */;
+                        $data['data'][$blockKey][$key]['value']['value'] = round($data['data'][$blockKey][$key]['value']['amount'], WIN_SHOW_DECIMAL);
+                        unset($data['data'][$blockKey][$key]['value']['amount']);
+                    }
+                    if ($value['value']['type'] == 'percent') {       //Percent in our db are from 0-1 range, we need multiply them-
+                        $data['data'][$blockKey][$key]['value']['percent'] = round($data['data'][$blockKey][$key]['value']['amount'] * 100, WIN_SHOW_DECIMAL);
+                        unset($data['data'][$blockKey][$key]['value']['amount']);
+                    }
                 }
-                else {
-                    $data['data'][$key]['graph_data'][$key2]['default'] = false;
+                //Give value to the icon show
+                if (!empty($value['icon'])) {
+                    $data['data'][$blockKey][$key]['icon'] = $value['icon'];
+                }
+                //Prepare link to the graphs
+                foreach ($value['graphLinksParams'] as $key2 => $linkParam) {
+                    $data['data'][$blockKey][$key]['graph_data'][$key2]['url'] = $this->generateLink('globaldashboards', null, $linkParam['link'])['href'];
+                    if (!empty($linkParam['displayName'])) {
+                        $data['data'][$blockKey][$key]['graph_data'][$key2]['option_display_name'] = $linkParam['displayName'];
+                    }
+                    if ($key2 == 0) {
+                        $data['data'][$blockKey][$key]['graph_data'][$key2]['default'] = true;
+                    }
+                    else {
+                        $data['data'][$blockKey][$key]['graph_data'][$key2]['default'] = false;
+                    }
                 }
             }
         }

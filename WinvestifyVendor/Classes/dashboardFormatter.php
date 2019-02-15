@@ -1,4 +1,5 @@
 <?php
+
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2019, http://www.winvestify.com                   	  	|
@@ -24,9 +25,7 @@
  * 2019-01-25		version 0.1
  * Basic version
  */
-
 class dashboardFormatter {
-    
 
     /**
      * Generic formatter for Graphs. only accept one set of data.
@@ -37,7 +36,17 @@ class dashboardFormatter {
      * @return array
      */
     function genericGraphFormatter($data, $dummy, $graphInfo) {
-        $resultNormalized = Hash::extract($data, '{n}.Userinvestmentdata');
+        $resultNormalized = Hash::extract($data, $graphInfo['normalice']);
+        if ($graphInfo['xAxis'] === '%') {
+            foreach ($resultNormalized as $key => $data) {
+                $resultNormalized[$key]['value'] = round($resultNormalized[$key]['value'] * 100, WIN_SHOW_DECIMAL);
+            }
+        }
+        else {
+            foreach ($resultNormalized as $key => $data) {
+                $resultNormalized[$key]['value'] = round($resultNormalized[$key]['value'], WIN_SHOW_DECIMAL);
+            }
+        }
         $this->graphicsResults = [
             "graphics_data" => [
                 "dataset" =>
@@ -58,7 +67,7 @@ class dashboardFormatter {
      * @return array
      */
     function genericMultiGraphFormatter($data, $dummy, $graphInfo) {
-        $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], '{n}.Userinvestmentdata');
+        $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], $graphInfo['normalice']);
         $resultNormalized['GlobalDashboard'] = Hash::extract($data['GlobalDashboard'], '{n}.Dashboardoverviewdata');
 
         $this->graphicsResults = [
@@ -85,16 +94,15 @@ class dashboardFormatter {
      * @return array
      */
     function gaugeGraphFormatter($data, $dummy, $graphInfo) {
-        $this->graphicsResults = 
-            ["dataset" =>
-                [
+        $this->graphicsResults = ["dataset" =>
+            [
                 "display_name" => $graphInfo['displayName'],
                 "data" => [
-                        "max_value" => $graphInfo["maxValue"],
-                        "percent" => round($data, WIN_SHOW_DECIMAL)
-                        ],
-                ]
-            ];
+                    "max_value" => $graphInfo["maxValue"],
+                    "percent" => round($data, WIN_SHOW_DECIMAL)
+                ],
+            ]
+        ];
         return $this->graphicsResults;
     }
 
@@ -113,23 +121,22 @@ class dashboardFormatter {
         $dataResult[2]['range_display_name'] = '31-60 days';
         $dataResult[3]['range_display_name'] = '61-90 days';
         $dataResult[4]['range_display_name'] = '> 90 days';
-        
+
         $dataResult[0]['percent'] = $data['1-7']['Userinvestmentdata']['userinvestmentdata_delay_1-7'];
         $dataResult[1]['percent'] = $data['8-30']['Userinvestmentdata']['userinvestmentdata_delay_8-30'];
         $dataResult[2]['percent'] = $data['31-60']['Userinvestmentdata']['userinvestmentdata_delay_31-60'];
         $dataResult[3]['percent'] = $data['61-90']['Userinvestmentdata']['userinvestmentdata_delay_61-90'];
         $dataResult[4]['percent'] = $data['>90']['Userinvestmentdata']['userinvestmentdata_delay_>90'];
-                
-        $this->graphicsResults = 
-            ["dataset" =>
-                [
+
+        $this->graphicsResults = ["dataset" =>
+            [
                 "display_name" => $graphInfo['displayName'],
                 "data" => $dataResult,
-                ]
-            ];
+            ]
+        ];
         return $this->graphicsResults;
     }
-    
+
     /**
      * Generic formatter for most of the investment list
      * 
@@ -185,42 +192,103 @@ class dashboardFormatter {
                 }
             }
         }
-        
+
         $this->companyId = $companyId;
         $this->Tooltip = ClassRegistry::init('Tooltip');
         $this->investmentListsResult["display_name"] = $listInfo['displayName'];
         $this->investmentListsResult['header'] = $this->createActiveInvestmentsListHeader();
-        $tooltip = $this->Tooltip->getTooltip([ INVESTMENT_LIST_GLOBALTOOLTIP], $this->language, $this->companyId);  
-        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];     
-        $this->investmentListsResult['data'] = $temp; 
-        
-        
+        $tooltip = $this->Tooltip->getTooltip([INVESTMENT_LIST_GLOBALTOOLTIP], $this->language, $this->companyId);
+        $this->investmentListsResult['tooltip_display_name'] = $tooltip[INVESTMENT_LIST_GLOBALTOOLTIP];
+        $this->investmentListsResult['data'] = $temp;
+
         return $this->investmentListsResult;
     }
-    
+
+    /**
+     * Special formatter for the kpi list.
+     * 
+     * @param array $data                                                       //Data of kpis lists
+     * @param type $dummy
+     * @param type $info                                                        //Extra info for the lists
+     * @return array
+     */
+    public function dashboardListFormatter($data, $dummy, $info) {
+        $this->Tooltip = ClassRegistry::init('Tooltip');
+
+        //Basic data
+        $kpisList['display_name'] = "Key Performance Indicators";
+        $mainTooltip = $this->Tooltip->getTooltip(array(GLOBALDASHBOARD_KPIS), $this->language);
+        $kpisList['tooltip_display_name'] = $mainTooltip[GLOBALDASHBOARD_KPIS];
+
+        //Table headers
+        $tooltipIdentifiers = [
+            GLOBALDASHBOARD_KPI_PLATFORM,
+            GLOBALDASHBOARD_KPI_YIELD,
+            GLOBALDASHBOARD_KPI_TOTAL_VOLUME,
+            GLOBALDASHBOARD_KPI_CASH,
+            GLOBALDASHBOARD_KPI_EXPOSURE,
+            GLOBALDASHBOARD_KPI_CURRENT
+        ];
+        $displayHeaders = [
+            "Platform/Username",
+            "Yield",
+            "Total Volume",
+            "Cash",
+            "Exposure",
+            "Current",
+        ];
+        $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language);
+        $i = 0;
+        foreach ($displayHeaders as $key => $displayHeader) {
+            $header[$i]['displayName'] = $displayHeader;
+            if (array_key_exists($tooltipIdentifiers[$key], $tooltips)) {
+                $header[$i]['tooltipDisplayName'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
+            }
+            $i++;
+        }
+        $kpisList['table_header'] = $header;
+
+        //Table values
+        $z = 0;
+        foreach ($data as $key => $item) {
+
+            $kpisList['table_data'][$z][0]['datum'] = $item['Userinvestmentdata']['pfp'] . '(' . $item['Userinvestmentdata']['linkedaccount_accountDisplayName'] . ')';
+            $kpisList['table_data'][$z][1]['datum']['percent'] = $item['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'];
+            $kpisList['table_data'][$z][2]['datum']['amount'] = round($item['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] + $item['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] + $item['Userinvestmentdata']['userinvestmentdata_reservedAssets'], WIN_SHOW_DECIMAL);
+            $kpisList['table_data'][$z][2]['datum']['currency_code'] = $item['Userinvestmentdata']['linkedaccount_currency'];
+            $kpisList['table_data'][$z][3]['datum']['amount'] = round($item['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], WIN_SHOW_DECIMAL);
+            $kpisList['table_data'][$z][3]['datum']['currency_code'] = $item['Userinvestmentdata']['linkedaccount_currency'];
+            $kpisList['table_data'][$z][4]['datum']['percent'] = round(0, WIN_SHOW_DECIMAL);
+            $kpisList['table_data'][$z][5]['datum']['percent'] = round(0, WIN_SHOW_DECIMAL);
+            $z++;
+        }
+
+        return $kpisList;
+    }
+
     /**
      * Read the headers and tooltips for the investment list.
      * 
-¡    * @return array
-     */  
-    public function createActiveInvestmentsListHeader()  { 
+     * @return array
+     */
+    public function createActiveInvestmentsListHeader() {
 
         $tooltipIdentifiers = [
             INVESTMENT_LIST_LOANID,
-            INVESTMENT_LIST_INVESTMENTDATE, 
-            INVESTMENT_LIST_MYINVESTMENT, 
-            INVESTMENT_LIST_INTEREST, 
+            INVESTMENT_LIST_INVESTMENTDATE,
+            INVESTMENT_LIST_MYINVESTMENT,
+            INVESTMENT_LIST_INTEREST,
             INVESTMENT_LIST_INSTALLMENTPROGRESS,
             INVESTMENT_LIST_OUTSTANDINGPRINCIPAL,
-            INVESTMENT_LIST_NEXTPAYMENT, 
+            INVESTMENT_LIST_NEXTPAYMENT,
             INVESTMENT_LIST_STATUS,
         ];
 
         $displayHeaders = [
-            "Loan ID", 
+            "Loan ID",
             "Investment Date",
             "My Investment",
-            "Interest", 
+            "Interest",
             "Instalment Progress",
             "Outstanding Principal",
             "Next Payment",
@@ -236,6 +304,6 @@ class dashboardFormatter {
             $i++;
         }
         return $header;
-    } 
-}
+    }
 
+}
