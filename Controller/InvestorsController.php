@@ -498,9 +498,9 @@ function linkAccount() {
         }
         $id = $this->request->params['id'];
         if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Pollingresource.investor_name', 'Pollingresource.investor_surname',      
-                                     'Pollingresource.investor_DNI', 'Pollingresource.polling_type', 
-                                     'Pollingresource.investor_address1', 'Pollingresource.polling_new_value_exists',
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI',  'Investor.investor_dateOfBirth', 
+                                     'Investor.investor_address1',  'Investor.investor_address1', 
                                      'Investor.investor_city', 'Investor.investor_telephone',
                                      'Investor.investor_postCode', 'Investor.investor_email',
                                      'Investor.investor_country', 'Investor.investor_language'

@@ -424,7 +424,7 @@ class Linkedaccount extends AppModel {
     }     */
  
     /**
-     * Get the company id given a linkedaccount id
+     * Get the company id given by the linkedaccount id
      * 
      * @param int $id
      * @return int
@@ -435,7 +435,7 @@ class Linkedaccount extends AppModel {
         return $linkedAccountResult['Accountowner']['company_id'];
     }
     /**
-     * Get the investor id given a linkedaccount id
+     * Get the investor id given by the linkedaccount id
      * 
      * @param int $id
      * @return int

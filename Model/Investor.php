@@ -243,12 +243,11 @@ class Investor extends AppModel {
 
     
    var $defaultFields = [ 
-        'investor' => ['id', 
-                        'investor_identity',
+        'investor' => ['id',            //causes problems with PATCH, is never r/w
                         'investor_name', 
                         'investor_surname',
                         'investor_DNI',
-                        'investor_DateOfBirth',
+                        'investor_dateOfBirth',
                         'investor_telephone',
                         'investor_email',
                         'investor_address1', 
@@ -259,12 +258,13 @@ class Investor extends AppModel {
                         'investor_language',
                         'investor_links'
                       ],
+
         'winAdmin' => ['id', 
                         'investor_identity',
                         'investor_name', 
                         'investor_surname',
                         'investor_DNI',
-                        'investor_DateOfBirth',
+                        'investor_dateOfBirth',
                         'investor_telephone',
                         'investor_email',
                         'investor_address1', 
@@ -283,7 +283,7 @@ class Investor extends AppModel {
                         'investor_name', 
                         'investor_surname',
                         'investor_DNI',
-                        'investor_DateOfBirth',
+                        'investor_dateOfBirth',
                         'investor_telephone',
                         'investor_email',
                         'investor_address1', 

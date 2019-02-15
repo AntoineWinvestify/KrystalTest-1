@@ -46,7 +46,7 @@ use Petslane\Bondora;
 class TestsController extends AppController {
     
     var $investorId = 22;
-    var $roleName = "investor";
+    var $roleName = "winAdmin";
     var $id = 22;
     var $name = 'Tests';
     var $model = "Investor";
@@ -56,158 +56,6 @@ class TestsController extends AppController {
         'Linkedaccount', 'Accountowner');
     var $error;
 
-    
-    var $tree_array = [ 
-
-    1 => ['category_id' => WIN_MODEL,
-         'category_name' => 'Linkedaccount',
-         'parent_id' => 0,
-         'children' => [0 =>
-                            [
-                            'category_id' => WIN_ACL_ROLE,
-                            'category_name' => 'investor',
-                            'parent_id' => 2
-                            ],     
-                        ] 
-        ],        
-    2 => ['category_id' => WIN_MODEL,
-         'category_name' =>'Investor',
-         'parent_id' => 0,
-         'children' => [0 =>
-                            [
-                            'category_id' => WIN_ACL_ROLE,
-                            'category_name' => 'winAdmin',
-                            'parent_id' => 1,
-                            'actions' => ['checkOwner' => ['Investor'], 
-                                         ],
-                            'children' => [ 0 => [  
-                                                'category_id' => WIN_METHOD,
-                                                'category_name' => 'GET_index',
-                                                'parent_id' => 1,
-                                                'actions' =>  ['checkFields' => ['R'],
-                                                                                
-                                            ],
-                                        ],
-                                    ], 
-                             ],
-                        1 => [
-                            'category_id' => WIN_ACL_ROLE,
-                            'category_name' => 'superAdmin',
-                            'parent_id' => 1,
-                            'actions' => ['getDefaultListOfFields' => ['Investor', 'superAdmin'],                                                          
-                                         ],
-                            'children' => [ 0 => [  
-                                                'category_id' => WIN_METHOD,
-                                                'category_name' => 'GET_index',
-                                                'parent_id' => 1,
-                                                'actions' =>  ['checkFields' => ['R'],
-                                                    ],                                
-                                                ]
-                                            ],
-                             ],
-                        2 => [
-                            'category_id' => WIN_ACL_ROLE,
-                            'category_name' => 'investor',
-                            'parent_id' => 1,
-                            'actions' => ['getDefaultListOfFields' => ['Investor', 'investor'],
-                                          'checkOwner' => [],
-                                          'addOwner' => [],
-                                         ],
-                            'children' => [ 0 => [ 
-                                                'category_id' => WIN_METHOD,
-                                                'category_name' => 'GET_view',
-                                                'parent_id' => 2,
-                                                'variableReferenceListsIndex' => 1,
-                                                'actions' =>  ['checkFields' => ['R'], 
-                                                              ],                                
-                                                 ],
-                                            1 => [ 
-                                                'category_id' => WIN_METHOD,
-                                                'category_name' => 'GET_index',
-                                                'parent_id' => 2,
-                                                'variableReferenceListsIndex' => 2,   
-                                                'actions' =>  ['checkFields' => ['R']
-                                                              ],                                              
-                                                ],
-                                            2 => [  
-                                                'category_id' => WIN_METHOD,                                               
-                                                'category_name' => 'PATCH',
-                                                'parent_id' => 2,
-                                                'variableReferenceListsIndex' => 5, 
-                                                'actions' =>  ['checkFields' => ['W'],                                            
-                                                ]
-                                            ]
-                                        ],
-                            ],
-                        ],
-        ],
-    3 => ['category_id' => WIN_MODEL,
-         'category_name' => 'Email',
-         'parent_id' => 0,
-         'children' => [0 =>
-                            [
-                            'category_id' => WIN_ACL_ROLE,
-                            'category_name' => 'superAdmin',
-                            'parent_id' => 2
-                            ],     
-                        ] 
-        ],
-    4 => ['category_id' => WIN_MODEL,
-         'category_name' => 'Pollingresource',
-         'parent_id' => 0,
-         'children' => [0 =>
-                            [
-                            'category_id' => WIN_ACL_ROLE,
-                            'category_name' => 'superAdmin',
-                            'parent_id' => 3
-                            ]  
-                        ]
-        ]   
-    
-    ]; 
-    
-    
-   
-    
-     var $referenceLists = [ 
-    1 =>                          // Pollingresource for role 'investor'
-        ['id' => 'R', 
-        'pollingresource_userIdentification' => 'R',
-        'pollingresource_newValueExists' => 'R',
-        'pollingresource_interval' => 'R',
-        'pollingresource_type' => 'R',
-//      'pollingresource_value' => 'R'
-//      'pollingresource_resourceId' => 'R',
-//      'pollingresource_links' => 'R'
-      ],
-        
-    2 =>   
-        ['id' => 'R',                // Pollingresource for role 'superAdmin'. 
-        'pollingresource_userIdentification' => 'RW',
-        'pollingresource_newValueExists' => 'RW',
-        'pollingresource_interval' => 'RW',
-        'pollingresource_type' => 'RW',
-        'pollingresource_value' => 'RW',
-        'pollingresource_resourceId' => 'RW',
-        'pollingresource_links' => 'RW',
-        'modified' => 'R',
-        'created' => 'R'           
-      ],
-
-    5 =>   
-        ['id' => 'R',                // Pollingresource for role 'winAdmin'
-        'pollingresource_userIdentification' => 'RW',
-        'pollingresource_newValueExists' => 'RW',
-        'pollingresource_interval' => 'RW',
-        'pollingresource_type' => 'RW',
-        'pollingresource_value' => 'RW',
-        'pollingresource_resourceId' => 'RW',
-        'pollingresource_links' => 'RW',
-        'modified' => 'R',
-        'created' => 'R'           
-      ]        
-      ];  
-      
     public $components = array('ApiAdapter'); 
 
     function beforeFilter() {
@@ -217,13 +65,10 @@ class TestsController extends AppController {
         $this->autoRender = false; 
         
         //$this->Security->requireAuth();
-        $this->Auth->allow(array('convertExcelToArray', "convertPdf", "bondoraTrying", "editCheck", "precheck",
-            "analyzeFile", 'getAmount', "dashboardOverview", "arrayToExcel", "insertDummyData", "downloadTimePeriod",
-            "readSize", "testReadFullAmortizationTable", "testAddPayment", 
-            "check_ACL",
-            "xlsxConvert", "read", "pdfTest", "linkedaccount",
-            "hashTest", "testDateDiff", "deleteFromUser",
-            "addOwner", "checkFields", "getDefaultListOfFields", 
+        $this->Auth->allow(array('convertExcelToArray', "bondoraTrying", "editCheck", "precheck",
+            "testAddPayment", "check_ACL", "pdfTest", "linkedaccount",
+            "hashTest", "testDateDiff", "deleteFromUser", 
+            "addInvestorToSearchCriteria", "checkFields", "getDefaultListOfFields", 
             "memoryTest3", "memoryTest2", "hashTest", 'tooltip'));       
     }
 
@@ -289,14 +134,28 @@ exit;*/
         $this->Accountowner->save($data);*/
     } 
 
+    
+    
+    
     /**
-     * This method can detect HTTP 403 errors
+     * This method checks if access is to be granted to the user to the specified resource.
+     * All "positive" permissions must be specifically defined. If a combination of Model, Role and Method is not defined
+     * then this is interpreted as no permission is granted.
+     * The following functions can be added to the analysis tree of the array:
+     *  - addInvestorToSearchCriteria
+     *  - approve 
+     *  - checkOwner
+     *  - checkFields
+     *  - getDefaultListOfFields
+     * 
+     * This method will also detect the HTTP 403 Forbidden error
      * 
      * Each called function, like for instance addOwner, checkFields etc.. will return a status code 
      * with the following meaning:
      *   1 Error encountered, stop analysis. This means no access will be granted.
-     *   2 OK, but continue with analysis. Does not mean that access is granted.
+     *   2 OK, but continue with analysis. Does not mean yet that access is granted.
      *   3 OK and access granted. Analysis can be stopped.
+     * 
      * The aforementioned functions can use the following class variables:
      * $this->roleName,
      * $this->investorId,
@@ -337,12 +196,20 @@ exit;*/
 
         $model = $this->model;
         $accessGranted = NO; // 1 = yes 2 = no
+        $requestedAction = "PATCH";
  echo "accessGranted = $accessGranted<br>";        
  echo "model = $this->model<br>";       
- echo "role = $this->roleName<br>";         
+ echo "role = $this->roleName<br>";      
+ echo "requestedAction = $requestedAction<br>";
+ 
+ 
+ echo "Loading config parameters for ACL, ";
+ $acl_tree_array = Configure::read('acl_tree_array');
+
+ echo "Done<br>";
  //echo "action = $model<br><br><br>"; 
  echo "<br><br><br>";         
-        $level0_item = $this->tree_array;                                       // top level
+        $level0_item = $acl_tree_array;                                       // top level
         
         foreach ($level0_item  as $level1_item) {
             echo "Model = " . $level1_item['category_name'] . "<br>";           
@@ -398,7 +265,7 @@ exit;*/
                         
                         foreach ($level2_item['children'] as $level3_item) {
                             echo "Method = " . $level3_item['category_name'] . "<br>";
-                            if ($level3_item['category_name'] == 'GET_index') { // Method
+                            if ($level3_item['category_name'] == $requestedAction) {            // Method
                                 echo "   ====> Found<br>";                                                               
                                 if (!empty($level3_item['actions'])) {
                                     var_dump($level3_item['actions']);
@@ -421,9 +288,12 @@ exit;*/
                                     }
                                 }                               
                                 echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                break 3;
+                                break 3;                                        // This is the normal end. 
                             } 
+                            echo __FUNCTION__ . " " . __LINE__ . "<br>";
                         }
+                        echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                        break 2;
                     }
                     echo __FUNCTION__ . " " . __LINE__ . "<br>";
                 }
@@ -436,10 +306,25 @@ exit;*/
             echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>";
    //         throw new UnauthorizedException('You are not authorized to access the requested resource');   
         }
-        return true;
+        else {
+            echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";
+            return true;
+        }
     }
  
     
+
+    /** 
+     * This is a stub code. It will always grant access
+     * 
+     * @return int  (WIN_ACL_GRANT_ACCESS 
+     */   
+    public function approve () {
+    echo __FUNCTION__ . " " . __LINE__ . "<br>";
+
+    echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_GRANT_ACCESS<br>";          
+        return WIN_ACL_GRANT_ACCESS;
+    }
     
     
     /** 
@@ -449,9 +334,9 @@ exit;*/
      * @param $fieldsToCheck An array of field names to check. These are the INTERNAL variable names
      * @param $referenceFields An array of the properties of each field according to the selected role
      * @param $property Values permitted: "R" [= read access] or "W" [ =write access]
-     * @return true 
+     * @return  int (WIN_ACL_ANALYSIS_CONTINUE) 
      */   
-    public function addOwner () {
+    public function addInvestorToSearchCriteria() {
     echo __FUNCTION__ . " " . __LINE__ . "<br>";
 
     echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE<br>";          
@@ -460,49 +345,66 @@ exit;*/
      
     /** 
      * Checks if the list of fields provided in $fieldsToCheck ALL have the permission according to
-     * the role of the user to perform the requested operation as defined in $property.
+     * the role of the user to perform the requested operation as defined in $property. The check is 
+     * done against the array $this->referenceVariablePermissions with keys "modelName" and "roleName".
+     * If a field which is provided in '$this->listOfFields' is NOT present in the 
+     * $referenceVariablePermissions then access will be denied.
+     * This is a very fine-grained permission check.
      * 
-     * @param $fieldsToCheck An array of field names to check. These are the INTERNAL variable names
-     * @param $referenceFields An array of the properties of each field according to the selected role
      * @param $property Values permitted: "R" [= read access] or "W" [ =write access]
-     * @return boolean 
+     * @param $model The name of the model that the current user like to access
+     * @param $roleName The name of the role of the current user
+     * @return int    (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_GRANT_ACCESS)
      */
-//     public function checkFields($fieldsToCheck, $referenceFields, $property) {
-    public function checkFields($property) {   
-        echo __FUNCTION__ . " " . __LINE__ . " property = $property<br>";
-         $fieldsToCheck = ['pollingresource_userIdentification', 
-                        'pollingresource_newValueExists', 
-                        'pollingresource_interval', 
-                        'pollingresource_type'];
-         $referenceFields = $this->referenceLists[1];
-     
-//var_dump($fieldsToCheck);
-//var_dump($referenceFields);
-//var_dump($property);
-        echo __FUNCTION__ . " " . __LINE__ . "<br>";
-        
-        foreach ($fieldsToCheck as $item) {
-//echo __FILE__ . " " . __LINE__ . " item = $item<br>";            
-             if (strpos ($referenceFields[$item], $property) === false) {
+    public function checkFields($property, $model, $roleName) {  
+    echo __FUNCTION__ . " " . __LINE__ . "<br>";
+  //      $listOfFields = $this->listOfFields;
+$listOfFields = ['investor_name', 'id', 'investor_surname', 'investor_links',
+               'investor_DNI', 'investor_dateOfBirth', 'investor_telephone']; // FOR TESTING ONLY
+
+        // Special treatment for fields "id" and "xxx_links"
+        $key = array_search("id", $listOfFields);
+        if ($key <> false) {
+            unset($listOfFields[$key]);
+        }
+        $modifiedModel = strtolower($model);  
+        $key = array_search($modifiedModel . "_links", $listOfFields);
+        if ($key <> false) {
+            unset($listOfFields[$key]);
+        }
+        $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');
+          
+ var_dump($listOfFields);       
+        echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
+         
+        $referenceRolePermissions = $acl_referenceVariablePermissions[$model][$roleName];
+             
+        foreach ($listOfFields as $item) {
+echo __FILE__ . " " . __LINE__ . " item = $item<br>";            
+            if (strpos ($referenceRolePermissions[$item], $property) === false) {
                 echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
                 return WIN_ACL_ANALYSIS_ERROR;
-             } 
+            } 
         }
-        echo __FILE__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
+        echo __FUNCTION__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
         return WIN_ACL_GRANT_ACCESS; 
     }    
       
     /** 
-     * Checks if the investor is the (in)direct owner of the Model to which s/he likes to access
+     * Checks if the investor is the (in)direct owner of the Model to which s/he likes to access.
+     * This function can only be applied where the 'id' as provided in the 
+     * HTTP-GET/HTTP-PUT/HTTP-DELETE/HTTP-PUT is provided by the user.
+     * In HTTP-POST the result might be unpredictable, as POSTs may or may not contain an 'id'.
      * 
-     * @return boolean 
+     * @param string Name of the model which is to be accessed
+     * @return int ( WIN_ACL_ANALYSIS_ERROR or WIN_ACL_ANALYSIS_CONTINUE)
      */
-    public function checkOwner() {
-        echo __FUNCTION__ . " " . __LINE__ . " investorId = $this->investorId <br>";
-        echo __FUNCTION__ . " " . __LINE__ . " investorId = $this->id <br>";    
+    public function checkOwner($model) {
+        echo __FUNCTION__ . " " . __LINE__ . " investorId_user = $this->investorId  and investorId_requestedresource = $this->id<br>";  
 
-        $model = "Investor";
+        $this->$model = ClassRegistry::init($model);
         if (!$this->$model->isOwner($this->investorId, $this->id) ) {
+                       
         echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>";            
             return WIN_ACL_ANALYSIS_ERROR;
         }
@@ -512,24 +414,29 @@ exit;*/
     
     /** 
      * Reads the list of fields which the server will provide to the webclient if no fields
-     * were defined in the HTTP message
+     * were defined in the HTTP message. This is only usefull for the HTTP-GET message
+     * This function is only applicable to HTTP-GET.
      * 
      * @param $model The name of the Model from whom to read the list of fields
      * @param $roleName The name of the role for whom the list shall be retrieved
-     * @return true
+     * @return int (WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function getDefaultListOfFields($model, $roleName) {
-        echo __FUNCTION__ . " " . __LINE__ . "<br>";  
-echo "Model = $model and rolename = $roleName\n";
+        echo __FUNCTION__ . " " . __LINE__ . " Model = $model and rolename = $roleName <br>";  
 
-        $this->$model = ClassRegistry::init($model);
-        $list = $this->$model->getDefaultFields($roleName);
-        var_dump($list);       
+        if (empty($this->listOfFields)) {
+            $this->$model = ClassRegistry::init($model);
+            $this->listOfFields = $this->$model->getDefaultFields($roleName);
+        }
+        var_dump($this->listOfFields);       
         echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE <br>"; 
         return WIN_ACL_ANALYSIS_CONTINUE;
     }
 
    
+    
+    
+    
     
     
     
@@ -679,12 +586,7 @@ echo "Using a component<br>";
     pr($jsonArray);    
     $this->ApiAdapter->normalizeIncomingJson($jsonArray); 
     pr($jsonArray);   
-    } 
-    
-    
-    public function recursiveSearchOutgoing() {
-
-     
+   
      
 
     $jsonString = '{
