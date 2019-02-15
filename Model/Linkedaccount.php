@@ -423,7 +423,7 @@ class Linkedaccount extends AppModel {
       } */
 
     /**
-     * Get the company id given a linkedaccount id
+     * Get the company id given by the linkedaccount id
      * 
      * @param int $id
      * @return int
@@ -435,7 +435,7 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     * Get the investor id given a linkedaccount id
+     * Get the investor id given by the linkedaccount id
      * 
      * @param int $id
      * @return int
@@ -572,11 +572,11 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     * Delete a likedaccount given the id
+     * Delete a linkedaccount given the id
      * 
      * @param type $investorId          Id of the investor that deletes the account
      * @param type $linkaccountId       Id of the linkedaccount to delete
-     * @param type $roleName            Role of the user that want delete the account
+     * @param type $roleName            Role of the user that wants to delete the account
      * @return string|int               Feedback and html code
      */
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {

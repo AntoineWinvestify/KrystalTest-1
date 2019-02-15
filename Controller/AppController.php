@@ -101,7 +101,8 @@ class AppController extends Controller {
     protected $listOfQueryParams;               // Array that holds the list of Query parameters
                                                 // in normalized, internal DB format
                                                 // An item in this array can be another array. In
-                                                // that case all entries are considered as OR condition
+                                                // that case all entries are considered as OR condition.
+                                                // This is a list as received from the webclient
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
     
     protected $action;                          // The 'action' of a POST operation

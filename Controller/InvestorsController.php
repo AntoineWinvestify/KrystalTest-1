@@ -498,9 +498,9 @@ function linkAccount() {
         }
         $id = $this->request->params['id'];
         if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Pollingresource.investor_name', 'Pollingresource.investor_surname',      
-                                     'Pollingresource.investor_DNI', 'Pollingresource.polling_type', 
-                                     'Pollingresource.investor_address1', 'Pollingresource.polling_new_value_exists',
+            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
+                                     'Investor.investor_DNI',  'Investor.investor_dateOfBirth', 
+                                     'Investor.investor_address1',  'Investor.investor_address1', 
                                      'Investor.investor_city', 'Investor.investor_telephone',
                                      'Investor.investor_postCode', 'Investor.investor_email',
                                      'Investor.investor_country', 'Investor.investor_language'
@@ -536,7 +536,7 @@ function linkAccount() {
     
 
    
-    /** MISSING: CHECK THAT THE ID CORRESPONDS TO THE SUB FIELD IN THE JWT
+    /** 
      * This methods handles the HTTP PATCH message
      * Format PATCH /api/1.0/investors/[investorId].json ....
      * Example PATCH /api/1.01/investors/1.json
@@ -587,7 +587,8 @@ function linkAccount() {
         return $this->response;               
     }     
 
-    /** Simple version is OK, ie. for defining *manually* new investors
+    /** 
+     * Simple version is OK, ie. for defining *manually* new investors
      * This methods terminates the HTTP POST for defining a new investor.
      * Format POST /api/1.0/investors.json
      * Example POST /api/1.0/investors.json
@@ -631,7 +632,8 @@ function linkAccount() {
     }          
     
   
-    /** Simple version is OK, i.e. for deling *manually* an investor
+    /** 
+     * Simple version is OK, i.e. for deling *manually* an investor
      * This methods terminates the HTTP POST for defining a new investor.
      * Format DELETE /api/1.0/investors.[investorId].json
      * Example DELETE /api/1.0/investors/23.json

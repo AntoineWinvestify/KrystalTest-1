@@ -115,7 +115,7 @@ class Investor extends AppModel {
      */
     var $validate = [
         'investor_name' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 50],
                 'allowEmpty' => false,
                 'message' => 'Name validation error'
             ],
@@ -129,7 +129,7 @@ class Investor extends AppModel {
           'message' => 'Name validation error'), */
         ],
         'investor_surname' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 50],
                 'allowEmpty' => false,
                 'message' => 'Surname validation error'
             ],
@@ -143,7 +143,7 @@ class Investor extends AppModel {
           'message' => 'Surname validation error'), */
         ],
         'investor_DNI' => [
-            'length_rule' => ['rule' => ['minLength', 3],
+            'length_rule' => ['rule' => ['lengthBetween', 3, 20],
                 'allowEmpty' => false,
                 'message' => 'Id validation error'
             ],
@@ -165,7 +165,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_telephone' => [ 
-            'length_rule' => ['rule' => ['minLength', 4],
+            'length_rule' => ['rule' => ['lengthBetween', 4, 20],
                 'allowEmpty' => false,
                 'message' => 'Telephone validation error'
             ],
@@ -176,7 +176,7 @@ class Investor extends AppModel {
             ]            
         ],
         'investor_address1' => [ 
-            'length_rule' => ['rule' =>  ['minLength', 2],
+            'length_rule' => ['rule' =>  ['lengthBetween', 2, 60],
                 'allowEmpty' => false,
                 'message' => 'Address validation error'
             ],
@@ -187,7 +187,7 @@ class Investor extends AppModel {
             ]
         ],
          'investor_address2' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 60],
                 'allowEmpty' => false,
                 'message' => 'Address validation error'
             ],
@@ -198,7 +198,7 @@ class Investor extends AppModel {
             ]
         ],       
         'investor_postCode' => [
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 45],
                 'allowEmpty' => false,
                 'message' => 'Postcode validation error'
             ],
@@ -209,8 +209,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_city' => [
-            'length_rule' => ['rule' => ['minLength', 2], 
-                'alphaNumeric',
+            'length_rule' => ['rule' => ['lengthBetween', 2, 45], 
                 'allowEmpty' => false,
                 'message' => 'City validation error'
             ],
@@ -221,7 +220,7 @@ class Investor extends AppModel {
             ]
         ],
         'investor_country' => [ 
-            'length_rule' => ['rule' => ['minLength', 2],
+            'length_rule' => ['rule' => ['lengthBetween', 2, 3],
                 'allowEmpty' => false,
                 'message' => 'Country validation error'
             ],
@@ -243,6 +242,67 @@ class Investor extends AppModel {
         ]
     ];
 
+    
+   var $defaultFields = [ 
+        'investor' => ['id',            //causes problems with PATCH, is never r/w
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_dateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_links'
+                      ],
+
+        'winAdmin' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_dateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_accredited',            
+                        'investor_links',
+                        'modified',
+                        'created'
+            ],              
+        'superAdmin' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_dateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_accredited',
+                        'investor_links',
+                        'modified',
+                        'created'            
+                      ],                
+    ];   
+    
+    
+    
+    
     public function checkOver18($check) {                                       //Calculate age for validation
         $birthDate = explode("/", $check['investor_dateOfBirth']);
         $age = (date("md", date("U", mktime(0, 0, 0, $birthDate[0], $birthDate[1], $birthDate[2]))) > date("md") ? ((date("Y") - $birthDate[2]) - 1) : (date("Y") - $birthDate[2]));
@@ -930,7 +990,7 @@ class Investor extends AppModel {
     /**
      * Checks if a field is write protected
      * 
-     * @param type $check
+     * @param array $check An array with the data to be checked
      * @return boolean
      */
     public function writeProtected($check) { 
@@ -1042,5 +1102,39 @@ class Investor extends AppModel {
         
     }
      
+ 
+    /**
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another webclient
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Investor object to be checked
+     * @return boolean  
+     */
+    public function isOwner($investorId, $id) {  
+        
+        if ($investorId == $id) {
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /** 
+     * Reads the list of defaultFields to read in case the webclient has not indicated any fields
+     * in its GET requests
+     * 
+     * @param $roleName The name of the role for whom the list of defaults fields is read
+     * @return array $list  An array with the names of the fields. The names are the internal names of the fields
+     */
+    public function getDefaultFields($roleName) {
+        return $this->defaultFields[$roleName];        
+    }   
+    
+    
+    
+    
     
 }

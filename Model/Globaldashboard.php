@@ -250,7 +250,7 @@ class Globaldashboard extends AppModel {
      * Generic search for a field to use in the graph of the api.
      * 
      * @param int $investorId
-     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @param string $period  Time period. For now can be "year" or "all"
      * @param string $field
      * @return array
      */

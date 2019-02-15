@@ -35,28 +35,68 @@ Pending:
 
 class Pollingresource extends AppModel
 {
-	var $name= 'Pollingresource';
+    var $name= 'Pollingresource';
 
-
-  
-    /**
-     *  Rules are defined for what should happen after a database record has been read
+    var $defaultFields = [ 
+        'investor' => ['id', 
+                        'pollingresource_userIdentification', 
+                        'pollingresource_newValueExists', 
+                        'pollingresource_interval', 
+                        'pollingresource_type', 
+    //                  'pollingresource_value',
+    //                  'pollingresource_resourceId',
+    //                  'pollingresource_links'
+                      ],
+        'winAdmin' => ['id', 
+                        'pollingresource_userIdentification', 
+                        'pollingresource_newValueExists', 
+                        'pollingresource_interval', 
+                        'pollingresource_type', 
+                        'pollingresource_value',
+                        'pollingresource_resourceId',
+                        'pollingresource_links',
+                        'modified',
+                        'created'
+            ],              
+        'superAdmin' => ['id', 
+                        'pollingresource_userIdentification', 
+                        'pollingresource_newValueExists', 
+                        'pollingresource_interval', 
+                        'pollingresource_type', 
+                        'pollingresource_value',
+                        'pollingresource_resourceId',
+                        'pollingresource_links',
+                        'modified',
+                        'created'            
+                      ],                
+    ];
+    
+      
+    /** 
+     * Call back 
+     * Rules are defined for what should happen after a database record has been read
+     * - Resets the pollingresource_newValueExists flag after it has been read
      * 
-     * 	@param array $results Array that contains the returned results from the model’s find operation
-     *  @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
-     *                            or whether or not this model was queried as an association
-     */
-    public function afterFind($results, $primary = false) {
-        // reset the field 'pollingresource_newValueExists' before returning results
-        if (isset($results['Pollingresource']['pollingresource_newValueExists'])) {
-            if ($results['Pollingresource']['pollingresource_newValueExists']) {
-                $this->id = $results['id'];
-                $this->saveField('pollingresource_newValueExists', false);
-            }  
-        }
-        return $results;
-    }
+     * @param array $results Array that contains the returned results from the model’s find operation
+     * @param boolean $primary Indicates whether or not the current model was the model that the query originated on 
+     * @return array The (possibly modified) result(s) of the find operation. 
+     */    
+    function afterFind($results, $primary = false)  {
 
+        foreach ($results as $key => $result) {
+
+            if (isset($result['Pollingresource']['pollingresource_newValueExists'])) {
+                if ($result['Pollingresource']['pollingresource_newValueExists'] == 1) {
+                    $this->clear();
+                    $this->id = $result['Pollingresource']['id']; 
+                    $this->saveField('pollingresource_newValueExists', 0);
+                }
+            }
+        }     
+        return $results;
+    }  
+    
+    
     
     /**
      * 	Rules are defined for what should happen before a database record is created or updated.
@@ -75,7 +115,7 @@ class Pollingresource extends AppModel
      *  @param array $options
      */
     function afterSavexx($created, $options = array()) {
-  
+
     }
 
 
@@ -86,10 +126,58 @@ class Pollingresource extends AppModel
      * @param int $id The identification of the object to delete
      * @return boolean
      */   
-    public function api_deletePollingresourcexxxx($id) {
-        
-        
-        
+    public function api_deletePollingresource($id) {
+        $this->delete($id);
+        return;
     }
+ 
+    
+    
+    /** 
+     * Reads the list of defaultFields to read in case the webclient has not indicated any fields
+     * in its GET requests
+     * 
+     * @param $roleName The name of the role for whom the list of defaults fields is read
+     * @return array $list  An array with the names of the fields. The names are the internal names of the fields
+     */
+    public function getDefaultFields($roleName) {
+        return $this->defaultFields[$roleName];        
+    }    
+
+
+    /** 
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another webclient
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Pollingresource object to be checked
+     * @return boolean   
+     */
+    public function isOwner($investorId, $id) {
+        
+        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id,
+                                                         'pollingresource_useridentification' => $investorId,
+                                                         'pollingresource_status' => ACTIVE],   
+                                                  'fields' => ['pollingresource_useridentification'],
+                                                  'recursive' => -1]);
+        
+        if ($result['Pollingresource']['pollingresource_useridentification'] == $investorId) {
+            return true;
+        }
+        return false;
+    }
+
+
+     
+    
+    
+    
+    
+    
+    
+    
+    
     
 }

@@ -118,7 +118,7 @@ class DashboardsController extends AppController {
             foreach ($dashboardConfig['data'] as $key => $value) {
                 $data['data'][$blockKey][$key]['display_name'] = $value['display_name'];
 
-                //Search tooltip if the field ave one
+                //Search tooltip if the field has one
                 if (!empty($value['tooltip'])) {
                     $this->Tooltip = ClassRegistry::init('Tooltip');
                     $tooltips = $this->Tooltip->getTooltip(array($value['tooltip']), $this->language, $companyId);
@@ -135,12 +135,12 @@ class DashboardsController extends AppController {
                 if (!empty($value['value'])) {
                     $field = $value['value']['field'];
                     $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
-                    if ($value['value']['type'] == 'currency') {      //Seacrh for the currency
+                    if ($value['value']['type'] == 'currency') {      //Search for the currency
                         $data['data'][$blockKey][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
                         $data['data'][$blockKey][$key]['value']['value'] = round($data['data'][$blockKey][$key]['value']['amount'], WIN_SHOW_DECIMAL);
                         unset($data['data'][$blockKey][$key]['value']['amount']);
                     }
-                    if ($value['value']['type'] == 'percent') {       //Percent in our db are from 0-1 range, we need multiply them-
+                    if ($value['value']['type'] == 'percent') {       //Percent in our db are from 0-1 range, we need to multiply them-
                         $data['data'][$blockKey][$key]['value']['percent'] = round($data['data'][$blockKey][$key]['value']['amount'] * 100, WIN_SHOW_DECIMAL);
                         unset($data['data'][$blockKey][$key]['value']['amount']);
                     }
