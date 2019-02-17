@@ -1113,10 +1113,12 @@ class Investor extends AppModel {
      * @return boolean  
      */
     public function isOwner($investorId, $id) {  
-        
+        echo __CLASS__ . "::"  .__FUNCTION__ . " " . __LINE__ . "<br>";         
         if ($investorId == $id) {
+         echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning true<br>";            
             return true;
         }
+          echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning false <br>";       
         return false;
     }
     
