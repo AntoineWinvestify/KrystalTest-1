@@ -217,7 +217,7 @@ class mintos extends p2pCompany {
         ]
     ];
 
-    protected $valuesInvestment = [
+protected $valuesInvestment = [
         [
             "A" =>  [
                 [
@@ -248,6 +248,9 @@ class mintos extends p2pCompany {
                 "name" => "investment_loanOriginator"                           // Winvestify standardized name  OK
              ],
             "G" =>  [
+                "name" => "investment_riskRating"                        
+            ], 
+            "H" =>  [
                 [
                     "type" => "investment_fullLoanAmount",                      // Winvestify standardized name   OK
                     "inputData" => [
@@ -258,7 +261,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "H" =>  [
+            "I" =>  [
                 [
                     "type" => "investment_remainingPrincipalTotalLoan",         // THIS FIELD IS NOT NEEDED?
                     "inputData" => [
@@ -269,7 +272,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "I" =>  [
+            "J" =>  [
                 [
                     "type" => "investment_nextPaymentDate",                     // Winvestify standardized name
                     "inputData" => [
@@ -278,7 +281,7 @@ class mintos extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
              ],
-            "J" =>  [
+            "K" =>  [
                 [
                     "type" => "investment_estimatedNextPayment",                // Winvestify standardized name
                     "inputData" => [
@@ -289,14 +292,14 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "K" =>  [
+            "L" =>  [
                 "name" => "investment_LTV"                                      // Winvestify standardized name   OK
              ],
-            "L" => [
+            "M" => [
                 [
                     "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
                     "inputData" => [
-                        "input2" => "100",
+                        "input2" => "1",
                         "input3" => 2,
                         "input4" => "."
                     ],
@@ -308,16 +311,16 @@ class mintos extends p2pCompany {
                                                                                 // at time of investing, the number of
                                                                                 // instalments.
              ],*/
-            "N" =>  [
+            "O" =>  [
                 "name" => "investment_paidInstalments"                          // Winvestify standardized name OK
                 ],
-            "O" =>  [
+            "P" =>  [
                 "name" => "investment_originalState"                            // Winvestify standardized name
              ],
-            "P" =>  [
+            "Q" =>  [
                 "name" => "investment_buyBackGuarantee"                         // Winvestify standardized name  OK
              ],
-            "Q" =>  [
+            "R" =>  [
                 [
                     "type" => "investment_myInvestment",                        // Winvestify standardized name   OK
                     "inputData" => [
@@ -336,7 +339,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getProgressString",
                 ],
              ],
-            "R" =>  [
+            "S" =>  [
                 [
                     "type" => "investment_myInvestmentDate",                    // Winvestify standardized name OK
                     "inputData" => [
@@ -352,7 +355,7 @@ class mintos extends p2pCompany {
                     "functionName" => "normalizeDate",
                 ]
              ],
-            "S" =>  [
+            "T" =>  [
                 [
                     "type" => "investment_capitalRepaymentFromP2P",             // Winvestify standardized name  OK
                     "inputData" => [
@@ -363,7 +366,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "T" =>  [
+            "U" =>  [
                 [
                     "type" => "investment_outstandingPrincipalFromP2P",         // Winvestify standardized name OK
                     "inputData" => [
@@ -374,7 +377,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "U" =>  [
+            "V" =>  [
                 [
                     "type" => "investment_secondaryMarketInvestment",           // Winvestify standardized name  OK
                     "inputData" => [
@@ -385,7 +388,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "V" =>  [
+            "W" =>  [
                 [
                     "type" => "investment_priceInSecondaryMarket",              // Winvestify standardized name  OK
                     "inputData" => [
@@ -396,7 +399,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "W" =>  [
+            "X" =>  [
                 [
                     "type" => "investment_discount_premium",                    // Winvestify standardized name  OK
                     "inputData" => [
@@ -407,7 +410,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getAmount",
                 ]
              ],
-            "X" =>  [
+            "Y" =>  [
                 [
                     "type" => "investment_currency",                            // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
@@ -419,14 +422,14 @@ class mintos extends p2pCompany {
                                 ],
                     "functionName" => "getDefaultValue",
                 ],*/
-                [
+                /*[
                     "type" => "investment_typeOfInvestment",                    // Winvestify standardized name  OK
                     "inputData" => [
 				"input2" => 99,                                 // set to "Not provided by P2P
                                 ],
                     "functionName" => "getDefaultValue",
                 
-                ],
+                ],*/
             ]
         ]
     ];
@@ -505,7 +508,6 @@ class mintos extends p2pCompany {
         ]
     ];
     
-
     protected $valuesExpiredLoan = [                                            // We are only interested in the investment_loanId
         [
             "A" =>  [
@@ -517,18 +519,21 @@ class mintos extends p2pCompany {
             "B" => [
                     "name" => "investment_loanId"                               // Winvestify standardized name  OK
                  ],
-            "D" =>  [
+            "E" =>  [
                 "name" => "investment_loanType"                                 // Winvestify standardized name   OK
              ],
 
-            "E" =>  [
+            "F" =>  [
                 "name" => "investment_amortizationMethod"                       // Winvestify standardized name  OK
              ],
 
-            "F" =>  [
+            "G" =>  [
                     "name" => "investment_loanOriginator"                       // Winvestify standardized name  OK
                  ],
-            "G" =>  [
+            "H" =>  [
+                    "name" => "investment_riskRating"                        
+                 ], 
+            "I" =>  [
                     [
                         "type" => "investment_fullLoanAmount",                  // Winvestify standardized name   OK
                         "inputData" => [
@@ -553,24 +558,24 @@ class mintos extends p2pCompany {
                 ]           
              ],
     */
-            "J" => [
+            "L" => [
                 [
                     "type" => "investment_nominalInterestRate", // Winvestify standardized name   OK
                     "inputData" => [
-                        "input2" => "100",
+                        "input2" => "1",
                         "input3" => 2,
                         "input4" => "."
                     ],
                     "functionName" => "handleNumber",
                 ]
             ],
-            "M" =>  [
+            "O" =>  [
                     "name" => "investment_originalState"                        // Winvestify standardized name  OK
                  ], 
-            "N" =>  [
+            "P" =>  [
                     "name" => "investment_buyBackGuarantee"                     // Winvestify standardized name  OK
                  ],
-            "R" =>  [
+            "T" =>  [
                 [
                     "type" => "investment_outstandingPrincipalFromP2P",                // Winvestify standardized name OK 
                     "inputData" => [
@@ -588,7 +593,7 @@ class mintos extends p2pCompany {
                     "functionName" => "getDefaultValue",
                 ],*/
             ],
-            "V" =>  [
+            "X" =>  [
                 [
                     "type" => "investment_currency",                            // Winvestify standardized name  OK
                     "functionName" => "getCurrency",
@@ -715,18 +720,19 @@ class mintos extends p2pCompany {
     
     
      protected $investmentHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
-            'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 'I' => 'Next Payment',
-            'J' => 'Estimated Next Payment', 'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Remaining Term', 'N' => 'Payments Received', 'O' => 'Status', 
-            'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Investment' , 'S' => 'Received Payments', 
-            'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 'X' => 'Currency'
+            'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Mintos Ratings', 'H' => 'Loan Amount', 'I' => 'Remaining Principal', 'J' => 'Next Payment',
+            'K' => 'Estimated Next Payment', 'L' => 'LTV', 'M' => 'Interest Rate', 'N' => 'Remaining Term', 'O' => 'Payments Received', 'P' => 'Status', 
+            'Q' => 'Buyback Guarantee', 'R' => 'My Investments', 'S' => 'Date of Investment' , 'T' => 'Received Payments', 
+            'U' => 'Outstanding Principal', 'V' => 'Amount in Secondary Market', 'W' => 'Price', 'X' => 'Discount/Premium', 'Y' => 'Currency'
             );
      
-      protected $expiredLoansHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Loan Type',
-            'E' => 'Amortization Method', 'F' => 'Loan Originator', 'G' => 'Loan Amount', 'H' => 'Remaining Principal', 
-            'I' => 'LTV', 'J' => 'Interest Rate', 'K' => 'Initial Term', 'L' => 'Payments Received', 'M' => 'Status', 
-            'N' => 'Buyback Guarantee', 'O' => 'My Investments', 'P' => 'Date of Investment' , 'Q' => 'Received Payments', 
-            'R' => 'Outstanding Principal', 'S' => 'Amount in Secondary Market', 'T' => 'Price', 'U' => 'Discount/Premium', 
-            'V' => 'Currency', 'W' => 'Finished', 'X' => 'Rebuy reasons');
+      protected $expiredLoansHeader = array('A' => 'Country', 'B' => 'ID', 'C' => 'Issue Date', 'D' => 'Closing Date','E' => 'Loan Type',
+            'F' => 'Amortization Method', 'G' => 'Loan Originator','H' => 'Mintos Ratings', 'I' => 'Loan Amount', 'J' => 'Remaining Principal', 
+            'K' => 'LTV', 'L' => 'Interest Rate', 'M' => 'Initial Term', 'N' => 'Payments Received', 'O' => 'Status', 
+            'P' => 'Buyback Guarantee', 'Q' => 'My Investments', 'R' => 'Date of Investment' , 'S' => 'Received Payments', 
+            'T' => 'Outstanding Principal', 'U' => 'Amount in Secondary Market', 'V' => 'Price', 'W' => 'Discount/Premium', 
+            'X' => 'Currency', 'Y' => 'Finished', 'Z' => 'Rebuy reasons');
+
       
     protected $transactionHeader = array(
         'A' => 'Transaction ID', 
