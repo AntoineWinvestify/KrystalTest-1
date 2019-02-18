@@ -375,6 +375,7 @@ class Userinvestmentdata extends AppModel {
                 'recursive' => -1,
                 'order' => 'Userinvestmentdata.Date DESC'
             ));
+            $kpisDataList[$key]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'] = round($kpisDataList[$key]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL);
             $kpisDataList[$key]['Userinvestmentdata']['pfp'] = $companyName['Company']['company_name'];
             $kpisDataList[$key]['Userinvestmentdata']['linkedaccount_accountDisplayName'] = $linkedaccount['Linkedaccount']['linkedaccount_accountDisplayName'];
             $kpisDataList[$key]['Userinvestmentdata']['linkedaccount_currency'] = $linkedaccount['Linkedaccount']['linkedaccount_currency'];

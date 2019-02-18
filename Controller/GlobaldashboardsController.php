@@ -173,6 +173,17 @@ class GlobaldashboardsController extends AppController {
                 }
             }
         }
+        $data['data']['kpis'] = $this->generateLink('globaldashboards', null, "$id/lists/kpis")['href'];
+        
+        $linkedAccountList = $this->Linkedaccount->find('list',array(
+                'conditions' => array('Accountowner.investor_id' => $this->investorId),
+                'field' => 'Linkedaccount.id',
+                'recursive' => 1,
+                ));
+        foreach($linkedAccountList as $linkedaccout){
+            $data['data']['links'][] = $this->generateLink('dashboards', 'list', $linkedaccout);
+        }
+        
         $resultJson = json_encode($data);
         $this->response->type('json');
         $this->response->body($resultJson);
