@@ -560,15 +560,12 @@ class Linkedaccount extends AppModel {
         if (empty($accounts)) {
             //ERROR LOGIN 
             $error = array();
-            //$error['code'] = ;
-            $error['error']['error_message'] = 'Error at login. User or password incorrect.';
-            $error['error']['error_name'] = 'ERROR_PRECHECK';
-            $error['error']['error_information_link'] = '';
-            $error['error']['error_details'] = array();
+            $error['code'] = 403;
             return $error;
         }
-        $return['accounts'] = $accounts;
-        return $return;
+        $returnResult['code'] = 200;
+        $returnResult['accounts'] = $accounts;
+        return $returnResult;
     }
 
     /**

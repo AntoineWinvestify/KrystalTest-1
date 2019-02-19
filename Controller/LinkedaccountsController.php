@@ -219,6 +219,9 @@ class LinkedaccountsController extends AppController {
         foreach ($accounts['accounts'] as $key => $account) {
             $this->Linkedaccount->apiVariableNameOutAdapter($accounts['accounts'][$key]);
         }
+        
+        $this->response->statusCode($accounts['code']);
+        unset($accounts['code']);
         $accounts = json_encode($accounts);
         $this->response->type('json');
         $this->response->body($accounts);

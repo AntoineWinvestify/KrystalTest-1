@@ -149,7 +149,7 @@ class DashboardsController extends AppController {
                     $data['data'][$blockKey][$key]['icon'] = $value['icon'];
                 }
                 foreach ($value['graphLinksParams'] as $key2 => $linkParam) {
-                    $data['data'][$blockKey][$key]['graph_data'][$key2]['url'] = $this->generateLink('dashboards', null, $linkParam['link'])['href'];
+                    $data['data'][$blockKey][$key]['graph_data'][$key2]['url'] = $this->generateLink('dashboards', null, $id . DS . $linkParam['link'])['href'];
                     if (!empty($linkParam['displayName'])) {
                         $data['data'][$blockKey][$key]['graph_data'][$key2]['option_display_name'] = $linkParam['displayName'];
                     }
