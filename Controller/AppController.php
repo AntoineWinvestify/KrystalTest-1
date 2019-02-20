@@ -863,7 +863,7 @@ class AppController extends Controller {
        
         $accessGranted = NO;                // 1 = yes 2 = no
 echo "Input parameters for Authorization check are:<br>";        
-echo "model = $this->model<br>"; 
+echo "model = $model<br>"; 
 echo "roleName = $roleName<br>";
 echo "requestedAction = $requestedAction<br>";
  
