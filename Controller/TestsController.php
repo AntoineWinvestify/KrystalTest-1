@@ -39,22 +39,15 @@ App::uses('CakeEventListener', 'Event');
 //App::import('Vendor', 'readFilterWinvestify', array('file' => 'PHPExcel'.DS.'PHPExcel'.DS. 'Reader'. DS . 'IReadFilterWinvestify.php'));
 
 use Petslane\Bondora;
- 
-/* use PhpOffice\PhpSpreadsheet\IOFactory;
-  use PhpOffice\PhpSpreadsheet\Cell; */
 
 class TestsController extends AppController {
-    
-    var $investorId = 22;
-    var $roleName = "investor";
-    var $id = 23;
-    var $name = 'Tests';
-    var $model = "Investor";
-    
+
+    var $name = 'Tests'; 
     var $helpers = array('Js', 'Text', 'Session');
     var $uses = array('Tooltipincompany', 'Tooltip', 'Test', 'Queue2', 'Data', 'Investor', 'Userinvestmentdata', 'Company',
         'Linkedaccount', 'Accountowner');
     var $error;
+    
     var $listOfFields = ['id', 'investor_name', 'investor_surname', 'investor_city', 'investor_address1'];
     var $filterConditionQueryParms  = ["AND" => ['pollingresource_interval' => 40,  // TO BE DELETED IN PRODUCTION
                     'cond2' => 222
@@ -62,9 +55,12 @@ class TestsController extends AppController {
           'OR1' => ['cond10' => "Cond10",
                   'cond11' => "Cond11"
          ],
-  //       'pollingresource_interval' => 0
+         'pollingresource_interval' => 0
          ];
-
+    var $investorId = 22;
+    var $id = 22;
+ 
+    
     
     public $components = array('ApiAdapter'); 
 
@@ -169,7 +165,7 @@ exit;*/
      *   2 OK, but continue with analysis. Does not mean yet that access is granted.
      *   3 OK and access granted. Analysis can be stopped.
      * 
-     * The aforementioned functions can use the following class variables:
+     * The aforementioned functions can any class variables like for instance:
      * $this->roleName,
      * $this->investorId,
      * $this->filterConditionQueryParms
@@ -196,33 +192,28 @@ exit;*/
      *                              '...'
      *                              ]   
      * 
-     * @param
-     * @param
-     * @param
-     * @param
+     * @param string $model The name of the Model that the user likes to access
+     * @param string $roleName The role of the user (investor, superAdmin, winAdmin,...)
+     * @param string $action The action/Method that is to be applied to the selected resource
      * @return boolean
      * @throws UnauthorizedException
      */  
-    public function check_ACL (){
-        $inflectorInstance = new Inflector();
-        $model = $inflectorInstance->singularize(ucfirst($this->request->params['controller']));
-
-        $model = $this->model;
-        $accessGranted = NO; // 1 = yes 2 = no
-        $requestedAction = "PATCH";
- echo "accessGranted = $accessGranted<br>";        
- echo "model = $this->model<br>";       
- echo "role = $this->roleName<br>";      
- echo "requestedAction = $requestedAction<br>";
- echo " showing \$this->listOfFields";
+    public function check_ACL ($model, $roleName, $requestedAction){
+//       http://compare_local.com/tests/check_ACL/Investor/investor/PATCH   
+       
+        $accessGranted = NO;                // 1 = yes 2 = no
+        
+echo "model = $this->model<br>";           
+echo "requestedAction = $requestedAction<br>";
+ 
+echo "accessGranted = $accessGranted<br>"; 
+echo "<br><br><br>";  
  var_dump ($this->listOfFields);
  
- echo "Loading config parameters for ACL, ";
- $acl_tree_array = Configure::read('acl_tree_array');
 
- echo "Done<br>";
- //echo "action = $model<br><br><br>"; 
- echo "<br><br><br>";         
+        $acl_tree_array = Configure::read('acl_tree_array');
+
+        
         $level0_item = $acl_tree_array;                                       // top level
         
         foreach ($level0_item  as $level1_item) {
@@ -233,9 +224,6 @@ exit;*/
                     var_dump($level1_item['actions']);
                     
                     foreach ($level1_item['actions'] as $actionName => $params) {
-                        eval ('$temp = $this->listOfFields;');     
-                        eval ('var_dump($temp);');
-
                         foreach ($params as $key => $param) {
                             if ($param[0] == "$") {
                                 eval ('$temp = ' . $param . ';'); 
@@ -243,52 +231,53 @@ exit;*/
                                 $params[$key] = $temp;
                             }
                         }
-                        
+ 
+                        echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
                         $status = call_user_func_array([__CLASS__, $actionName], $params);
-                            switch ($status) {
-                                case WIN_ACL_ANALYSIS_ERROR:
-                                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                    break 2;
-                                case WIN_ACL_ANALYSIS_CONTINUE:
-                                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                    // don't do anything, just continue with analysis
-                                    break;
-                                case WIN_ACL_GRANT_ACCESS:
-                                    $accessGranted = YES;
-                                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                    break 2;
+                        switch ($status) {
+                            case WIN_ACL_ANALYSIS_ERROR:
+                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                break 2;
+                            case WIN_ACL_ANALYSIS_CONTINUE:
+                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                // don't do anything, just continue with analysis
+                                break;
+                            case WIN_ACL_GRANT_ACCESS:
+                                $accessGranted = YES;
+                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                break 2;
                         }
                     }    
                 } 
 
                 
                 foreach ($level1_item['children'] as $level2_item) {
-                    echo "Role = " . $level2_item['category_name'] . "<br>";
-                    if ($level2_item['category_name'] == $this->roleName) {     // Role
-                        echo "   ===> Found<br>";
-                        var_dump($level2_item['actions']);
-                        if (!empty($level2_item['actions'])) {
-                            var_dump($level2_item['actions']);
-                            foreach ($level2_item['actions'] as $actionName => $params) {
-                                eval ('$temp = $this->listOfFields;');     
-                                eval ('var_dump($temp);');
-var_dump($params);
-                                foreach ($params as $key => $param) {
-                                    var_dump($param);
-                                    if ($param[0] == "$") {
-                                        echo "key = $key<br>";
-                                        eval ('$temp = ' . $param . ';'); 
-                                        unset($params[$key]);
-                                        $params[$key] = $temp;
+                    var_dump($level2_item['category_name']);
+                    foreach ($level2_item['category_name'] as $roleNameList) { 
+                        echo "Role = " . $roleNameList . "<br>";
+                        echo __FUNCTION__ . " " . __LINE__ . " roleNameList = $roleNameList<br>";
+                        if ($roleNameList == $roleName) {     // Role
+                            echo "   ===> Found<br>";
+                            if (!empty($level2_item['actions'])) {
+                                var_dump($level2_item['actions']);
+
+                                foreach ($level2_item['actions'] as $actionName => $params) {
+                                    foreach ($params as $key => $param) {
+                                        var_dump($param);
+                                        if ($param[0] == "$") {
+                                            echo "key = $key<br>";
+                                            eval ('$temp = ' . $param . ';'); 
+                                            unset($params[$key]);
+                                            $params[$key] = $temp;
+                                        }
                                     }
-                                }
-                                
-                                echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";   
-                                $status = call_user_func_array([__CLASS__, $actionName], $params);
+
+                                    echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";   
+                                    $status = call_user_func_array([__CLASS__, $actionName], $params);
                                     switch ($status) {
                                         case WIN_ACL_ANALYSIS_ERROR:
                                             echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                            break 3;
+                                            break 4;
                                         case WIN_ACL_ANALYSIS_CONTINUE:
                                             // don't do anything, just continue with analysis
                                             echo __FUNCTION__ . " " . __LINE__ . "<br>";
@@ -296,68 +285,67 @@ var_dump($params);
                                         case WIN_ACL_GRANT_ACCESS:
                                             $accessGranted = YES;
                                             echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                            break 3;
-                                }   
+                                            break 4;
+                                    }   
+                                }
+                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                            }
+
+
+                            foreach ($level2_item['children'] as $level3_item) {
+                                var_dump($level3_item['category_name']);
+                                    foreach ($level3_item['category_name'] as $requestActionList) { 
+                                    echo "Method = " . $requestActionList . "<br>";
+                                    echo __FUNCTION__ . " " . __LINE__ . " requestActionList = $requestActionList<br>";
+                                    }   
+                                    if ($requestActionList == $requestedAction) {            // Method/action
+                                        echo "   ====> Found<br>";                                                               
+                                        if (!empty($level3_item['actions'])) {
+                                            var_dump($level3_item['actions']);
+
+                                            foreach ($level3_item['actions'] as $actionName => $params) {
+                                                foreach ($params as $key => $param) {
+                                                    if ($param[0] == "$") {
+                                                        eval ('$temp = ' . $param . ';'); 
+                                                        unset($params[$key]);
+                                                        $params[$key] = $temp;
+                                                    }
+                                                }
+
+                                                echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
+                                                $status = call_user_func_array([__CLASS__, $actionName], $params);
+                                                switch ($status) {
+                                                    case WIN_ACL_ANALYSIS_ERROR:
+                                                        echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                                        break 5;
+                                                    case WIN_ACL_ANALYSIS_CONTINUE:
+                                                        // don't do anything, just continue with analysis
+                                                        echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                                        break;
+                                                    case WIN_ACL_GRANT_ACCESS:
+                                                        $accessGranted = YES;
+                                                        echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                                        break 5;
+                                                }
+                                            }
+                                        }                               
+                                        echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                                        break 4;                                        // This is the normal end. 
+                                    } 
+                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
                             }
                             echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                            break 3;
                         }
-                
-                   
-                        foreach ($level2_item['children'] as $level3_item) {
-                            echo "Method = " . $level3_item['category_name'] . "<br>";
-                            if ($level3_item['category_name'] == $requestedAction) {            // Method
-                                echo "   ====> Found<br>";                                                               
-                                if (!empty($level3_item['actions'])) {
-                                    var_dump($level3_item['actions']);
-                                    
-                                    
-                                    foreach ($level3_item['actions'] as $actionName => $params) {
-                                        eval ('$temp = $this->listOfFields;');     
-                                        eval ('var_dump($temp);');
-
-                                        foreach ($params as $key => $param) {
-                                            if ($param[0] == "$") {
-                                                eval ('$temp = ' . $param . ';'); 
-                                                unset($params[$key]);
-                                                $params[$key] = $temp;
-                                            }
-                                        }
-      
-                                        
-                                        $status = call_user_func_array([__CLASS__, $actionName], $params);
-                                            switch ($status) {
-                                                case WIN_ACL_ANALYSIS_ERROR:
-                                                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                                    break 4;
-                                                case WIN_ACL_ANALYSIS_CONTINUE:
-                                                    // don't do anything, just continue with analysis
-                                                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                                    break;
-                                                case WIN_ACL_GRANT_ACCESS:
-                                                    $accessGranted = YES;
-                                                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                                    break 4;
-                                        }
-                                    }
-                                }                               
-                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                                break 3;                                        // This is the normal end. 
-                            } 
-                            echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                        }
-                        echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                        break 2;
                     }
-                    echo __FUNCTION__ . " " . __LINE__ . "<br>";
                 }
                 echo __FUNCTION__ . " " . __LINE__ . "<br>";
                 break ;                
             }
-            echo __FUNCTION__ . " " . __LINE__ . "<br>";
         }
         if ($accessGranted == NO) {
             echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>";
-   //         throw new UnauthorizedException('You are not authorized to access the requested resource');   
+   //         throw new ForbiddenException('You are not allowed to access the requested resource');   
         }
         else {
             echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";
@@ -368,7 +356,7 @@ var_dump($params);
     
 
     /** 
-     * This is a stub code. It will always grant access
+     * This is a stub code. It will ALWAYS grant access to the requested resource
      * 
      * @return int  (WIN_ACL_GRANT_ACCESS 
      */   
@@ -381,8 +369,17 @@ var_dump($params);
     
     
     /** 
-     * Adds the current user, as identified by its investorId, to the $filterConditionQueryParms
-     * This applies to the HTTP-GET message only
+     * Adds the filtering conditions, to the class variable $this->filterConditionQueryParms.
+     * New conditions are simply added and existing ones will be overwritten.
+     * 
+     * The condition(s) (one or more) is/are formed in the following way:
+     *      array key => name of the key to add 
+     *      array value => the value to add
+     * The original $this->filterConditionQueryParms should not have SQL operands as the results
+     * may be unpredictable.
+     * Note that in the following case, a new condition,  "myCondition >" => 4 will replace an already
+     * existing condition of "myCondition" => 4.
+     * This function applies to HTTP-GET message only.
      * 
      * @param $param An array searchConditions that will be added to the conditions as provided by the Web-Client
      * @return  int (WIN_ACL_ANALYSIS_CONTINUE) 
@@ -391,7 +388,6 @@ var_dump($params);
     echo __FUNCTION__ . " " . __LINE__ . "<br>";
     
 var_dump($this->filterConditionQueryParms);
-//var_dump($param);
 
         foreach ($param as $key => $condition) {
             $isUpperCase = false;
@@ -406,11 +402,10 @@ var_dump($this->filterConditionQueryParms);
                 $param[$key] = $temp;
             }
         }
-//var_dump($param);
 
         $conditionKeys = array_keys($param);
         foreach ($conditionKeys as $index => $conditionKey) {
-            $conditionKeys[$index] = str_replace(['<', '>', ' '], '', $conditionKey);
+            $conditionKeys[$index] = str_replace(['<', '>', '>=', '<=', '<>'], '', $conditionKey);
         }
         var_dump($conditionKeys);
     
@@ -446,25 +441,22 @@ var_dump($this->filterConditionQueryParms);
     }    
      
     /** 
-     * Checks if the list of fields provided in $fieldsToCheck ALL have the permission according to
+     * Checks if the list of fields provided in $fields ALL have the permission according to
      * the role of the user to perform the requested operation as defined in $property. The check is 
      * done against the array $this->referenceVariablePermissions with keys "modelName" and "roleName".
      * If a field which is provided in '$this->listOfFields' is NOT present in the 
      * $referenceVariablePermissions then access will be denied.
      * This is a very fine-grained permission check.
      * 
-     * @param $property Values permitted: "R" [= read access] or "W" [ =write access]
-     * @param $model The name of the model that the current user like to access
+     * @param $property Values permitted: "R" [= Read access] or "W" [= Write access]
+     * @param $model The name of the model that the current user likes to access
      * @param $roleName The name of the role of the current user
-     * @param $fields Array with the name of the fields to be checked
+     * @param $fields Array with the name of the fields to be checked. Typically this is '$this->listOfFields'
      * @return int    (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_GRANT_ACCESS)
      */
     public function checkFields($property, $model, $roleName, $fields) {  
     echo __FUNCTION__ . " " . __LINE__ . "<br>";
     var_dump($fields);
-  //      $listOfFields = $this->listOfFields;
-//$listOfFields = ['investor_name', 'id', 'investor_surname', 'investor_links',
- //              'investor_DNI', 'investor_dateOfBirth', 'investor_telephone']; // FOR TESTING ONLY
 
         // Special treatment for fields "id" and "xxx_links"
         $key = array_search("id", $fields);
@@ -477,8 +469,7 @@ var_dump($this->filterConditionQueryParms);
             unset($fields[$key]);
         }
         
-        $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');
-          
+        $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');         
      
         echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
         $this->print_r2($fields); 
@@ -496,22 +487,22 @@ var_dump($this->filterConditionQueryParms);
     }    
       
     /** 
-     * Checks if the investor is the (in)direct owner of the Model to which s/he likes to access.
+     * Checks if the investor is the (in)direct owner of the Model which s/he likes to access.
      * This function can only be applied where the 'id' as provided in the 
-     * 
-     * HTTP-GET/HTTP-PUT/HTTP-DELETE/HTTP-PUT is provided by the user.
+     * HTTP-GET/HTTP-PUT/HTTP-DELETE/HTTP-PUT by the user. It DOES NOT work correctly on a HTTP-GET which 
+     * searches for one or more results. ( = HTTP-GET -> v1_index)
      * In HTTP-POST the result might be unpredictable, as POSTs may or may not contain an 'id'.
      * 
      * @param string Name of the model which is to be accessed
      * @param int $investorId The internal reference to the Investor object of the user
      * @param int $id The internal reference to the Object that is going to be accessed
-     * @return int ( WIN_ACL_ANALYSIS_ERROR or WIN_ACL_ANALYSIS_CONTINUE)
+     * @return int  (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function checkOwner($model, $investorId, $id) {
        echo __FUNCTION__ . " " . __LINE__ . " investorId_user = $investorId  and investorId_requestedresource = $id<br>";  
 
         $this->$model = ClassRegistry::init($model);
-        if (!$this->$model->isOwner($this->investorId, $this->id) ) {
+        if (!$this->$model->isOwner($investorId, $id) ) {
                        
         echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>";            
             return WIN_ACL_ANALYSIS_ERROR;
@@ -521,13 +512,12 @@ var_dump($this->filterConditionQueryParms);
     }   
     
     /** 
-     * Reads the list of fields which the server will provide to the webclient if no fields
+     * Reads the list of fields which the server will provide to the webclient if NO fields
      * were defined in the HTTP message. This is only useful for the HTTP-GET message
-     * This function is only applicable to HTTP-GET.
      * 
      * @param $model The name of the Model from whom to read the list of fields
      * @param $roleName The name of the role for whom the list shall be retrieved
-     * @return int (WIN_ACL_ANALYSIS_CONTINUE)
+     * @return int  (WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function setListOfFields($model, $roleName) {
         echo __FUNCTION__ . " " . __LINE__ . " Model = $model and rolename = $roleName <br>";  

@@ -64,13 +64,13 @@ class PollingresourcesController extends AppController
                                   ]; 
         }  
 
-        $key = in_array('pollingresource_userIdentification',$this->listOfFields);
+        $key = in_array('pollingresource_userIdentification', $this->listOfFields);
         if (!$key) {
             array_push($this->listOfFields, 'pollingresource_userIdentification');
             $idField = false;
         }       
 
-        $apiResult = $this->Pollingresource->find('first', $params= ['conditions' => ['id' => $id],
+        $apiResult = $this->Pollingresource->find('first', $params = ['conditions' => ['id' => $id],
                                                           'fields' => $this->listOfFields, 
                                                           'recursive' => -1
                                                          ]);
