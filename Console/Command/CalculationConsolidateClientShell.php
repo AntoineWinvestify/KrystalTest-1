@@ -45,7 +45,7 @@ App::import('Shell', 'UserData');
 class CalculationConsolidateClientShell extends GearmanClientShell {
 
     public $uses = array('Queue2', 'Investment', 'Investmentslice', 'Amortizationtable',
-        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable');
+        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable', 'Userinvestmentdata', 'Dashboardelay');
     public $today;
 
 // Only used for defining a stable testbed definition
@@ -413,6 +413,12 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
         return $scheduledDate;
     }
 
+    /**
+     *  Calculate and save the delay ranges base on the outstanding and active investment for each linkedaccount in companiesInFlow.
+     * 
+     * @param array $params                                                     //Array with the queue info, we need the companiesInFlow to get the delay ranges of the linkedaccounts
+     * @return boolean
+     */
     public function saveDelayRanges($params) {
         foreach ($params as $key => $company) {
             $linkedAccountIdList[] = $key;
@@ -420,37 +426,30 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
         foreach ($linkedAccountIdList as $key => $linkedaccount) {
             $range = $this->Investment->getDefaultedByOutstanding($linkedaccount);
+            $range2 = $this->Investment->getDefaultedByInvestmentNumber($linkedaccount);
 
-            foreach ($range as $key => $value) {
-                switch ($key) {
-                    case "1-7":
-                        $this->Dashboarsdealy->save(array('userinvestmentdata_delay_1-7_outstanding' => $value, 'userinvestmentdata_id' => $userinvestmenrdataId));
-                        break;
-                    case "8-30":
-                        $value = ($defaultedRange["8-30"] * $defaultedRange["total"]) / 100;
-                        $globalValue["8-30"] = $globalValue["8-30"] + $value;
-                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
-                        break;
-                    case "31-60":
-                        $value = ($defaultedRange["31-60"] * $defaultedRange["total"]) / 100;
-                        $globalValue["31-60"] = $globalValue["31-60"] + $value;
-                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
-                        break;
-                    case "61-90":
-                        $value = ($defaultedRange["61-90"] * $defaultedRange["total"]) / 100;
-                        $globalValue["61-90"] = $globalValue["61-90"] + $value;
-                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
-                        break;
-                    case ">90":
-                        $value = ($defaultedRange[">90"] * $defaultedRange["total"]) / 100;
-                        $globalValue[">90"] = $globalValue[">90"] + $value;
-                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
-                        break;
-                }
-            }
+            $userinvestmenrdataId = $this->Userinvestmentdata->getData(array('linkedaccount_id' => $linkedaccount), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
+
+            $this->Dashboardelay->create();
+            $this->Dashboardelay->save(array(
+                'dashboardelay_delay_1-7_outstanding' => $range['1-7'],
+                'dashboardelay_delay_8-30_outstanding' => $range['8-30'],
+                'dashboardelay_delay_31-60_outstanding' => $range['31-60'],
+                'dashboardelay_delay_61-90_outstanding' => $range['61-90'],
+                'dashboardelay_delay_>90_outstanding' => $range['+90'],
+                'dashboardelay_outstandingDebs' => $range['outstandingDebt'],
+                'dashboardelay_current_outstanding' => $range['current'],
+                'dashboardelay_delay_1-7_active' => $range2['1-7'],
+                'dashboardelay_delay_8-30_active' => $range2['8-30'],
+                'dashboardelay_delay_31-60_active' => $range2['31-60'],
+                'dashboardelay_delay_61-90_active' => $range2['61-90'],
+                'dashboardelay_delay_>90_active' => $range2['+90'],
+                'dashboardelay_activeDebs' => $range2['+90Number'],
+                'dashboardelay_current_active' => $range2['current'],
+                'userinvestmentdata_id' => $userinvestmenrdataId
+            ));
         }
-
-        return $globalRange;
+        return true;
     }
 
 }

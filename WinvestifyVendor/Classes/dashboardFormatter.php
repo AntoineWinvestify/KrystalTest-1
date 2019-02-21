@@ -115,6 +115,10 @@ class dashboardFormatter {
      * @return array
      */
     function paymentDelayGraphFormatter($data, $dummy, $graphInfo) {
+        
+        $this->Tooltip = ClassRegistry::init('Tooltip');
+        $this->Tooltip->getTooltip(DASHBOARD_PAYMENT_DELAY, $this->language, $graphInfo['linkedaccountId']);
+        
         $dataResult = array();
         $dataResult[0]['range_display_name'] = '1-7 days';
         $dataResult[1]['range_display_name'] = '8-30 days';
@@ -122,18 +126,20 @@ class dashboardFormatter {
         $dataResult[3]['range_display_name'] = '61-90 days';
         $dataResult[4]['range_display_name'] = '> 90 days';
 
-        $dataResult[0]['percent'] = $data['1-7']['Userinvestmentdata']['userinvestmentdata_delay_1-7'];
-        $dataResult[1]['percent'] = $data['8-30']['Userinvestmentdata']['userinvestmentdata_delay_8-30'];
-        $dataResult[2]['percent'] = $data['31-60']['Userinvestmentdata']['userinvestmentdata_delay_31-60'];
-        $dataResult[3]['percent'] = $data['61-90']['Userinvestmentdata']['userinvestmentdata_delay_61-90'];
-        $dataResult[4]['percent'] = $data['>90']['Userinvestmentdata']['userinvestmentdata_delay_>90'];
+        $dataResult[0]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_1-7_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[1]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_8-30_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[2]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_31-60_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[3]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_61-90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[4]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_>90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
 
         $this->graphicsResults = ["dataset" =>
             [
                 "display_name" => $graphInfo['displayName'],
+                "tooltip_display_name" => $tooltip[DASHBOARD_PAYMENT_DELAY],
                 "data" => $dataResult,
             ]
         ];
+        print_r($this->graphicsResults);
         return $this->graphicsResults;
     }
 

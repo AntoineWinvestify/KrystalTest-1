@@ -145,6 +145,62 @@ var $validate = array(
         return $defaultedRange;
     }
 
+    
+    /**
+     * Get defaulted percent based on the number of investment.
+     * 
+     * @param Int       $linkedaccount Link account id 
+     * @return Array    Percentage of each defaulted range
+     */
+    public function getDefaultedByInvestmentNumber($linkedaccount) {
+
+        //Get total outstanding principal for a P2P
+        $activeInvestment = $this->find("all", array(
+            "fields" => array("investment_paymentStatus"),
+            "conditions" => array("linkedaccount_id" => $linkedaccount, "investment_statusOfLoan" => WIN_LOANSTATUS_ACTIVE),
+            "recursive" => -1,
+        ));
+
+        
+        $activeInvestmentRange = array(
+            'currentNumber' => 0, '1-7Number' => 0, '8-30Number' => 0, '31-60Number' => 0, '61-90Number' => 0, '+90Number' => 0,
+            'current' => 0, '1-7' => 0, '8-30' => 0, '31-60' => 0, '61-90' => 0, '+90' => 0,
+        );
+        $total = count($activeInvestment);
+        
+        foreach ($activeInvestment as $investment) {
+            switch ($investment['Investment']['investment_paymentStatus']) {
+                case 0:
+                    $activeInvestmentRange['currentNumber']++;
+                    $activeInvestmentRange['current'] = bcdiv($activeInvestmentRange['currentNumber'], $total ,16);
+                    break;
+                case ($investment['Investment']['investment_paymentStatus'] > 90):
+                    $activeInvestmentRange['+90Number']++;
+                    $activeInvestmentRange['+90'] = bcdiv($activeInvestmentRange['+90Number'], $total ,16);
+                    break;
+                case ($investment['Investment']['investment_paymentStatus'] > 60):
+                    $activeInvestmentRange['61-90Number']++;
+                    $activeInvestmentRange['61-90'] = bcdiv($activeInvestmentRange['61-90Number'], $total ,16);
+                    break;
+                case ($investment['Investment']['investment_paymentStatus'] > 30):
+                    $activeInvestmentRange['31-60Number']++;
+                    $activeInvestmentRange['31-60'] = bcdiv($activeInvestmentRange['31-60Number'], $total ,16);
+                    break;
+                case ($investment['Investment']['investment_paymentStatus'] > 7):
+                    $activeInvestmentRange['8-30Number']++;
+                    $activeInvestmentRange['8-30'] = bcdiv($activeInvestmentRange['8-30Number'], $total ,16);
+                    break;
+                case ($investment['Investment']['investment_paymentStatus'] > 0):
+                    $activeInvestmentRange['1-7Number']++;
+                    $activeInvestmentRange['1-7'] = bcdiv($activeInvestmentRange['1-7Number'], $total ,16);
+                    break;
+            }
+        }
+        
+        return $activeInvestmentRange;
+    }    
+    
+    
     /**
      * Get defaulted percent range.
      * 
@@ -153,7 +209,7 @@ var $validate = array(
      */
     public function getDefaultedRange($defaultedInvestments, $outstanding) {
 
-        $range = array(">90" => 0, "61-90" => 0, "31-60" => 0, "8-30" => 0, "1-7" => 0);
+        $range = array("+90" => 0, "61-90" => 0, "31-60" => 0, "8-30" => 0, "1-7" => 0);
         $value = array();
 
         $range['total'] = $outstanding;
@@ -163,29 +219,30 @@ var $validate = array(
                 case 0:
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 90):
-                    $value[">90"] = $value[">90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range[">90"] = round(($value[">90"] / $outstanding) * 100, WIN_SHOW_DECIMAL);
+                    $value["+90"] = $value["+90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
+                    $range["outstandingDebt"] =  $value["+90"];
+                    $range["+90"] = round(($value["+90"] / $outstanding), 4);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 60):
                     $value["61-90"] = $value["61-90"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["61-90"] = round(($value["61-90"] / $outstanding) * 100, WIN_SHOW_DECIMAL);
+                    $range["61-90"] = round(($value["61-90"] / $outstanding), 4);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 30):
                     $value["31-60"] = $value["31-60"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["31-60"] = round(($value["31-60"] / $outstanding) * 100, WIN_SHOW_DECIMAL);
+                    $range["31-60"] = round(($value["31-60"] / $outstanding), 4);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 7):
                     $value["8-30"] = $value["8-30"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["8-30"] = round(($value["8-30"] / $outstanding) * 100, WIN_SHOW_DECIMAL);
+                    $range["8-30"] = round(($value["8-30"] / $outstanding), 4);
                     break;
                 case ($defaultedInvestment['Investment']['investment_paymentStatus'] > 0):
                     $value["1-7"] = $value["1-7"] + $defaultedInvestment['Investment']['investment_outstandingPrincipal'];
-                    $range["1-7"] = round(($value["1-7"] / $outstanding) * 100, WIN_SHOW_DECIMAL);
+                    $range["1-7"] = round(($value["1-7"] / $outstanding), 4);
                     break;
             }
         }
         //Calculate current
-        $range["current"] = 100 - $range["1-7"] - $range["8-30"] - $range["31-60"] - $range["61-90"] - $range[">90"];
+        $range["current"] = 1 - $range["1-7"] - $range["8-30"] - $range["31-60"] - $range["61-90"] - $range["+90"];
         return $range;
     }
 

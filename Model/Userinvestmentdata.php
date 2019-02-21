@@ -36,6 +36,12 @@ class Userinvestmentdata extends AppModel {
             'order' => '',
         ),
     );
+    public $hasOne = array(
+        'Dashboardelay' => array(
+            'className' => 'Dashboardelay',
+            'foreignKey' => 'userinvestmentdata_id',
+        ),
+    );
     public $belongsTo = array(
         'Globaldashboard' => array(
             'className' => 'Globaldashboard',
@@ -324,7 +330,7 @@ class Userinvestmentdata extends AppModel {
     }
 
     /**
-     * Read the datum "userinvestmentdata_exposure"      //This field is not implemented yet
+     * Read the data of the delay ranged based on outstanding
      * 
      * @param int  $linkedAccountId The object reference for the linked account
      * @param string $period                                                   //Not used
@@ -332,14 +338,15 @@ class Userinvestmentdata extends AppModel {
      */
     public function readPaymentDelayGraphData($linkedAccountId, $period) {
 
+        $userinvestmentdataId = $this->getData(array('linkedaccount_id' => $linkedAccountId), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
 
-        $data['1-7'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_1-7'], 'Date DESC', null, 'first');
-        $data['8-30'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_8-30'], 'Date DESC', null, 'first');
-        $data['31-60'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_31-60'], 'Date DESC', null, 'first');
-        $data['61-90'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_61-90'], 'Date DESC', null, 'first');
-        $data['>90'] = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_delay_>90'], 'Date DESC', null, 'first');
-
-        return $data;
+        $delayRanges = $this->find('first', array(
+            'conditions' => array('Dashboardelay.userinvestmentdata_id' => $userinvestmentdataId),
+            'fields' => array('Dashboardelay.dashboardelay_delay_1-7_outstanding', 'Dashboardelay.dashboardelay_delay_8-30_outstanding', 'Dashboardelay.dashboardelay_delay_31-60_outstanding', 'Dashboardelay.dashboardelay_delay_61-90_outstanding', 'Dashboardelay.dashboardelay_delay_>90_outstanding', 'Dashboardelay.dashboardelay_current_outstanding', 'Dashboardelay.dashboardelay_outstandingDebs'), //dashboardelay_delay_1-7_active, dashboardelay_delay_8-30_active, dashboardelay_delay_31-60_active, dashboardelay_delay_61-90_active, dashboardelay_delay_>91_active, dashboardelay_activeDebs, dashboardelay_current_active),
+            'recursive' => 0,
+            ));
+        
+        return $delayRanges;
     }
 
     /**
