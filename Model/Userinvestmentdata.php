@@ -340,15 +340,35 @@ class Userinvestmentdata extends AppModel {
 
         $userinvestmentdataId = $this->getData(array('linkedaccount_id' => $linkedAccountId), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
 
-        $delayRanges = $this->find('first', array(
+        $delayRanges['data'] = $this->find('first', array(
             'conditions' => array('Dashboardelay.userinvestmentdata_id' => $userinvestmentdataId),
             'fields' => array('Dashboardelay.dashboardelay_delay_1-7_outstanding', 'Dashboardelay.dashboardelay_delay_8-30_outstanding', 'Dashboardelay.dashboardelay_delay_31-60_outstanding', 'Dashboardelay.dashboardelay_delay_61-90_outstanding', 'Dashboardelay.dashboardelay_delay_>90_outstanding', 'Dashboardelay.dashboardelay_current_outstanding', 'Dashboardelay.dashboardelay_outstandingDebs'), //dashboardelay_delay_1-7_active, dashboardelay_delay_8-30_active, dashboardelay_delay_31-60_active, dashboardelay_delay_61-90_active, dashboardelay_delay_>91_active, dashboardelay_activeDebs, dashboardelay_current_active),
             'recursive' => 0,
             ));
         
+        $delayRanges['tooltip'] = array(DASHBOARD_PAYMENT_DELAY);
         return $delayRanges;
     }
+    
+    /**
+     * Read the data of the current outstanding
+     * 
+     * @param int  $linkedAccountId The object reference for the linked account
+     * @param string $period                                                   //Not used
+     * @return array
+     */
+    public function readCurrentTotalGraphData($linkedAccountId, $period) {
 
+        $userinvestmentdataId = $this->getData(array('linkedaccount_id' => $linkedAccountId), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
+
+        $current['data'] = $this->find('first', array(
+            'conditions' => array('Dashboardelay.userinvestmentdata_id' => $userinvestmentdataId),
+            'fields' => array('Dashboardelay.dashboardelay_current_outstanding'), //dashboardelay_delay_1-7_active, dashboardelay_delay_8-30_active, dashboardelay_delay_31-60_active, dashboardelay_delay_61-90_active, dashboardelay_delay_>91_active, dashboardelay_activeDebs, dashboardelay_current_active),
+            'recursive' => 0,
+            ));
+        $current['tooltip'] = array(DASHBOARD_CURRENT);
+        return $current;
+    }
     /**
      * Read the list of each individual dashboard of a investor.
      * 

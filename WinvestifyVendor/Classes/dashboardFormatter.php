@@ -94,12 +94,17 @@ class dashboardFormatter {
      * @return array
      */
     function gaugeGraphFormatter($data, $dummy, $graphInfo) {
+        
+        $this->Tooltip = ClassRegistry::init('Tooltip');
+        $tooltip = $this->Tooltip->getTooltip($data['tooltip'], $this->language, $graphInfo['linkedaccountId']);
+        unset($data['tooltip']);
         $this->graphicsResults = ["dataset" =>
             [
                 "display_name" => $graphInfo['displayName'],
+                "tooltip_display_name" => $tooltip[$data['tooltip']],
                 "data" => [
                     "max_value" => $graphInfo["maxValue"],
-                    "percent" => round($data, WIN_SHOW_DECIMAL)
+                    "percent" => round(bcmul($data['data']['Dashboardelay']['dashboardelay_current_outstanding'], 100, 16), WIN_SHOW_DECIMAL)
                 ],
             ]
         ];
@@ -117,7 +122,7 @@ class dashboardFormatter {
     function paymentDelayGraphFormatter($data, $dummy, $graphInfo) {
         
         $this->Tooltip = ClassRegistry::init('Tooltip');
-        $this->Tooltip->getTooltip(DASHBOARD_PAYMENT_DELAY, $this->language, $graphInfo['linkedaccountId']);
+        $tooltip = $this->Tooltip->getTooltip($data['tooltip'], $this->language, $graphInfo['linkedaccountId']);
         
         $dataResult = array();
         $dataResult[0]['range_display_name'] = '1-7 days';
@@ -126,20 +131,19 @@ class dashboardFormatter {
         $dataResult[3]['range_display_name'] = '61-90 days';
         $dataResult[4]['range_display_name'] = '> 90 days';
 
-        $dataResult[0]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_1-7_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[1]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_8-30_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[2]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_31-60_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[3]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_61-90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[4]['percent'] = round(bcmul($data['Dashboardelay']['dashboardelay_delay_>90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[0]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_1-7_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[1]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_8-30_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[2]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_31-60_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[3]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_61-90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        $dataResult[4]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_>90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
 
         $this->graphicsResults = ["dataset" =>
             [
                 "display_name" => $graphInfo['displayName'],
-                "tooltip_display_name" => $tooltip[DASHBOARD_PAYMENT_DELAY],
+                "tooltip_display_name" => $tooltip[$data['tooltip']],
                 "data" => $dataResult,
             ]
         ];
-        print_r($this->graphicsResults);
         return $this->graphicsResults;
     }
 

@@ -113,11 +113,11 @@ $config['Dashboard'] = array(
             array("dashboardFormatter" => "genericGraphFormatter"),
             array("displayName" => "Net Earnings Total", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
         ),
-        /* "current-graph-data" => array(
+        "current-graph-data" => array(
           array("Userinvestmentdata" => "readCurrentTotalGraphData"),
           array("dashboardFormatter" => "gaugeGraphFormatter"),
           array("displayName" => "Current", "maxValue" => "100")
-          ), */
+          ), 
         /* "exposure-graph-data" => array(
           array("Userinvestmentdata" => "readExposureTotalGraphData"),
           array("dashboardFormatter" => "gaugeGraphFormatter"),
