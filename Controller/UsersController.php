@@ -78,8 +78,8 @@ class UsersController extends AppController
 function beforeFilter() {
 
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
+    $this->Auth->allow('v1_login', 'v1_pre-check');
 
-    $this->Auth->allow('v1_login');
 }
 
 

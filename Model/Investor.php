@@ -256,7 +256,7 @@ class Investor extends AppModel {
                         'investor_city',
                         'investor_country', 
                         'investor_language',
-                        'investor_links'
+  //                      'investor_links'
                       ],
 
         'winAdmin' => ['id', 
@@ -274,7 +274,7 @@ class Investor extends AppModel {
                         'investor_country', 
                         'investor_language',
                         'investor_accredited',            
-                        'investor_links',
+    //                    'investor_links',
                         'modified',
                         'created'
             ],              
@@ -293,7 +293,7 @@ class Investor extends AppModel {
                         'investor_country', 
                         'investor_language',
                         'investor_accredited',
-                        'investor_links',
+     //                   'investor_links',
                         'modified',
                         'created'            
                       ],                
@@ -1125,10 +1125,10 @@ class Investor extends AppModel {
     
     /** 
      * Reads the list of defaultFields to read in case the webclient has not indicated any fields
-     * in its GET requests
+     * in its GET request
      * 
      * @param $roleName The name of the role for whom the list of defaults fields is read
-     * @return array $list  An array with the names of the fields. The names are the internal names of the fields
+     * @return array  An array with the names of the fields. The names are the *internal* names of the fields
      */
     public function getDefaultFields($roleName) {
         return $this->defaultFields[$roleName];        
