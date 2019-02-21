@@ -1,4 +1,5 @@
 <?php
+
 /**
  * +----------------------------------------------------------------------------+
  * | Copyright (C) 2017, http://www.winvestify.com                   	  	|
@@ -19,7 +20,7 @@
  * @date 2018-06-18
  * @package
  */
- /*
+/*
  * This Client starts analyzing the data of the amortization tables and writes the data-elements 
  * 'investment_nextPaymentDate', 'investment_dateForPaymentDelayCalculation' and 
  * 'investment_paymentStatus' to the corresponding database tables.
@@ -40,10 +41,11 @@
  */
 App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
+
 class CalculationConsolidateClientShell extends GearmanClientShell {
 
-    public $uses = array('Queue2', 'Investment', 'Investmentslice', 'Amortizationtable', 
-                        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable');
+    public $uses = array('Queue2', 'Investment', 'Investmentslice', 'Amortizationtable',
+        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable');
     public $today;
 
 // Only used for defining a stable testbed definition
@@ -51,10 +53,9 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
         return;
     }
 
-    
     public function initClient() {
-        $this->today  = date('Y-m-d', time());
-        
+        $this->today = date('Y-m-d', time());
+
         $this->GearmanClient->addServers();
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
@@ -73,12 +74,10 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
         Configure::load('p2pGestor.php', 'default');
         $jobsInParallel = Configure::read('dashboard2JobsInParallel');
-        
+
         while (true) {
-            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION),
-                                                  WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION,
-                                                $jobsInParallel);              
-            
+            $pendingJobs = $this->checkJobs(array(WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION), WIN_QUEUE_STATUS_STARTING_CALCULATION_CONSOLIDATION, $jobsInParallel);
+
             print_r($pendingJobs);
 
             if (Configure::read('debug')) {
@@ -108,35 +107,37 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                         }
                         $tempPfpName = explode("/", $allFiles[0]);
                         $pfp = $tempPfpName[count($tempPfpName) - 2];
-                        
+
                         $this->userLinkaccountIds[$job['Queue2']['id']][$i] = $linkedAccountId;
                         $i++;
                         echo "pfp = " . $pfp . "\n";
-                       
+
                         $allFiles = $dirs->findRecursive(WIN_FLOW_AMORTIZATION_TABLE_FILE . ".*");
                         $params[$linkedAccountId] = array(
                             'pfp' => $pfp,
                             'userReference' => $job['Queue2']['queue2_userReference'],
                             'files' => $allFiles,
-                            'actionOrigin' => $job['Queue2']['queue2_type'],          // this was WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
+                            'actionOrigin' => $job['Queue2']['queue2_type'], // this was WIN_ACTION_ORIGIN_ACCOUNT_LINKING,
                             'finishDate' => $this->queueInfo[$queueId]['date'],
                             'startDate' => $this->queueInfo[$queueId]['startDate'][$linkedAccountId],
-
                             'queueInfo' => json_decode($job['Queue2']['queue2_info'], true));
                     }
 
                     $this->GearmanClient->addTask($workerFunction, json_encode($params), null, $job['Queue2']['id'] . ".-;" .
                             $workerFunction . ".-;" . $job['Queue2']['queue2_userReference']);
                 }
-               
+
                 echo "Calling consolidateData\n";
                 $this->consolidateData($params);
-                
-                echo "Calling consolidatePaymentDelay\n";               
+
+                echo "Calling consolidatePaymentDelay\n";
                 $this->consolidatePaymentDelay($params);
-                
-                echo "Calling calculateNextPaymentDates\n";  
+
+                echo "Calling calculateNextPaymentDates\n";
                 $this->calculateNextPaymentDates($params);
+
+                echo "Calling saveDelayRanges\n";
+                $this->saveDelayRanges($params);
 
                 //?
                 foreach ($this->queueInfo as $queueIdKey => $info) {
@@ -146,8 +147,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
                 }
 
                 $this->verifyStatus(WIN_QUEUE_STATUS_CALCULATION_CONSOLIDATION_FINISHED, "Amortization tables succesfully stored", WIN_QUEUE_STATUS_AMORTIZATION_TABLE_EXTRACTED, WIN_QUEUE_STATUS_UNRECOVERED_ERROR_ENCOUNTERED);
-    
-            } 
+            }
             else {
                 $inActivityCounter++;
                 if (Configure::read('debug')) {
@@ -157,16 +157,14 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
             }
             if ($inActivityCounter > MAX_INACTIVITY) {                          // system has dealt with ALL request for tonight, so exit "forever"
                 if (Configure::read('debug')) {
-                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";    
+                    echo __FUNCTION__ . " " . __LINE__ . ": " . "Maximum Waiting time expired, so EXIT\n";
                 }
                 exit;
             }
         }
     }
 
-
-
-    /** 
+    /**
      * This method writes the 'investment_dateForPaymentDelayCalculation' in the investment object. 
      * This is done for the loanIds/loanslices whose amortization tables
      * are stored in the directory currently under processing. 
@@ -180,7 +178,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
         $timeStart = time();
 
-        foreach ($linkedAccountData as $linkedAccount) {           
+        foreach ($linkedAccountData as $linkedAccount) {
             foreach ($linkedAccount['files'] as $tempName) {
                 $name = explode("_", $tempName);
                 $sliceIdTemp = $name[count($name) - 2];
@@ -190,67 +188,64 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
             foreach ($loanDataId as $sliceId) {
                 $tempNextScheduledDate = "";
 
-                $result = $this->Investmentslice->find("all", ['conditions' => ['Investmentslice.id' => $sliceId],       
-                                                                     'recursive' => 1]
-                                                                        );
-                
+                $result = $this->Investmentslice->find("all", ['conditions' => ['Investmentslice.id' => $sliceId],
+                    'recursive' => 1]
+                );
+
                 if ($this->Investmentslice->hasChildModel($sliceId, "Amortizationtable")) {
                     $reversedData = array_reverse($result[0]['Amortizationtable']);     // prepare to search backwards in amortization table
                     foreach ($reversedData as $table) {
-                        if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                            $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
+                        if ($table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED ||
+                                $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE ||
+                                $table['amortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
 
                             $tempNextScheduledDate = $table['amortizationtable_scheduledDate'];
                         }
-                    } 
-                   
+                    }
                 }
-                else {  
-                    $lists = $this->GlobalamortizationtablesInvestmentslice->find("all",  array('conditions' => array('investmentslice_id' => $sliceId), 
-                                                                      'fields' => array('id', 'globalamortizationtable_id')
-                                                    )); 
+                else {
+                    $lists = $this->GlobalamortizationtablesInvestmentslice->find("all", array('conditions' => array('investmentslice_id' => $sliceId),
+                        'fields' => array('id', 'globalamortizationtable_id')
+                    ));
 
                     foreach ($lists as $list) {
                         $filteringConditions = array('id' => $list['GlobalamortizationtablesInvestmentslice']['globalamortizationtable_id']);
 
                         $result2 = $this->Globalamortizationtable->find("first", array('conditions' => $filteringConditions,
-                                                                                        'fields' => ['id', 'globalamortizationtable_scheduledDate',
-                                                                                                    'globalamortizationtable_paymentStatus'],
-                                                                                        'recursive' => -1
+                            'fields' => ['id', 'globalamortizationtable_scheduledDate',
+                                'globalamortizationtable_paymentStatus'],
+                            'recursive' => -1
                         ));
                         $globalTable[] = $result2;
                     }
-                
-                    $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable');                     
-                    $reversedData =  array_reverse($amortizationTable);         // prepare to search backwards in amortization table
+
+                    $amortizationTable = Hash::extract($globalTable, '{n}.Globalamortizationtable');
+                    $reversedData = array_reverse($amortizationTable);         // prepare to search backwards in amortization table
                     unset($globalTable);
-                    foreach ($reversedData as $table) { 
-                        if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED || 
-                            $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE   ||
-                            $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {                      
-                                $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
+                    foreach ($reversedData as $table) {
+                        if ($table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_SCHEDULED ||
+                                $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_LATE ||
+                                $table['globalamortizationtable_paymentStatus'] == WIN_AMORTIZATIONTABLE_PAYMENT_PARTIALLY_PAID) {
+                            $tempNextScheduledDate = $table['globalamortizationtable_scheduledDate'];
                         }
                     }
                 }
- 
+
                 if (Configure::read('debug')) {
-                    echo "tempNextScheduledDate = $tempNextScheduledDate\n"; 
-                }                
+                    echo "tempNextScheduledDate = $tempNextScheduledDate\n";
+                }
                 $this->Investment->save(array('id' => $result[0]['Investmentslice']['investment_id'],
-                                               'investment_dateForPaymentDelayCalculation' =>  $tempNextScheduledDate )
-                                               );             
+                    'investment_dateForPaymentDelayCalculation' => $tempNextScheduledDate)
+                );
             }
-            
         }
-                   
+
         $timeStop = time();
-        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";    
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) . "\n";
         return true;
     }
 
-    
-    /** 
+    /**
      * This method scans through *ALL* active loans per P2P of an investor and calculates the number of days of 
      * payment delay. The result is written in the investment model object.
      *  
@@ -326,8 +321,7 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
         return true;
     }
 
-    
-    /** 
+    /**
      * This method scans through *ALL* active loans per P2P of an investor and writes the field "investment_nextPaymentDate", 
      * based on the data in our amortization tables, in the investment model object.
      *  
@@ -335,40 +329,39 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
      *                      needs to be updated, based on the data available in the amortization tables
      *  @return boolean
      */
-    public function calculateNextPaymentDates(&$linkedAccountData) { 
+    public function calculateNextPaymentDates(&$linkedAccountData) {
         $timeStart = time();
 
-        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {          
-            $conditions = array("AND" => array( array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE), 
-                                                      'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE,
-                                                      'linkedaccount_id'  => $linkedAccountKey
-                                              ));            
+        foreach ($linkedAccountData as $linkedAccountKey => $linkedAccount) {
+            $conditions = array("AND" => array(array('investment_statusOfLoan' => WIN_LOANSTATUS_ACTIVE),
+                    'investment_amortizationTableAvailable' => WIN_AMORTIZATIONTABLES_AVAILABLE,
+                    'linkedaccount_id' => $linkedAccountKey
+            ));
 
             $this->Investment->Behaviors->load('Containable');
-            $this->Investment->contain('Investmentslice');            
+            $this->Investment->contain('Investmentslice');
             $investmentResults = $this->Investment->find("all", array('conditions' => $conditions,
-                                                                    'recursive' => 1,
-                                                                    'fields' => array('id')
-                                                      ));
+                'recursive' => 1,
+                'fields' => array('id')
+            ));
 
-            foreach ($investmentResults as $result) {             
+            foreach ($investmentResults as $result) {
                 if (isset($result['Investmentslice'][0]['id'])) {
-                    $nextPaymentDate = $this->getNextPaymentDateForLoanSlice($result['Investmentslice'][0]['id']); 
+                    $nextPaymentDate = $this->getNextPaymentDateForLoanSlice($result['Investmentslice'][0]['id']);
                     $nextDates[] = array('id' => $result['Investment']['id'],
-                                        'investment_nextPaymentDate' => $nextPaymentDate);
+                        'investment_nextPaymentDate' => $nextPaymentDate);
                 }
-            }     
-            $this->Investment->saveMany($nextDates, array('validate' => true));            
+            }
+            $this->Investment->saveMany($nextDates, array('validate' => true));
             unset($nextDates);
         }
-  
-        $timeStop = time();
-        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) ."\n";
-        return true;
-    }      
 
-    
-    /** 
+        $timeStop = time();
+        echo "\nNUMBER OF SECONDS EXECUTED IN " . __FUNCTION__ . " = " . ($timeStop - $timeStart) . "\n";
+        return true;
+    }
+
+    /**
      * This method scans through an amortization table and returns the NEXT payment date, based on the
      * dates of proposed payment dates as stored in the amortization table¡
      *  
@@ -418,6 +411,46 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
             }
         }
         return $scheduledDate;
+    }
+
+    public function saveDelayRanges($params) {
+        foreach ($params as $key => $company) {
+            $linkedAccountIdList[] = $key;
+        }
+
+        foreach ($linkedAccountIdList as $key => $linkedaccount) {
+            $range = $this->Investment->getDefaultedByOutstanding($linkedaccount);
+
+            foreach ($range as $key => $value) {
+                switch ($key) {
+                    case "1-7":
+                        $this->Dashboarsdealy->save(array('userinvestmentdata_delay_1-7_outstanding' => $value, 'userinvestmentdata_id' => $userinvestmenrdataId));
+                        break;
+                    case "8-30":
+                        $value = ($defaultedRange["8-30"] * $defaultedRange["total"]) / 100;
+                        $globalValue["8-30"] = $globalValue["8-30"] + $value;
+                        $globalRange["8-30"] = round(($globalValue["8-30"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
+                        break;
+                    case "31-60":
+                        $value = ($defaultedRange["31-60"] * $defaultedRange["total"]) / 100;
+                        $globalValue["31-60"] = $globalValue["31-60"] + $value;
+                        $globalRange["31-60"] = round(($globalValue["31-60"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
+                        break;
+                    case "61-90":
+                        $value = ($defaultedRange["61-90"] * $defaultedRange["total"]) / 100;
+                        $globalValue["61-90"] = $globalValue["61-90"] + $value;
+                        $globalRange["61-90"] = round(($globalValue["61-90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
+                        break;
+                    case ">90":
+                        $value = ($defaultedRange[">90"] * $defaultedRange["total"]) / 100;
+                        $globalValue[">90"] = $globalValue[">90"] + $value;
+                        $globalRange[">90"] = round(($globalValue[">90"] / $globalTotal) * 100, WIN_SHOW_DECIMAL);
+                        break;
+                }
+            }
+        }
+
+        return $globalRange;
     }
 
 }

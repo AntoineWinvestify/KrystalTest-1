@@ -1572,6 +1572,21 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         return $transactionData['amount'];
     }
     
+    
+    /**
+     * Calculate cashdrag at the end of each day
+     * 
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
+    function calculateCashDrag(&$transactionData, &$resultData) {
+        $totalVolume = bcadd(bcadd($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 16), $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'], 16);
+        $cashdrag = bcdiv($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $totalVolume, 16);
+        return $cashdrag;
+    }
+    
+    
     function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }

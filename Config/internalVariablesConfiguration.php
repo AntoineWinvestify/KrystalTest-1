@@ -947,22 +947,20 @@ $config['internalVariables'] = array(
         ],   
         98 => [
             "databaseName" => "payment.payment_partialPrincipalAndInterestPayment",
-            "internalName" => "payment_partialPrincipalAndInterestPayment2", 
+            "internalName" => "payment_PrincipalpartialAndInterestPayment2", 
             "internalIndex" => 98,            
             "state" => WIN_FLOWDATA_VARIABLE_NOT_DONE,
             "charAcc" => WIN_FLOWDATA_VARIABLE_ACCUMULATIVE,   
-            "function" => "calculateGenericAmountReturn",
-            "cashflowOperation" => "bcadd",
-            "linkedIndex" => 99
+            "function" => "calculatePartialPrincipalAndInterestPayment2",
         ], 
-        99 => [
+        /*99 => [
             "databaseName" => "payment.payment_partialPrincipalRepayment",
             "internalName" => "payment_partialPrincipalAndInterestPayment2Extra", 
             "internalIndex" => 99,            
             "state" => WIN_FLOWDATA_VARIABLE_NOT_DONE,
             "charAcc" => WIN_FLOWDATA_VARIABLE_ACCUMULATIVE,   
             "function" => "calculatePartialPrincipalAndInterestPayment2",
-        ], 
+        ], */
     
         1000 => [
                 "databaseName" => "payment.payment_disinvestment",  // Disinvestment
@@ -1040,7 +1038,15 @@ $config['internalVariables'] = array(
                 "charAcc" => WIN_FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
                 "function" => ""
             ],  
- */   
+ */ 
+        10003 => [
+               "databaseName" => "Userinvestmentdata.userinvestmentdata_cashDrag",  
+               "internalName" => "userinvestmentdata_cashDrag",        
+               "internalIndex" => 10003,            
+               "state" => WIN_FLOWDATA_VARIABLE_NOT_DONE,
+               "charAcc" => WIN_FLOWDATA_VARIABLE_NOT_ACCUMULATIVE,   
+               "function" => "calculateCashDrag"
+        ],
         10004 => [
                 "databaseName" => "investment.investment_technicalStateTemp",  
                 "internalName" => "investment_technicalStateTemp",        

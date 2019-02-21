@@ -1027,7 +1027,8 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
-                    $internalVariablesToHandle = array(10001,
+                    $internalVariablesToHandle = array(
+                        10001, 10003,
                         10006, 10007, 10008,
                         10009, 10010, 10011,
                         10012, 10013, 10016,
