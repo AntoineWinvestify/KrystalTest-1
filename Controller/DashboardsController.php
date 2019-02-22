@@ -137,7 +137,15 @@ class DashboardsController extends AppController {
                 $this->model = ClassRegistry::init($model);
                 if (!empty($value['value'])) {
                     $field = $value['value']['field'];
-                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, $model . '.date DESC', null, 'first', 1)[$model][$field];
+                    if(empty($value['value']['recursive'])){
+                        $fieldSearch = $field;
+                        $keyResult = $model;
+                    }
+                    else{
+                        $fieldSearch = $value['value']['recursive'] . ".$field";
+                        $keyResult = $value['value']['recursive'];
+                    }
+                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $fieldSearch, $model . '.date DESC', null, 'first', 1)[$keyResult][$field];
                     if ($value['value']['type'] == 'currency') {      //Search for the currency
                         $data['data'][$blockKey][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
                         $data['data'][$blockKey][$key]['value']['value'] = round($data['data'][$blockKey][$key]['value']['amount'], WIN_SHOW_DECIMAL);

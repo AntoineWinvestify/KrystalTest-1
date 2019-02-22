@@ -462,7 +462,8 @@ $config['DashboardMainData'] = array(
                 "display_name" => "Outstanding Debt",
                 "value" => array(
                     "model" => "Userinvestmentdata",
-                    "field" => "Dashboardelay.dashboardelay_outstandingDebs",
+                    "recursive" => "Dashboardelay",
+                    "field" => "dashboardelay_outstandingDebs",
                     "type" => "currency"
                 ),
             ),
