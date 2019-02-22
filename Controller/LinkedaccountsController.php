@@ -38,6 +38,8 @@ class LinkedaccountsController extends AppController {
     var $name = 'Linkedaccounts';
     var $uses = array('Linkedaccount', 'Accountowner', 'Tooltip', 'Pollingresource');
     var $error;
+    protected $belongToAccountOwner = array('company_id', 'investor_id', 'accountowner_username', 'accountowner_linkedAccountCounter');
+    protected $belongToLinkedaccount = array('id', 'accountowner_id', 'linkedaccount_lastAccessed', 'linkedaccount_linkingProcess', 'linkedaccount_status', 'linkedaccount_statusExtended', 'linkedaccount_statusExtendedOld', 'linkedaccount_alias', 'linkedaccount_accountIdentity', 'linkedaccount_accountDisplayName', 'linkedaccount_isControlledBy', 'linkedaccount_executionData', 'linkedaccount_currency', 'linkedaccount_visualStatus');
 
     function beforeFilter () {
         parent::beforeFilter();
@@ -92,8 +94,32 @@ class LinkedaccountsController extends AppController {
      */
     public function v1_view () {
         $id = $this->request->params['id'];
-        $linkedaccount = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), null, null, null, 'first');
-        $linkedaccount = $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount);
+        $fields = $this->listOfFields;
+        $this->Linkedaccount->apiVariableNameInAdapter($fields);
+           
+        foreach($fields as $key => $field){
+            if(in_array($field, $this->belongToAccountOwner)){
+                $fields[$key] = 'Accountowner.' . $field;
+            }
+            else if (in_array($field, $this->belongToLinkedaccount)) {
+                $fields[$key] = 'Linkedaccount.' . $field;
+            }
+            else{
+                $this->response->statusCode(400);
+                return $this->response;
+            }
+        }
+
+        $linkedaccount = $this->Linkedaccount->find('first',array(
+            array('conditions' => array('Linkedaccount.id' => $id)), 
+           'fields' => $fields,
+            'recursive' => 1,
+        ));
+            
+        $linkedaccount['Linkedaccount'] = array_merge($linkedaccount['Linkedaccount'],$linkedaccount['Accountowner']);
+        unset($linkedaccount['Accountowner']);
+        
+        $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount['Linkedaccount']);
         $linkedaccount = json_encode($linkedaccount);
         $this->response->type('json');
         $this->response->body($linkedaccount);
