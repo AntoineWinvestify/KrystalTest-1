@@ -262,7 +262,7 @@ class AppModel extends Model {
      * @param  int   $limit  Limit table result   ---> 1,
      * @return array         data from the table
      */
-    public function getData($filter = null, $field = null, $order = null, $limit = null, $type = "all"){
+    public function getData($filter = null, $field = null, $order = null, $limit = null, $type = "all", $recursive = -1){
 
        
         $resultData = $this->find($type, array("recursive" => -1,
@@ -270,6 +270,7 @@ class AppModel extends Model {
             "fields" => $field,
             "order" => $order,
             "limit" => $limit,
+            "recursive" => $recursive,
         ));
 
         return $resultData;

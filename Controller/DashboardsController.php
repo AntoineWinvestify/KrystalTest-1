@@ -28,7 +28,7 @@ class DashboardsController extends AppController {
 
     var $name = 'Dashboards';
     var $helpers = array('Html', 'Form', 'Js', 'Text');
-    var $uses = array('Dashboard', 'Company', 'Linkedaccount', 'Tooltip');
+    var $uses = array('Dashboard', 'Company', 'Linkedaccount', 'Tooltip', 'Dashboardelay');
     protected $graphicsResults;         // contains the data of a graphic
     protected $investmentListsResult;   // contains the data of an investment list
 
@@ -109,6 +109,9 @@ class DashboardsController extends AppController {
         $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
         foreach ($dashboardConfigBlock as $blockKey => $dashboardConfig) {
             $data['data'][$blockKey]['display_name'] = $dashboardConfig['display_name'];
+            if (!empty($dashboardConfig['display_name1'])) {
+                $data['data'][$blockKey]['display_name1'] = $dashboardConfig['display_name1'];
+            }
             if (!empty($dashboardConfig['tooltip'])) {
                 $this->Tooltip = ClassRegistry::init('Tooltip');
                 $tooltips = $this->Tooltip->getTooltip(array($dashboardConfig['tooltip']), $this->language, $companyId);
@@ -125,16 +128,16 @@ class DashboardsController extends AppController {
                     $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
                 }
 
-                if($value['default_graph']){
-                     $data['data'][$blockKey][$key]['default_graph'] = true;
+                if ($value['default_graph']) {
+                    $data['data'][$blockKey][$key]['default_graph'] = true;
                 }
-                
+
                 //Search value
                 $model = $value['value']['model'];
                 $this->model = ClassRegistry::init($model);
                 if (!empty($value['value'])) {
                     $field = $value['value']['field'];
-                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, 'date DESC', null, 'first')[$model][$field];
+                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('linkedaccount_id' => $id), $field, $model . '.date DESC', null, 'first', 1)[$model][$field];
                     if ($value['value']['type'] == 'currency') {      //Search for the currency
                         $data['data'][$blockKey][$key]['value']['currency_code'] = $this->Linkedaccount->getCurrency($id);
                         $data['data'][$blockKey][$key]['value']['value'] = round($data['data'][$blockKey][$key]['value']['amount'], WIN_SHOW_DECIMAL);
@@ -162,6 +165,16 @@ class DashboardsController extends AppController {
                 }
             }
         }
+
+        $data['data']['payment_delay']['graph_data'] = array(
+            "url" => $this->generateLink("dashboards", "active_list", $id . "/lists/payment-delay-graph-data")['href'],
+            "default" => true,
+        );
+
+
+        $data['data']['links'][0] = $this->generateLink("dashboards", "active_list", $id . "/lists/active-investments-list");
+        $data['data']['links'][0]['defaulted'] = true;
+        $data['data']['links'][1] = $this->generateLink("dashboards", "defaulted_list", $id . "/lists/defaulted-investments-list");
         $resultJson = json_encode($data);
         $this->response->type('json');
         $this->response->body($resultJson);

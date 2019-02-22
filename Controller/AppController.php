@@ -764,11 +764,10 @@ class AppController extends Controller {
                 $link['method'] = 'DELETE';
                 break;
             case 'monitor':
-                $link['method'] = 'GET';
-                break;
             case 'self':
-                $link['method'] = 'GET';
             case 'list':
+            case 'defaulted_list':
+            case 'active_list':    
                 $link['method'] = 'GET';
                 break;
         }
