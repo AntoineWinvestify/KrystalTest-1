@@ -62,6 +62,8 @@ class Email extends AppModel
             ],
             'checkTelephoneNumber' => [
                 'rule' => 'checkTelephoneNumber',
+                'allowEmpty' => false,
+                'required'   => true,                
                 'message' => 'The telephone number can only contain numbers and the + sign',
             ]
         ],
@@ -88,7 +90,7 @@ class Email extends AppModel
             'complex_rule' => ['rule' => '/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/',
                 'allowEmpty' => false,
                 'required'   => true,
-                'message' => 'Email validation error'
+                'message' => '12Email validation error'
             ],
         ]
     ];   
@@ -190,7 +192,7 @@ class Email extends AppModel
                                         'model' => 'Email', 
                                         'modelData' => $this->data[$this->alias], 
                                         'userIdentification' => 0,
-                                        'isFinalEvent => true')
+                                        'isFinalEvent' => true)
                                   );
                     
            

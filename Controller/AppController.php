@@ -105,7 +105,7 @@ class AppController extends Controller {
                                                 // This is a list as received from the webclient
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
     protected $listOfWriteFields;               // the list of variables which will be written during a
-                                                // PUT or PATCH message
+                                                // PUT or PATCH message. Note this is NOT the contents of the fields
     protected $action;                          // The 'action' of a POST operation
     protected $investorId;                      // The investorId as obtained in the JWT
     protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
@@ -166,11 +166,7 @@ class AppController extends Controller {
      * 	callback.
      */
     public function beforeFilter() {
- 
-        if (Configure::read('debug')) {
-            $this->print_r2($this->request);
-        } 
-     
+
         $tokenRough = $this->request->header('Authorization');   
         $token1 = explode(" ", $tokenRough);
         ((!empty($token1[1])) ? $jwt = $token1[1] : $jwt = $token1[0]);
@@ -181,141 +177,13 @@ class AppController extends Controller {
             $this->roleName = $tokenObject->role;  
             $this->language = $tokenObject->language;
             $this->refreshToken = $tokenObject->refresh_token;
-            $this->accountDisplayName = $tokenObject->account_display_name; 
-//var_dump($tokenObject);            
+            $this->accountDisplayName = $tokenObject->account_display_name;           
         }
-  
-// Load the application configuration file. Now it is available to the *whole* application	 
-/*        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');
-        $runtime = new Winvestify();
-        $this->runTimeParameters = $runtime->readRunTimeParameters();
-        $this->set('runTimeParameters', $this->runTimeParameters);
+    }
 
-        $durationPublic = array(0 => "Undefined",
-            1 => "Días",
-            2 => "Meses",
-            3 => "Trimestre",
-            4 => "Horas",
-        );
-
-        // TRANSLATE CURRENCY NAME
-        $this->currencyName = array(EUR => "€",
-            GBP => "£",
-            USD => "$",
-            ARS => "$",
-            AUD => "$",
-            NZD => "$",
-            BYN => "BR",
-            BGN => "лв",
-            CZK => "Kč",
-            DKK => "Kr",
-            CHF => "Fr",
-            MXN => "$",
-            RUB => "₽",
-        );
-
-
-        //Investor Status to PFP Admin
-        $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
-
-        //Investor Ocr Status
-        $this->ocrStatus = array(1 => __("New"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
-
-        //Company ocr service status
-        $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
-
-
-        //Investment Status in marketplace
-        $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
-
-
-        $this->set('durationPublic', $durationPublic);
-        $this->durationPublic = $durationPublic;
-
-        $this->crowdlendingTypesLong = array(
-            P2P => __('P2P Crowdlending'),
-            P2B => __('P2B Crowdlending'),
-            INVOICE_TRADING => __('P2P Invoice Trading'),
-            CROWD_REAL_ESTATE => __('Crowd Real Estate'),
-            SOCIAL => __('Social')
-        );
-        $this->set('crowdlendingTypesLong', $this->crowdlendingTypesLong);
-
-
-        $this->crowdlendingTypesShort = array(
-            P2P => __('P2P'),
-            P2B => __('P2B'),
-            INVOICE_TRADING => __('I.T.'),
-            CROWD_REAL_ESTATE => __('R.E.'),
-            SOCIAL => __('SOCIAL')
-        );
-
-        $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
-
-        if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
-            $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
-            $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
-            $this->Cookie->write('p2pManager', array('language' => $ourLanguage[0]));
-        } else {
-            $ourLanguage[0] = $this->Cookie->read('p2pManager.language');
-        }
-        $this->Session->write('Config.language', $ourLanguage[0]);
-
-        $subjectContactForm = array('Choose one...',
-            'general' => __('General'),
-            'billing' => __('Billing Dept'),
-            'improvement' => __('Functional Improvement'),
-            'feature' => __('New Feature'),
-            'unsubscribe' => __('Unsubscribe Account'));
-        $this->set('subjectContactForm', $subjectContactForm);
-
-        //$this->documentTypes = array ('dni_front' => 1, 'dni_back' => 2, 'iban' => 3, 'cif' => 4);
-        //$this->set('documentTypes', $this->documentTypes);
-
-        $filterCompanies1 = array(__('Country filter'), 'Spain' => __('Spain'), 'Italy' => __('Italy'));
-        $filterCompanies2 = array(__('Type filter'), 'P2P (Peer-to-Peer)' => __('P2P (Peer-to-Peer)'));
-        $this->set('filterCompanies1', $filterCompanies1);
-        $this->set('filterCompanies2', $filterCompanies2);
-
-        //Use $this->params['controller'] to get the current controller.
-        //Use $this->action to verify the current controller/action
-        if ($this->Auth->user()) {
-
-            $action = $this->action;
-            $controller = $this->params['controller'];
-            //Here we verify if this user has authorization to acces the controller and the action
-            $resultAcl = $this->isAuthorized($controller, $action);
-            if (!$resultAcl) {
-                //In contructions, we use this now before we create a error page
-                throw new
-                FatalErrorException(__('You cannot access this page directly'));
-            }
-        } 
- 
-        if ($this->Auth->user()) {
-            $sectorExist = $this->Session->read('sectorsMenu');
-            if (empty($sectorExist)) {
-                $roleId = $this->Auth->User('role_id');
-                // $this->Role = ClassRegistry::init('Role');
-                //  $sectors = $this->Role->getSectorsByRole($roleId); 
-                $sectors = $this->getSectorsByRole($roleId);
-                $this->Session->write('sectorsMenu', $sectors);
-            }
-        }
-
-        switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
-            case WIN_LOCAL_TEST_ENVIRONMENT:
-            case WIN_REMOTE_TEST_ENVIRONMENT:
-     //           rename($fileName, $fileName1);
-            case WIN_LIVE_ENVIRONMENT:
-   //            rename ($fileName1, $fileName);       
-            default:
-        }  
-  */       
+    public function checkAcl() {
         $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message 
- 
+
     // Is the user authorized to access the requested resource?
         $inflectorInstance = new Inflector();
         $model = $inflectorInstance->singularize(ucfirst($this->request->params['controller']));
@@ -330,13 +198,14 @@ class AppController extends Controller {
             $methodAction = $this->request->params['[method]'];
         }
         
-        if ($this->checkAcl($model, $this->roleName, $methodAction) == false) { 
-           // throw new ForbiddenException('You are not allowed to access the requested resource'); 
-            echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>";             // remove this code in production
-            exit;                                                               // remove this code in production
-        }  
+        if ($this->checkAuthorization($model, $this->roleName, $methodAction) <> WIN_ACL_GRANT_ACCESS) { 
+            throw new ForbiddenException('You are not allowed to access the requested resource'); 
+        }     
+        if (Configure::read('debug')) {
+            var_dump($this->request);
+        }      
     }
-
+    
     /**
      *
      * 	Creates a new instance of class with name company, like zank, or comunitae....
@@ -720,20 +589,32 @@ class AppController extends Controller {
         if (!empty($andCondition)) {
             $this->filterConditionQueryParms['AND'] = $andCondition;
         }        
-   
+
         if (!empty($this->request['data'])) {
-                $newData = $this->request['data'];
+                $mainKeys = array_keys($this->request['data']);
+
+                if (is_array( $this->request['data'][($mainKeys[0])])) {
+                    $key = array_keys($this->request['data'][$mainKeys[0]]);
+                    $newData = $this->request->data[$mainKeys[0]];
+                }
+                else {
+                    $newData = $this->request['data'];
+                }
+
                 $this->AppModel->apiVariableNameInAdapter($newData);
                 $this->listOfWriteFields = array_keys($newData); 
+
+                var_dump($this->listOfWriteFields);
+                
         }
-        
+    
         if (Configure::read('debug')) {
                 if (!empty($this->listOfQueryParams)) {
                     echo "listOfQueryParams =\n<br>";
                     var_dump($this->listOfQueryParams);
                 }
                 if (!empty($this->listOfFields)) {
-                     echo "listOfFields = \n<br>";
+                    echo "listOfFields = \n<br>";
                     var_dump($this->listOfFields);
                 }
                 if (!empty($this->filterConditionQueryParms)) {
@@ -743,12 +624,12 @@ class AppController extends Controller {
                 if (!empty($this->listOfWriteFields)) {
                     echo "listOfWriteFields = \n<br>";
                     var_dump($this->listOfWriteFields);
-                }
+                }            
                 if (!empty($this->request->data)) {
                     echo "request->data = \n<br>";
                     var_dump($this->request->data);
                 }  
-        }        
+        }    
         return true;
     }
     
@@ -862,22 +743,20 @@ class AppController extends Controller {
      * 
      * @param string $model The name of the Model that the user likes to access
      * @param string $roleName The role of the user (investor, superAdmin, winAdmin,...)
-     * @param string $action The action/Method that is to be applied to the selected resource
+     * @param string $requestedAction The action/Method that is to be applied to the selected resource
      * @return boolean
      * @throws UnauthorizedException
      */  
-    public function checkAcl ($model, $roleName, $requestedAction){
+    public function checkAuthorization ($model, $roleName, $requestedAction) {
 //       http://compare_local.com/tests/check_ACL/Investor/investor/PATCH   
-       
+      
         $accessGranted = NO;                // 1 = yes 2 = no
         if (Configure::read('debug')) {       
             echo "Input parameters for Authorization check are:<br>";        
             echo "model = $model<br>"; 
             echo "roleName = $roleName<br>";
             echo "requestedAction = $requestedAction<br>";
-
             echo "accessGranted = $accessGranted  [1 = yes, 2 = no]<br>"; 
-            echo "<br><br>";  
             var_dump ($this->listOfFields);
         }
         $acl_tree_array = Configure::read('acl_tree_array');
@@ -900,37 +779,30 @@ class AppController extends Controller {
                             }
                         }
  
-     //                   echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
                         $status = call_user_func_array([__CLASS__, $actionName], $params);
                         switch ($status) {
                             case WIN_ACL_ANALYSIS_ERROR:
-       //                         echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                 break 2;
                             case WIN_ACL_ANALYSIS_CONTINUE:
-      //                          echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                 // don't do anything, just continue with analysis
                                 break;
                             case WIN_ACL_GRANT_ACCESS:
                                 $accessGranted = YES;
-     //                           echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                 break 2;
                         }
                     }    
                 } 
 
                 foreach ($level1_item['children'] as $level2_item) {
-      //              var_dump($level2_item['category_name']);
                     foreach ($level2_item['category_name'] as $roleNameList) {
       //                  echo "Role = " . $roleNameList . "<br>";
-      //                  echo __FUNCTION__ . " " . __LINE__ . " roleNameList = $roleNameList<br>";
                         if ($roleNameList == $roleName) {     // Role
        //                     echo "   ===> Found<br>";
                             if (!empty($level2_item['actions'])) {
-          //                      var_dump($level2_item['actions']);
+
 
                                 foreach ($level2_item['actions'] as $actionName => $params) {
                                     foreach ($params as $key => $param) {
-          //                              var_dump($param);
                                         if ($param[0] == "$") {
             //                                echo "key = $key<br>";
                                             eval ('$temp = ' . $param . ';'); 
@@ -943,32 +815,28 @@ class AppController extends Controller {
                                     $status = call_user_func_array([__CLASS__, $actionName], $params);
                                     switch ($status) {
                                         case WIN_ACL_ANALYSIS_ERROR:
-                       //                     echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                             break 4;
                                         case WIN_ACL_ANALYSIS_CONTINUE:
                                             // don't do anything, just continue with analysis
-                         //                   echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                             break;
                                         case WIN_ACL_GRANT_ACCESS:
                                             $accessGranted = YES;
-                         //                   echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                             break 4;
                                     }   
                                 }
-                                echo __FUNCTION__ . " " . __LINE__ . "<br>";
+ //                               echo __FUNCTION__ . " " . __LINE__ . "<br>";
                             }
 
 
                             foreach ($level2_item['children'] as $level3_item) {
                //                 var_dump($level3_item['category_name']);
                                     foreach ($level3_item['category_name'] as $requestActionList) { 
-                   //                 echo "Method = " . $requestActionList . "<br>";
-                    //                echo __FUNCTION__ . " " . __LINE__ . " requestActionList = $requestActionList<br>";
+             //                       echo "Method = " . $requestActionList . "<br>";
+               //                     echo __FUNCTION__ . " " . __LINE__ . " requestActionList = $requestActionList<br>";
                                     }   
                                     if ($requestActionList == $requestedAction) {            // Method/action
-                    //                    echo "   ====> Found<br>";                                                               
+                  //                      echo "   ====> Found<br>";                                                               
                                         if (!empty($level3_item['actions'])) {
-                       //                     var_dump($level3_item['actions']);
 
                                             foreach ($level3_item['actions'] as $actionName => $params) {
                                                 foreach ($params as $key => $param) {
@@ -979,48 +847,42 @@ class AppController extends Controller {
                                                     }
                                                 }
 
-                      //                          echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
+                   //                             echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
                                                 $status = call_user_func_array([__CLASS__, $actionName], $params);
                                                 switch ($status) {
                                                     case WIN_ACL_ANALYSIS_ERROR:
-                      //                                  echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                                         break 5;
                                                     case WIN_ACL_ANALYSIS_CONTINUE:
                                                         // don't do anything, just continue with analysis
-                       //                                 echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                                         break;
                                                     case WIN_ACL_GRANT_ACCESS:
                                                         $accessGranted = YES;
-                         //                               echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                                         break 5;
                                                 }
                                             }
                                         }                               
-                //                       echo __FUNCTION__ . " " . __LINE__ . "<br>";
                                         break 4;                                        // This is the normal end. 
                                     } 
-                //                echo __FUNCTION__ . " " . __LINE__ . "<br>";
                             }
-               //             echo __FUNCTION__ . " " . __LINE__ . "<br>";
                             break 3;
                         }
                     }
                 }
-           //     echo __FUNCTION__ . " " . __LINE__ . "<br>";
-                break ;                
+                break;                
             }
         }
+
         if ($accessGranted == NO) {
             if (Configure::read('debug')) {            
                 echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>"; 
-                return false;
-            }                                         
+            }          
+            return false;
         }
         else {
             if (Configure::read('debug')) {
-                echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";
-                return true;
-            }                                        
+                echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";  
+            }    
+            return true;
         }
     }    
     
@@ -1060,7 +922,7 @@ class AppController extends Controller {
     public function addInvestorToSearchCriteria($param) {
 //    echo __FUNCTION__ . " " . __LINE__ . "<br>";
     
-var_dump($this->filterConditionQueryParms);
+//var_dump($this->filterConditionQueryParms);
 
         foreach ($param as $key => $condition) {
             $isUpperCase = false;
@@ -1128,8 +990,8 @@ var_dump($this->filterConditionQueryParms);
      * @return int    (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_GRANT_ACCESS)
      */
     public function checkFields($property, $model, $roleName, $fields) {  
-//    echo __FUNCTION__ . " " . __LINE__ . "<br>";
-//    var_dump($fields);
+ //   echo __FUNCTION__ . " " . __LINE__ . "<br>";
+ //   var_dump($fields);
 
         // Special treatment for fields "id" and "xxx_links"
         $key = array_search("id", $fields);
@@ -1144,14 +1006,13 @@ var_dump($this->filterConditionQueryParms);
         
         $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');         
      
-        echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
+ //       echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
         $this->print_r2($fields); 
         $referenceRolePermissions = $acl_referenceVariablePermissions[$model][$roleName];
              
-        foreach ($fields as $item) {
-//echo __FILE__ . " " . __LINE__ . " item = $item<br>";            
+        foreach ($fields as $item) {          
             if (strpos ($referenceRolePermissions[$item], $property) === false) {
-     //           echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
+ //               echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
                 return WIN_ACL_ANALYSIS_ERROR;
             } 
         }
@@ -1172,15 +1033,11 @@ var_dump($this->filterConditionQueryParms);
      * @return int  (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function checkOwner($model, $investorId, $id) {
- //      echo __FUNCTION__ . " " . __LINE__ . " investorId_user = $investorId  and investorId_requestedresource = $id<br>";  
 
         $this->$model = ClassRegistry::init($model);
-        if (!$this->$model->isOwner($investorId, $id) ) {
-                       
-  //      echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>";            
+        if (!$this->$model->isOwner($investorId, $id) ) {                            
             return WIN_ACL_ANALYSIS_ERROR;
-        }
-//       echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE<br>";      
+        }     
         return WIN_ACL_ANALYSIS_CONTINUE; 
     }   
     
@@ -1193,14 +1050,12 @@ var_dump($this->filterConditionQueryParms);
      * @return int  (WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function setListOfFields($model, $roleName) {
- //       echo __FUNCTION__ . " " . __LINE__ . " Model = $model and rolename = $roleName <br>";  
 
         if (empty($this->listOfFields)) {
             $this->$model = ClassRegistry::init($model);
             $this->listOfFields = $this->$model->getDefaultFields($roleName);
         }
-   //     var_dump($this->listOfFields);       
-   //     echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE <br>"; 
+
         return WIN_ACL_ANALYSIS_CONTINUE;
     }
 

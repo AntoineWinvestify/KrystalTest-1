@@ -85,7 +85,7 @@ class EmailsController extends AppController
         $this->AppModel->apiVariableNameInAdapter($data);    
         $result = $this->Email->api_addEmail($data);
         
-        if (!($result)) {
+        if (empty($result)) {
             $validationErrors = $this->Email->validationErrors;              // Cannot retrieve all validation errors
             $this->Email->apiVariableNameOutAdapter($validationErrors);
 

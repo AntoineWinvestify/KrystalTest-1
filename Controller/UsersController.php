@@ -119,6 +119,7 @@ function changeDisplayLanguage() {
      * @throws UnauthorizedException Email or password is wrong
      */ 
     public function v1_login() {
+        $this->checkAcl();
         $this->request->data['User'] = $this->request->data; 
       
 	if ($this->request->is('post')) {    

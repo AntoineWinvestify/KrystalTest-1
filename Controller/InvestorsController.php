@@ -51,7 +51,9 @@ class InvestorsController extends AppController {
 
     
     function beforeFilter() {
+
         parent::beforeFilter();
+        $data = $this->request->data;
     }
 
    
@@ -427,42 +429,35 @@ function linkAccount() {
      * Example GET /api/1.0/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
      * 
      * @param -
-     * 
      */
     public function v1_index() {
- echo "AAAAAAAAAAAAAAAAAAAAA";
-
+        $this->checkAcl();
+/*        
         if (empty($this->listOfFields)) {
             $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
                                      'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                     'Investor.investor_address2',  'Investor.investor_address1',
+                                     'Investor.investor_address1',  'Investor.investor_address2',
                                      'Investor.investor_city',  'Investor.investor_telephone',
                                      'Investor.investor_postCode',  'Investor.investor_email',
                                      'Investor.investor_country', 'Investor.investor_language'
                                     ];
-        } 
-echo "bbbb";
+        }
+ */       
         foreach ($this->listOfFields as $field) {
-            
-$tempField = explode("_", $field);
-echo "field = $field<br>";
-$this->print_r2($tempField);
-$p = count($tempField);
-echo "p = $p<br>";
+            $tempField = explode("_", $field);
 
-            if (count($tempField) == 2)) {
-                echo "Added<br>2";
+            if (count($tempField) == 2) {
                 $this->listOfFields[] = "Check.check_" . $tempField[1]; 
             }  
         }  
-  var_dump($this->listOfFields);    
+        
         $this->Investor->contain('Investor', 'Check');
         $results = $this->Investor->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
                                                           'recursive' => 0]);
 
         $numberOfResults = count($results);    
-echo "ccc";
+
         $j = 0;
         foreach ($results as $resultItem) { 
             foreach ($resultItem['Investor'] as $key => $value) {
@@ -498,20 +493,9 @@ echo "ccc";
      * 
      */
     public function v1_view($id){
-        // somehow, $id is not loaded
-        if ($this->investorId <> $this->request->params['id']) {        
-            throw new UnauthorizedException('You are not authorized to access the requested resource');      
-        }
+        $this->checkAcl();
+
         $id = $this->request->params['id'];
-        if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI',  'Investor.investor_dateOfBirth', 
-                                     'Investor.investor_address1',  'Investor.investor_address1', 
-                                     'Investor.investor_city', 'Investor.investor_telephone',
-                                     'Investor.investor_postCode', 'Investor.investor_email',
-                                     'Investor.investor_country', 'Investor.investor_language'
-                                    ];
-        }
 
         foreach ($this->listOfFields as $field) {
             $tempField = explode("_", $field);
@@ -537,7 +521,7 @@ echo "ccc";
         $this->Investor->apiVariableNameOutAdapter($apiResult);
         $this->set(['data' => $apiResult,
                   '_serialize' => ['data']]
-                   );          
+                   );         
     }     
     
 
@@ -551,24 +535,18 @@ echo "ccc";
      * @param integer $id The database identifier of the requested 'Investor' object
      * 
      */
-    public function v1_edit($id) { 
-        // somehow, $id is not loaded
-        if ($this->investorId <> $this->request->params['id']) {        
-            throw new UnauthorizedException('You are not authorized to access the requested resource');      
-        }
-        
-        $data = $this->request->data;
-        
-        if (!empty($data)) {
-            $dataNew = $data['data'];
+    public function v1_edit() {
+        $this->checkAcl();
 
+        if (!empty($this->request->data)) {
+            $dataNew = $this->request->data['data'];
             $dataNew['id'] = $this->request->params['id']; 
 
             $this->Investor->apiVariableNameInAdapter($dataNew);
             $result = $this->Investor->save($dataNew, $validate = true);
         }
-        
-        if (!($result)) {
+
+        if (empty($result)) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
@@ -576,7 +554,7 @@ echo "ccc";
                                                         "It is not allowed to modify read-only fields", 
                                                         $validationErrors);
             $resultJson = json_encode($formattedError);
-            $this->response->statusCode(403);                                   // 403 Forbidden  
+            $this->response->statusCode(400);                                   // 400 Bad Request  
         }
         else {
             if (!empty($result['Investor']['requireNewAccessToken'])) {
@@ -593,7 +571,7 @@ echo "ccc";
         return $this->response;               
     }     
 
-    /** 
+    /*
      * Simple version is OK, ie. for defining *manually* new investors
      * This methods terminates the HTTP POST for defining a new investor.
      * Format POST /api/1.0/investors.json
@@ -615,7 +593,7 @@ echo "ccc";
         $this->AppModel->apiVariableNameInAdapter($newData);    
         $result = $this->Investor->api_addInvestor($newData);
         
-        if (!($result)) {
+        if (empty($result)) {
             $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
@@ -639,30 +617,31 @@ echo "ccc";
     
   
     /** 
-     * Simple version is OK, i.e. for deling *manually* an investor
+     * Simple version is OK, i.e. for deleting *manually* an investor
      * This methods terminates the HTTP POST for defining a new investor.
-     * Format DELETE /api/1.0/investors.[investorId].json
+     * Format DELETE /api/1.0/investors./{investorId}.json
      * Example DELETE /api/1.0/investors/23.json
      * 
      * @return boolean
      * @throws UnauthorizedException
      */
     public function v1_delete($id) { 
-
+/*
         if ($this->roleName <> "superAdmin") {        
             throw new UnauthorizedException('You are not authorized to access the requested resource');      
-        }         
+        }  
+ */       
         $id = $this->request->params['id'];
         $result = $this->Investor->api_deleteInvestor($id);
         
-        if (!($result)) {
+        if (empty($result)) {
             $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
 
             $formattedError = $this->createErrorFormat('CANNOT_DELETE_INVESTOR_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
-            $this->response->statusCode(500);                                    
+            $this->response->statusCode(400);                                    
         }
         else { // create the links
             $this->response->statusCode(200);

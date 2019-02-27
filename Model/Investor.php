@@ -256,7 +256,6 @@ class Investor extends AppModel {
                         'investor_city',
                         'investor_country', 
                         'investor_language',
-  //                      'investor_links'
                       ],
 
         'winAdmin' => ['id', 
@@ -274,7 +273,6 @@ class Investor extends AppModel {
                         'investor_country', 
                         'investor_language',
                         'investor_accredited',            
-    //                    'investor_links',
                         'modified',
                         'created'
             ],              
@@ -293,7 +291,6 @@ class Investor extends AppModel {
                         'investor_country', 
                         'investor_language',
                         'investor_accredited',
-     //                   'investor_links',
                         'modified',
                         'created'            
                       ],                
@@ -1113,12 +1110,12 @@ class Investor extends AppModel {
      * @return boolean  
      */
     public function isOwner($investorId, $id) {  
-        echo __CLASS__ . "::"  .__FUNCTION__ . " " . __LINE__ . "<br>";         
+  //      echo __CLASS__ . "::"  .__FUNCTION__ . " " . __LINE__ . "<br>";         
         if ($investorId == $id) {
-         echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning true<br>";            
+  //       echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning true<br>";            
             return true;
         }
-          echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning false <br>";       
+  //        echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning false <br>";       
         return false;
     }
     

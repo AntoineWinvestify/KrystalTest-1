@@ -135,7 +135,7 @@ class CompanysController extends AppController {
      * @return array $apiResult A list of elements of array "company"
      */
     public function v1_index(){       
-
+        $this->checkAcl();
         if (empty($this->listOfFields)) {
             $this->listOfFields = ['id', 'company_name','company_url', 
                                     'company_country', 'company_countryName', 
@@ -180,10 +180,10 @@ class CompanysController extends AppController {
      * @param int   $id The database identifier of the requested 'Company' resource
      * @return array $apiResult A list of field (variables) of array "company"
      */   
-   public function v1_view($id){
+   public function v1_view(){
 
         $id = $this->request->id;
-           
+ /*          
         if (empty($this->listOfFields)) {
             $this->listOfFields = ['company_name','company_url', 
                                     'company_country', 'company_countryName', 
@@ -191,7 +191,7 @@ class CompanysController extends AppController {
                                     'company_logoGUID'
                                   ]; 
         }  
-
+*/
         $apiResult = $this->Company->find('first', $params= ['conditions' => ['id' => $id],
                                                           'fields' => $this->listOfFields, 
                                                           'recursive' => -1

@@ -97,33 +97,10 @@ class Pollingresource extends AppModel
     }  
     
     
-    
     /**
-     * 	Rules are defined for what should happen before a database record is created or updated.
+     * Deletes a Pollingresources object.
      * 
-     * 	@param array $options
-     */ 
-    function beforeSavexx($options = array()) {
-       
-    }
-
-
-    /**
-     * 	Rules are defined for what should happen after a database record is created or updated.
-     * 
-     * 	@param boolean $created True if a new record was created (rather than an update).
-     *  @param array $options
-     */
-    function afterSavexx($created, $options = array()) {
-
-    }
-
-
-    
-    /**
-     * Deletes a Pollingresources object, i.e making it invisible 
-     * 
-     * @param int $id The identification of the object to delete
+     * @param int $id The internal identification of the object to delete
      * @return boolean
      */   
     public function api_deletePollingresource($id) {

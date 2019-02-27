@@ -44,14 +44,14 @@ App::uses('CakeEvent', 'Event');
 class Notification extends AppModel
 {
 	var $name= 'Notification';
-/*
-	var $hasOne = array(
-		'Company' => array(
-			'className' => 'Company',
-			'foreignKey' => 'marketplace_id',
+
+	var $belongsTo = array(
+		'Investor' => array(
+			'className' => 'Investor',
+			'foreignKey' => 'investor_id',
 		)
 	);
-*/
+
 
 
 
@@ -65,6 +65,42 @@ class Notification extends AppModel
     );
 
 
+
+    var $defaultFields = [ 
+        'investor' => ['id', 
+                        'notification_textShort', 
+                        'notification_textLong', 
+                        'notification_icon', 
+                        'notification_type', 
+                        'notification_status',
+                        'notification_url',
+                        'notification_links'
+                      ],
+        'winAdmin' => ['id', 
+                        'notification_textShort', 
+                        'notification_textLong', 
+                        'notification_icon', 
+                        'notification_type', 
+                        'notification_status',
+                        'notification_textId',
+                        'notification_url',
+                        'notification_links',
+                        'modified',
+                        'created'
+            ],              
+        'superAdmin' => ['id', 
+                        'notification_textShort', 
+                        'notification_textLong', 
+                        'notification_icon', 
+                        'notification_type', 
+                        'notification_status',
+                        'notification_textId',
+                        'notification_url',
+                        'notification_links',
+                        'modified',
+                        'created'            
+                      ],                
+    ];
 
 
 
@@ -82,7 +118,7 @@ class Notification extends AppModel
      *   @param string   $notificationDateTime   Date/time of publication of notification. If empty then 
      *                                              publication date/time is immediate   
      * 	@return boolean	true/false			
-    */
+     */
     public function addNotification($filterConditions, $text, $icon , $extendedInfo, $notificationDateTime) {
 
             if (empty($icon)) {
@@ -92,7 +128,7 @@ class Notification extends AppModel
                     $notificationDateTime = date("Y-m-d H:i:s", time());
             }
 
-            $data = array("investor_id"             => $filterConditions,
+            $data = array("investor_id"           => $filterConditions,
                         "notification_textShort"  => $text,
                         "notification_textLong"   => $extendedInfo,
                         "notification_icon"       => $icon,
@@ -111,21 +147,16 @@ class Notification extends AppModel
 
 
     /**
-     *not tested
-     *	Deletes a notification permanently from the notification stream, i.e. marks it as read
      *
-     *	@param 		array 	$filteringConditions. Must be sufficient to identify 1 unique record.
-     *				Example: array("id" => 12)
-     * 	@return 	boolean		true	notification *deleted*
-     * 					false	notification NOT deleted as filtering conditions did not
-     * 						identify a UNIQUE notification		
-    */
-    public function deleteNotification($filterConditions) {
-
-
-
-
-
+     *	Deletes a notification permanently from the notification stream, i.e. marks it as 'deleted'
+     *
+     *	@param int $id The internal reference of the Notification object to be checked
+     * 	@return boolean		
+     */
+    public function api_deleteNotification($id) {
+        $this->id = $id;
+        $this->saveField('notification_status', DELETED, $validate = true);
+        return true;
     }
 
 
@@ -137,13 +168,13 @@ class Notification extends AppModel
      *
      *	@param array $filterConditions
      *	@return	array $notifications 	List of notifications with slogan texts only
-    */
+     */
     public function getList($filterConditions) {
-            $result = $this->find("all", array('conditions' => $filterConditions, 
-                                               'recursive' => -1,
-                                               'fields'	=> array('id', 'notification_textShort', 'notification_icon')
-                                               ));
-            return $result;
+        $result = $this->find("all", array('conditions' => $filterConditions, 
+                                           'recursive'  => -1,
+                                           'fields'	=> array('id', 'notification_textShort', 'notification_icon')
+                                           ));
+        return $result;
     }
 
 
@@ -152,25 +183,91 @@ class Notification extends AppModel
 
     /**
      *	Read notification contents
-     *      A flag is set indicating that the contents has been read by user.
      *
      *	@param 		array 	$filteringConditions. 
      *	@return		array	$notification 	It is possible to return contents of 0 or 1 notification
      */
     public function readNotificationContents($filterConditions) {
 
-            $result = $this->find("first", array('conditions' => $filterConditions, 
-                                                 'recursive' => -1,	
-                                 ));
+        $result = $this->find("first", array('conditions' => $filterConditions, 
+                                             'recursive'  => -1,	
+                             ));
 
-            if (!empty($result)) {
-                $this->id = $result['Notification']['id'];
-                $this->saveField('notification_status', READ_BY_USER);			// mark as read
-            }
-            return $result;
+        if (!empty($result)) {
+            $this->id = $result['Notification']['id'];
+        }
+        return $result;
     }
 
 
+    /** 
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another webclient
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Notification object to be checked
+     * @return boolean   
+     */
+    public function isOwner($investorId, $id) {
+        
+        $filteringConditions = ['AND' => [
+                                            'id' => $id,
+                                            'investorId' => $investorId ],
+                                'OR' => [
+                                            ['notification_status' => READY_FOR_VISUALIZATION], 
+                                            ['notification_status' => READ_BY_USER]
+                                        ]
+            
+                               ];
+        
+        $result = $this->find("first", $params = ['conditions' => $filteringConditions,  
+                                                  'recursive' => -1]);
+        
+        if (!empty($result)) {
+            return true;
+        }
+        return false;
+    }
 
+   
+    /** 
+     * Mark the notification as "READ_BY_USER"
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Notification object to be checked
+     * @return boolean   
+     */
+    public function api_NotificationRead($id) {
+        $this->id = $id;
+        $this->saveField('notification_status', READ_BY_USER, $validate = true);
+        return true;
+    }
 
+    
+    /** 
+     * Get the "latest" modifications to the list of active Notifications of the
+     * user (=investor).
+     * The 
+     * @param int $investorId The internal reference of the owner of the Notification
+     * @param int $id The internal reference of the first New Notification to return
+     * @return array $result One or more results
+     * 
+     */
+    public function api_getLatestModifications($investorId, $id) {
+
+        $filterConditions = ['id >=' => $id,
+                             'investor_id' => $investorId];
+        
+        $result = $this->find("all", array('conditions' => $filterConditions, 
+                                           'recursive'  => -1,
+                                           'fields'	=> array('id', 'notification_textShort')
+                                           ));
+        return $result;
+    }    
+    
+    
+
+    
 }

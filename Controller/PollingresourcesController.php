@@ -51,19 +51,18 @@ class PollingresourcesController extends AppController
      * @param int   $id The database identifier of the requested 'Pollingresource' resource
      * @return array $apiResult A list of field (variables) of array "pollingresource"
      * @throws NotFoundException
-     * @throws UnauthorizedException
      */
-    function v1_view($id)  {
+    function v1_view()  {
 
         $idField = true;
         $id = $this->request->id;
-                
+ /*               
         if (empty($this->listOfFields)) {
             $this->listOfFields = ['id', 'pollingresource_type','pollingresource_interval', 
                                     'pollingresource_newValueExists', 'pollingresource_userIdentification'
                                   ]; 
         }  
-
+*/
         $key = in_array('pollingresource_userIdentification', $this->listOfFields);
         if (!$key) {
             array_push($this->listOfFields, 'pollingresource_userIdentification');
@@ -78,11 +77,11 @@ class PollingresourcesController extends AppController
         if (empty($apiResult)) {
             throw new NotFoundException();
         }
-        
+/*        
         if ($this->investorId <> $apiResult['Pollingresource']['pollingresource_userIdentification']) {
             throw new UnauthorizedException('You are not authorized to access the requested resource');      
         } 
-        
+ */       
 
         if ($idField == false) {
             unset($apiResult['Pollingresource'][['pollingresource_userIdentification']]);
@@ -112,14 +111,14 @@ class PollingresourcesController extends AppController
     
         $linksField = false;
         $idField = true;
-        if (empty($this->listOfFields)) {
+  /*      if (empty($this->listOfFields)) {
             $this->listOfFields = ['pollingresource_type', 'pollingresource_interval', 
                                     'pollingresource_newValueExists', 'pollingresource_resourceId',
                                     'pollingresource_links',
                                   ]; 
-        }
+        }*/
         if (in_array('pollingresource_links',$this->listOfFields)) {
-            $key = array_search('pollingresource_links',$this->listOfFields); 
+            $key = array_search('pollingresource_links', $this->listOfFields); 
             unset ($this->listOfFields[$key]);
             $linksField = true;
         }
@@ -129,7 +128,7 @@ class PollingresourcesController extends AppController
             array_push($this->listOfFields, 'id');
             $idField = false;
         }
-
+/*
         // Add condition of pollingresources_status = ACTIVE if not present, and get only resources belonging to user
         if (!empty($this->listOfQueryParams)) {
             if (array_key_exists('AND', $this->listOfQueryParams)) {
@@ -157,7 +156,7 @@ class PollingresourcesController extends AppController
             $this->listOfQueryParams['pollingresource_status'] = ACTIVE; 
             $this->listOfQueryParams['pollingresource_interval > '] = 0;            
         }
-   
+ */  
         $results = $this->Pollingresource->find("all", $params = ['conditions' => $this->listOfQueryParams,
                                                           'fields' => $this->listOfFields,
                                                           'recursive' => -1]);
@@ -238,7 +237,7 @@ class PollingresourcesController extends AppController
             $formattedError = $this->createErrorFormat('CANNOT_CREATE_POLLINGRESOURCE_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
-            $this->response->statusCode(500);                                    
+            $this->response->statusCode(400);                                    
         }
         else { // create the links
             $account['feedback_message_user'] = 'Account successfully created.';

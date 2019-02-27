@@ -101,6 +101,103 @@ class Company extends AppModel {
             'message' => 'Select one country.'
         ),
     );
+    
+    
+    
+    
+     var $defaultFields = [ 
+        'investor' => ['id', 
+                        'company_name',
+                        'company_logoGUID',
+                        'company_url',
+                        'company_country',
+                        'company_countryName',
+                        'company_privacyUrl',
+                        'company_termsUrl',
+                      ],
+        'winAdmin' => ['id', 
+                        'company_name',
+                        'company_logoGUID',
+                        'company_logoFiletype',
+                        'company_url',
+                        'company_country',
+                        'company_countryName',
+                        'company_lastAccessMarketplace',
+                        'company_isActiveInMarketplace',
+                        'company_showInGlobalMarketplace',
+                        'company_state',
+                        'company_featureList',
+                        'company_reference',
+                        'company_privacyUrl',
+                        'company_termsUrl',
+                        'company_PFPType',
+                        'company_hasMultiplePages',
+                        'created',
+                        'modified'
+            ],              
+        'superAdmin' => ['id', 
+                        'company_name',
+                        'company_logoGUID',
+                        'company_logoFiletype',
+                        'company_url',
+                        'company_country',
+                        'company_countryName',
+                        'company_codeFile',
+                        'company_username',
+                        'company_password',
+                        'company_lastAccessMarketplace',
+                        'company_isActiveInMarketplace',
+                        'company_showInGlobalMarketplace',
+                        'company_state',
+                        'company_featureList',
+                        'company_reference',
+                        'company_technicalFeatures',
+                        'company_privacyUrl',
+                        'company_termsUrl',
+                        'company_PFPType',
+                        'company_hasMultiplePages',
+                        'company_typeAccessAmortization',
+                        'company_typeAccessTransaction',
+                        'company_typeAccessPreprocess',
+                        'created',
+                        'modified'          
+                      ],                
+    ];   
+    
+    /*
+    SELECT id',
+    'company_name',
+    'company_logoGUID',
+    'company_logoFiletype',
+    'company_url',
+    'company_country',
+    'company_countryName',
+    'company_codeFile',
+    'company_username',
+    'company_password',
+    'company_lastAccessMarketplace',
+    'company_isActiveInMarketplace',
+    'company_showInGlobalMarketplace',
+    'company_state',
+    'company_featureList',
+    'company_reference',
+    'company_technicalFeatures',
+    'company_privacyUrl',
+    'company_termsUrl',
+    'company_PFPType',
+    'company_hasMultiplePages',
+    'company_typeAccessAmortization',
+    'company_typeAccessTransaction',
+    'company_typeAccessPreprocess',
+    'created',
+    'modified'
+
+
+   */ 
+    
+    
+    
+    
 
     /** STILL TO BE DONE
      *

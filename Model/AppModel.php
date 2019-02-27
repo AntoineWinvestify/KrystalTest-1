@@ -78,7 +78,10 @@ class AppModel extends Model {
                                 'requireNewAccessToken'=> 'require_new_access_token',
                                 'pollingresource_newValueExists' => 'pollingresource_new_value_exists',
                                 'pollingresource_userIdentification' => 'pollingresource_investor_id',
-                                'pollingresource_resourceId' => 'pollingresource_resource_id',
+                                'pollingresource_resourceId' => 'pollingresource_resource_id',     
+                                'notification_textShort' => 'notification_text_short',
+                                'notification_textLong' => 'notification_text_long',
+                                'notification_textId'=> 'notification_text_id',  
                               ];
 
     /**
