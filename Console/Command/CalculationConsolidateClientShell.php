@@ -45,7 +45,7 @@ App::import('Shell', 'UserData');
 class CalculationConsolidateClientShell extends GearmanClientShell {
 
     public $uses = array('Queue2', 'Investment', 'Investmentslice', 'Amortizationtable',
-        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable', 'Userinvestmentdata', 'Dashboardelay');
+        'GlobalamortizationtablesInvestmentslice', 'Globalamortizationtable', 'Userinvestmentdata', 'Dashboarddelay');
     public $today;
 
 // Only used for defining a stable testbed definition
@@ -430,22 +430,22 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
             $userinvestmenrdataId = $this->Userinvestmentdata->getData(array('linkedaccount_id' => $linkedaccount), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
 
-            $this->Dashboardelay->create();
-            $this->Dashboardelay->save(array(
-                'dashboardelay_delay_1-7_outstanding' => $range['1-7'],
-                'dashboardelay_delay_8-30_outstanding' => $range['8-30'],
-                'dashboardelay_delay_31-60_outstanding' => $range['31-60'],
-                'dashboardelay_delay_61-90_outstanding' => $range['61-90'],
-                'dashboardelay_delay_>90_outstanding' => $range['+90'],
-                'dashboardelay_outstandingDebs' => $range['outstandingDebt'],
-                'dashboardelay_current_outstanding' => $range['current'],
-                'dashboardelay_delay_1-7_active' => $range2['1-7'],
-                'dashboardelay_delay_8-30_active' => $range2['8-30'],
-                'dashboardelay_delay_31-60_active' => $range2['31-60'],
-                'dashboardelay_delay_61-90_active' => $range2['61-90'],
-                'dashboardelay_delay_>90_active' => $range2['+90'],
-                'dashboardelay_activeDebs' => $range2['+90Number'],
-                'dashboardelay_current_active' => $range2['current'],
+            $this->Dashboarddelay->create();
+            $this->Dashboarddelay->save(array(
+                'dashboarddelay_delay_1-7Outstanding' => $range['1-7'],
+                'dashboarddelay_delay_8-30Outstanding' => $range['8-30'],
+                'dashboarddelay_delay_31-60Outstanding' => $range['31-60'],
+                'dashboarddelay_delay_61-90Outstanding' => $range['61-90'],
+                'dashboarddelay_delay_>90Outstanding' => $range['+90'],
+                'dashboarddelay_outstandingDebts' => $range['outstandingDebt'],
+                'dashboarddelay_currentOutstanding' => $range['current'],
+                'dashboarddelay_delay1-7Active' => $range2['1-7'],
+                'dashboarddelay_delay8-30Active' => $range2['8-30'],
+                'dashboarddelay_delay31-60Active' => $range2['31-60'],
+                'dashboarddelay_delay61-90Active' => $range2['61-90'],
+                'dashboarddelay_delay>90Active' => $range2['+90'],
+                'dashboarddelay_activeDebts' => $range2['+90Number'],
+                'dashboarddelay_currentActive' => $range2['current'],
                 'userinvestmentdata_id' => $userinvestmenrdataId
             ));
         }

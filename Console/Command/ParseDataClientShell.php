@@ -408,8 +408,8 @@ class ParseDataClientShell extends GearmanClientShell {
                 echo " Memory usage at start of $dateKey " . memory_get_usage() . " *-*-*-*-*-*-*-*\n";
 
 
-                // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
-                if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
+                // Copy the last userinvestmentdata for any missing dates in the transaction records sequence for all actionOrigin
+                if (!empty($oldDateKey)) {
                     $date1 = new DateTime($oldDateKey);
                     $date1->modify('+1 day');
                     $actualDate = $date1->format('Y-m-d');

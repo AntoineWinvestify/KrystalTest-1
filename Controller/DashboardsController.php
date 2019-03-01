@@ -28,7 +28,7 @@ class DashboardsController extends AppController {
 
     var $name = 'Dashboards';
     var $helpers = array('Html', 'Form', 'Js', 'Text');
-    var $uses = array('Dashboard', 'Company', 'Linkedaccount', 'Tooltip', 'Dashboardelay');
+    var $uses = array('Dashboard', 'Company', 'Linkedaccount', 'Tooltip', 'Dashboarddelay');
     protected $graphicsResults;         // contains the data of a graphic
     protected $investmentListsResult;   // contains the data of an investment list
 
@@ -104,6 +104,9 @@ class DashboardsController extends AppController {
     public function v1_view() {
 
         Configure::load('dashboardConfig.php', 'default');
+        $this->Tooltip = ClassRegistry::init('Tooltip');
+        $this->Tooltip = ClassRegistry::init('Tooltip');
+
         $dashboardConfigBlock = Configure::read('DashboardMainData');
         $id = $this->request->id;
         $companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);
@@ -123,7 +126,6 @@ class DashboardsController extends AppController {
 
                 //Search tooltip if the field has one
                 if (!empty($value['tooltip'])) {
-                    $this->Tooltip = ClassRegistry::init('Tooltip');
                     $tooltips = $this->Tooltip->getTooltip(array($value['tooltip']), $this->language, $companyId);
                     $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
                 }
@@ -175,7 +177,7 @@ class DashboardsController extends AppController {
         }
 
         $data['data']['payment_delay']['graph_data'] = array(
-            "url" => $this->generateLink("dashboards", "active_list", $id . "/lists/payment-delay-graph-data")['href'],
+            "url" => $this->generateLink("dashboards", "list", $id . "/graphs/payment-delay-graph-data")['href'],
             "default" => true,
         );
 

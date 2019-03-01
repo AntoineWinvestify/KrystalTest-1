@@ -56,62 +56,62 @@ $config['Dashboard'] = array(
         "active-investments-graph-data" => array(
             array("Userinvestmentdata" => "readActiveInvestmentsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Active Investment", "xAxis" => "", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Active Investment", "xAxis" => "", "normalize" => "{n}.Userinvestmentdata")
         ),
         "net-deposits-graph-data" => array(
             array("Userinvestmentdata" => "readNetDepositsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Net Deposits", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Net Deposits", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "cash-drag-graph-data" => array(
             array("Userinvestmentdata" => "readCashDragGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Cash Drag", "xAxis" => "%", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Cash Drag", "xAxis" => "%", "normalize" => "{n}.Userinvestmentdata")
         ),
         "invested-assets-graph-data" => array(
             array("Userinvestmentdata" => "readInvestedAssetsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Invested Assets", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Invested Assets", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "reserved-funds-graph-data" => array(
             array("Userinvestmentdata" => "readReservedFundsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Reserved Funds", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Reserved Funds", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "cash-graph-data" => array(
             array("Userinvestmentdata" => "readCashGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Cash", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Cash", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "nar-last-365-days-graph-data" => array(
             array("Userinvestmentdata" => "readNarLast365daysMultiGraphData"),
             array("dashboardFormatter" => "genericMultiGraphFormatter"),
-            array("displayName" => "NAR Last 365 Days", "xAxis" => "%", "normalice" => "{n}.Userinvestmentdata"),
+            array("displayName" => "NAR Last 365 Days", "xAxis" => "%", "normalize" => array( "Dashboard" => "{n}.Userinvestmentdata", "GlobalDashboard" => "{n}.Dashboardoverviewdata")),
         ),
         "nar-past-year-graph-data" => array(
             array("Userinvestmentdata" => "readNarPastYearGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "NAR Past Year", "xAxis" => "%", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "NAR Past Year", "xAxis" => "%", "normalize" => "{n}.Userinvestmentdata")
         ),
         "nar-total-funds-graph-data" => array(
             array("Userinvestmentdata" => "readNarTotalFundsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "NAR Total Funds", "xAxis" => "%", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "NAR Total Funds", "xAxis" => "%", "normalize" => "{n}.Userinvestmentdata")
         ),
         "net-earnings-last-365-days-graph-data" => array(
             array("Userinvestmentdata" => "readNetEarningsLast365daysGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Net Earnings Last 365 Days", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Net Earnings Last 365 Days", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "net-earnings-past-year-graph-data" => array(
             array("Userinvestmentdata" => "readNetEarningsPastYearGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Net Earnings Past Year", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Net Earnings Past Year", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "net-earnings-total-graph-data" => array(
             array("Userinvestmentdata" => "readNetEarningsTotalGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Net Earnings Total", "xAxis" => "currency", "normalice" => "{n}.Userinvestmentdata")
+            array("displayName" => "Net Earnings Total", "xAxis" => "currency", "normalize" => "{n}.Userinvestmentdata")
         ),
         "current-graph-data" => array(
             array("Userinvestmentdata" => "readCurrentTotalGraphData"),
@@ -151,67 +151,68 @@ $config['Globaldashboard'] = array(
         "active-investments-graph-data" => array(
             array("Globaldashboard" => "readActiveInvestmentsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Active Investment", "xAxis" => "", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Active Investment", "xAxis" => "", "normalize" => "{n}.Globaldashboard")
         ),
         "net-deposits-graph-data" => array(
             array("Globaldashboard" => "readNetDepositsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Net Deposits", "xAxis" => "currency", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Net Deposits", "xAxis" => "currency", "normalize" => "{n}.Globaldashboard")
         ),
         "cash-drag-graph-data" => array(
             array("Globaldashboard" => "readCashDragGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Cash Drag", "xAxis" => "%", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Cash Drag", "xAxis" => "%", "normalize" => "{n}.Globaldashboard")
         ),
         "invested-assets-graph-data" => array(
             array("Globaldashboard" => "readInvestedAssetsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Invested Assets", "xAxis" => "currency", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Invested Assets", "xAxis" => "currency", "normalize" => "{n}.Globaldashboard")
         ),
         "reserved-funds-graph-data" => array(
             array("Globaldashboard" => "readReservedFundsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Reserved Funds", "xAxis" => "currency", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Reserved Funds", "xAxis" => "currency", "normalize" => "{n}.Globaldashboard")
         ),
         "cash-graph-data" => array(
             array("Globaldashboard" => "readCashGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Cash", "xAxis" => "currency", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Cash", "xAxis" => "currency", "normalize" => "{n}.Globaldashboard")
         ),
         "nar-last-365-days-graph-data" => array(
             array("Globaldashboard" => "readNarLast365daysGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Last 365 Days", "xAxis" => "%", "normalice" => "{n}.Dashboardoverviewdata"),
+            array("displayName" => "Last 365 Days", "xAxis" => "%", "normalize" => "{n}.Dashboardoverviewdata"),
         ),
         "nar-past-year-graph-data" => array(
             array("Globaldashboard" => "readNarPastYearGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Past Year", "xAxis" => "%", "normalice" => "{n}.Dashboardoverviewdata")
+            array("displayName" => "Past Year", "xAxis" => "%", "normalize" => "{n}.Dashboardoverviewdata")
         ),
         "nar-total-funds-graph-data" => array(
             array("Globaldashboard" => "readNarTotalFundsGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Total Funds", "xAxis" => "%", "normalice" => "{n}.Dashboardoverviewdata")
+            array("displayName" => "Total Funds", "xAxis" => "%", "normalize" => "{n}.Dashboardoverviewdata")
         ),
         "net-earnings-last-365-days-graph-data" => array(
             array("Globaldashboard" => "readNetEarningsLast365daysGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Last 365 Days", "xAxis" => "currency", "normalice" => "{n}.Dashboardoverviewdata")
+            array("displayName" => "Last 365 Days", "xAxis" => "currency", "normalize" => "{n}.Dashboardoverviewdata")
         ),
         "net-earnings-past-year-graph-data" => array(
             array("Globaldashboard" => "readNetEarningsPastYearGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Past Year", "xAxis" => "currency", "normalice" => "{n}.Dashboardoverviewdata")
+            array("displayName" => "Past Year", "xAxis" => "currency", "normalize" => "{n}.Dashboardoverviewdata")
         ),
         "net-earnings-total-graph-data" => array(
             array("Globaldashboard" => "readNetEarningsTotalGraphData"),
             array("dashboardFormatter" => "genericGraphFormatter"),
-            array("displayName" => "Total", "xAxis" => "currency", "normalice" => "{n}.Dashboardoverviewdata")
-        ), /* "current-graph-data" => array(
+            array("displayName" => "Total", "xAxis" => "currency", "normalize" => "{n}.Dashboardoverviewdata")
+        ),
+        "current-graph-data" => array(
           array("Globaldashboard" => "readCurrentTotalGraphData"),
           array("dashboardFormatter" => "gaugeGraphFormatter"),
           array("displayName" => "Daily Current", "maxValue" => "100")
-          ), */
+          ),
         /* "exposure-graph-data" => array(  //Not in global?
           array("Globaldashboard" => "readExposureTotalGraphData"),
           array("dashboardFormatter" => "gaugeGraphFormatter"),
@@ -220,7 +221,7 @@ $config['Globaldashboard'] = array(
         "payment-delay-graph-data" => array(
             array("Globaldashboard" => "readPaymentDelayGraphData"),
             array("dashboardFormatter" => "paymentDelayGraphFormatter"),
-            array("displayName" => "Payment Delay", "normalice" => "{n}.Globaldashboard")
+            array("displayName" => "Payment Delay", "normalize" => "{n}.Globaldashboard")
         ),
     ),
     "lists" => array(
@@ -364,7 +365,7 @@ $config['DashboardMainData'] = array(
             ),
         ),
     ),
-    "statementOfFunds" => array(
+    "statement_of_funds" => array(
         "display_name" => "Statement of Funds",
         "tooltip" => DASHBOARD_STATEMENT_OF_FUNDS,
         "data" => array(
@@ -412,7 +413,7 @@ $config['DashboardMainData'] = array(
             ),
         ),
     ),
-    "netEarnings" => array(
+    "net_earnings" => array(
         "display_name" => "Net Earnings",
         "tooltip" => DASHBOARD_NET_EARNINGS,
         "data" => array(
@@ -462,8 +463,8 @@ $config['DashboardMainData'] = array(
                 "display_name" => "Outstanding Debt",
                 "value" => array(
                     "model" => "Userinvestmentdata",
-                    "recursive" => "Dashboardelay",
-                    "field" => "dashboardelay_outstandingDebs",
+                    "recursive" => "Dashboarddelay",
+                    "field" => "dashboarddelay_outstandingDebts",
                     "type" => "currency"
                 ),
             ),
@@ -492,6 +493,54 @@ $config['DashboardMainData'] = array(
 );
 
 $config['globalDashboardMainData'] = array(
+        "investment_indicators" => array(
+        "display_name" => "Investment Indicators",
+        "tooltip" => GLOBALDASHBOARD_INVESTMENT_INDICATORS,
+        "data" => array(
+            "active_investments" => array(
+                "display_name" => "Active Investments",
+                "tooltip" => GLOBALDASHBOARD_ACTIVE_INVESTMENTS,
+                "icon" => "icon-win-airplay",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_numberActiveInvestments",
+                //"type" => "currency" or "percent"
+                ),
+                "graphLinksParams" => array(
+                    array("link" => "graphics/active-investments-graph-data/?period=year", "displayName" => "Year"),
+                    array("link" => "graphics/active-investments-graph-data/?period=all", "displayName" => "All")
+                )
+            ),
+            "net_deposits" => array(
+                "display_name" => "Net Deposits",
+                "tooltip" => GLOBALDASHBOARD_NET_DEPOSITS,
+                "icon" => "icon-win-airplay",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_totalNetDeposits",
+                    "type" => "currency"
+                ),
+                "graphLinksParams" => array(
+                    array("link" => "graphics/net-deposits-graph-data/?period=year", "displayName" => "Year"),
+                    array("link" => "graphics/net-deposits-graph-data/?period=all", "displayName" => "All")
+                )
+            ),
+            "cash_drag" => array(
+                "display_name" => "Cash Drag",
+                "tooltip" => GLOBALDASHBOARD_CASH_DRAG,
+                "icon" => "icon-win-airplay",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_cashDrag",
+                    "type" => "percent"
+                ),
+                "graphLinksParams" => array(
+                    array("link" => "graphics/cash-drag-graph-data/?period=year", "displayName" => "Year"),
+                    array("link" => "graphics/cash-drag-graph-data/?period=all", "displayName" => "All")
+                )
+            ),
+        ),
+    ),
     "nar" => array(
         "display_name" => "Net Annual Returns",
         "tooltip" => GLOBALDASHBOARD_NET_ANNUAL_RETURNS,
@@ -541,7 +590,55 @@ $config['globalDashboardMainData'] = array(
             ),
         ),
     ),
-    "netEarnings" => array(
+    "statement_of_funds" => array(
+        "display_name" => "Statement of Funds",
+        "tooltip" => GLOBALDASHBOARD_STATEMENT_OF_FUNDS,
+        "data" => array(
+            "invested_assets" => array(
+                "display_name" => "Invested Assets",
+                "tooltip" => GLOBALDASHBOARD_INVESTED_ASSETS,
+                "icon" => "icon-win-airplay",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_outstandingPrincipal",
+                    "type" => "currency"
+                ),
+                "graphLinksParams" => array(
+                    array("link" => "graphics/invested-assets-graph-data/?period=year", "displayName" => "Year"),
+                    array("link" => "graphics/invested-assets-graph-data/?period=all", "displayName" => "All")
+                )
+            ),
+            "reserved_funds" => array(
+                "display_name" => "Reserved Funds",
+                "tooltip" => GLOBALDASHBOARD_RESERVED_FUNDS,
+                "icon" => "icon-win-airplay",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_reservedAssets",
+                    "type" => "currency"
+                ),
+                "graphLinksParams" => array(
+                    array("link" => "graphics/reserved-funds-graph-data/?period=year", "displayName" => "Year"),
+                    array("link" => "graphics/reserved-funds-graph-data/?period=all", "displayName" => "All")
+                )
+            ),
+            "cash" => array(
+                "display_name" => "Cash",
+                "tooltip" => GLOBALDASHBOARD_CASH,
+                "icon" => "icon-win-airplay",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_cashInPlatform",
+                    "type" => "currency"
+                ),
+                "graphLinksParams" => array(
+                    array("link" => "graphics/cash-graph-data/?period=year", "displayName" => "Year"),
+                    array("link" => "graphics/cash-graph-data/?period=all", "displayName" => "All")
+                )
+            ),
+        ),
+    ),
+    "net_earnings" => array(
         "display_name" => "Net Earnings",
         "tooltip" => GLOBALDASHBOARD_NET_EARNINGS,
         "data" => array(
@@ -589,5 +686,48 @@ $config['globalDashboardMainData'] = array(
           )
           ), */
         ),
+    ),
+    "payment_delay" => array(
+        "display_name" => "Payment Delay",
+        "display_name1" => "More than 90 days",
+        "tooltip" => GLOBALDASHBOARD_PAYMENT_DELAY,
+        "data" => array(
+            /* "delinquency_rate" => array(
+              "display_name" => "Delinquency Rate",
+              "tooltip" => DASHBOARD_DEL,
+              "graphLinksParams" => array(
+              array("link" => "graphics/current-graph-data"),
+              )
+              ) */
+            "outstanding_debt" => array(
+                "display_name" => "Outstanding Debt",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "recursive" => "Globaldashboarddelay",
+                    "field" => "globaldashboarddelay_outstandingDebts",
+                    "type" => "currency"
+                ),
+            ),
+            "written_off" => array(
+                "display_name" => "Written Off",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "field" => "globaldashboard_writtenOff",
+                    "type" => "currency"
+                ),
+            ),
+        )
+    ),
+    "current" => array(
+        "display_name" => "Current",
+        "data" => array(
+            "current_situation" => array(
+                "display_name" => "Current",
+                "tooltip" => GLOBALDASHBOARD_CURRENT,
+                "graphLinksParams" => array(
+                    array("link" => "graphics/current-graph-data"),
+                )
+            )
+        )
     ),
 );

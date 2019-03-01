@@ -497,7 +497,7 @@ class Linkedaccount extends AppModel {
 
         $this->Company = ClassRegistry::init('Company');
         $multiAccount = $this->Company->getData(array('id' => $companyId), array('company_technicalFeatures', 'company_codeFile'));
-        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in technical freatures
+        $bitIsSet = $multiAccount[0]['Company']['company_technicalFeatures'] & WIN_MULTI_ACCOUNT_FEATURE;                           //Check if multiaccount bit is set in technical features
 
         if ($bitIsSet == WIN_MULTI_ACCOUNT_FEATURE) {
             $multiAccountCheck = true;
@@ -669,14 +669,19 @@ class Linkedaccount extends AppModel {
      */
     public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {
         $accountOwnerId = $this->Accountowner->checkAccountOwner($investorId, $companyId, $username, $password);         //Search for an account owner with same credentials and company
-        if (!empty($accountOwnerId)) {
+
+        if (!empty($accountOwnerId) && !empty($investorId) && !empty($companyId) && !empty($username) && !empty($password) && !empty($identity) && !empty($displayName)) {
             //Not new Accountowner
             return $this->addLinkedaccount($accountOwnerId['Accountowner']['id'], $identity, $displayName, $currency);
         }
-        else {
+        else if(!empty($investorId) && !empty($companyId) && !empty($username) && !empty($password) && !empty($identity) && !empty($displayName)){
             //New Accountowner
             $newAccountOwnerId = $this->Accountowner->createAccountOwner($investorId, $companyId, $username, $password);
             return $this->addLinkedaccount($newAccountOwnerId, $identity, $displayName, $currency);
+        }
+        else{
+            $result['code'] = 400;
+            return $result;
         }
     }
 

@@ -36,7 +36,7 @@ class dashboardFormatter {
      * @return array
      */
     function genericGraphFormatter($data, $dummy, $graphInfo) {
-        $resultNormalized = Hash::extract($data, $graphInfo['normalice']);
+        $resultNormalized = Hash::extract($data, $graphInfo['normalize']);
         if ($graphInfo['xAxis'] === '%') {
             foreach ($resultNormalized as $key => $data) {
                 $resultNormalized[$key]['value'] = round($resultNormalized[$key]['value'] * 100, WIN_SHOW_DECIMAL);
@@ -67,8 +67,22 @@ class dashboardFormatter {
      * @return array
      */
     function genericMultiGraphFormatter($data, $dummy, $graphInfo) {
-        $resultNormalized['Dashboard'] = Hash::extract($data['Dashboard'], $graphInfo['normalice']);
-        $resultNormalized['GlobalDashboard'] = Hash::extract($data['GlobalDashboard'], '{n}.Dashboardoverviewdata');
+
+        foreach ($data as $key => $value) {
+            foreach ($value as $key2 => $value2) {
+                foreach ($value2 as $key3 => $value3) {
+                    foreach ($value3 as $key4 => $value4) {
+                        if ($key4 == 'value') {
+                            $fieldValue = round(bcmul($data[$key][$key2][$key3][$key4], 100, 16), WIN_SHOW_DECIMAL);
+                            $data[$key][$key2][$key3][$key4] = $fieldValue;
+                        }
+                    }
+                }
+            }
+        }
+        foreach($graphInfo['normalize'] as $key => $normalize){
+            $resultNormalized[$key] = Hash::extract($data[$key], $normalize);
+        }
 
         $this->graphicsResults = [
             "graphics_data" => [
@@ -94,17 +108,25 @@ class dashboardFormatter {
      * @return array
      */
     function gaugeGraphFormatter($data, $dummy, $graphInfo) {
-        
+
+        foreach ($data['data'] as $value) {
+
+            foreach ($value as $key => $value2) {
+                if (strstr($key, 'current')) {
+                    $fieldValue = $value2;
+                }
+            }
+        }
+
         $this->Tooltip = ClassRegistry::init('Tooltip');
         $tooltip = $this->Tooltip->getTooltip($data['tooltip'], $this->language, $graphInfo['linkedaccountId']);
-        unset($data['tooltip']);
         $this->graphicsResults = ["dataset" =>
             [
                 "display_name" => $graphInfo['displayName'],
                 "tooltip_display_name" => $tooltip[$data['tooltip']],
                 "data" => [
                     "max_value" => $graphInfo["maxValue"],
-                    "percent" => round(bcmul($data['data']['Dashboardelay']['dashboardelay_current_outstanding'], 100, 16), WIN_SHOW_DECIMAL)
+                    "percent" => round(bcmul($fieldValue, 100, 16), WIN_SHOW_DECIMAL)
                 ],
             ]
         ];
@@ -120,10 +142,10 @@ class dashboardFormatter {
      * @return array
      */
     function paymentDelayGraphFormatter($data, $dummy, $graphInfo) {
-        
+
         $this->Tooltip = ClassRegistry::init('Tooltip');
         $tooltip = $this->Tooltip->getTooltip($data['tooltip'], $this->language, $graphInfo['linkedaccountId']);
-        
+
         $dataResult = array();
         $dataResult[0]['range_display_name'] = '1-7 days';
         $dataResult[1]['range_display_name'] = '8-30 days';
@@ -131,11 +153,26 @@ class dashboardFormatter {
         $dataResult[3]['range_display_name'] = '61-90 days';
         $dataResult[4]['range_display_name'] = '> 90 days';
 
-        $dataResult[0]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_1-7_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[1]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_8-30_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[2]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_31-60_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[3]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_61-90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
-        $dataResult[4]['percent'] = round(bcmul($data['data']['Dashboardelay']['dashboardelay_delay_>90_outstanding'], 100, 16), WIN_SHOW_DECIMAL);
+        foreach ($data['data'] as $key => $value) {
+            $model = $key;
+            foreach ($value as $field => $value2) {
+                if (strstr($field, '1-7')) {
+                    $dataResult[0]['percent'] = round(bcmul($value2, 100, 16), WIN_SHOW_DECIMAL);
+                }
+                if (strstr($field, '8-30')) {
+                    $dataResult[1]['percent'] = round(bcmul($value2, 100, 16), WIN_SHOW_DECIMAL);
+                }
+                if (strstr($field, '31-60')) {
+                    $dataResult[2]['percent'] = round(bcmul($value2, 100, 16), WIN_SHOW_DECIMAL);
+                }
+                if (strstr($field, '61-90')) {
+                    $dataResult[3]['percent'] = round(bcmul($value2, 100, 16), WIN_SHOW_DECIMAL);
+                }
+                if (strstr($field, '>90')) {
+                    $dataResult[4]['percent'] = round(bcmul($value2, 100, 16), WIN_SHOW_DECIMAL);
+                }
+            }
+        }
 
         $this->graphicsResults = ["dataset" =>
             [
@@ -240,7 +277,7 @@ class dashboardFormatter {
             GLOBALDASHBOARD_KPI_CURRENT
         ];
         $displayHeaders = [
-            "Platform/Username",
+            "Platform",
             "Yield",
             "Total Volume",
             "Cash",
@@ -250,7 +287,7 @@ class dashboardFormatter {
         $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language);
         $i = 0;
         foreach ($displayHeaders as $key => $displayHeader) {
-            $header[$i]['displayName'] = $displayHeader;
+            $header[$i]['display_name'] = $displayHeader;
             if (array_key_exists($tooltipIdentifiers[$key], $tooltips)) {
                 $header[$i]['tooltipDisplayName'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
             }
@@ -262,14 +299,16 @@ class dashboardFormatter {
         $z = 0;
         foreach ($data as $key => $item) {
 
-            $kpisList['table_data'][$z][0]['datum'] = $item['Userinvestmentdata']['pfp'] . '(' . $item['Userinvestmentdata']['linkedaccount_accountDisplayName'] . ')';
+            $kpisList['table_data'][$z][0]['datum'] = $item['Userinvestmentdata']['pfp'];
+            $kpisList['table_data'][$z][0]['username'] = $item['Userinvestmentdata']['linkedaccount_accountDisplayName'];
+            $kpisList['table_data'][$z][0]['dashboard_id'] = $item['Linkedaccount']['linkedaccount_id'];
             $kpisList['table_data'][$z][1]['datum']['percent'] = $item['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'];
             $kpisList['table_data'][$z][2]['datum']['amount'] = round($item['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'] + $item['Userinvestmentdata']['userinvestmentdata_cashInPlatform'] + $item['Userinvestmentdata']['userinvestmentdata_reservedAssets'], WIN_SHOW_DECIMAL);
             $kpisList['table_data'][$z][2]['datum']['currency_code'] = $item['Userinvestmentdata']['linkedaccount_currency'];
             $kpisList['table_data'][$z][3]['datum']['amount'] = round($item['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], WIN_SHOW_DECIMAL);
             $kpisList['table_data'][$z][3]['datum']['currency_code'] = $item['Userinvestmentdata']['linkedaccount_currency'];
             $kpisList['table_data'][$z][4]['datum']['percent'] = round(0, WIN_SHOW_DECIMAL);
-            $kpisList['table_data'][$z][5]['datum']['percent'] = round(0, WIN_SHOW_DECIMAL);
+            $kpisList['table_data'][$z][5]['datum']['percent'] = round($item['Dashboarddelay']['dashboarddelay_currentOutstanding'], WIN_SHOW_DECIMAL);
             $z++;
         }
 
@@ -307,9 +346,9 @@ class dashboardFormatter {
         $tooltips = $this->Tooltip->getTooltip($tooltipIdentifiers, $this->language, $this->companyId);
         $i = 0;
         foreach ($displayHeaders as $key => $displayHeader) {
-            $header[$i]['displayName'] = $displayHeader;
+            $header[$i]['display_name'] = $displayHeader;
             if (array_key_exists($tooltipIdentifiers[$key], $tooltips)) {
-                $header[$i]['tooltipDisplayName'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
+                $header[$i]['tooltip_display_name'] = $tooltips[$tooltipIdentifiers[$key]] . "key = $key";
             }
             $i++;
         }

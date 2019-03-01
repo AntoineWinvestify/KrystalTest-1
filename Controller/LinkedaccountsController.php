@@ -41,7 +41,7 @@ class LinkedaccountsController extends AppController {
     protected $belongToAccountOwner = array('company_id', 'investor_id', 'accountowner_username', 'accountowner_linkedAccountCounter');
     protected $belongToLinkedaccount = array('id', 'accountowner_id', 'linkedaccount_lastAccessed', 'linkedaccount_linkingProcess', 'linkedaccount_status', 'linkedaccount_statusExtended', 'linkedaccount_statusExtendedOld', 'linkedaccount_alias', 'linkedaccount_accountIdentity', 'linkedaccount_accountDisplayName', 'linkedaccount_isControlledBy', 'linkedaccount_executionData', 'linkedaccount_currency', 'linkedaccount_visualStatus');
 
-    function beforeFilter () {
+    function beforeFilter() {
         parent::beforeFilter();
     }
 
@@ -49,11 +49,11 @@ class LinkedaccountsController extends AppController {
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/linkedaccounts?[status]
      * Example GET /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE
-     *             /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE,SUSPENDED
+     *             /api/1.0/linkedaccounts?linkedaccount_status=ACTIVE,NOT_ACTIVE
      * @return string
      * 
      */
-    public function v1_index () {
+    public function v1_index() {
         $linkedaccountStatus = $this->listOfQueryParams;
 
         $tooltips = $this->Tooltip->getTooltip(array(ACCOUNT_LINKING_TOOLTIP_DISPLAY_NAME), $this->language);
@@ -63,20 +63,27 @@ class LinkedaccountsController extends AppController {
         $accounts = $accounts + $this->Accountowner->api_readAccountowners($this->investorId, $linkedaccountStatus);
 
         $this->Accountowner->apiVariableNameOutAdapter($accounts['data']);
+        foreach ($accounts['data'] as $accountKey => $account) {
+            $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$accountKey]);
+            $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$accountKey]['linkedaccount']);
+        }
         foreach ($accounts['data'] as $key => $account) {
             $this->Accountowner->apiVariableNameOutAdapter($accounts['data'][$key]);
-            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['Linkedaccount']['id'] . '.json');
-            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['Linkedaccount']['id'] . '.json');
+            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'edit', $accounts['data'][$key]['linkedaccount']['id'] . '.json');
+            $accounts['data'][$key]['links'][] = $this->generateLink('linkedaccounts', 'delete', $accounts['data'][$key]['linkedaccount']['id'] . '.json');
             if ($account['linkedaccount_visualStatus'] !== 'MONITOR') {
                 $resourceId = $this->Pollingresource->getData(array(
                             'pollingresource_userIdentification' => $this->investorId,
                             'pollingresource_status' => ACTIVE,
                             'pollingresource_interval >' => 0,
-                            'pollingresource_resourceId' => $accounts['data'][$key]['Linkedaccount']['id']), 'id', null, null, 'first')['Pollingresource']['id'];
+                            'pollingresource_resourceId' => $accounts['data'][$key]['linkedaccount']['id']), 'id', null, null, 'first')['Pollingresource']['id'];
 
                 $accounts['data'][$key]['links'][] = $this->generateLink('pollingresources', 'delete', $resourceId . '.json');
                 $accounts['data'][$key]['links'][] = $this->generateLink('pollingresources', 'monitor', $resourceId . '.json');
             }
+        }
+        if (empty($accounts['data'])) {
+            unset($accounts);
         }
         $accounts = json_encode($accounts);
         $this->response->type('json');
@@ -92,34 +99,35 @@ class LinkedaccountsController extends AppController {
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
-    public function v1_view () {
+    public function v1_view() {
         $id = $this->request->params['id'];
         $fields = $this->listOfFields;
         $this->Linkedaccount->apiVariableNameInAdapter($fields);
-           
-        foreach($fields as $key => $field){
-            if(in_array($field, $this->belongToAccountOwner)){
+
+        foreach ($fields as $key => $field) {
+            if (in_array($field, $this->belongToAccountOwner)) {
                 $fields[$key] = 'Accountowner.' . $field;
             }
             else if (in_array($field, $this->belongToLinkedaccount)) {
                 $fields[$key] = 'Linkedaccount.' . $field;
             }
-            else{
+            else {
                 $this->response->statusCode(400);
                 return $this->response;
             }
         }
 
-        $linkedaccount = $this->Linkedaccount->find('first',array(
-            array('conditions' => array('Linkedaccount.id' => $id)), 
-           'fields' => $fields,
+        $linkedaccount = $this->Linkedaccount->find('first', array(
+            array('conditions' => array('Linkedaccount.id' => $id)),
+            'fields' => $fields,
             'recursive' => 1,
         ));
-            
-        $linkedaccount['Linkedaccount'] = array_merge($linkedaccount['Linkedaccount'],$linkedaccount['Accountowner']);
+
+        $linkedaccount['linkedaccount'] = array_merge($linkedaccount['Linkedaccount'], $linkedaccount['Accountowner']);
+        unset($linkedaccount['Linkedaccount']);
         unset($linkedaccount['Accountowner']);
-        
-        $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount['Linkedaccount']);
+
+        $this->Linkedaccount->apiVariableNameOutAdapter($linkedaccount['linkedaccount']);
         $linkedaccount = json_encode($linkedaccount);
         $this->response->type('json');
         $this->response->body($linkedaccount);
@@ -134,7 +142,7 @@ class LinkedaccountsController extends AppController {
      * @param integer $id The database identifier of the requested 'Linkedaccount' resource
      * @return string
      */
-    public function v1_edit () {
+    public function v1_edit() {
         $id = $this->request->params['id'];
         $RequestData = $this->request->data;
         $this->Linkedaccount->apiVariableNameInAdapter($RequestData);
@@ -156,17 +164,31 @@ class LinkedaccountsController extends AppController {
      * 
      * @return string
      */
-    public function v1_add () {
+    public function v1_add() {
         //$this->print_r2($this->request);
         $data = $this->request['data'];
         $this->Linkedaccount->apiVariableNameInAdapter($data);
-        $this->Linkedaccount->apiVariableNameInAdapter($data['linkedaccount'][0]);
+        $this->Linkedaccount->apiVariableNameInAdapter($data['Linkedaccount'][0]);
 
         $companyId = $data['company_id'];
         $username = $data['accountowner_username'];
         $password = $data['accountowner_password'];
-        $identity = $data['linkedaccount'][0]['linkedaccount_accountIdentity'];
-        $displayName = $data['linkedaccount'][0]['linkedaccount_accountDisplayName'];
+        $identity = $data['Linkedaccount'][0]['linkedaccount_accountIdentity'];
+        $displayName = $data['Linkedaccount'][0]['linkedaccount_accountDisplayName'];
+
+        $accountOwner = $this->Accountowner->checkAccountOwner($this->investorId, $companyId, $username, $password);
+        $accountOwnerId = $accountOwner['Accountowner']['id'];
+        $accountsLinked = $this->Linkedaccount->getLinkedaccountDataList(array('accountowner_id' => $accountOwnerId, 'linkedaccount_status' => WIN_LINKEDACCOUNT_ACTIVE));
+        foreach ($accountsLinked as $accountLinked) {
+            if ($accountLinked['Linkedaccount']['linkedaccount_accountIdentity'] == $identity) {
+                $formattedError = $this->createErrorFormat('ALREADY_LINKED_ACCOUNT', "The same account can't be linked twice.");
+                $formattedError = json_encode($formattedError);
+                $this->response->statusCode(400);
+                $this->response->body($formattedError);
+                return $this->response;
+            }
+        }
+
         if (!empty($this->$data['linkedaccount'][0]['linkedaccount_currency'])) {
             $currency = $this->$data['linkedaccount'][0]['linkedaccount_currency'];
         }
@@ -178,9 +200,12 @@ class LinkedaccountsController extends AppController {
             $result = $this->Linkedaccount->api_addLinkedaccount($this->investorId, $companyId, $username, $password, $identity, $displayName);
         }
 
-        if ($result !== false) { //Link OK       
+        if ($result['code'] == 400) { //DB save fail
+            $this->response->statusCode($result['code']);
+            return $this->response;
+        }
+        else { //Link OK       
             $account = $this->Accountowner->api_readAccountowner($result);
-
 
             $resourceId = $this->Pollingresource->getData(array(
                         'pollingresource_userIdentification' => $this->investorId,
@@ -189,6 +214,7 @@ class LinkedaccountsController extends AppController {
                         'pollingresource_resourceId' => $account['data']['Linkedaccount']['id']), 'id', null, null, 'first')['Pollingresource']['id'];
 
             $account['feedback_message_user'] = 'Account successfully linked.';
+
             $this->Accountowner->apiVariableNameOutAdapter($account['data']);
             $this->Accountowner->apiVariableNameOutAdapter($account['data']['linkedaccount']);
 
@@ -196,15 +222,10 @@ class LinkedaccountsController extends AppController {
             $account['data']['linkedaccount']['links'][] = $this->generateLink('linkedaccounts', 'delete', $account['data']['linkedaccount']['id']);
             $account['data']['linkedaccount']['links'][] = $this->generateLink('pollingresources', 'delete', $resourceId . '.json');
             $account['data']['linkedaccount']['links'][] = $this->generateLink('pollingresources', 'monitor', $resourceId . '.json');
-            
+
             $account = json_encode($account);
             $this->response->type('json');
             $this->response->body($account);
-            return $this->response;
-        }
-        else { //DB save fail
-            $this->response->type('json');
-            $this->response->body($error);
             return $this->response;
         }
     }
@@ -216,7 +237,7 @@ class LinkedaccountsController extends AppController {
      * @param int $id
      * @return string
      */
-    public function v1_delete () {
+    public function v1_delete() {
         $id = $this->request->params['id'];
         $returnData = $this->Linkedaccount->api_deleteLinkedaccount($this->investorId, $id, $this->roleName);
         $this->response->statusCode($returnData['code']);
@@ -233,7 +254,7 @@ class LinkedaccountsController extends AppController {
      *  
      * @return string
      */
-    public function v1_precheck () {
+    public function v1_precheck() {
         $data = $this->request['data'];
         $this->Linkedaccount->apiVariableNameInAdapter($data);
 
@@ -245,7 +266,7 @@ class LinkedaccountsController extends AppController {
         foreach ($accounts['accounts'] as $key => $account) {
             $this->Linkedaccount->apiVariableNameOutAdapter($accounts['accounts'][$key]);
         }
-        
+
         $this->response->statusCode($accounts['code']);
         unset($accounts['code']);
         $accounts = json_encode($accounts);

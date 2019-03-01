@@ -201,6 +201,10 @@ var $validate = array(
     }    
     
     
+    
+    
+    
+    
     /**
      * Get defaulted percent range.
      * 

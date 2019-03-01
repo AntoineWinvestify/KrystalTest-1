@@ -37,8 +37,8 @@ class Userinvestmentdata extends AppModel {
         ),
     );
     public $hasOne = array(
-        'Dashboardelay' => array(
-            'className' => 'Dashboardelay',
+        'Dashboarddelay' => array(
+            'className' => 'Dashboarddelay',
             'foreignKey' => 'userinvestmentdata_id',
         ),
     );
@@ -341,15 +341,18 @@ class Userinvestmentdata extends AppModel {
         $userinvestmentdataId = $this->getData(array('linkedaccount_id' => $linkedAccountId), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
 
         $delayRanges['data'] = $this->find('first', array(
-            'conditions' => array('Dashboardelay.userinvestmentdata_id' => $userinvestmentdataId),
-            'fields' => array('Dashboardelay.dashboardelay_delay_1-7_outstanding', 'Dashboardelay.dashboardelay_delay_8-30_outstanding', 'Dashboardelay.dashboardelay_delay_31-60_outstanding', 'Dashboardelay.dashboardelay_delay_61-90_outstanding', 'Dashboardelay.dashboardelay_delay_>90_outstanding', 'Dashboardelay.dashboardelay_current_outstanding', 'Dashboardelay.dashboardelay_outstandingDebs'), //dashboardelay_delay_1-7_active, dashboardelay_delay_8-30_active, dashboardelay_delay_31-60_active, dashboardelay_delay_61-90_active, dashboardelay_delay_>91_active, dashboardelay_activeDebs, dashboardelay_current_active),
+            'conditions' => array('Dashboarddelay.userinvestmentdata_id' => $userinvestmentdataId),
+            'fields' => array('Dashboarddelay.dashboarddelay_delay1-7Outstanding', 'Dashboarddelay.dashboarddelay_delay8-30Outstanding',
+                'Dashboarddelay.dashboarddelay_delay31-60Outstanding', 'Dashboarddelay.dashboarddelay_delay61-90Outstanding',
+                'Dashboarddelay.dashboarddelay_delay>90Outstanding', 'Dashboarddelay.dashboarddelay_currentOutstanding',
+                'Dashboarddelay.dashboarddelay_outstandingDebts'),
             'recursive' => 0,
-            ));
-        
+        ));
+
         $delayRanges['tooltip'] = array(DASHBOARD_PAYMENT_DELAY);
         return $delayRanges;
     }
-    
+
     /**
      * Read the data of the current outstanding
      * 
@@ -362,13 +365,16 @@ class Userinvestmentdata extends AppModel {
         $userinvestmentdataId = $this->getData(array('linkedaccount_id' => $linkedAccountId), 'id', 'date DESC', null, 'first')['Userinvestmentdata']['id'];
 
         $current['data'] = $this->find('first', array(
-            'conditions' => array('Dashboardelay.userinvestmentdata_id' => $userinvestmentdataId),
-            'fields' => array('Dashboardelay.dashboardelay_current_outstanding'), //dashboardelay_delay_1-7_active, dashboardelay_delay_8-30_active, dashboardelay_delay_31-60_active, dashboardelay_delay_61-90_active, dashboardelay_delay_>91_active, dashboardelay_activeDebs, dashboardelay_current_active),
+            'conditions' => array('Dashboarddelay.userinvestmentdata_id' => $userinvestmentdataId),
+            'fields' => array('Dashboarddelay.dashboarddelay_currentOutstanding'),
+//dashboarddelay_delay_1-7_active, dashboarddelay_delay_8-30_active, dashboarddelay_delay_31-60_active, dashboarddelay_delay_61-90_active, 
+//dashboarddelay_delay_>91_active, dashboarddelay_activeDebts, dashboarddelay_current_active),
             'recursive' => 0,
-            ));
+        ));
         $current['tooltip'] = array(DASHBOARD_CURRENT);
         return $current;
     }
+
     /**
      * Read the list of each individual dashboard of a investor.
      * 
@@ -376,13 +382,17 @@ class Userinvestmentdata extends AppModel {
      * @param type $dummy                                                       //Not used
      * @return array                                                            //List of the individual dashboard for each linkedaccount
      */
-    public function readDashboardList($investorId, $dummy) {
+    public function readDashboardList($globaldashboardId, $dummy) {
+
         $this->Linkedaccount = ClassRegistry::init('Linkedaccount');
         $this->Userinvestmentdata = ClassRegistry::init('Userinvestmentdata');
         $this->Company = ClassRegistry::init('Company');
+        $this->Globaldashboard = ClassRegistry::init('Globaldashboard');
+
+        $investorId = $this->Globaldashboard->getData(array('Globaldashboard.id' => $globaldashboardId), 'Globaldashboard.investor_id', null, null, 'first', 1)['Globaldashboard']['investor_id'];
 
         $linkedAccountList = $this->Linkedaccount->find('all', array(
-            'conditions' => array('Accountowner.investor_id' => $investorId),
+            'conditions' => array('Accountowner.investor_id' => $investorId, "linkedaccount_linkingProcess" => WIN_LINKING_NOTHING_IN_PROCESS, "linkedaccount_status" => ACTIVE),
             'fields' => array('Linkedaccount.id', 'Accountowner.company_id', 'Linkedaccount.linkedaccount_accountDisplayName', 'Linkedaccount.linkedaccount_currency'),
             'recursive' => 1,
         ));
@@ -397,15 +407,18 @@ class Userinvestmentdata extends AppModel {
 
             $kpisDataList[$key] = $this->Userinvestmentdata->find('first', array(
                 'conditions' => array('Userinvestmentdata.linkedaccount_id' => $linkedaccount['Linkedaccount']['id']),
-                'fields' => array('Userinvestmentdata.userinvestmentdata_netAnnualReturnPast12Months', 'userinvestmentdata_outstandingPrincipal',
-                    'userinvestmentdata_cashInPlatform', 'userinvestmentdata_reservedAssets'),
-                'recursive' => -1,
+                'fields' => array('Userinvestmentdata.userinvestmentdata_netAnnualReturnPast12Months', 'Userinvestmentdata.userinvestmentdata_outstandingPrincipal',
+                    'Userinvestmentdata.userinvestmentdata_cashInPlatform', 'Userinvestmentdata.userinvestmentdata_reservedAssets', 'Dashboarddelay.dashboarddelay_currentOutstanding'),
+                'recursive' => 1,
                 'order' => 'Userinvestmentdata.Date DESC'
             ));
-            $kpisDataList[$key]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'] = round($kpisDataList[$key]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months']*100, WIN_SHOW_DECIMAL);
+
+            $kpisDataList[$key]['Linkedaccount']['linkedaccount_id'] = $linkedaccount['Linkedaccount']['id'];
+            $kpisDataList[$key]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'] = round($kpisDataList[$key]['Userinvestmentdata']['userinvestmentdata_netAnnualReturnPast12Months'] * 100, WIN_SHOW_DECIMAL);
             $kpisDataList[$key]['Userinvestmentdata']['pfp'] = $companyName['Company']['company_name'];
             $kpisDataList[$key]['Userinvestmentdata']['linkedaccount_accountDisplayName'] = $linkedaccount['Linkedaccount']['linkedaccount_accountDisplayName'];
             $kpisDataList[$key]['Userinvestmentdata']['linkedaccount_currency'] = $linkedaccount['Linkedaccount']['linkedaccount_currency'];
+            $kpisDataList[$key]['Dashboarddelay']['dashboarddelay_currentOutstanding'] = round($kpisDataList[$key]['Dashboarddelay']['dashboarddelay_currentOutstanding'] * 100, WIN_SHOW_DECIMAL);
         }
 
         return $kpisDataList;
@@ -438,6 +451,7 @@ class Userinvestmentdata extends AppModel {
             'fields' => ['id', 'date',
                 "$field as value"
             ],
+            'order' => 'date ASC',
             'recursive' => -1,
         ]);
         return $result;

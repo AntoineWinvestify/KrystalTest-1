@@ -1364,18 +1364,16 @@ class loanbook extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                 break;
             case 7:
-                if (empty($this->tempUrl['InvesmentUrl'])) {
-                    $this->tempUrl['InvesmentUrl'] = array_shift($this->urlSequence);
-                }
-                echo 'LOAN ID' . $this->UserLoansId[$this->j - 1];
-                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j - 1];
+                if (empty($this->tempUrl['InvestmentUrl'])) {
+                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);
+                }        
+                echo 'LOAN ID' . $this->UserLoansId[$this->j];
+                $url = $this->tempUrl['InvestmentUrl'] . $this->UserLoansId[$this->j];
                 $this->j++;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);
                 break;
             case 8:
-                //echo $str;
-
                 $topRevision = false;
                 $tableRevision = false;
                 $dom = new DOMDocument;

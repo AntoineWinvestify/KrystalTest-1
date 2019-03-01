@@ -637,7 +637,7 @@ class AppController extends Controller {
      * @param array $validationErrors This is an array with all the error messages per variable 
      * @return array 
      */   
-    public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
+    public function createErrorFormat($errorName, $errorMessage, $validationErrors = null){      
         if (!empty($validationErrors)) {
             foreach ($validationErrors as $key => $item) {
                 $tempArray['field'] = $key;
