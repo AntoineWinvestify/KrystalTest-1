@@ -118,7 +118,6 @@ class ConsolidationClientShell extends GearmanClientShell {
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
-
         $this->flowName = "GEARMAN_FLOW4";
         $inActivityCounter = 0;
         $workerFunction = "consolidation";

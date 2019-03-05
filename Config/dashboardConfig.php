@@ -86,7 +86,7 @@ $config['Dashboard'] = array(
         "nar-last-365-days-graph-data" => array(
             array("Userinvestmentdata" => "readNarLast365daysMultiGraphData"),
             array("dashboardFormatter" => "genericMultiGraphFormatter"),
-            array("displayName" => "NAR Last 365 Days", "xAxis" => "%", "normalize" => array( "Dashboard" => "{n}.Userinvestmentdata", "GlobalDashboard" => "{n}.Dashboardoverviewdata")),
+            array("displayName" => "NAR Last 365 Days", "xAxis" => "%", "normalize" => array("Dashboard" => "{n}.Userinvestmentdata", "GlobalDashboard" => "{n}.Dashboardoverviewdata")),
         ),
         "nar-past-year-graph-data" => array(
             array("Userinvestmentdata" => "readNarPastYearGraphData"),
@@ -209,10 +209,10 @@ $config['Globaldashboard'] = array(
             array("displayName" => "Total", "xAxis" => "currency", "normalize" => "{n}.Dashboardoverviewdata")
         ),
         "current-graph-data" => array(
-          array("Globaldashboard" => "readCurrentTotalGraphData"),
-          array("dashboardFormatter" => "gaugeGraphFormatter"),
-          array("displayName" => "Daily Current", "maxValue" => "100")
-          ),
+            array("Globaldashboard" => "readCurrentTotalGraphData"),
+            array("dashboardFormatter" => "gaugeGraphFormatter"),
+            array("displayName" => "Daily Current", "maxValue" => "100")
+        ),
         /* "exposure-graph-data" => array(  //Not in global?
           array("Globaldashboard" => "readExposureTotalGraphData"),
           array("dashboardFormatter" => "gaugeGraphFormatter"),
@@ -452,13 +452,15 @@ $config['DashboardMainData'] = array(
         "display_name1" => "More than 90 days",
         "tooltip" => DASHBOARD_PAYMENT_DELAY,
         "data" => array(
-            /* "delinquency_rate" => array(
-              "display_name" => "Delinquency Rate",
-              "tooltip" => DASHBOARD_DEL,
-              "graphLinksParams" => array(
-              array("link" => "graphics/current-graph-data"),
-              )
-              ) */
+            "delinquency_rate" => array(
+                "display_name" => "Delinquency Rate",
+                "value" => array(
+                    "model" => "Userinvestmentdata",
+                    "recursive" => "Dashboarddelay",
+                    "field" => "dashboarddelay_delay>90Outstanding",
+                    "type" => "percent"
+                ),
+            ),
             "outstanding_debt" => array(
                 "display_name" => "Outstanding Debt",
                 "value" => array(
@@ -493,7 +495,7 @@ $config['DashboardMainData'] = array(
 );
 
 $config['globalDashboardMainData'] = array(
-        "investment_indicators" => array(
+    "investment_indicators" => array(
         "display_name" => "Investment Indicators",
         "tooltip" => GLOBALDASHBOARD_INVESTMENT_INDICATORS,
         "data" => array(
@@ -692,13 +694,15 @@ $config['globalDashboardMainData'] = array(
         "display_name1" => "More than 90 days",
         "tooltip" => GLOBALDASHBOARD_PAYMENT_DELAY,
         "data" => array(
-            /* "delinquency_rate" => array(
-              "display_name" => "Delinquency Rate",
-              "tooltip" => DASHBOARD_DEL,
-              "graphLinksParams" => array(
-              array("link" => "graphics/current-graph-data"),
-              )
-              ) */
+            "delinquency_rate" => array(
+                "display_name" => "Delinquency Rate",
+                "value" => array(
+                    "model" => "Globaldashboard",
+                    "recursive" => "Globaldashboarddelay",
+                    "field" => "globaldashboarddelay_delay>90Outstanding",
+                    "type" => "percent"
+                ),
+            ),
             "outstanding_debt" => array(
                 "display_name" => "Outstanding Debt",
                 "value" => array(

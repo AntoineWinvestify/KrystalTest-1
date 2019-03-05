@@ -118,20 +118,23 @@ class loanbook extends p2pCompany {
                         "input2" => "#current.original_concept",
                         "input3" => [
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
-                            1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_verification"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
-                            4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
-                            5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            7 => ["Compensación-Compensación por incidencia administrativa" => "Compensation"],
+                            1 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
+                            2 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
+                            3 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_verification"],
+                            4 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
+                            5 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
+                            6 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
+                            7 => ["Compensación-Compensación por incidencia administrativa" => "Commission_income"],
                             8 => ["Comisión-Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
-                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
-                            11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
-                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
-                            13 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"],
-                            14 => ["Impuestos-Retención de Intereses (AEAT)" => "Tax_income_withholding_tax"]
+                            9 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
+                            
+                            10 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
+                            11 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
+                            12 => ["Reservado-Participación en pagaré" => "Disinvestment_primary_market"],
+                            13 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
+                            
+                            14 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"],
+                            15 => ["Impuestos-Retención de Intereses (AEAT)" => "Tax_income_withholding_tax"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
