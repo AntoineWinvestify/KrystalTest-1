@@ -1,0 +1,71 @@
+@require './colors.styl'
+@require './mixins.styl'
+
+$checksize = 18px
+
+.container
+	max-width: 100%
+
+.v-navigation-drawer
+	.v-list__tile__action
+		min-width: 35px
+
+.select-active
+	.v-list__tile--active
+		color: green_text !important
+	.v-list__tile.v-list__tile--link
+		transition: none
+		&:hover
+			color: green_text !important
+.data-card
+	.v-list__tile--active, .v-icon.primary--text.material-icons
+		color: green_text !important
+	.v-text-field .v-input__slot:after
+		border-color: green_text !important
+	.v-input__slot
+		min-height: 40px
+	.v-select__slot input
+		margin-top: 0 !important
+	.card-title
+		background-color: gray_bg_toolbar
+		color: text_opacity
+		width: 100%
+		padding: 10px
+
+.login-form.custom-form
+	.v-list__tile--active, .v-icon.primary--text.material-icons
+		color: #6eb341 !important
+	.v-text-field .v-input__slot:after
+		border-color: #6eb341 !important
+	.v-input__slot
+		min-height: 40px
+	.v-select__slot input
+		margin-top: 0 !important
+	.v-input--is-focused
+		label.v-label
+			color: rgba(0, 0, 0, .87) !important
+			font-weight: bold
+	input
+		color: #6eb341 !important
+			
+
+.custom-checks
+	&.main
+		flex-start()
+		flex-wrap: wrap
+	.v-input--selection-controls
+		flex: initial
+		margin-top: 0;
+		.v-input__slot
+			margin-right: 20px
+			.v-label
+				font-size: 14px
+			.v-icon
+				font-size: $checksize
+			.v-input--selection-controls__input
+				width: $checksize
+				height: $checksize
+
+
+.v-card
+	background-color: gray_bg_card !important

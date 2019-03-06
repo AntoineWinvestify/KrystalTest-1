@@ -1,0 +1,193 @@
+@require './mixins.styl'
+/*
+	MEDIA QUERIES
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------*/
+@media (min-width: 1600px)
+	.container
+		max-width: 90%
+@media (min-width: 1400px)
+	.marketplace
+		.indicators-list-container
+			.indicator-item
+				.indicator
+					width: 70%
+@media (max-width: 1150px)
+	.data-card
+		.indicators-container
+			.item-indicator
+				.amount
+					font-size: 1.1em
+	.marketplace
+		.lending-row
+			figure
+				img
+					width: 100%
+
+@media (max-width: 959px)
+	.marketplace
+		.lending-row
+			figure
+				img
+					width: 150px			
+			.lendings-list
+				margin-bottom: 1em	
+		&.second-card
+			min-height: auto
+
+@media (max-width: 800px)
+	body
+		font-size: 15px
+	.marketplace
+		position: unset
+	.filter-mobile
+		display: none
+		position: fixed
+		bottom: 30px
+		right: 20px
+		padding: 10px !important
+		max-width: 350px !important
+		background-color: gray_body
+		z-index: 1
+		box-shadow: 0px 0px 1px 0px inset
+		border-bottom-right-radius: 15px
+		transition: 0.5s all
+		.title-check
+			justify-content: flex-start
+			font-weight: bold
+		.custom-checks .v-input--selection-controls
+			width: 50%
+		&.show
+			display: block
+	.filter-button
+		right: 10px !important
+
+@media (max-width: 730px)
+	.platform-card:not(.dashboard-lending)
+		.controls
+			flex-direction: column-reverse
+	.platform-card.dashboard-lending
+		.section-header
+			figure
+				img
+					width: 8em
+					margin-left: 1em
+					margin-right: 1em
+	.marketplace
+		.controls
+			width: 100%
+			.tabs
+				.tab
+					padding: 5px 5px		
+		.indicators-list-container
+			.indicator-item
+				.indicator
+					width: 45%
+@media (max-width: 640px)
+	.marketplace
+		.controls
+			.tabs
+				margin-right: 1em
+			figure
+				width: 8em
+
+@media (max-width: 600px)
+	body
+		font-size: 14px
+	.dashboard-modal-container.modal-responsive
+		.dashboard-modal-content
+			.modal-image-container
+				width: 100%
+				img
+					height: 26em
+					width: 13em
+	.data-card
+		.indicators-container
+			.item-indicator
+				.amount
+					font-size: 1.2em			
+	.platform-card
+		.controls
+			.tabs
+				.tab
+					padding: 7px 8px
+		&.dashboard-lending
+			.section-header
+				justify-content: center
+	.btn-next-container
+		button, a
+			width: 150px
+
+	.marketplace
+		.controls
+			justify-content: center
+		.lending-row
+			.lendings-list
+				.lendings-item
+					width: 33.33%
+		&.information
+			.information-platform
+				.item
+					&.item-two
+						margin-bottom: 1em
+						&:before
+							display: none
+		.indicators-list-container
+			.indicator-item
+				.indicator
+					width: 60%
+
+@media (max-width: 520px)
+	.dashboard-modal-container.modal-responsive
+		.dashboard-modal-content
+			.modal-image-container
+				img
+					display: none
+	.platform-card
+		&.dashboard-lending
+			.section-header
+				.controls
+					flex-direction: column-reverse
+					figure
+						&:before
+							display: none
+					.account-name
+						margin: 10px 0
+						margin-left: 0
+@media (max-width: 450px)
+	.marketplace
+		.controls
+			flex-direction: column-reverse
+			margin: 10px 0
+			.tabs
+				margin-right: 0
+		.lending-row
+			.lendings-list
+				.lendings-item
+					width: 50%
+		.indicators-list-container
+			.indicator-item
+				.indicator
+					width: 45%					
+	.filter-mobile					
+		right: 5px
+		padding: 10px !important
+		max-width: 100% !important
+		.custom-checks .v-input--selection-controls
+			width: auto
+	.filter-button
+		right: 1px !important
+
+@media (max-width: 380px)
+	.marketplace
+		.lending-row
+			center-win()
+			.image-container
+				flex: initial
+				max-width: 100%
+				width: 100%
+				center-win()
+				img
+					width: 100%
+			.btn-container
+				order: 3

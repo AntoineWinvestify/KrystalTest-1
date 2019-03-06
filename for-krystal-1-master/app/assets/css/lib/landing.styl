@@ -1,0 +1,240 @@
+@require './mixins.styl'
+@require './colors.styl'
+
+.form-register-content
+	flex-column()
+	background-color: gray_bg_card
+	padding: 2em 4em
+	box-shadow: 0px 0px 2px 2px inset green_button
+	figure
+		width: 100%
+		center-win()
+		img
+			width: 70%
+	form
+		width: 100%
+		.custom-checks.register
+			margin-top: 1em
+			a
+				margin: 0 5px
+				text-decoration: none 
+				color: green_button
+		.next-button
+			background-color: green_button !important
+			color: white
+			width: 160px
+			height: 40px
+			margin-top: 2em
+		&.step-2
+			.message
+				margin: 2em 0
+			.buttons
+				flex-between-center()
+			.new-code
+				height: 40px
+				margin-top: 2em
+		&.step-3
+			p
+				&:first-child
+					font-size: 1.5em
+					color: green_button
+			.buttons
+				flex-between-center()
+			.new-code
+				height: 40px
+				margin-top: 2em			
+
+.login-form
+	width: 310px
+	padding: 10px 20px
+	background-color: rgba(239, 239, 239, 0.9)
+	color: green
+	.login-button
+		flex-end()
+		button, a
+			background-color: green_button !important
+			color: white
+.mobile-menu
+	ul
+		list-style: none
+		line-height: 35px
+		li
+			color: landing_text1
+			font-weight: bold
+			cursor: pointer
+			&:hover
+				color: green_text
+.landing
+	padding: 2em 3em
+.landing-step-1
+	background-image: url('../img/landing/bg.png')
+	background-color: gray_body
+	header
+		flex-between-center()
+		nav
+			ul
+				list-style: none
+				display: flex
+				padding: 0
+				li
+					color: landing_text1
+					font-weight: bold
+					cursor: pointer
+					font-size: 1.1em
+					&:hover
+						color: green_button
+					&:not(:first-child)
+						margin-left: 2.2em
+		.actions
+			.register-button
+				background-color: green_button !important
+				color: white
+				border-top-left-radius: 6px
+				border-top-right-radius: 0
+				border-bottom-left-radius: 0
+				border-bottom-right-radius: 6px
+				text-shadow: 0px 0px 5px green_button
+				box-shadow: 0px 1px 13px 2px green_button
+	.landing-step-1-container
+		min-height: 80vh
+		background-image: url('../img/landing/world_loans_connect.png')
+		background-size: 42em
+		background-position-x: right
+		background-position-y: bottom
+		background-size: contain
+		color: white
+		.first-line
+			margin-top: 3em
+			font-size: 2.2em
+			width: 15em
+		.second-line
+			font-size: 1.5em
+			width: 16em
+			margin: 1em 0
+	.third-line
+		center-win()
+		color: white
+		font-size: 1.1em
+		font-weight: bold
+	.platforms-list
+		center-win()
+		margin-bottom: 2em
+		.platforms-list-content
+			center-win()
+			border-bottom: 1px solid landing_text1
+			figure
+				width: 11em
+				&:not(:first-child)
+					margin-left: 2em
+				img
+					width: 100%
+.landing-step-2
+	background-image: url('../img/landing/macbook.png')
+	background-color: gray_bg_card
+	background-position-x: right
+	background-position-y: 80%
+	background-size: 32em
+	color: landing_text_opaicty
+	min-height: 100vh
+	.first-line
+		width: 26em
+		font-size: 1.3em
+	.logo-container
+		figure
+			width: 20em
+			img
+				width: 100%
+	.info-item
+		margin-top: 1em
+		width: 75%
+		.info-item-title
+			color: green_chart
+			font-size: 1.1em
+		p
+			margin-top: 1em
+		figure
+			margin-bottom: 1em
+.v-parallax
+	height: 100vh !important
+	.v-parallax__content
+		padding: 0 !important
+	.v-parallax__image
+		// height: 125%
+	.landing-step-3
+		background-repeat: no-repeat
+		min-height: 100vh
+		color: white
+		display: flex
+		flex-direction: column
+		.landing-step-3-container
+			flex-center()
+			background-color: rgba(0, 0, 0, 0.3)
+			.first-line
+				font-size: 1.8em
+				width: 20em
+				margin-bottom: 1em
+				font-weight: bold
+			.second-line
+				width: 27em
+				font-size: 1.2em			
+				margin-bottom: 3em
+				color: landing_text1
+.landing-step-4
+	// background-image: url('../img/landing/pattern-bg-1.png'), url('../img/landing/pattern-bg-2.png'), url('../img/landing/pattern-bg-3.png'), url('../img/landing/pattern-bg-4.png')
+	// background-position: left top, top right, bottom left, bottom right
+	// background-size: 50% 50%
+	background-color: gray_bg_card
+	color: white
+	min-height: 100vh
+	.info-item-list
+		margin-top: 6em
+	&-title
+		font-size: 2.2em
+		position: relative
+		&:before
+			content: "...."
+			color: green_text
+			position: absolute
+			bottom: -10px
+			font-family: Roboto
+	.item-info
+		text-align: center
+		figure
+			margin-bottom: 1.5em
+		.item-info-title
+			font-size: 1.2em
+			font-weight: bold
+		p
+			margin-top: 1.5em
+
+footer
+	background: gray_body
+	padding: 2em
+	color: landing_text1
+	ul
+		list-style: none
+		padding: 0
+		&.opacity-list
+			color: landing_text_opaicty
+		li
+			margin-bottom: 10px
+			&:first-child
+				text-transform: uppercase
+				font-weight: bold
+	.footer-message
+		figure
+			width: 150px
+			img
+				width: 100%
+
+.button-open-account
+	background-color: transparent !important
+	width: 210px
+	border: 1px solid
+	border-radius: 5px
+	box-shadow: 0px 0px 6px 2px green_button, 0px 0px 3px 2px green_button inset !important
+	color: green_button !important
+	height: auto
+	padding: 12px 0
+
+@require './media_query_landing.styl'

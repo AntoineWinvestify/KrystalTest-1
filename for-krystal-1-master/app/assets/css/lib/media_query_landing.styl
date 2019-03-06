@@ -1,0 +1,50 @@
+@media (max-width: 960px)
+	.landing
+		padding: 1em 2em
+	.landing-step-1
+		background-size: 50%
+		.landing-step-1-container
+			background-size: 28em
+			background-image: none
+			position: relative
+			&:before
+				content: ''
+				display: block
+				position: absolute
+				left: 0
+				top: 0
+				width: 100%
+				height: 100%
+				background-image: url('../img/landing/world_loans_connect.png')
+				opacity: 0.5
+				background-repeat: no-repeat
+				-ms-background-size: cover
+				background-size: 28em
+				background-position-x: right
+				background-position-y: bottom				
+		.platforms-list
+			.platforms-list-content
+				width: 100%
+				flex-wrap: wrap
+				figure
+					width: auto
+					img
+						width: 11em
+	.landing-step-2
+		background-size: 19em
+		background-position-y: 50%
+		.logo-container figure
+			width: 16em
+		.first-line
+			font-size: 1.1em
+@media (max-width: 740px)
+	.landing-step-1		
+		.platforms-list
+			.platforms-list-content
+				flex-wrap: nowrap
+				flex-direction: row
+				justify-content: flex-start
+				overflow-x: auto
+	.landing-step-2
+		.first-line
+			width: 100%

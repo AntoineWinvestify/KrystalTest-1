@@ -1,0 +1,838 @@
+/*
+
+	Proyecto: Winvestify
+
+	Maquetado por: Jose Torrens <josetorrens9@gmail.com>
+
+	Fecha: 03/08/2018
+
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------*/
+
+/*
+	IMPORTACIONES
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------*/
+
+// Import Vuetify styling
+@require '~vuetify/src/stylus/main.styl'
+
+// Import App styling
+@require './lib/colors.styl'
+@require './lib/overrides.styl'
+@require './lib/mixins.styl'
+@require './lib/style-icon.styl'
+@require './lib/landing.styl'
+
+body
+	font-family: 'Open Sans', sans-serif
+	font-size: 15px
+	color: #FFFFFF
+
+.application.theme--dark
+	background: gray_body
+
+.flex-8
+	flex: 8
+.p15
+	padding: 15px !important
+.show-icon
+	opacity: 1 !important
+	color:#FFFFFF !important
+	vertical-align: middle !important
+	&-small
+		font-size: 13px !important
+.button-plus
+	flex-between-center()
+.v-input--is-disabled, .v-input--is-disabled input
+	pointer-events: unset !important
+	cursor: not-allowed
+/* TOOLBAR / DRAWER */
+.v-toolbar__content
+	background-color: gray_bg_toolbar !important
+	span.user-name
+		margin-left: 3em
+		white-space: nowrap
+		overflow: hidden
+		text-overflow: ellipsis	
+.v-navigation-drawer
+	background-color: gray_bg_toolbar !important
+	> .v-list .v-list__tile--active .v-list__tile__title
+		color: green_text
+	.v-list__tile.v-list__tile--link i
+		font-size: 0.9em
+	.v-list__tile--active.v-list__tile.v-list__tile--link i
+		color: green_text
+	.v-list__tile--active .v-list__tile__action:first-of-type .v-icon
+		color: white
+	.v-list__tile--active.v-list__tile.v-list__tile--link:before
+		content: ""
+		height 100%
+		width: 3px
+		background-color: green_text
+		left: 0
+		position: absolute
+	.v-navigation-drawer__border
+		display: none
+	.v-list--dense
+		padding-top: 0
+	figure
+		center-win()
+		width: 100%
+		background: gray_bg_card
+		height: 80px
+		img 
+			width: 100%
+			height: auto
+			padding: 6px
+.v-menu__content.notifications, .v-menu__content.langs
+	margin-top: 1.5em
+	overflow-y: unset
+	overflow-x: unset
+	contain: initial
+	.arrow-mark
+		position: absolute
+		top: -19px
+		font-size: 32px
+		left: 3px
+		color: green_text
+	.menu-options
+		background-color: gray_bg_toolbar
+		border: 1px solid green_text
+		list-style: none
+		padding: 0
+		&.langs-menu
+			width: 130px
+			li
+				cursor: pointer
+				flex-start()
+				padding: 10px
+				position: relative
+				img
+					width: 2.4em
+					margin-right: 10px
+				&:hover
+					color: green_text
+					img
+						filter: blur(1px)
+				&.active
+					&:before
+						width: 100%
+						height: 100%
+						background-color: #ffffff5e
+						position: absolute
+						top: 0
+						left: 0
+						content: ''
+		&.notification-menu
+			width: 260px
+			li
+				margin: 0 1em
+				padding: 10px 5px
+				position: relative
+				font-weight: bold
+				font-size: .9em
+				&:not(:last-child):after
+					content: ""
+					height: 2px
+					background-color: gray_body
+					width: 90%
+					position: absolute
+					left: 0
+					bottom: 0
+					right: 0
+					margin: 0 auto
+				&.active
+					color: green_text
+				span
+					&:first-child
+						margin-right: 10px
+					&:last-child
+						font-size: .8em
+
+/* DASHBOARD */
+.dashboard-modal-container
+	center-win()
+	height: 100%
+	.dashboard-modal-content
+		center-win()
+		box-shadow: 0px 0px 6px 1px green_button
+		.modal-image-container
+			width: 100%
+			display: flex
+			img
+				height: 27em
+				width: 17em
+		.modal-message
+			max-width: 300px
+			padding: 0 15px
+			text-indent: 15px
+			text-align: justify
+			.modal-logo-container
+				text-align: center
+				img
+					width: 15em
+.data-card
+	flex-between-center()
+	padding: 10px
+	height: 100%
+	&.not-center
+		align-items: flex-start !important
+	.section-title
+		flex-between-center()
+		.title-item
+			center-win()
+			i
+				font-size: 0.9em
+	.item-graph	
+		&.main
+			.echarts
+				width: 100%
+				min-height: 400px
+			&.general
+				.echarts
+					min-height: 100%
+					height: 277px
+		&.second
+			&.pie-chart
+				.echarts
+					width: 100%
+					height: 280px		
+			.echarts
+				width: 100%
+				height: 297px				
+	.tab-graph-container
+		margin-left: 2em
+		span
+			font-size: .9em
+			cursor: pointer
+			&:not(:last-child)
+				margin-right: 10px
+			&.tab-active
+				color: green_text
+				border-bottom: 2px solid
+	.resume-table
+		.v-datatable.v-table
+			background-color: inherit
+			thead
+				th
+					color: yellow_text
+					&.active
+						color: yellow_text
+			tbody
+				.tr-red
+					color: #ef5350 !important
+				tr:hover
+					background: inherit
+					color: green_text
+	.indicators-container
+		center-win()
+		.item-indicator
+			flex-column()
+			padding: 0 15px
+			position: relative
+			max-height: 120px
+			.amount
+				font-size: 1.3em
+				font-weight: bold
+				margin-top: 1em
+				i
+					font-size: .9em
+					margin-right: 5px
+			&:not(:last-child):after
+				content: ""
+				height: 67%
+				position: absolute
+				width: 1px
+				background-color: gray_bg_toolbar
+				right: -1px
+				top: 0
+				bottom: 0
+				margin: auto 0
+			.title-indicator
+				color: text_opacity
+				font-size: 1em
+				center-win()
+				i
+					font-size: 0.9em
+					margin-left: 10px
+	.data-list-container
+		flex-column-not-align()
+		.data-list-title
+			font-size: 1.2em
+			font-weight: bold
+			color: yellow_text
+			text-align: center
+		.data-list-item
+			text-align: center
+			margin: 20px 0
+			&:not(:last-child)
+				border-bottom: 1px solid text_opacity
+				padding-bottom: 10px
+			span
+				&.tooltip
+					display: block
+					font-size: .7em !important
+					color: text_opacity !important
+					font-weight: normal !important
+				&:first-child
+					font-size: 1.4em
+					font-weight: bold
+					color: white
+	.section-header
+		flex-between-center()
+		position: relative
+		.section-header-title
+			a
+				font-weight: bold
+				font-size: 1em
+				color: green_text
+				text-decoration: none
+		.lending-image-container
+			position: relative
+			display: flex
+			span.v-tooltip
+				center-win()
+			figure
+				center-win()
+				&:before
+					content: ""
+					position: absolute
+					left: -0.5em
+					width: 1px
+					height: 3em
+					margin: auto 0
+					bottom: 0
+					top: 0
+					background-color: #FFFFFF
+		img
+			width: 8em
+			margin-left: 4em
+			margin-right: 1em
+		i
+			font-size: 1.3em
+
+/* PLATFORMS */
+.platform-card
+	.controls
+		flex-between-center()
+		.account-name
+			margin-left: 15px
+			margin-right: 15px
+		figure
+			center-win()
+			width: 8em
+			img
+				margin: 0
+				width: 100%
+				height: 100%
+	.tabs
+		flex-stretch()
+		.tab
+			padding: 5px 15px
+			font-size: 1.1em
+			background-color: gray_body
+			border-top: 1px solid
+			border-bottom: 1px solid
+			color: gray_border
+			cursor: pointer
+			position: relative
+			text-align: center
+			center-win()
+			a
+				color: gray_border
+				text-decoration: none
+			&:hover
+				color: green_text
+				background-color: gray_bg_toolbar
+				a
+					color: green_text
+				&:not(:first-child):not(:last-child)
+					&:before
+						content: ""
+						height: 104%
+						width: 1px
+						background: #73dc50
+						position: absolute
+						left: -1px
+						top: -1px
+					&:after
+						content: ""
+						height: 104%
+						width: 1px
+						background: #73dc50
+						position: absolute
+						right: -1px
+						top: -1px
+						z-index: 1
+			&:first-child
+				border: 1px solid
+				border-top-left-radius: 5px
+				border-bottom-left-radius: 5px
+			&:last-child
+				border: 1px solid
+				border-top-right-radius: 5px
+				border-bottom-right-radius: 5px
+	.v-table
+		background: transparent
+		border-top: 1px solid
+		border-bottom: 1px solid
+		margin: 2em 0
+		tbody
+			tr
+				&:not(:last-child)
+					border-bottom: 1px solid gray_border
+				td
+					&:last-child
+						color: yellow_text
+		thead
+			th
+				&:first-child
+					border-bottom: 1px solid gray_border
+	.v-pagination
+		margin: 2em 0
+		.v-pagination__navigation, .v-pagination__item
+			background: gray_bg_toolbar
+			border: 1px solid gray_border
+			outline: 0
+			color: green_text
+			&.v-pagination__item--active
+				border-color: green_text !important
+				background-color: #829fa3b7 !important
+			i
+				outline: 0
+				color: inherit
+	.pagination-info
+		font-size: 0.9em
+		color: gray_border
+
+/* Marketplace */
+.marketplace
+	.title-check
+		center-win()
+	.lending-row
+		figure
+			padding: 10px
+			img
+				width: 150px
+		.btn-container
+			center-win()
+			button, a
+				green-button()
+		.lendings-list
+			flex-wrap: wrap
+			padding: 10px !important
+			flex-between-center()
+			.lendings-item
+				span
+					display: block
+					&:last-child
+						font-size: 0.9em
+						color: text_opacity
+	&.second-card
+		background-color: gray_bg_toolbar !important
+		border-top-left-radius: 0
+		border-top-right-radius: 0
+		padding: 15px
+		min-height: 37vh
+		.btn-container
+			margin-top: 3em
+			text-align: center
+			button, a
+				green-button()
+	&.information
+		padding: 25px !important
+		height: auto
+		border-bottom-left-radius: 0
+		border-bottom-right-radius: 0
+		align-items: flex-start
+		&.full-height
+			height: 100%
+		.title-item
+			margin-bottom: 20px
+			display: flex
+			justify-content: flex-start
+			align-items: center
+			color: green_text
+			position: relative
+			font-weight: bold
+			text-transform: uppercase
+			i
+				margin-right: 10px
+				color: white
+				font-size: 1.3em
+			&:after
+				width: 94%
+				height: 1px
+				background-color: text_opacity
+				content: ""
+				position: absolute
+				left: 0
+				bottom: 0
+				right: 0
+				margin: auto				
+		.information-platform
+			flex-center()
+			flex-direction: column
+			margin: 1.5em 0
+			.item
+				position: relative
+				flex-column()
+				justify-content: space-between
+				&.item-two
+					&:before
+						content: ''
+						height: 100%
+						width: 1px
+						position: absolute
+						right: 0
+						background: text_opacity
+				span
+					color: text_opacity
+					font-size: 0.8em
+					&:first-child
+						color: white
+						font-size: 1.2em
+				img
+					max-width: 100px
+		.item-indicator
+			text-align: center
+			.amount
+				font-size: 1.1em
+				font-weight: bold
+				i
+					font-size: 3em
+			.title-indicator
+				color: text_opacity
+				font-size: 0.9em
+	&.ul-container
+		display: flex
+		justify-content: center
+		.information-list
+			list-style: none
+			column-count: 2
+			width: 70%
+			.item-container
+				&div
+					display: flex
+					align-items: center
+			.information-item
+				color: text_opacity
+	.controls
+		flex-end()
+		width: 100%
+		figure
+			center-win()
+			width: 8em
+			img
+				margin: 0
+				width: 100%
+				height: 100%
+		.tabs
+			flex-stretch()
+			margin-right: 2em
+			.tab
+				padding: 5px 15px
+				font-size: 1.1em
+				background-color: gray_body
+				border-top: 1px solid
+				border-bottom: 1px solid
+				color: gray_border
+				cursor: pointer
+				position: relative
+				text-align: center
+				center-win()
+				&:hover
+					color: green_text
+					background-color: gray_bg_toolbar
+					&.special:first-child
+						&:after
+							content: ""
+							height: 104%
+							width: 1px
+							background: #73dc50
+							position: absolute
+							right: -1px
+							top: -1px
+							z-index: 1
+					&:not(:first-child):not(:last-child)
+						&:before
+							content: ""
+							height: 104%
+							width: 1px
+							background: #73dc50
+							position: absolute
+							left: -1px
+							top: -1px
+						&:after
+							content: ""
+							height: 104%
+							width: 1px
+							background: #73dc50
+							position: absolute
+							right: -1px
+							top: -1px
+							z-index: 1
+				&:first-child
+					border: 1px solid
+					border-top-left-radius: 5px
+					border-bottom-left-radius: 5px
+					border-right-width: 0px
+				&:last-child
+					border: 1px solid
+					border-top-right-radius: 5px
+					border-bottom-right-radius: 5px
+	.indicators-list-container
+		flex-column()
+		.v-tooltip
+			margin-left: 1px
+		.indicator-item
+			flex-start()
+			width: 100%
+			margin-bottom: 1.5em
+			&.indicator-left
+				justify-content: flex-end
+				.v-tooltip
+					margin-left: 0px
+					margin-right: 1px
+				.indicator
+					margin-left: 9px
+			.indicator
+				width: 48%
+				height: 10px
+				background-color: #FFFFFF
+				border-radius: 10px
+				position: relative
+				&:not(.indicator-left)
+					margin-right: 9px
+				&:after
+					content: ""
+					width: 103%
+					height: 1px
+					background-color: text_opacity
+					position: absolute
+					bottom: -10px					
+				.value
+					width: 81%
+					height: 100%
+					position: absolute
+					background-color: special_green
+					border-radius: 10px
+			.title-indicator
+				&:not(.title-left)
+					padding-left: 15px
+				&.title-left
+					text-align: right
+					padding-right: 15px					
+	.circle-indicator-container
+		center-win()
+		height: 300px
+		.circle-chart__circle
+			animation: circle-chart-fill 2s reverse
+			transform-origin: center
+		.circle-chart__circle--negative
+			transform: rotate(-90deg) scale(1,-1)
+		.circle-chart__info
+			animation: circle-chart-appear 2s forwards
+			opacity: 0
+			transform: translateY(0.3em)
+		.circle-chart-title, .circle-chart-max
+			font-size: 2.3px
+			fill: text_opacity
+		.circle-chart-value
+			font-size: 7px
+			fill: special_green
+		@keyframes circle-chart-fill
+			to
+				stroke-dasharray: 0 100
+
+		@keyframes circle-chart-appear
+			to
+				opacity: 1
+				transform: translateY(0)
+					
+.winvestify-tooltip
+	max-width: 40em
+	border: 1px solid purple_2
+	background-color: tooltip_bg
+	opacity: 0.9
+	&.small
+		max-width: 25em
+/* Lendings registrations */
+.registration-item
+	flex-column()
+	padding: 10px
+	border: 1px solid
+	position: relative
+	background-color: gray_bg_toolbar
+	margin-bottom: 1.5em
+	&.selected
+		border: 1px solid green_button
+		box-shadow: 0px 0px 2px 2px inset green_button		
+	.v-btn
+		height: 50px
+	figure
+		padding: 20px
+		height: 100px
+		center-win()
+	.policies
+		margin-bottom: 2em
+		.v-input--checkbox
+			margin-top: 0
+			height: 40px
+		.label-check
+			font-size: 0.8em
+			a
+				color: blue_text
+				font-weight: bold
+				text-decoration: none
+		&:before
+			position: absolute
+			height: 1px
+			background-color: white
+			content: ""
+			width: 100%
+			left: 0
+	.actions-btns
+		width: 100%
+		button
+			margin: 2px
+			background-color: gray_bg_card !important
+			&.only-one.v-btn.v-btn--block.v-btn--disabled
+				background-color: gray_bg_card !important
+				color: text_opacity !important
+		.both
+			center-win()			
+			button
+				width: 49.5%
+				padding: 0
+				&.selected
+					green-button()
+.custom-form
+	.v-text-field.v-input--is-focused
+		.v-label--active
+			color: white !important
+
+.table-actions-info
+	table
+		width: 99.9%
+		thead
+			tr
+				background-color: gray_bg_card
+				border-bottom: 0
+			.v-datatable__progress
+				display: none
+		tbody
+			tr
+				background-color: gray_body
+				border: 2px solid text_opacity
+	.td-actions
+		display: flex
+		align-items: center
+		img
+			width: 140px
+			padding: 5px
+		&.pending
+			color: blue_text_2
+		&.ready
+			color: green_button
+		&.waiting
+			color: purple_1
+		i
+			margin-right: 5px
+			color: inherit
+			&.point
+				font-size: 1em
+
+	button
+		background-color: gray_bg_card !important
+		width: 50%
+		&.uploaded
+			green-button()
+	.header-cell
+		display: flex
+		align-items: center
+		color: white
+		.icon-table
+			font-size: 1.5em
+			margin-right: 5px
+.card-modal			
+	padding: 35px
+	min-height: 40vh
+	background-color: gray_body !important
+	display: flex
+	justify-content: center
+	flex-direction: column
+	align-items: flex-start
+	border: 2px solid green_button
+	.v-input--selection-controls
+		flex: initial
+	.title-modal
+		color: green_button
+		font-size: 1.2em
+		font-weight: bold
+		margin-bottom: 15px
+		width: 100%
+		&-confirm
+			color: yellow_text
+			font-size: 1em
+			font-weight: bold
+			margin-bottom: 15px
+	a.link-terms
+		text-decoration: none 
+		color: green_button
+	.btn-green
+		green-button()
+		align-self: center
+		width: 50%		
+	.buttons
+		margin-top: 20px
+		center-win()
+		width: 100%
+		a, button
+			background-color: gray_bg_card !important
+			width: 50%
+			&.btn-green
+				green-button()
+			
+.link-account
+	.custom-form
+		.v-text-field.v-text-field--enclosed
+			margin-top: 16px
+		.v-input__slot, .v-input__slot:hover
+			background-color: transparent !important
+		.flex-container
+			center-win()
+			button
+				green-button()
+
+.btn-next-container
+	flex-end()
+	margin: 25px 0
+	button, a
+		background-color: gray_bg_card !important
+		// height: 50px
+		width: 250px
+		&.btn-green
+			green-button()
+
+.gauge-chart
+	text-align: center
+	.echarts
+		width: 100%
+		height: 315px
+	.chart-info
+		position: absolute
+		bottom: 60px
+		margin: 0 auto
+		left: 0
+		right: 0
+		z-index: 1
+		span
+			display: block
+			color: text_opacity
+			&:first-child
+				font-size: 1.5em
+				font-weight: bold
+				color: white
+@require './lib/media_query.styl'
