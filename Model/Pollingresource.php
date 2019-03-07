@@ -45,7 +45,7 @@ class Pollingresource extends AppModel
                         'pollingresource_type', 
     //                  'pollingresource_value',
     //                  'pollingresource_resourceId',
-    //                  'pollingresource_links'
+                        'pollingresource_links'
                       ],
         'winAdmin' => ['id', 
                         'pollingresource_userIdentification', 
@@ -130,20 +130,25 @@ class Pollingresource extends AppModel
      * 
      * @param $investorId The internal reference of the investor Object
      * @param $id The internal reference of the Pollingresource object to be checked
-     * @return boolean   
+     * @return int  (WIN_ACL_INVESTOR_IS_OWNER, WIN_ACL_INVESTOR_IS_NOT_OWNER, WIN_ACL_RESOURCE_DOES_NOT_EXIST)
      */
     public function isOwner($investorId, $id) {
-        
+      
         $result = $this->find("first", $params = ['conditions' => [ 'id' => $id,
-                                                         'pollingresource_useridentification' => $investorId,
                                                          'pollingresource_status' => ACTIVE],   
                                                   'fields' => ['pollingresource_useridentification'],
                                                   'recursive' => -1]);
-        
+      
+        if (empty($result)) {
+ //           echo __FILE__ . " " . __LINE__ ." WIN_ACL_RESOURCE_DOES_NOT_EXIST<br>";
+            return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+        }        
         if ($result['Pollingresource']['pollingresource_useridentification'] == $investorId) {
-            return true;
+ //           echo __FILE__ . " " . __LINE__ ." Investor is not the owner, WIN_ACL_INVESTOR_IS_OWNER<br>";
+            return WIN_ACL_INVESTOR_IS_OWNER;
         }
-        return false;
+ //       echo __FILE__ . " " . __LINE__ ." Investor is not the owner, WIN_ACL_INVESTOR_IS_NOT_OWNER<br>";
+        return WIN_ACL_INVESTOR_IS_NOT_OWNER;
     }
 
 

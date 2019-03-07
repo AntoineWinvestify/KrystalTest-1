@@ -113,10 +113,10 @@ function readNotificationContent() {
 
 
 
-    /** NOT FINISHED
+    /** NOT YET TESTED
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/notifications.json&_fields=x,y,z
-     * Example GET /api/1.0/notifications.json&notification_country=SPAIN&_fields=notification_name,notification_surname
+     * Example GET /api/1.0/notifications.json&notification_type=1&_fields=notification_status,notification_text_long
      * 
      * @param -
      */
@@ -141,12 +141,11 @@ function readNotificationContent() {
    
     }     
    
-    /** NOT FINISHED
+    /** NOT YET TESTED
      * This methods terminates the HTTP GET.
      * Format GET api/v1/notifications/[notificationId]&_fields=x,y,z
      * Example GET api/v1/notifications/1.json&_fields=Notification_name,Notification_surname...
      * 
-     * @param integer $id The database identifier of the requested 'Notification' resource
      * 
      */
     public function v1_view(){

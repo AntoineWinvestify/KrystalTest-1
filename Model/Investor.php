@@ -1107,16 +1107,20 @@ class Investor extends AppModel {
      * 
      * @param $investorId The internal reference of the investor Object
      * @param $id The internal reference of the Investor object to be checked
-     * @return boolean  
+     * @return int (WIN_ACL_INVESTOR_IS_OWNER, WIN_ACL_INVESTOR_IS_NOT_OWNER, WIN_ACL_RESOURCE_DOES_NOT_EXIST)
      */
-    public function isOwner($investorId, $id) {  
-  //      echo __CLASS__ . "::"  .__FUNCTION__ . " " . __LINE__ . "<br>";         
-        if ($investorId == $id) {
-  //       echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning true<br>";            
-            return true;
+    public function isOwner($investorId, $id) { 
+        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id],   
+                                                  'fields' => ['pollingresource_useridentification'],
+                                                  'recursive' => -1]);
+      
+        if (empty($result)) {
+            return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+        }        
+        if ($id == $investorId) {
+            return WIN_ACL_INVESTOR_IS_OWNER;
         }
-  //        echo __CLASS__ . "::" . __FUNCTION__ . " " . __LINE__ . " returning false <br>";       
-        return false;
+        return WIN_ACL_INVESTOR_IS_NOT_OWNER;   
     }
     
     

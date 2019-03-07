@@ -820,7 +820,7 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         $payload['endpoints'] = $endpoints = Configure::read("endpoints");   
         
         if ($typeOfToken == WIN_ACCESS_TOKEN) {
-            $payload['refresh_token'] = $this->User->api_getNewToken($userData['id']);
+            $payload['refresh_token'] = $this->User->api_getNewToken($userData['id'], $userData['Investor']['id']);
             $payload['account_display_name'] = $userData['Investor']['investor_name'] . " " . $userData['Investor']['investor_surname']; 
         } 
         else {      // type = WIN_REFRESH_TOKEN

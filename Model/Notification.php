@@ -115,7 +115,7 @@ class Notification extends AppModel
      *	@param  string	$extendedInfo	Extended information which will be shown in a popup
      *                                               window if the user clicked on link. If this is available
      *						the system will automatically create a "href" link
-     *   @param string   $notificationDateTime   Date/time of publication of notification. If empty then 
+     *  @param string   $notificationDateTime   Date/time of publication of notification. If empty then 
      *                                              publication date/time is immediate   
      * 	@return boolean	true/false			
      */
@@ -167,7 +167,7 @@ class Notification extends AppModel
      *	Get a list of notifications according to the filteringConditions provided
      *
      *	@param array $filterConditions
-     *	@return	array $notifications 	List of notifications with slogan texts only
+     *	@return	array $notifications List of notifications with slogan texts only
      */
     public function getList($filterConditions) {
         $result = $this->find("all", array('conditions' => $filterConditions, 
@@ -256,7 +256,7 @@ class Notification extends AppModel
      * 
      */
     public function api_getLatestModifications($investorId, $id) {
-
+// MUST SEARCH FOR STATE READYFOR VISUALIZATION ETC ETC
         $filterConditions = ['id >=' => $id,
                              'investor_id' => $investorId];
         
@@ -269,5 +269,31 @@ class Notification extends AppModel
     
     
 
+    /**
+     *
+     * 	Rules are defined for what should happen when a database record is created or updated.
+     * 	
+     */
+    function afterSave($created, $options = array()) {
+
+        if ($created) {            
+   
+            $event = new CakeEvent("Model.Notification.NewAccessTokenRequested", $this, 
+                       array(
+                           'model' => "Notification",
+                           'isFinalEvent' => false,
+                           'userIdentification' => $this->data['Notification']['investor_id'],
+                           'modelData' => $this->data,
+                           'id' => $this->data['Notification']['id'],     
+                           ));
+            $this->getEventManager()->dispatch($event);                
+                
+                
+                
+            
+        }
+    }    
+    
+    
     
 }

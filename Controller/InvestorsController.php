@@ -530,7 +530,7 @@ function linkAccount() {
      * This methods handles the HTTP PATCH message
      * Format PATCH /api/1.0/investors/[investorId].json ....
      * Example PATCH /api/1.01/investors/1.json
-     * fields are conveyed in the message body as json
+     * Fields are conveyed in the message body as json
      * 
      * @param integer $id The database identifier of the requested 'Investor' object
      * 

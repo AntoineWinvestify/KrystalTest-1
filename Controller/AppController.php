@@ -198,9 +198,8 @@ class AppController extends Controller {
             $methodAction = $this->request->params['[method]'];
         }
         
-        if ($this->checkAuthorization($model, $this->roleName, $methodAction) <> WIN_ACL_GRANT_ACCESS) { 
-            throw new ForbiddenException('You are not allowed to access the requested resource'); 
-        }     
+        $this->checkAuthorization($model, $this->roleName, $methodAction);
+           
         if (Configure::read('debug')) {
             var_dump($this->request);
         }      
@@ -700,7 +699,7 @@ class AppController extends Controller {
      * The following 'help' functions can be added to the analysis tree of the array:
      *  - addInvestorToSearchCriteria
      *  - approve 
-     *  - checkOwner
+     *  - checkOwner 
      *  - checkFields
      *  - setListOfFields
      * 
@@ -710,7 +709,8 @@ class AppController extends Controller {
      * 
      * Each called function, like for instance addOwner, checkFields etc.. will return a status code 
      * with the following meaning:
-     *   1 Error encountered, stop analysis. This means no access will be granted.
+     *   1 Error encountered, stop analysis. This means no access will be granted and 403 returned
+     *   2 Error encountered, requested resource does not exist, No access granted and 404 returned
      *   2 OK, but continue with analysis. Does not mean yet that access is granted.
      *   3 OK and access granted. Analysis can be stopped.
      * 
@@ -744,8 +744,9 @@ class AppController extends Controller {
      * @param string $model The name of the Model that the user likes to access
      * @param string $roleName The role of the user (investor, superAdmin, winAdmin,...)
      * @param string $requestedAction The action/Method that is to be applied to the selected resource
-     * @return boolean
+     * @return -
      * @throws UnauthorizedException
+     * @throws NotFoundException
      */  
     public function checkAuthorization ($model, $roleName, $requestedAction) {
 //       http://compare_local.com/tests/check_ACL/Investor/investor/PATCH   
@@ -763,13 +764,10 @@ class AppController extends Controller {
 
         $level0_item = $acl_tree_array;                                         // top level
         
-        foreach ($level0_item  as $level1_item) {
-   //         echo "Model = " . $level1_item['category_name'] . "<br>";           
+        foreach ($level0_item  as $level1_item) {          
             if ($level1_item['category_name'] == $model ) {                     // Model
-     //           echo "&nbsp;&nbsp;&nbsp;&nbsp;==> Found<br>";
                 if (!empty($level1_item['actions'])) {
-     //               var_dump($level1_item['actions']);
-                    
+
                     foreach ($level1_item['actions'] as $actionName => $params) {
                         foreach ($params as $key => $param) {
                             if ($param[0] == "$") {
@@ -782,6 +780,7 @@ class AppController extends Controller {
                         $status = call_user_func_array([__CLASS__, $actionName], $params);
                         switch ($status) {
                             case WIN_ACL_ANALYSIS_ERROR:
+                            case WIN_ACL_RESOURCE_DOES_NOT_EXIST:
                                 break 2;
                             case WIN_ACL_ANALYSIS_CONTINUE:
                                 // don't do anything, just continue with analysis
@@ -800,7 +799,6 @@ class AppController extends Controller {
        //                     echo "   ===> Found<br>";
                             if (!empty($level2_item['actions'])) {
 
-
                                 foreach ($level2_item['actions'] as $actionName => $params) {
                                     foreach ($params as $key => $param) {
                                         if ($param[0] == "$") {
@@ -815,6 +813,7 @@ class AppController extends Controller {
                                     $status = call_user_func_array([__CLASS__, $actionName], $params);
                                     switch ($status) {
                                         case WIN_ACL_ANALYSIS_ERROR:
+                                        case WIN_ACL_RESOURCE_DOES_NOT_EXIST:
                                             break 4;
                                         case WIN_ACL_ANALYSIS_CONTINUE:
                                             // don't do anything, just continue with analysis
@@ -829,9 +828,8 @@ class AppController extends Controller {
 
 
                             foreach ($level2_item['children'] as $level3_item) {
-               //                 var_dump($level3_item['category_name']);
+       //                         var_dump($level3_item['category_name']);
                                     foreach ($level3_item['category_name'] as $requestActionList) { 
-             //                       echo "Method = " . $requestActionList . "<br>";
                //                     echo __FUNCTION__ . " " . __LINE__ . " requestActionList = $requestActionList<br>";
                                     }   
                                     if ($requestActionList == $requestedAction) {            // Method/action
@@ -844,13 +842,13 @@ class AppController extends Controller {
                                                         eval ('$temp = ' . $param . ';'); 
                                                         unset($params[$key]);
                                                         $params[$key] = $temp;
-                                                    }
+                                                    }   
                                                 }
-
                    //                             echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
                                                 $status = call_user_func_array([__CLASS__, $actionName], $params);
                                                 switch ($status) {
                                                     case WIN_ACL_ANALYSIS_ERROR:
+                                                    case WIN_ACL_RESOURCE_DOES_NOT_EXIST:
                                                         break 5;
                                                     case WIN_ACL_ANALYSIS_CONTINUE:
                                                         // don't do anything, just continue with analysis
@@ -873,16 +871,24 @@ class AppController extends Controller {
         }
 
         if ($accessGranted == NO) {
-            if (Configure::read('debug')) {            
-                echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>"; 
-            }          
-            return false;
+            echo __FILE__ . " " . __LINE__  . "Status = $status <br>";
+            if ($status ===  WIN_ACL_RESOURCE_DOES_NOT_EXIST) {
+                if (Configure::read('debug')) { 
+                    echo __FILE__ . " " . __LINE__ . " RESOURCE NOT FOUND<br>";
+                }
+                throw new NotFoundException('The requested resource does not exist'); 
+            }
+            else {      // = WIN_ACL_ANALYSIS_ERROR
+                if (Configure::read('debug')) { 
+                    echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>"; 
+                }    
+                throw new ForbiddenException('You are not allowed to access the requested resource'); 
+            }                        
         }
         else {
             if (Configure::read('debug')) {
                 echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";  
             }    
-            return true;
         }
     }    
     
@@ -923,7 +929,7 @@ class AppController extends Controller {
 //    echo __FUNCTION__ . " " . __LINE__ . "<br>";
     
 //var_dump($this->filterConditionQueryParms);
-
+//var_dump($param);
         foreach ($param as $key => $condition) {
             $isUpperCase = false;
             $upperCondition = ucfirst($condition);
@@ -937,7 +943,7 @@ class AppController extends Controller {
                 $param[$key] = $temp;
             }
         }
-
+//var_dump($param);
         $conditionKeys = array_keys($param);
         foreach ($conditionKeys as $index => $conditionKey) {
             $conditionKeys[$index] = str_replace(['<', '>', '>=', '<=', '<>'], '', $conditionKey);
@@ -963,7 +969,7 @@ class AppController extends Controller {
                 }
             }    
         }
-        else {   
+        else { 
             foreach ($conditionKeys as $conditionKey) {
                 unset( $this->filterConditionQueryParms[$conditionKey]);
             }            
@@ -971,7 +977,7 @@ class AppController extends Controller {
         }
 
 //var_dump($this->filterConditionQueryParms); 
- //   echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE<br>";          
+//echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE<br>";          
         return WIN_ACL_ANALYSIS_CONTINUE;
     }    
      
@@ -1006,8 +1012,8 @@ class AppController extends Controller {
         
         $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');         
      
- //       echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
-        $this->print_r2($fields); 
+  //      echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
+  //      $this->print_r2($fields); 
         $referenceRolePermissions = $acl_referenceVariablePermissions[$model][$roleName];
              
         foreach ($fields as $item) {          
@@ -1033,11 +1039,20 @@ class AppController extends Controller {
      * @return int  (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function checkOwner($model, $investorId, $id) {
-
         $this->$model = ClassRegistry::init($model);
-        if (!$this->$model->isOwner($investorId, $id) ) {                            
-            return WIN_ACL_ANALYSIS_ERROR;
-        }     
+        
+        $result = $this->$model->isOwner($investorId, $id);
+        switch($result) {
+            case WIN_ACL_INVESTOR_IS_OWNER:          
+                return WIN_ACL_ANALYSIS_CONTINUE; 
+                break;
+            case WIN_ACL_INVESTOR_IS_NOT_OWNER:               
+                return WIN_ACL_ANALYSIS_ERROR;
+                break;
+            case WIN_ACL_RESOURCE_DOES_NOT_EXIST:                
+                return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+                break;
+        }
         return WIN_ACL_ANALYSIS_CONTINUE; 
     }   
     
@@ -1050,12 +1065,12 @@ class AppController extends Controller {
      * @return int  (WIN_ACL_ANALYSIS_CONTINUE)
      */
     public function setListOfFields($model, $roleName) {
-
+//echo __FUNCTION__ . " " . __LINE__ . " model = $model, roleName = $roleName<br>";
         if (empty($this->listOfFields)) {
             $this->$model = ClassRegistry::init($model);
             $this->listOfFields = $this->$model->getDefaultFields($roleName);
         }
-
+// var_dump($this->listOfFields);       
         return WIN_ACL_ANALYSIS_CONTINUE;
     }
 
