@@ -122,10 +122,10 @@ class GlobaldashboardsController extends AppController {
         //$companyId = $this->Linkedaccount->getCompanyFromLinkedaccount($id);  Linkedaccount list
         //Prepare the data for each block
         foreach ($dashboardConfigBlock as $blockKey => $dashboardConfig) {
-            if (!empty($dashboardConfig['tooltip_display_name'])) {
+            if (!empty($dashboardConfig['display_name'])) {
                 $data['data'][$blockKey]['display_name'] = $dashboardConfig['display_name'];
             }
-            if (!empty($dashboardConfig['tooltip_display_name1'])) {
+            if (!empty($dashboardConfig['display_name1'])) {
                 $data['data'][$blockKey]['display_name1'] = $dashboardConfig['display_name1'];
             }
             if (!empty($dashboardConfig['tooltip'])) {
