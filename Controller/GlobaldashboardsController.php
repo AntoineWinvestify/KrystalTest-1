@@ -72,7 +72,7 @@ class GlobaldashboardsController extends AppController {
         $id = $this->request->id;
         $type = $this->request->pass[0];
         $function = $this->request->pass[1];
-        
+
         if ($dashboardConfig[$type][$function][2]['xAxis'] == 'currency') {
             $dashboardConfig[$type][$function][2]['xAxis'] = 'EUR'/* $this->Linkedaccount->getCurrency($id) */;
         }
@@ -131,7 +131,9 @@ class GlobaldashboardsController extends AppController {
             if (!empty($dashboardConfig['tooltip'])) {
                 $this->Tooltip = ClassRegistry::init('Tooltip');
                 $tooltips = $this->Tooltip->getTooltip(array($dashboardConfig['tooltip']), $this->language, $companyId);
-                $data['data'][$blockKey]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                if (!empty($tooltips[$dashboardConfig['tooltip']])) {
+                    $data['data'][$blockKey]['tooltip_display_name'] = $tooltips[$dashboardConfig['tooltip']];
+                }
             }
 
             foreach ($dashboardConfig['data'] as $key => $value) {
@@ -141,7 +143,9 @@ class GlobaldashboardsController extends AppController {
                 if (!empty($value['tooltip'])) {
                     $this->Tooltip = ClassRegistry::init('Tooltip');
                     $tooltips = $this->Tooltip->getTooltip(array($value['tooltip']), $this->language, $companyId);
-                    $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                    if (!empty($tooltips[$value['tooltip']])) {
+                        $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                    }
                 }
                 //Defalut graph 1 in the main globaldashboard view.
                 if ($value['default_graph']) {
@@ -198,10 +202,10 @@ class GlobaldashboardsController extends AppController {
                 "default" => true,
             );
         }
-        
+
         $data['data']['kpis'] = $this->generateLink('globaldashboards', null, "$id/lists/kpis")['href'];
-        
-        
+
+
         $linkedAccountList = $this->Linkedaccount->find('list', array(
             'conditions' => array('Accountowner.investor_id' => $this->investorId),
             'field' => 'Linkedaccount.id',

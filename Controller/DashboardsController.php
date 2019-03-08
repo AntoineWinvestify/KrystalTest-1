@@ -118,7 +118,9 @@ class DashboardsController extends AppController {
             if (!empty($dashboardConfig['tooltip'])) {
                 $this->Tooltip = ClassRegistry::init('Tooltip');
                 $tooltips = $this->Tooltip->getTooltip(array($dashboardConfig['tooltip']), $this->language, $companyId);
-                $data['data'][$blockKey]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                if (!empty($tooltips[$dashboardConfig['tooltip']])) {
+                    $data['data'][$blockKey]['tooltip_display_name'] = $tooltips[$dashboardConfig['tooltip']];
+                }
             }
 
             foreach ($dashboardConfig['data'] as $key => $value) {
@@ -127,7 +129,9 @@ class DashboardsController extends AppController {
                 //Search tooltip if the field has one
                 if (!empty($value['tooltip'])) {
                     $tooltips = $this->Tooltip->getTooltip(array($value['tooltip']), $this->language, $companyId);
-                    $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                    if (!empty($tooltips[$value['tooltip']])) {
+                        $data['data'][$blockKey][$key]['tooltip_display_name'] = $tooltips[$value['tooltip']];
+                    }
                 }
 
                 if ($value['default_graph']) {
@@ -139,11 +143,11 @@ class DashboardsController extends AppController {
                 $this->model = ClassRegistry::init($model);
                 if (!empty($value['value'])) {
                     $field = $value['value']['field'];
-                    if(empty($value['value']['recursive'])){
+                    if (empty($value['value']['recursive'])) {
                         $fieldSearch = $field;
                         $keyResult = $model;
                     }
-                    else{
+                    else {
                         $fieldSearch = $value['value']['recursive'] . ".$field";
                         $keyResult = $value['value']['recursive'];
                     }
