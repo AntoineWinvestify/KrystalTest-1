@@ -736,10 +736,10 @@ $config['globalDashboardMainData'] = array(
     ),
     "current" => array(
         "display_name" => "Current",
+        "tooltip" => GLOBALDASHBOARD_CURRENT,
         "data" => array(
             "current_situation" => array(
                 "display_name" => "Current",
-                "tooltip" => GLOBALDASHBOARD_CURRENT,
                 "graphLinksParams" => array(
                     array("link" => "graphics/current-graph-data"),
                 )

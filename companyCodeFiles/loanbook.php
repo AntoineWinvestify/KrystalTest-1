@@ -774,6 +774,7 @@ class loanbook extends p2pCompany {
                 //echo $str;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
+
                 $dom->preserveWhiteSpace = false;
 
                 $forms = $dom->getElementsByTagName('form');
@@ -1217,6 +1218,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
+
                 foreach ($uls as $ul) {
                     $as = $ul->getElementsByTagName('a');
                     $this->verifyNodeHasElements($as);
@@ -1225,7 +1227,7 @@ class loanbook extends p2pCompany {
                     }
                     $index = 0;
                     foreach ($as as $a) {
-                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                        if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                             $this->mainPortalPage = $str;
                             $resultMiLoanbook = true;
                             break 2;
@@ -1233,6 +1235,7 @@ class loanbook extends p2pCompany {
                         $index++;
                     }
                 }
+
                 if (!$resultMiLoanbook) {   // Error while logging in
                     echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
                     $tracings = "Tracing:\n";
