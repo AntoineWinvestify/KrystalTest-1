@@ -92,7 +92,7 @@ $config['backup']['limit'] = 1000;                                              
 //$config['winvestify']['version'] = '0.8.0';                                   MOVED TO DATABASE
 
 // These persons receive notifications
-$config['admin']['systemAdmin'] = "antoine@winvestify.com";
+$config['admin']['systemAdmin'] = "";
 $config['admin']['customerCare'] = "ana@winvestify.com";
 $config['admin']['winAdminCheck'] = "ana@winvestify.com";                       // admin who receives notification when a user has finished 1CR form
 

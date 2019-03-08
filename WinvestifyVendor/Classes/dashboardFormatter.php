@@ -108,11 +108,10 @@ class dashboardFormatter {
      * @return array
      */
     function gaugeGraphFormatter($data, $dummy, $graphInfo) {
-
         foreach ($data['data'] as $value) {
 
             foreach ($value as $key => $value2) {
-                if (strstr($key, 'current')) {
+                if (strstr($key,'current') || strstr($key,'exposure')) {
                     $fieldValue = $value2;
                 }
             }

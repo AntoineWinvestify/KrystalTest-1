@@ -17,27 +17,12 @@
  *
  * @author Antoine
  * @version 0.2.0
- * @date 2018-06-18
+ * @date 2019-03-04
  * @package
  */
 /*
- * This Client starts analyzing the data of the amortization tables and writes the data-elements 
- * 'investment_nextPaymentDate', 'investment_dateForPaymentDelayCalculation' and 
- * 'investment_paymentStatus' to the corresponding database tables.
+ * This Client starts analyzing the data of userinvestmentdata and writes the globaldashboard 
  * Encountered errors are stored in the database table "applicationerrors".
- *
- *
- * 2017-12-23		version 0.1
- * Basic version
- *
- * 2018-06-18           version 0.2
- * Added "netPaymentDate"
- * 
- * 
- * PENDING:
- * get paidInstalments
- *
- * 
  */
 App::import('Shell', 'GearmanClient');
 App::import('Shell', 'UserData');
@@ -121,7 +106,6 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
             echo "Calling consolidateData\n";
             $this->calculateGlobals($params);
             $this->calculateDelays($params);
-            $this->calculateExposure($params);
             //?
             foreach ($this->queueInfo as $queueIdKey => $info) {
                 foreach ($info['companiesInFlow'] as $companieInFlow) {
@@ -149,6 +133,8 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
     /**
      * Calculate or update globalDashboard for all active linkedaccount of the user.
      * We calculate all historical if the user link a new account.
+     * In a regular updated, if we have an pfp with more than one day to update, we update all day.
+     * Also in a regular update, if a pfp failed in a previous flow, we wil take the lasy day with info and calculate the globals with that.
      * 
      * @param array $params                                                     //Array with the queue info, we need the companiesInFlow to get the delay ranges of the linkedaccounts
      * @return boolean
@@ -227,55 +213,55 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
                             $userinvestmentdataIds[$dashboardKey] = $field;
                             break;
                         case 'userinvestmentdata_capitalRepayment':
-                            $globalTotal['globaldashboard_capitalRepayment'] = bcsum($globalTotal['globaldashboard_capitalRepayment'], $field, 16);
+                            $globalTotal['globaldashboard_capitalRepayment'] = bcadd($globalTotal['globaldashboard_capitalRepayment'], $field, 16);
                             break;
                         case 'userinvestmentdata_partialPrincipalRepayment':
-                            $globalTotal['globaldashboard_partialPrincipalRepayment'] = bcsum($globalTotal['globaldashboard_partialPrincipalRepayment'], $field, 16);
+                            $globalTotal['globaldashboard_partialPrincipalRepayment'] = bcadd($globalTotal['globaldashboard_partialPrincipalRepayment'], $field, 16);
                             break;
                         case 'userinvestmentdata_receivedPrepayments':
-                            $globalTotal['globaldashboard_receivedPrepayments'] = bcsum($globalTotal['globaldashboard_receivedPrepayments'], $field, 16);
+                            $globalTotal['globaldashboard_receivedPrepayments'] = bcadd($globalTotal['globaldashboard_receivedPrepayments'], $field, 16);
                             break;
                         case 'userinvestmentdata_totalGrossIncome':
-                            $globalTotal['globaldashboard_totalGrossIncome'] = bcsum($globalTotal['globaldashboard_totalGrossIncome'], $field, 16);
+                            $globalTotal['globaldashboard_totalGrossIncome'] = bcadd($globalTotal['globaldashboard_totalGrossIncome'], $field, 16);
                             break;
                         case 'userinvestmentdata_outstandingPrincipal':
-                            $globalTotal['globaldashboard_outstandingPrincipal'] = bcsum($globalTotal['globaldashboard_outstandingPrincipal'], $field, 16);
-                            $globalTotalVolume = bcsum($globalTotalVolume, $globalTotal['globaldashboard_outstandingPrincipal'], 16);
-                            $plaformTotalVolume[$dashboardKey] = bcsum($plaformTotalVolume[$dashboardKey], $globalTotal['globaldashboard_outstandingPrincipal'], 16);
+                            $globalTotal['globaldashboard_outstandingPrincipal'] = bcadd($globalTotal['globaldashboard_outstandingPrincipal'], $field, 16);
+                            $globalTotalVolume = bcadd($globalTotalVolume, $globalTotal['globaldashboard_outstandingPrincipal'], 16);
+                            $plaformTotalVolume[$dashboardKey] = bcadd($plaformTotalVolume[$dashboardKey], $globalTotal['globaldashboard_outstandingPrincipal'], 16);
                             break;
                         case 'userinvestmentdata_interestGrossIncome':
-                            $globalTotal['globaldashboard_interestGrossIncome'] = bcsum($globalTotal['globaldashboard_interestGrossIncome'], $field, 16);
+                            $globalTotal['globaldashboard_interestGrossIncome'] = bcadd($globalTotal['globaldashboard_interestGrossIncome'], $field, 16);
                             break;
                         case 'userinvestmentdata_cashInPlatform':
-                            $globalTotal['globaldashboard_cashInPlatform'] = bcsum($globalTotal['globaldashboard_cashInPlatform'], $field, 16);
-                            $globalTotalVolume = bcsum($globalTotalVolume, $globalTotal['globaldashboard_cashInPlatform'], 16);
-                            $plaformTotalVolume[$dashboardKey] = bcsum($plaformTotalVolume[$dashboardKey], $globalTotal['globaldashboard_cashInPlatform'], 16);
+                            $globalTotal['globaldashboard_cashInPlatform'] = bcadd($globalTotal['globaldashboard_cashInPlatform'], $field, 16);
+                            $globalTotalVolume = bcadd($globalTotalVolume, $globalTotal['globaldashboard_cashInPlatform'], 16);
+                            $plaformTotalVolume[$dashboardKey] = bcadd($plaformTotalVolume[$dashboardKey], $globalTotal['globaldashboard_cashInPlatform'], 16);
                             break;
                         case 'userinvestmentdata_numberActiveInvestments':
-                            $globalTotal['globaldashboard_numberActiveInvestments'] = bcsum($globalTotal['globaldashboard_numberActiveInvestments'], $field, 16);
+                            $globalTotal['globaldashboard_numberActiveInvestments'] = bcadd($globalTotal['globaldashboard_numberActiveInvestments'], $field, 16);
                             break;
                         case 'userinvestmentdata_reservedAssets':
-                            $globalTotal['globaldashboard_reservedAssets'] = bcsum($globalTotal['globaldashboard_reservedAssets'], $field, 16);
-                            $globalTotalVolume = bcsum($globalTotalVolume, $globalTotal['globaldashboard_reservedAssets'], 16);
-                            $plaformTotalVolume[$dashboardKey] = bcsum($plaformTotalVolume[$dashboardKey], $globalTotal['globaldashboard_reservedAssets'], 16);
+                            $globalTotal['globaldashboard_reservedAssets'] = bcadd($globalTotal['globaldashboard_reservedAssets'], $field, 16);
+                            $globalTotalVolume = bcadd($globalTotalVolume, $globalTotal['globaldashboard_reservedAssets'], 16);
+                            $plaformTotalVolume[$dashboardKey] = bcadd($plaformTotalVolume[$dashboardKey], $globalTotal['globaldashboard_reservedAssets'], 16);
                             break;
                         case 'userinvestmentdata_totalNetDeposits':
-                            $globalTotal['globaldashboard_totalNetDeposits'] = bcsum($globalTotal['globaldashboard_totalNetDeposits'], $field, 16);
+                            $globalTotal['globaldashboard_totalNetDeposits'] = bcadd($globalTotal['globaldashboard_totalNetDeposits'], $field, 16);
                             break;
                         case 'userinvestmentdata_totalLoansCost':
-                            $globalTotal['globaldashboard_totalLoansCost'] = bcsum($globalTotal['globaldashboard_totalLoansCost'], $field, 16);
+                            $globalTotal['globaldashboard_totalLoansCost'] = bcadd($globalTotal['globaldashboard_totalLoansCost'], $field, 16);
                             break;
                         case 'userinvestmentdata_numberActiveInvestmentsdecrements':
-                            $globalTotal['globaldashboard_numberActiveInvestmentsdecrements'] = bcsum($globalTotal['globaldashboard_numberActiveInvestmentsdecrements'], $field, 16);
+                            $globalTotal['globaldashboard_numberActiveInvestmentsdecrements'] = bcadd($globalTotal['globaldashboard_numberActiveInvestmentsdecrements'], $field, 16);
                             break;
                         case 'userinvestmentdata_numberActiveInvestmentsincrements':
-                            $globalTotal['globaldashboard_numberActiveInvestmentsincrements'] = bcsum($globalTotal['globaldashboard_numberActiveInvestmentsincrements'], $field, 16);
+                            $globalTotal['globaldashboard_numberActiveInvestmentsincrements'] = bcadd($globalTotal['globaldashboard_numberActiveInvestmentsincrements'], $field, 16);
                             break;
                         case 'userinvestmentdata_writtenOff':
-                            $globalTotal['globaldashboard_writtenOff'] = bcsum($globalTotal['globaldashboard_writtenOff'], $field, 16);
+                            $globalTotal['globaldashboard_writtenOff'] = bcadd($globalTotal['globaldashboard_writtenOff'], $field, 16);
                             break;
                         case 'userinvestmentdata_defaultInterestIncome':
-                            $globalTotal['globaldashboard_defaultInterestIncome'] = bcsum($globalTotal['globaldashboard_defaultInterestIncome'], $field, 16);
+                            $globalTotal['globaldashboard_defaultInterestIncome'] = bcadd($globalTotal['globaldashboard_defaultInterestIncome'], $field, 16);
                             break;
                         case 'userinvestmentdata_cashDrag':
                             $total = bcadd(bcadd($globalTotal['globaldashboard_outstandingPrincipal'], $globalTotal['globaldashboard_cashInPlatform'], 16), $globalTotal['globaldashboard_reservedAssets'], 16);
@@ -283,10 +269,14 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
                             break;
                     }
                 }
-                $platformExposure[$dashboardKey] = bcdiv($plaformTotalVolume[$dashboardKey], $globalTotalVolume, 16);
+                 
             }
-            print_r($platformExposure);
-            exit;
+            
+            foreach($plaformTotalVolume as $linkaccountId => $value){
+                echo "exposure of $linkaccountId $value/$globalTotalVolume";
+                $platformExposure[$linkaccountId] = bcdiv($value, $globalTotalVolume, 16);
+            }
+            
             $globaId = $this->Globaldashboard->getData(array('date' => $searchDate, 'investor_id' => $investorId), 'id', null, null, 'first')['Globaldashboard']['id'];
             if (!empty($globaId)) {
                 $globalTotal['id'] = $globaId;
@@ -298,7 +288,8 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
             $this->Globaldashboard->save($globalTotal);
 
             foreach ($userinvestmentdataIds as $userinvestmentdataId) {
-                $this->Userinvestmentdata->save(array('id' => $userinvestmentdataId, 'globaldashboard_id' => $this->Globaldashboard->id));
+                $linkaccountId = $this->Userinvestmentdata->getData(array('id' => $userinvestmentdataId), 'linkedaccount_id', null, null, 'first')['Userinvestmentdata']['linkedaccount_id'];
+                $this->Userinvestmentdata->save(array('id' => $userinvestmentdataId, 'globaldashboard_id' => $this->Globaldashboard->id, 'userinvestmentdata_exposure' => $platformExposure[$linkaccountId]));
                 $this->Userinvestmentdata->clear();
             }
 
@@ -319,6 +310,7 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
 
     /**
      * Calculate global delays for the investor on the day.
+     * Always calculate for the last day.
      * 
      * @param array $params                                                     //Array with the queue info, we need the companiesInFlow to get the delay ranges of the linkedaccounts
      * @return boolean
@@ -343,7 +335,7 @@ class CalculateGlobaldashboardClientShell extends GearmanClientShell {
 
         $this->Globaldashboarddelay->create();
         $this->Globaldashboarddelay->save(array(
-            'globaldashboarddelay_1-7OOutstanding' => $range['1-7'],
+            'globaldashboarddelay_delay1-7Outstanding' => $range['1-7'],
             'globaldashboarddelay_delay8-30Outstanding' => $range['8-30'],
             'globaldashboarddelay_delay31-60Outstanding' => $range['31-60'],
             'globaldashboarddelay_delay61-90Outstanding' => $range['61-90'],

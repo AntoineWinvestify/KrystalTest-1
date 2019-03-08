@@ -160,7 +160,8 @@ class GlobaldashboardsController extends AppController {
                         $fieldSearch = $value['value']['recursive'] . ".$field";
                         $keyResult = $value['value']['recursive'];
                     }
-                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('investor_id' => $this->investorId), $fieldSearch, $model . '.date DESC', null, 'first', 1)[$keyResult][$field];
+                    $globalDate = $this->Globaldashboard->getData(array('Globaldashboard.id' => $this->request->id), 'date', null, null, 'first')['Globaldashboard']['date'];
+                    $data['data'][$blockKey][$key]['value']['amount'] = $this->model->getData(array('investor_id' => $this->investorId, "$model.date" => $globalDate), $fieldSearch, null, null, 'first', 1)[$keyResult][$field];
                     if ($value['value']['type'] == 'currency') {      //Seacrh for the currency
                         $data['data'][$blockKey][$key]['value']['currency_code'] = 'EUR'/* $this->Linkedaccount->getCurrency($id) */;
                         $data['data'][$blockKey][$key]['value']['value'] = round($data['data'][$blockKey][$key]['value']['amount'], WIN_SHOW_DECIMAL);

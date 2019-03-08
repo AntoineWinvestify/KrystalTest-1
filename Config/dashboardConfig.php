@@ -118,11 +118,11 @@ $config['Dashboard'] = array(
             array("dashboardFormatter" => "gaugeGraphFormatter"),
             array("displayName" => "Current", "maxValue" => "100")
         ),
-        /* "exposure-graph-data" => array(
-          array("Userinvestmentdata" => "readExposureTotalGraphData"),
-          array("dashboardFormatter" => "gaugeGraphFormatter"),
-          array("displayName" => "Exposure", "maxValue" => "100")
-          ), */
+        "exposure-graph-data" => array(
+            array("Userinvestmentdata" => "readExposureGraphData"),
+            array("dashboardFormatter" => "gaugeGraphFormatter"),
+            array("displayName" => "Exposure", "maxValue" => "100")
+        ),
         "payment-delay-graph-data" => array(
             array("Userinvestmentdata" => "readPaymentDelayGraphData"),
             array("dashboardFormatter" => "paymentDelayGraphFormatter"),
@@ -482,12 +482,24 @@ $config['DashboardMainData'] = array(
     ),
     "current" => array(
         "display_name" => "Current",
+        "tooltip" => DASHBOARD_CURRENT,
         "data" => array(
             "current_situation" => array(
-                "display_name" => "Current",
-                "tooltip" => DASHBOARD_CURRENT,
+                "display_name" => "Daily Current",
                 "graphLinksParams" => array(
                     array("link" => "graphics/current-graph-data"),
+                )
+            )
+        )
+    ),
+    "exposure" => array(
+        "display_name" => "Exposure",
+        "tooltip" => DASHBOARD_EXPOSURE,
+        "data" => array(
+            "platform_exposure" => array(
+                "display_name" => "Platform Exposure",
+                "graphLinksParams" => array(
+                    array("link" => "graphics/exposure-graph-data"),
                 )
             )
         )

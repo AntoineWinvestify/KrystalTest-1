@@ -432,11 +432,11 @@ class CalculationConsolidateClientShell extends GearmanClientShell {
 
             $this->Dashboarddelay->create();
             $this->Dashboarddelay->save(array(
-                'dashboarddelay_delay_1-7Outstanding' => $range['1-7'],
-                'dashboarddelay_delay_8-30Outstanding' => $range['8-30'],
-                'dashboarddelay_delay_31-60Outstanding' => $range['31-60'],
-                'dashboarddelay_delay_61-90Outstanding' => $range['61-90'],
-                'dashboarddelay_delay_>90Outstanding' => $range['+90'],
+                'dashboarddelay_delay1-7Outstanding' => $range['1-7'],
+                'dashboarddelay_delay8-30Outstanding' => $range['8-30'],
+                'dashboarddelay_delay31-60Outstanding' => $range['31-60'],
+                'dashboarddelay_delay61-90Outstanding' => $range['61-90'],
+                'dashboarddelay_delay>90Outstanding' => $range['+90'],
                 'dashboarddelay_outstandingDebts' => $range['outstandingDebt'],
                 'dashboarddelay_currentOutstanding' => $range['current'],
                 'dashboarddelay_delay1-7Active' => $range2['1-7'],

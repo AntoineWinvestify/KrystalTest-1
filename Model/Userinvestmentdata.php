@@ -325,8 +325,9 @@ class Userinvestmentdata extends AppModel {
      * @return array
      */
     public function readExposureGraphData($linkedAccountId, $period) {
-        $data = $this->getData(['linkedaccount_id' => $linkedAccountId], ['userinvestmentdata_exposure'], 'Date DESC', null, 'first');
-        return $data['Userinvestmentdata']['userinvestmentdata_exposure'];
+        $data['data'] = $this->getData(['linkedaccount_id' => $linkedAccountId], 'userinvestmentdata_exposure', 'Date DESC', null, 'first');
+        $data['tooltip'] = array(DASHBOARD_CURRENT);
+        return $data;
     }
 
     /**
