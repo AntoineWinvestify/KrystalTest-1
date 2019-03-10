@@ -150,7 +150,7 @@ class PollingresourceListener implements CakeEventListener {
                       ];
 
         // 0 or 1 entry will be returned
-        $pollingResults = $this->Pollingresource->find("first", $params = ['conditions' => $conditions,
+        $pollingResult = $this->Pollingresource->find("first", $params = ['conditions' => $conditions,
                                                                             'recursive' => -1
                                                       ]);
         
@@ -182,7 +182,7 @@ class PollingresourceListener implements CakeEventListener {
             $data['Pollingresource']['pollingresource_type'] = $event->data['model'];     
         }
         else {                                     // pollingresource already exists, so just update the "change" flag
-            $data['Pollingresource']['id'] = $pollingResults['Pollingresource']['id'];
+            $data['Pollingresource']['id'] = $pollingResult['Pollingresource']['id'];
         }
         
         if ($event->data['isFinalEvent']) {

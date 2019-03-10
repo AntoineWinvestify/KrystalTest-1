@@ -82,6 +82,15 @@ class AppModel extends Model {
                                 'notification_textShort' => 'notification_text_short',
                                 'notification_textLong' => 'notification_text_long',
                                 'notification_textId'=> 'notification_text_id',  
+                                'email_senderName'=> 'email_sender_name',
+                                'email_senderSurname'=> 'email_sender_surname',         
+                                'email_senderCompany'=> 'email_sender_company',
+                                'email_senderTelephone'=> 'email_sender_telephone',
+                                'email_senderJobTitle'=> 'email_sender_job_title',
+                                'email_senderSubject'=> 'email_sender_subject',
+                                'email_senderText'=> 'email_sender_text',      
+                                'email_senderEmail' => 'email_sender_email',
+        
                               ];
 
     /**

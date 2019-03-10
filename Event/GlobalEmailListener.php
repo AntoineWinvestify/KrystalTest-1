@@ -125,7 +125,7 @@ class GlobalEmailListener implements CakeEventListener {
      * @param CakeEvent $event
      */
     public function contactEmail(CakeEvent $event) {
-  
+
         $subjectContactForm = Configure::read('subjectContactForm');   
 
         // Send contact text to server administrator    
@@ -133,13 +133,13 @@ class GlobalEmailListener implements CakeEventListener {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
             $Email->to(array($this->adminData['systemAdmin'] => __("Admin")));
-            $Email->subject($subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']]);
+            $Email->subject($subjectContactForm[$event->data['modelData']['email_senderSubject']]);
             $Email->template('adminContactform', 'standard_email_layout');
-            $Email->viewVars(array('name' => $event->data['modelData']['Email']['email_senderName'] . " " . 
-                                                           $event->data['modelData']['Email']['email_senderSurname'],
-                'text' => $event->data['modelData']['Email']['email_senderText'],
-                'subject' => $subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']],
-                'email' => $event->data['modelData']['Email']['email_senderEmail']));
+            $Email->viewVars(array('name' => $event->data['modelData']['email_senderName'] . " " . 
+                                                           $event->data['modelData']['email_senderSurname'],
+                'text' => $event->data['modelData']['email_senderText'],
+                'subject' => $subjectContactForm[$event->data['modelData']['email_senderSubject']],
+                'email' => $event->data['modelData']['email_senderEmail']));
             $Email->emailFormat('html');
             $Email->send();          
         } catch (Exception $e) {
@@ -152,14 +152,14 @@ class GlobalEmailListener implements CakeEventListener {
         try {
             $Email = new CakeEmail('smtp_Winvestify');
             $Email->from(array($this->adminData['genericEmailOriginator'] => 'WINVESTIFY'));
-            $Email->to($event->data['modelData']['Email']['email_senderEmail']);
-            $Email->subject($subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']]);
+            $Email->to($event->data['modelData']['email_senderEmail']);
+            $Email->subject($subjectContactForm[$event->data['modelData']['email_senderSubject']]);
             $Email->template('contactEmail', 'standard_email_layout');
-            $Email->viewVars(array('name' => $event->data['modelData']['Email']['email_senderName'] . " " . 
-                                                           $event->data['modelData']['Email']['email_senderSurname'],
-                'text' => $event->data['modelData']['Email']['email_senderText'],
-                'subject' => $subjectContactForm[$event->data['modelData']['Email']['email_senderSubject']],
-                'email' => $event->data['modelData']['Email']['email_senderEmail']));
+            $Email->viewVars(array('name' => $event->data['modelData']['email_senderName'] . " " . 
+                                                           $event->data['modelData']['email_senderSurname'],
+                'text' => $event->data['modelData']['email_senderText'],
+                'subject' => $subjectContactForm[$event->data['modelData']['email_senderSubject']],
+                'email' => $event->data['modelData']['email_senderEmail']));
             $Email->emailFormat('html');
             $Email->send();
             

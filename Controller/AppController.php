@@ -602,8 +602,6 @@ class AppController extends Controller {
 
                 $this->AppModel->apiVariableNameInAdapter($newData);
                 $this->listOfWriteFields = array_keys($newData); 
-
-                var_dump($this->listOfWriteFields);
                 
         }
     
@@ -871,23 +869,23 @@ class AppController extends Controller {
         }
 
         if ($accessGranted == NO) {
-            echo __FILE__ . " " . __LINE__  . "Status = $status <br>";
+  //          echo __FILE__ . " " . __LINE__  . " Status = $status <br>";
             if ($status ===  WIN_ACL_RESOURCE_DOES_NOT_EXIST) {
                 if (Configure::read('debug')) { 
-                    echo __FILE__ . " " . __LINE__ . " RESOURCE NOT FOUND<br>";
+       //             echo __FILE__ . " " . __LINE__ . " RESOURCE NOT FOUND<br>";
                 }
                 throw new NotFoundException('The requested resource does not exist'); 
             }
             else {      // = WIN_ACL_ANALYSIS_ERROR
                 if (Configure::read('debug')) { 
-                    echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>"; 
+         //           echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>"; 
                 }    
                 throw new ForbiddenException('You are not allowed to access the requested resource'); 
             }                        
         }
         else {
             if (Configure::read('debug')) {
-                echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";  
+         //       echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";  
             }    
         }
     }    
@@ -996,8 +994,8 @@ class AppController extends Controller {
      * @return int    (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_GRANT_ACCESS)
      */
     public function checkFields($property, $model, $roleName, $fields) {  
- //   echo __FUNCTION__ . " " . __LINE__ . "<br>";
- //   var_dump($fields);
+//echo __FUNCTION__ . " " . __LINE__ . "<br>";
+//var_dump($fields);
 
         // Special treatment for fields "id" and "xxx_links"
         $key = array_search("id", $fields);
@@ -1012,17 +1010,17 @@ class AppController extends Controller {
         
         $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');         
      
-  //      echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
+     //   echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
   //      $this->print_r2($fields); 
         $referenceRolePermissions = $acl_referenceVariablePermissions[$model][$roleName];
-             
+//var_dump($referenceRolePermissions);             
         foreach ($fields as $item) {          
             if (strpos ($referenceRolePermissions[$item], $property) === false) {
- //               echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
+  //              echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
                 return WIN_ACL_ANALYSIS_ERROR;
             } 
         }
- //       echo __FUNCTION__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
+    //    echo __FUNCTION__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
         return WIN_ACL_GRANT_ACCESS; 
     }    
       
