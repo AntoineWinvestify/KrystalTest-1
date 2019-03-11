@@ -48,7 +48,7 @@ class Linkedaccount extends AppModel {
                 'foreignKey' => 'accountowner_id'
             ));     
 
-    
+ /*   
    var $defaultFields = [ 
         'investor' => ['id',            //causes problems with PATCH, is never r/w
                         'investor_name', 
@@ -102,7 +102,7 @@ class Linkedaccount extends AppModel {
                         'created'            
                       ],                
     ];  
-    
+ */   
     
     
     
@@ -618,12 +618,12 @@ class Linkedaccount extends AppModel {
 
 
     /**
-     * Delete a linkedaccount given the id
+     * Delete a linkedaccount 
      * 
      * @param type $investorId          Id of the investor that deletes the account
      * @param type $linkaccountId       Id of the linkedaccount to delete
      * @param type $roleName            Role of the user that wants to delete the account
-     * @return string|int               Feedback and html code
+     * @return string|int               Feedback and http code
      */
     public function api_deleteLinkedaccount($investorId, $linkaccountId, $roleName = 'Investor') {
                

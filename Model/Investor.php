@@ -1111,7 +1111,6 @@ class Investor extends AppModel {
      */
     public function isOwner($investorId, $id) { 
         $result = $this->find("first", $params = ['conditions' => [ 'id' => $id],   
-                                                  'fields' => ['pollingresource_useridentification'],
                                                   'recursive' => -1]);
       
         if (empty($result)) {

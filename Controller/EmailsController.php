@@ -80,7 +80,7 @@ class EmailsController extends AppController
      * Format POST /api/1.0/emails.json
      * Example POST /api/1.0/emails.json
      * 
-     * @return Response A list of fields related with the object creation
+     * @return 
      */
     function v1_add() {
         $this->checkAcl();      
@@ -89,7 +89,7 @@ class EmailsController extends AppController
         $result = $this->Email->api_addEmail($data);
        
         if (empty($result)) {             
-            $validationErrors = $this->Email->validationErrors;              // Cannot retrieve all validation errors
+            $validationErrors = $this->Email->validationErrors;                 // Cannot retrieve all validation errors
 
             $this->Email->apiVariableNameOutAdapter($validationErrors);
 

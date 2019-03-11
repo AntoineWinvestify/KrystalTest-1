@@ -492,7 +492,7 @@ function linkAccount() {
      * @param integer $id The database identifier of the requested 'Investor' resource
      * 
      */
-    public function v1_view($id){
+    public function v1_view(){
         $this->checkAcl();
 
         $id = $this->request->params['id'];
