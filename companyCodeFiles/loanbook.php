@@ -822,7 +822,7 @@ class loanbook extends p2pCompany {
                     }
                     $index = 0;
                     foreach ($as as $a) {
-                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                        if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                             $this->mainPortalPage = $str;
                             $resultMiLoanbook = true;
                             break 2;
@@ -1589,7 +1589,7 @@ class loanbook extends p2pCompany {
                     }
                     $index = 0;
                     foreach ($as as $a) {
-                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                        if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                             $this->mainPortalPage = $str;
                             $resultMiLoanbook = true;
                             break 2;
@@ -1715,7 +1715,7 @@ class loanbook extends p2pCompany {
             $as = $ul->getElementsByTagName('a');
             $index = 0;
             foreach ($as as $a) {
-                if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                     $this->mainPortalPage = $str;
                     return true;
                     break 2;
