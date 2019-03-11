@@ -49,10 +49,13 @@ class dashboardFormatter {
         }
         $this->graphicsResults = [
             "graphics_data" => [
-                "dataset" =>
-                ["display_name" => $graphInfo['displayName'],
-                    "x-axis_unit" => $graphInfo['xAxis'],
-                    "data" => $resultNormalized]
+                "dataset" => [
+                    [
+                        "display_name" => $graphInfo['displayName'],
+                        "x-axis_unit" => $graphInfo['xAxis'],
+                        "data" => $resultNormalized
+                    ]
+                ]
             ]
         ];
         return $this->graphicsResults;
@@ -80,22 +83,22 @@ class dashboardFormatter {
                 }
             }
         }
-        foreach($graphInfo['normalize'] as $key => $normalize){
-            $resultNormalized[$key] = Hash::extract($data[$key], $normalize);
-        }
 
         $this->graphicsResults = [
             "graphics_data" => [
-                "dataset" =>
-                ["display_name" => $graphInfo['displayName'],
-                    "x-axis_unit" => $graphInfo['xAxis'],
-                    "data" => $resultNormalized['Dashboard']],
-                "dataset_1" =>
-                ["display_name" => $graphInfo['displayName'],
-                    "x-axis_unit" => $graphInfo['xAxis'],
-                    "data" => $resultNormalized['GlobalDashboard']]
+                "dataset" => [
+                ]
             ]
         ];
+
+        foreach ($graphInfo['normalize'] as $key => $normalize) {
+            $resultNormalized[$key] = Hash::extract($data[$key], $normalize);
+            $this->graphicsResults['graphics_data']['dataset'][] = array(
+                "display_name" => $graphInfo['displayName'],
+                "x-axis_unit" => $graphInfo['xAxis'],
+                "data" => $resultNormalized[$key]);
+        }
+
         return $this->graphicsResults;
     }
 
@@ -111,7 +114,7 @@ class dashboardFormatter {
         foreach ($data['data'] as $value) {
 
             foreach ($value as $key => $value2) {
-                if (strstr($key,'current') || strstr($key,'exposure')) {
+                if (strstr($key, 'current') || strstr($key, 'exposure')) {
                     $fieldValue = $value2;
                 }
             }
@@ -121,12 +124,14 @@ class dashboardFormatter {
         $tooltip = $this->Tooltip->getTooltip($data['tooltip'], $this->language, $graphInfo['linkedaccountId']);
         $this->graphicsResults = ["dataset" =>
             [
-                "display_name" => $graphInfo['displayName'],
-                "tooltip_display_name" => $tooltip[$data['tooltip']],
-                "data" => [
-                    "max_value" => $graphInfo["maxValue"],
-                    "percent" => round(bcmul($fieldValue, 100, 16), WIN_SHOW_DECIMAL)
-                ],
+                [
+                    "display_name" => $graphInfo['displayName'],
+                    "tooltip_display_name" => $tooltip[$data['tooltip']],
+                    "data" => [
+                        "max_value" => $graphInfo["maxValue"],
+                        "percent" => round(bcmul($fieldValue, 100, 16), WIN_SHOW_DECIMAL)
+                    ],
+                ]
             ]
         ];
         return $this->graphicsResults;
@@ -175,9 +180,11 @@ class dashboardFormatter {
 
         $this->graphicsResults = ["dataset" =>
             [
-                "display_name" => $graphInfo['displayName'],
-                "tooltip_display_name" => $tooltip[$data['tooltip']],
-                "data" => $dataResult,
+                [
+                    "display_name" => $graphInfo['displayName'],
+                    "tooltip_display_name" => $tooltip[$data['tooltip']],
+                    "data" => $dataResult,
+                ]
             ]
         ];
         return $this->graphicsResults;
