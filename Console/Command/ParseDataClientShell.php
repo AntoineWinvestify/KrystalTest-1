@@ -1032,10 +1032,9 @@ class ParseDataClientShell extends GearmanClientShell {
                         }
                     }
                     $internalVariablesToHandle = array(
-                        10001, 10006, 10010, 10007, 10008, 10009, 
-                        10011, 10012, 10013, 10016, 10017, 10018, 
-                        10019, 10020, 10021, 10022, 10023, 10024, 
-                        10025, 10026, 10027, 10028, 10029,
+                        10001, 10003, 10006, 10007, 10008, 10009, 10010,
+                        10011, 10012, 10013, 10016, 10017, 10018, 10019, 10020, 
+                        10021, 10022, 10023, 10024, 10025, 10026, 10027, 10028, 10029,
                         10031, 10032, 10033, 10034);
                     foreach ($internalVariablesToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
