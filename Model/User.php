@@ -496,15 +496,28 @@ class User extends AppModel {
     
     /**
      * A new refreshtoken is prepared which can be used in the future to
-     * renew existing JWT.   
+     * renew existing JWT.  
+     * An event is generated to which other Model objects can subscribe to 
      * 
      * @param int $userId The internal database reference of the User object
+     * @param int $investorId The internal database reference of the corresponding Investor object
      * @return mixed refreshToken or false
      */
-    public function api_getNewToken($userId) {
+    public function api_getNewToken($userId, $investorId) {
 
         $token = $this->Usertoken->api_addUserToken($userId);
         if (!empty($token)) {
+
+            $event = new CakeEvent("Model.User.NewAccessTokenRequested", $this, 
+                       array(
+                           'model' => "User",
+                           'isFinalEvent' => false,
+                           'userIdentification' => $investorId,
+                           'modelData' => $this->data,
+                           'id' => $this->data['User']['id'],
+                           ));
+            $this->getEventManager()->dispatch($event);
+
             return $token;
         } 
         return false;

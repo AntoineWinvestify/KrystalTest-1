@@ -268,7 +268,7 @@ class Queue2 extends AppModel {
     function afterSave($created, $options = array()) {
 
         if (isset($this->data['Queue2']['queue2_status'])) {                    // A job in Queue2 has finished
-            if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_CONSOLIDATION_FINISHED) { 
+            if ($this->data['Queue2']['queue2_status'] == WIN_QUEUE_STATUS_GLOBAL_CALCULATION_FINISHED) { 
 
                 // queue2info is always present
                 $queue2_infoDecoded = json_decode($this->data['Queue2']['queue2_info'], true);
@@ -291,7 +291,7 @@ class Queue2 extends AppModel {
                     $companyName = $data[0]['Company']['company_name'];
                 
                     //bGenerate an event
-                    $event = new CakeEvent("accountLinkingFullyFinished", $this, 
+                    $event = new CakeEvent("accountAnalysisFinished", $this, 
                                             array('investor_userReference' => $result['Queue2']['queue2_userReference'], 
                                                  'messageContent'        => __('Your account on platform') . " " . $companyName . " " .
                                                                            __('has been succesfully linked and analyzed and will be monitored from now on.') . " " .

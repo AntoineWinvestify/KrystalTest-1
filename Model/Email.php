@@ -62,6 +62,8 @@ class Email extends AppModel
             ],
             'checkTelephoneNumber' => [
                 'rule' => 'checkTelephoneNumber',
+                'allowEmpty' => false,
+                'required'   => true,                
                 'message' => 'The telephone number can only contain numbers and the + sign',
             ]
         ],
@@ -136,29 +138,33 @@ class Email extends AppModel
     public function checkTelephoneNumber($check) {                               
 
         $tempKey = array_keys($check);
-        $key = $tempKey[0];                                                     // contains current field
+        $key = $tempKey[0];                                                     // contains index name
 
-        if (preg_match("/\+\d[0-9]/", $key)) {   
+        $telephoneNumber = $check[$key];
+
+        if (preg_match("/\+\d[0-9]/", $telephoneNumber)) {  
             return true;
-        }   
+        }  
         return false;
     }   
 
     /**
      * Checks if the 'subject' of the email is one of the predefined ones according to the
-     * configuration file 'p2pGestor.php'
+     * configuration file 'p2pGestor.php'. the subject should be 'general', 'improvement' etc.etc.
      * 
      * @param array $check An array with the data to be checked. 
      * @return boolean
      */    
     public function checkEmailSubject($check) { 
-        
+
         $tempKey = array_keys($check);
-        $key = $tempKey[0];                                                     // contains current field
-        
+        $subject = $check[$tempKey[0]];                                         // contains index name
+  
         $allowedEmailSubjects = Configure::read('subjectContactForm');
         array_shift($allowedEmailSubjects);
-        if (in_array($key, $allowedEmailSubjects)) {
+        $allowedEmailSubjectsKeys = array_keys($allowedEmailSubjects);
+        
+        if (in_array($subject, $allowedEmailSubjectsKeys)) { 
             return true;
         }
         return false;
@@ -185,15 +191,14 @@ class Email extends AppModel
     function afterSave($created, $options = array()) {
 
         if ($created) {
-            $event = new CakeEvent("sendContactMessage", $this, 
+            $event = new CakeEvent("Model.Email.SendMessage", $this, 
                                     array('id' => $this->id, 
                                         'model' => 'Email', 
                                         'modelData' => $this->data[$this->alias], 
                                         'userIdentification' => 0,
-                                        'isFinalEvent => true')
+                                        'isFinalEvent' => true)
                                   );
                     
-           
             $this->getEventManager()->dispatch($event);
         }
         return true;

@@ -44,7 +44,7 @@ class EmailsController extends AppController
     function beforeFilter() {
         parent::beforeFilter();
 
-        $this->Auth->allow('v1_add');       
+        $this->Auth->allow('v1_add', 'v1_index');       
             
     }
     
@@ -56,13 +56,15 @@ class EmailsController extends AppController
      * @return Response A list of configuration parameters
      */
     function v1_index()  {
+        $this->checkAcl();
+
         if ($this->listOfFields <> ['config']) {
             $this->response->statusCode(404);           
         }
         else {
             $emailSubject = Configure::read('subjectContactForm');
             array_shift($emailSubject);        
-            $data['emailconfig'] = $emailSubject;
+            $data['emailconfig']['category'] = $emailSubject;
 
             $resultJson = json_encode($data);   
             $this->response->statusCode(200);
@@ -81,23 +83,25 @@ class EmailsController extends AppController
      * @return Response A list of fields related with the object creation
      */
     function v1_add() {
+        $this->checkAcl();      
         $data = $this->request->data;
         $this->AppModel->apiVariableNameInAdapter($data);    
         $result = $this->Email->api_addEmail($data);
-        
-        if (!($result)) {
+       
+        if (empty($result)) {             
             $validationErrors = $this->Email->validationErrors;              // Cannot retrieve all validation errors
+
             $this->Email->apiVariableNameOutAdapter($validationErrors);
 
             $formattedError = $this->createErrorFormat('CANNOT_CREATE_EMAIL', 
-                                                        "The system encountered an undefined error, try again later on");
+                                                        "One or more mandatory fields are missing", 
+                                                        $validationErrors);
             $resultJson = json_encode($formattedError);
-            $this->response->statusCode(500);                                    
+            $this->response->statusCode(400);                                    
         }
         else { // create the links
-            $account['feedback_message_user'] = "Email successfully created. We'll get in touch with you as soon as possible";
-            $account['data']['links'][] = $this->generateLink("emails", "edit", $result . '.json'); 
-            $account['data']['links'][] = $this->generateLink("emails", "delete" , $result . '.json');             
+               
+            $account['feedback_message_user'] = "Email successfully created. We'll get in touch with you as soon as possible";          
             $resultJson = json_encode($account);           
             $this->response->statusCode(201);
         }

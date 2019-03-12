@@ -32,7 +32,7 @@
 
   2017-06-11      version 0.2
   Corrected test for language cookie
-
+addInvestorToSearchCriteria, checkFields, checkOwner, setListOfFields
 
   2017-06-14      version 0.21
   loginRedirect has changed to global market place
@@ -104,7 +104,8 @@ class AppController extends Controller {
                                                 // that case all entries are considered as OR condition.
                                                 // This is a list as received from the webclient
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
-    
+    protected $listOfWriteFields;               // the list of variables which will be written during a
+                                                // PUT or PATCH message. Note this is NOT the contents of the fields
     protected $action;                          // The 'action' of a POST operation
     protected $investorId;                      // The investorId as obtained in the JWT
     protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
@@ -165,11 +166,7 @@ class AppController extends Controller {
      * 	callback.
      */
     public function beforeFilter() {
- 
-        if (Configure::read('debug')) {
-            $this->print_r2($this->request);
-        } 
-     
+
         $tokenRough = $this->request->header('Authorization');   
         $token1 = explode(" ", $tokenRough);
         ((!empty($token1[1])) ? $jwt = $token1[1] : $jwt = $token1[0]);
@@ -180,142 +177,34 @@ class AppController extends Controller {
             $this->roleName = $tokenObject->role;  
             $this->language = $tokenObject->language;
             $this->refreshToken = $tokenObject->refresh_token;
-            $this->accountDisplayName = $tokenObject->account_display_name; 
-//var_dump($tokenObject);            
+            $this->accountDisplayName = $tokenObject->account_display_name;           
         }
-  
-// Load the application configuration file. Now it is available to the *whole* application	 
-/*        Configure::load('p2pGestor.php', 'default');
-        $winvestifyBaseDirectoryClasses = Configure::read('winvestifyVendor') . "Classes";          // Load Winvestify class(es)
-        require_once($winvestifyBaseDirectoryClasses . DS . 'winVestify.php');
-        $runtime = new Winvestify();
-        $this->runTimeParameters = $runtime->readRunTimeParameters();
-        $this->set('runTimeParameters', $this->runTimeParameters);
-
-        $durationPublic = array(0 => "Undefined",
-            1 => "Días",
-            2 => "Meses",
-            3 => "Trimestre",
-            4 => "Horas",
-        );
-
-        // TRANSLATE CURRENCY NAME
-        $this->currencyName = array(EUR => "€",
-            GBP => "£",
-            USD => "$",
-            ARS => "$",
-            AUD => "$",
-            NZD => "$",
-            BYN => "BR",
-            BGN => "лв",
-            CZK => "Kč",
-            DKK => "Kr",
-            CHF => "Fr",
-            MXN => "$",
-            RUB => "₽",
-        );
-
-
-        //Investor Status to PFP Admin
-        $this->pfpStatus = array(2 => __("New"), 4 => __("Viewed"));
-
-        //Investor Ocr Status
-        $this->ocrStatus = array(1 => __("New"), 2 => __("Error"), 3 => __("Pending"), 4 => __("Finished"), 5 => __("Fixed"));
-
-        //Company ocr service status
-        $this->serviceStatus = array(0 => __('Choose One'), 1 => __("Inactive"), 2 => __("Active"), 3 => __("Suspended"));
-
-
-        //Investment Status in marketplace
-        $this->marketplaceStatus = array(0 => __('Choose One'), 1 => __("Status 1"), 2 => __("Status 2"), 3 => __("Status 3"));
-
-
-        $this->set('durationPublic', $durationPublic);
-        $this->durationPublic = $durationPublic;
-
-        $this->crowdlendingTypesLong = array(
-            P2P => __('P2P Crowdlending'),
-            P2B => __('P2B Crowdlending'),
-            INVOICE_TRADING => __('P2P Invoice Trading'),
-            CROWD_REAL_ESTATE => __('Crowd Real Estate'),
-            SOCIAL => __('Social')
-        );
-        $this->set('crowdlendingTypesLong', $this->crowdlendingTypesLong);
-
-
-        $this->crowdlendingTypesShort = array(
-            P2P => __('P2P'),
-            P2B => __('P2B'),
-            INVOICE_TRADING => __('I.T.'),
-            CROWD_REAL_ESTATE => __('R.E.'),
-            SOCIAL => __('SOCIAL')
-        );
-
-        $this->set('crowdlendingTypesShort', $this->crowdlendingTypesShort);
-
-        if (!$this->Cookie->check('p2pManager.language')) {        // first time that the user visits our Web
-            $languages = $this->request->acceptLanguage();       // Array, something like     [0] => en-us [1] => es [2] => en
-            $ourLanguage = explode('-', $languages[0]);        // in this case will be "en"
-            $this->Cookie->write('p2pManager', array('language' => $ourLanguage[0]));
-        } else {
-            $ourLanguage[0] = $this->Cookie->read('p2pManager.language');
-        }
-        $this->Session->write('Config.language', $ourLanguage[0]);
-
-        $subjectContactForm = array('Choose one...',
-            'general' => __('General'),
-            'billing' => __('Billing Dept'),
-            'improvement' => __('Functional Improvement'),
-            'feature' => __('New Feature'),
-            'unsubscribe' => __('Unsubscribe Account'));
-        $this->set('subjectContactForm', $subjectContactForm);
-
-        //$this->documentTypes = array ('dni_front' => 1, 'dni_back' => 2, 'iban' => 3, 'cif' => 4);
-        //$this->set('documentTypes', $this->documentTypes);
-
-        $filterCompanies1 = array(__('Country filter'), 'Spain' => __('Spain'), 'Italy' => __('Italy'));
-        $filterCompanies2 = array(__('Type filter'), 'P2P (Peer-to-Peer)' => __('P2P (Peer-to-Peer)'));
-        $this->set('filterCompanies1', $filterCompanies1);
-        $this->set('filterCompanies2', $filterCompanies2);
-
-        //Use $this->params['controller'] to get the current controller.
-        //Use $this->action to verify the current controller/action
-        if ($this->Auth->user()) {
-
-            $action = $this->action;
-            $controller = $this->params['controller'];
-            //Here we verify if this user has authorization to acces the controller and the action
-            $resultAcl = $this->isAuthorized($controller, $action);
-            if (!$resultAcl) {
-                //In contructions, we use this now before we create a error page
-                throw new
-                FatalErrorException(__('You cannot access this page directly'));
-            }
-        } 
- 
-        if ($this->Auth->user()) {
-            $sectorExist = $this->Session->read('sectorsMenu');
-            if (empty($sectorExist)) {
-                $roleId = $this->Auth->User('role_id');
-                // $this->Role = ClassRegistry::init('Role');
-                //  $sectors = $this->Role->getSectorsByRole($roleId); 
-                $sectors = $this->getSectorsByRole($roleId);
-                $this->Session->write('sectorsMenu', $sectors);
-            }
-        }
-
-        switch ($this->runTimeParameters['runtimeconfiguration_executionEnvironment']) {
-            case WIN_LOCAL_TEST_ENVIRONMENT:
-            case WIN_REMOTE_TEST_ENVIRONMENT:
-     //           rename($fileName, $fileName1);
-            case WIN_LIVE_ENVIRONMENT:
-   //            rename ($fileName1, $fileName);       
-            default:
-        }  
-  */       
-    $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message 
     }
 
+    public function checkAcl() {
+        $result = $this->loadParameterFields();                                      // Extract parameters from HTTP message 
+
+    // Is the user authorized to access the requested resource?
+        $inflectorInstance = new Inflector();
+        $model = $inflectorInstance->singularize(ucfirst($this->request->params['controller']));
+        if (empty($this->roleName)) {
+            $this->roleName = "nobody";          // Access without authentication
+        }
+  
+        if (!empty($this->request->params['acl_action'])) {
+            $methodAction = $this->request->params['acl_action'];    
+        }
+        else {
+            $methodAction = $this->request->params['[method]'];
+        }
+        
+        $this->checkAuthorization($model, $this->roleName, $methodAction);
+           
+        if (Configure::read('debug')) {
+            var_dump($this->request);
+        }      
+    }
+    
     /**
      *
      * 	Creates a new instance of class with name company, like zank, or comunitae....
@@ -695,29 +584,49 @@ class AppController extends Controller {
 
         if (!empty($orCondition)) {
             $this->filterConditionQueryParms['OR'] = $orCondition;
-        }
+        }    
         if (!empty($andCondition)) {
             $this->filterConditionQueryParms['AND'] = $andCondition;
         }        
-        
+
+        if (!empty($this->request['data'])) {
+                $mainKeys = array_keys($this->request['data']);
+
+                if (is_array( $this->request['data'][($mainKeys[0])])) {
+                    $key = array_keys($this->request['data'][$mainKeys[0]]);
+                    $newData = $this->request->data[$mainKeys[0]];
+                }
+                else {
+                    $newData = $this->request['data'];
+                }
+
+                $this->AppModel->apiVariableNameInAdapter($newData);
+                $this->listOfWriteFields = array_keys($newData); 
+                
+        }
+    
         if (Configure::read('debug')) {
                 if (!empty($this->listOfQueryParams)) {
                     echo "listOfQueryParams =\n<br>";
                     var_dump($this->listOfQueryParams);
                 }
-                 if (!empty($this->listOfFields)) {
-                     echo "listOfFields = \n<br>";
+                if (!empty($this->listOfFields)) {
+                    echo "listOfFields = \n<br>";
                     var_dump($this->listOfFields);
                 }
                 if (!empty($this->filterConditionQueryParms)) {
                     echo "filterConditionQueryParms = \n<br>";
                     var_dump($this->filterConditionQueryParms);
                 }
+                if (!empty($this->listOfWriteFields)) {
+                    echo "listOfWriteFields = \n<br>";
+                    var_dump($this->listOfWriteFields);
+                }            
                 if (!empty($this->request->data)) {
                     echo "request->data = \n<br>";
                     var_dump($this->request->data);
-                }
-        }     
+                }  
+        }    
         return true;
     }
     
@@ -778,7 +687,392 @@ class AppController extends Controller {
         return $link;
     }
             
-    
+
+
+    /**
+     * This method checks if access is to be granted to the user to the specified resource.
+     * All "positive" permissions must be specifically defined. If a combination of Model, Role and Method is not defined
+     * in the configuration aaray then this is interpreted as *no permission is granted*.
+     * The following 'help' functions can be added to the analysis tree of the array:
+     *  - addInvestorToSearchCriteria
+     *  - approve 
+     *  - checkOwner 
+     *  - checkFields
+     *  - setListOfFields
+     * 
+     * The called 'help' function can also receive "class variables" as input parameter, They are identified in the configuration
+     * array using the '$' sign, example '$this->listOfFields, $this->request->params['id'], $this->investorId',...
+     * See the descriptions of each individual function for more details on how to use them.
+     * 
+     * Each called function, like for instance addOwner, checkFields etc.. will return a status code 
+     * with the following meaning:
+     *   1 Error encountered, stop analysis. This means no access will be granted and 403 returned
+     *   2 Error encountered, requested resource does not exist, No access granted and 404 returned
+     *   2 OK, but continue with analysis. Does not mean yet that access is granted.
+     *   3 OK and access granted. Analysis can be stopped.
+     * 
+     * The aforementioned functions can any class variables of the Controller class like for instance:
+     * $this->roleName,
+     * $this->investorId,
+     * $this->filterConditionQueryParms
+     * 
+     * It requires the following support in all the Models that are exposed to the Webclient using
+     * the API:
+     *      method =>  isOwnerpublic function isOwner($investorId, $id)  
+     *      method =>  public function getDefaultFields($roleName)
+     * and variable:   
+     *  var $defaultFields = [ 
+     *              'investor' => [
+     *                           'id', 
+     *                           '...',
+     *                           '...'
+     *                            ] 
+     *              'winAdm' => [
+     *                           'id', 
+     *                           '...',
+     *                           '...' 
+     *                           ]
+     *              'superAdmin' => [
+     *                              'id', 
+     *                              '...',
+     *                              '...'
+     *                              ]   
+     * 
+     * @param string $model The name of the Model that the user likes to access
+     * @param string $roleName The role of the user (investor, superAdmin, winAdmin,...)
+     * @param string $requestedAction The action/Method that is to be applied to the selected resource
+     * @return -
+     * @throws UnauthorizedException
+     * @throws NotFoundException
+     */  
+    public function checkAuthorization ($model, $roleName, $requestedAction) {
+//       http://compare_local.com/tests/check_ACL/Investor/investor/PATCH   
+      
+        $accessGranted = NO;                // 1 = yes 2 = no
+        if (Configure::read('debug')) {       
+            echo "Input parameters for Authorization check are:<br>";        
+            echo "model = $model<br>"; 
+            echo "roleName = $roleName<br>";
+            echo "requestedAction = $requestedAction<br>";
+            echo "accessGranted = $accessGranted  [1 = yes, 2 = no]<br>"; 
+            var_dump ($this->listOfFields);
+        }
+        $acl_tree_array = Configure::read('acl_tree_array');
+
+        $level0_item = $acl_tree_array;                                         // top level
+        
+        foreach ($level0_item  as $level1_item) {          
+            if ($level1_item['category_name'] == $model ) {                     // Model
+                if (!empty($level1_item['actions'])) {
+
+                    foreach ($level1_item['actions'] as $actionName => $params) {
+                        foreach ($params as $key => $param) {
+                            if ($param[0] == "$") {
+                                eval ('$temp = ' . $param . ';'); 
+                                unset($params[$key]);
+                                $params[$key] = $temp;
+                            }
+                        }
+ 
+                        $status = call_user_func_array([__CLASS__, $actionName], $params);
+                        switch ($status) {
+                            case WIN_ACL_ANALYSIS_ERROR:
+                            case WIN_ACL_RESOURCE_DOES_NOT_EXIST:
+                                break 2;
+                            case WIN_ACL_ANALYSIS_CONTINUE:
+                                // don't do anything, just continue with analysis
+                                break;
+                            case WIN_ACL_GRANT_ACCESS:
+                                $accessGranted = YES;
+                                break 2;
+                        }
+                    }    
+                } 
+
+                foreach ($level1_item['children'] as $level2_item) {
+                    foreach ($level2_item['category_name'] as $roleNameList) {
+      //                  echo "Role = " . $roleNameList . "<br>";
+                        if ($roleNameList == $roleName) {     // Role
+       //                     echo "   ===> Found<br>";
+                            if (!empty($level2_item['actions'])) {
+
+                                foreach ($level2_item['actions'] as $actionName => $params) {
+                                    foreach ($params as $key => $param) {
+                                        if ($param[0] == "$") {
+            //                                echo "key = $key<br>";
+                                            eval ('$temp = ' . $param . ';'); 
+                                            unset($params[$key]);
+                                            $params[$key] = $temp;
+                                        }
+                                    }
+
+             //                       echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";   
+                                    $status = call_user_func_array([__CLASS__, $actionName], $params);
+                                    switch ($status) {
+                                        case WIN_ACL_ANALYSIS_ERROR:
+                                        case WIN_ACL_RESOURCE_DOES_NOT_EXIST:
+                                            break 4;
+                                        case WIN_ACL_ANALYSIS_CONTINUE:
+                                            // don't do anything, just continue with analysis
+                                            break;
+                                        case WIN_ACL_GRANT_ACCESS:
+                                            $accessGranted = YES;
+                                            break 4;
+                                    }   
+                                }
+ //                               echo __FUNCTION__ . " " . __LINE__ . "<br>";
+                            }
+
+
+                            foreach ($level2_item['children'] as $level3_item) {
+       //                         var_dump($level3_item['category_name']);
+                                    foreach ($level3_item['category_name'] as $requestActionList) { 
+               //                     echo __FUNCTION__ . " " . __LINE__ . " requestActionList = $requestActionList<br>";
+                                    }   
+                                    if ($requestActionList == $requestedAction) {            // Method/action
+                  //                      echo "   ====> Found<br>";                                                               
+                                        if (!empty($level3_item['actions'])) {
+
+                                            foreach ($level3_item['actions'] as $actionName => $params) {
+                                                foreach ($params as $key => $param) {
+                                                    if ($param[0] == "$") {
+                                                        eval ('$temp = ' . $param . ';'); 
+                                                        unset($params[$key]);
+                                                        $params[$key] = $temp;
+                                                    }   
+                                                }
+                   //                             echo __FILE__ . " " . __LINE__ . " action to execute =  " .  $actionName . "<br>";  
+                                                $status = call_user_func_array([__CLASS__, $actionName], $params);
+                                                switch ($status) {
+                                                    case WIN_ACL_ANALYSIS_ERROR:
+                                                    case WIN_ACL_RESOURCE_DOES_NOT_EXIST:
+                                                        break 5;
+                                                    case WIN_ACL_ANALYSIS_CONTINUE:
+                                                        // don't do anything, just continue with analysis
+                                                        break;
+                                                    case WIN_ACL_GRANT_ACCESS:
+                                                        $accessGranted = YES;
+                                                        break 5;
+                                                }
+                                            }
+                                        }                               
+                                        break 4;                                        // This is the normal end. 
+                                    } 
+                            }
+                            break 3;
+                        }
+                    }
+                }
+                break;                
+            }
+        }
+
+        if ($accessGranted == NO) {
+  //          echo __FILE__ . " " . __LINE__  . " Status = $status <br>";
+            if ($status ===  WIN_ACL_RESOURCE_DOES_NOT_EXIST) {
+                if (Configure::read('debug')) { 
+       //             echo __FILE__ . " " . __LINE__ . " RESOURCE NOT FOUND<br>";
+                }
+                throw new NotFoundException('The requested resource does not exist'); 
+            }
+            else {      // = WIN_ACL_ANALYSIS_ERROR
+                if (Configure::read('debug')) { 
+         //           echo __FILE__ . " " . __LINE__ . " NOT AUTHORIZED<br>"; 
+                }    
+                throw new ForbiddenException('You are not allowed to access the requested resource'); 
+            }                        
+        }
+        else {
+            if (Configure::read('debug')) {
+         //       echo __FILE__ . " " . __LINE__ . " THE ACCESS IS AUTHORIZED<br>";  
+            }    
+        }
+    }    
     
 
+    
+ 
+
+    /** 
+     * This is a stub code. It will ALWAYS grant access to the requested resource
+     * 
+     * @return int  (WIN_ACL_GRANT_ACCESS) 
+     */   
+    public function approve () {
+ //   echo __FUNCTION__ . " " . __LINE__ . "<br>";
+
+ //   echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_GRANT_ACCESS<br>";          
+        return WIN_ACL_GRANT_ACCESS;
+    }
+    
+    
+    /** 
+     * Adds the filtering conditions, to the class variable $this->filterConditionQueryParms.
+     * New conditions are simply added and existing ones will be overwritten.
+     * 
+     * The condition(s) (one or more) is/are formed in the following way:
+     *      array key => name of the key to add 
+     *      array value => the value to add
+     * The original $this->filterConditionQueryParms should not have SQL operands as the results
+     * may be unpredictable.
+     * Note that in the following case, a new condition,  "myCondition >" => 4 will replace an already
+     * existing condition of "myCondition" => 4.
+     * This function applies to HTTP-GET message only.
+     * 
+     * @param $param An array searchConditions that will be added to the conditions as provided by the Web-Client
+     * @return  int (WIN_ACL_ANALYSIS_CONTINUE) 
+     */   
+    public function addInvestorToSearchCriteria($param) {
+//    echo __FUNCTION__ . " " . __LINE__ . "<br>";
+    
+//var_dump($this->filterConditionQueryParms);
+//var_dump($param);
+        foreach ($param as $key => $condition) {
+            $isUpperCase = false;
+            $upperCondition = ucfirst($condition);
+
+            if ($condition[0] == $upperCondition[0]) {
+                $isUpperCase = true;
+            }
+            if ($condition[0] == "$" OR $isUpperCase == true) {
+                eval ('$temp = ' . $condition . ';'); 
+                unset($param[$key]);
+                $param[$key] = $temp;
+            }
+        }
+//var_dump($param);
+        $conditionKeys = array_keys($param);
+        foreach ($conditionKeys as $index => $conditionKey) {
+            $conditionKeys[$index] = str_replace(['<', '>', '>=', '<=', '<>'], '', $conditionKey);
+        }
+//        var_dump($conditionKeys);
+    
+        if (!empty($this->filterConditionQueryParms)) {    
+            if (array_key_exists('AND', $this->filterConditionQueryParms)) {
+                foreach ($conditionKeys as $conditionKey) {
+                    unset( $this->filterConditionQueryParms["AND"][$conditionKey]);
+                }                 
+                $this->filterConditionQueryParms["AND"] = $param + $this->filterConditionQueryParms["AND"];
+            }
+            else {            
+                if (array_key_exists('OR', $this->filterConditionQueryParms)) {
+                    $this->filterConditionQueryParms["AND"] = $param;
+                }
+                else { 
+                    foreach ($conditionKeys as $conditionKey) {
+                        unset( $this->filterConditionQueryParms[$conditionKey]);
+                    }
+                    $this->filterConditionQueryParms = $param;
+                }
+            }    
+        }
+        else { 
+            foreach ($conditionKeys as $conditionKey) {
+                unset( $this->filterConditionQueryParms[$conditionKey]);
+            }            
+            $this->filterConditionQueryParms = $param;       
+        }
+
+//var_dump($this->filterConditionQueryParms); 
+//echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_CONTINUE<br>";          
+        return WIN_ACL_ANALYSIS_CONTINUE;
+    }    
+     
+    /** 
+     * Checks if the list of fields provided in $fields ALL have the permission according to
+     * the role of the user to perform the requested operation as defined in $property. The check is 
+     * done against the array $this->referenceVariablePermissions with keys "modelName" and "roleName".
+     * If a field which is provided in '$this->listOfFields' is NOT present in the 
+     * $referenceVariablePermissions then access will be denied.
+     * This is a very fine-grained permission check.
+     * 
+     * @param $property Values permitted: "R" [= Read access] or "W" [= Write access]
+     * @param $model The name of the model that the current user likes to access
+     * @param $roleName The name of the role of the current user
+     * @param $fields Array with the name of the fields to be checked. Typically this is '$this->listOfFields'
+     * @return int    (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_GRANT_ACCESS)
+     */
+    public function checkFields($property, $model, $roleName, $fields) {  
+//echo __FUNCTION__ . " " . __LINE__ . "<br>";
+//var_dump($fields);
+
+        // Special treatment for fields "id" and "xxx_links"
+        $key = array_search("id", $fields);
+        if ($key !== false) {
+            unset($fields[$key]);
+        }
+        $modifiedModel = strtolower($model);  
+        $key = array_search($modifiedModel . "_links", $fields);
+        if ($key !== false) {
+            unset($fields[$key]);
+        }
+        
+        $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');         
+     
+     //   echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
+  //      $this->print_r2($fields); 
+        $referenceRolePermissions = $acl_referenceVariablePermissions[$model][$roleName];
+//var_dump($referenceRolePermissions);             
+        foreach ($fields as $item) {          
+            if (strpos ($referenceRolePermissions[$item], $property) === false) {
+  //              echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
+                return WIN_ACL_ANALYSIS_ERROR;
+            } 
+        }
+    //    echo __FUNCTION__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
+        return WIN_ACL_GRANT_ACCESS; 
+    }    
+      
+    /** 
+     * Checks if the investor is the (in)direct owner of the Model which s/he likes to access.
+     * This function can only be applied where the 'id' as provided in the 
+     * HTTP-GET/HTTP-PUT/HTTP-DELETE/HTTP-PUT by the user. It DOES NOT work correctly on a HTTP-GET which 
+     * searches for one or more results. ( = HTTP-GET -> v1_index)
+     * In HTTP-POST the result might be unpredictable, as POSTs may or may not contain an 'id'.
+     * 
+     * @param string Name of the model which is to be accessed
+     * @param int $investorId The internal reference to the Investor object of the user
+     * @param int $id The internal reference to the Object that is going to be accessed
+     * @return int  (WIN_ACL_ANALYSIS_ERROR or WIN_ACL_ANALYSIS_CONTINUE)
+     */
+    public function checkOwner($model, $investorId, $id) {
+        $this->$model = ClassRegistry::init($model);
+        
+        $result = $this->$model->isOwner($investorId, $id);
+        switch($result) {
+            case WIN_ACL_INVESTOR_IS_OWNER:          
+                return WIN_ACL_ANALYSIS_CONTINUE; 
+                break;
+            case WIN_ACL_INVESTOR_IS_NOT_OWNER:               
+                return WIN_ACL_ANALYSIS_ERROR;
+                break;
+            case WIN_ACL_RESOURCE_DOES_NOT_EXIST:                
+                return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+                break;
+        }
+        return WIN_ACL_ANALYSIS_CONTINUE; 
+    }   
+    
+    /** 
+     * Reads the list of fields which the server will provide to the webclient if NO fields
+     * were defined in the HTTP message. This is only useful for the HTTP-GET message
+     * 
+     * @param $model The name of the Model from whom to read the list of fields
+     * @param $roleName The name of the role for whom the list shall be retrieved
+     * @return int  (WIN_ACL_ANALYSIS_CONTINUE)
+     */
+    public function setListOfFields($model, $roleName) {
+//echo __FUNCTION__ . " " . __LINE__ . " model = $model, roleName = $roleName<br>";
+        if (empty($this->listOfFields)) {
+            $this->$model = ClassRegistry::init($model);
+            $this->listOfFields = $this->$model->getDefaultFields($roleName);
+        }
+// var_dump($this->listOfFields);       
+        return WIN_ACL_ANALYSIS_CONTINUE;
+    }
+
+   
+    
+ 
+    
 }

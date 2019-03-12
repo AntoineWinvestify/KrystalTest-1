@@ -50,48 +50,31 @@ class PollingresourcesController extends AppController
      * 
      * @param int   $id The database identifier of the requested 'Pollingresource' resource
      * @return array $apiResult A list of field (variables) of array "pollingresource"
-     * @throws NotFoundException
-     * @throws UnauthorizedException
      */
-    function v1_view($id)  {
-
-        $idField = true;
+    function v1_view()  {
+        $this->checkAcl();
         $id = $this->request->id;
-                
-        if (empty($this->listOfFields)) {
-            $this->listOfFields = ['id', 'pollingresource_type','pollingresource_interval', 
-                                    'pollingresource_newValueExists', 'pollingresource_userIdentification'
-                                  ]; 
-        }  
+          
+        $key = array_search('pollingresource_links', $this->listOfFields);
 
-        $key = in_array('pollingresource_userIdentification',$this->listOfFields);
-        if (!$key) {
-            array_push($this->listOfFields, 'pollingresource_userIdentification');
-            $idField = false;
+        if (!empty($key)) {
+            unset($this->listOfFields[$key]);
+            $linksField = true;
         }       
 
-        $apiResult = $this->Pollingresource->find('first', $params= ['conditions' => ['id' => $id],
+        $apiResult = $this->Pollingresource->find('first', $params = ['conditions' => ['id' => $id],
                                                           'fields' => $this->listOfFields, 
                                                           'recursive' => -1
                                                          ]);
-     
-        if (empty($apiResult)) {
-            throw new NotFoundException();
-        }
-        
-        if ($this->investorId <> $apiResult['Pollingresource']['pollingresource_userIdentification']) {
-            throw new UnauthorizedException('You are not authorized to access the requested resource');      
-        } 
-        
-
-        if ($idField == false) {
-            unset($apiResult['Pollingresource'][['pollingresource_userIdentification']]);
-        }
+       
+        if ($linksField) {
+            $apiResult['Pollingresource']['links'][] = $this->generateLink("pollingresources", "delete" , $id . '.json'); 
+            $apiResult['Pollingresource']['links'][] = $this->generateLink("pollingresources", "self" , $id . '.json');
+        }       
         
         $this->Pollingresource->apiVariableNameOutAdapter($apiResult['Pollingresource']);
-        
+       
         $resultJson = json_encode($apiResult['Pollingresource']);
-    
         $this->response->statusCode(200);
         $this->response->type('json');
         $this->response->body($resultJson); 
@@ -109,59 +92,26 @@ class PollingresourcesController extends AppController
      * @return array $apiResult A list of elements of array "pollingresource"
      */
     function v1_index()  {
-    
+        $this->checkAcl();    
         $linksField = false;
         $idField = true;
-        if (empty($this->listOfFields)) {
-            $this->listOfFields = ['pollingresource_type', 'pollingresource_interval', 
-                                    'pollingresource_newValueExists', 'pollingresource_resourceId',
-                                    'pollingresource_links',
-                                  ]; 
-        }
+
         if (in_array('pollingresource_links',$this->listOfFields)) {
-            $key = array_search('pollingresource_links',$this->listOfFields); 
+            $key = array_search('pollingresource_links', $this->listOfFields); 
             unset ($this->listOfFields[$key]);
             $linksField = true;
         }
          
-        $key = in_array('id',$this->listOfFields);
+        $key = in_array('id', $this->listOfFields);
         if (!$key) {
             array_push($this->listOfFields, 'id');
             $idField = false;
         }
 
-        // Add condition of pollingresources_status = ACTIVE if not present, and get only resources belonging to user
-        if (!empty($this->listOfQueryParams)) {
-            if (array_key_exists('AND', $this->listOfQueryParams)) {
-                if (empty(array_key_exists('pollingresources_status', $data["AND"]) )) {
-                    $this->listOfQueryParams["AND"]['pollingresource_userIdentification'] = $this->investorId;
-                    $this->listOfQueryParams["AND"]['pollingresource_status'] = ACTIVE;
-                    $this->listOfQueryParams["AND"]['pollingresource_interval > '] = 0;
-                }
-            }
-            else {
-                if (array_key_exists('OR', $this->listOfQueryParams)) {
-                    $this->listOfQueryParams["AND"]['pollingresource_userIdentification'] = $this->investorId;
-                    $this->listOfQueryParams["AND"]['pollingresource_status'] = ACTIVE; 
-                    $this->listOfQueryParams["AND"]['pollingresource_interval > '] = 0;
-                }
-                else {
-                    $this->listOfQueryParams['pollingresource_userIdentification'] = $this->investorId;
-                    $this->listOfQueryParams['pollingresource_status'] = ACTIVE; 
-                    $this->listOfQueryParams['pollingresource_interval > '] = 0;
-                }
-            }    
-        }
-        else {
-            $this->listOfQueryParams['pollingresource_userIdentification'] = $this->investorId;
-            $this->listOfQueryParams['pollingresource_status'] = ACTIVE; 
-            $this->listOfQueryParams['pollingresource_interval > '] = 0;            
-        }
-   
-        $results = $this->Pollingresource->find("all", $params = ['conditions' => $this->listOfQueryParams,
+        $results = $this->Pollingresource->find("all", $params = ['conditions' => $this->filterConditionQueryParms,
                                                           'fields' => $this->listOfFields,
                                                           'recursive' => -1]);
-        
+       
         $j = 0;    
         foreach ($results as $resultItem) { 
             $this->Pollingresource->apiVariableNameOutAdapter( $resultItem['Pollingresource']);
@@ -181,7 +131,7 @@ class PollingresourcesController extends AppController
             $j++;
         }
 
-        $resultJson = json_encode($apiResult);
+        $resultJson = json_encode(['data' => $apiResult]);
     
         $this->response->statusCode(200);
         $this->response->type('json');
@@ -199,6 +149,7 @@ class PollingresourcesController extends AppController
      * @throws UnauthorizedException
      */
     function v1_delete($id)  {
+        $this->checkAcl();        
         $id = $this->request->id;
 
         // Only pollingresource owner can delete it
@@ -224,7 +175,7 @@ class PollingresourcesController extends AppController
      * @return mixed false or the Links object of the new 'Investor' object
      */
     public function v1_add() { 
- 
+        $this->checkAcl(); 
         if ($this->roleName <> "superAdmin") {        
             throw new UnauthorizedException('You are not authorized to access the requested resource');      
         }   
@@ -238,7 +189,7 @@ class PollingresourcesController extends AppController
             $formattedError = $this->createErrorFormat('CANNOT_CREATE_POLLINGRESOURCE_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
-            $this->response->statusCode(500);                                    
+            $this->response->statusCode(400);                                    
         }
         else { // create the links
             $account['feedback_message_user'] = 'Account successfully created.';

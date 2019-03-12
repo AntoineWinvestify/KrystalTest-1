@@ -54,6 +54,64 @@ class Linkedaccount extends AppModel {
         )
     );
 
+    
+   var $defaultFields = [ 
+        'investor' => ['id',            //causes problems with PATCH, is never r/w
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_dateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                      ],
+
+        'winAdmin' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_dateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_accredited',            
+                        'modified',
+                        'created'
+            ],              
+        'superAdmin' => ['id', 
+                        'investor_identity',
+                        'investor_name', 
+                        'investor_surname',
+                        'investor_DNI',
+                        'investor_dateOfBirth',
+                        'investor_telephone',
+                        'investor_email',
+                        'investor_address1', 
+                        'investor_address2', 
+                        'investor_postCode',
+                        'investor_city',
+                        'investor_country', 
+                        'investor_language',
+                        'investor_accredited',
+                        'modified',
+                        'created'            
+                      ],                
+    ];  
+    
+    
+    
+    
     /**
      * 	Delete a an account that fulfills the filteringConditions
      * 	
@@ -684,5 +742,50 @@ class Linkedaccount extends AppModel {
             return $result;
         }
     }
-
+    
+    
+    
+    /** NOT FINISHED
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another webclient
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Investor object to be checked
+     * @return int (WIN_ACL_INVESTOR_IS_OWNER, WIN_ACL_INVESTOR_IS_NOT_OWNER, WIN_ACL_RESOURCE_DOES_NOT_EXIST)
+     */
+    public function isOwner($investorId, $id) { 
+        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id],   
+                                                  'fields' => ['pollingresource_useridentification'],
+                                                  'recursive' => -1]);
+      
+        if (empty($result)) {
+            return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+        }        
+        if ($id == $investorId) {
+            return WIN_ACL_INVESTOR_IS_OWNER;
+        }
+        return WIN_ACL_INVESTOR_IS_NOT_OWNER;   
+    }
+    
+    
+    /** NOT FINISHED
+     * Reads the list of defaultFields to read in case the webclient has not indicated any fields
+     * in its GET request
+     * 
+     * @param $roleName The name of the role for whom the list of defaults fields is read
+     * @return array  An array with the names of the fields. The names are the *internal* names of the fields
+     */
+    public function getDefaultFields($roleName) {
+        return $this->defaultFields[$roleName];        
+    }   
+    
+        
+    
+    
+    
+    
+    
+    
 }

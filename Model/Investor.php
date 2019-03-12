@@ -257,7 +257,6 @@ class Investor extends AppModel {
                         'investor_city',
                         'investor_country', 
                         'investor_language',
-                        'investor_links'
                       ],
 
         'winAdmin' => ['id', 
@@ -275,7 +274,6 @@ class Investor extends AppModel {
                         'investor_country', 
                         'investor_language',
                         'investor_accredited',            
-                        'investor_links',
                         'modified',
                         'created'
             ],              
@@ -294,7 +292,6 @@ class Investor extends AppModel {
                         'investor_country', 
                         'investor_language',
                         'investor_accredited',
-                        'investor_links',
                         'modified',
                         'created'            
                       ],                
@@ -1111,23 +1108,29 @@ class Investor extends AppModel {
      * 
      * @param $investorId The internal reference of the investor Object
      * @param $id The internal reference of the Investor object to be checked
-     * @return boolean  
+     * @return int (WIN_ACL_INVESTOR_IS_OWNER, WIN_ACL_INVESTOR_IS_NOT_OWNER, WIN_ACL_RESOURCE_DOES_NOT_EXIST)
      */
-    public function isOwner($investorId, $id) {  
-        
-        if ($investorId == $id) {
-            return true;
+    public function isOwner($investorId, $id) { 
+        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id],   
+                                                  'fields' => ['pollingresource_useridentification'],
+                                                  'recursive' => -1]);
+      
+        if (empty($result)) {
+            return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+        }        
+        if ($id == $investorId) {
+            return WIN_ACL_INVESTOR_IS_OWNER;
         }
-        return false;
+        return WIN_ACL_INVESTOR_IS_NOT_OWNER;   
     }
     
     
     /** 
      * Reads the list of defaultFields to read in case the webclient has not indicated any fields
-     * in its GET requests
+     * in its GET request
      * 
      * @param $roleName The name of the role for whom the list of defaults fields is read
-     * @return array $list  An array with the names of the fields. The names are the internal names of the fields
+     * @return array  An array with the names of the fields. The names are the *internal* names of the fields
      */
     public function getDefaultFields($roleName) {
         return $this->defaultFields[$roleName];        

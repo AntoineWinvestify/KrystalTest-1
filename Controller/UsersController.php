@@ -78,8 +78,8 @@ class UsersController extends AppController
 function beforeFilter() {
 
     parent::beforeFilter(); // only call if the generic code for all the classes is required.
+    $this->Auth->allow('v1_login', 'v1_pre-check');
 
-    $this->Auth->allow('v1_login');
 }
 
 
@@ -119,6 +119,7 @@ function changeDisplayLanguage() {
      * @throws UnauthorizedException Email or password is wrong
      */ 
     public function v1_login() {
+        $this->checkAcl();
         $this->request->data['User'] = $this->request->data; 
       
 	if ($this->request->is('post')) {    
@@ -819,7 +820,7 @@ echo "startDate = $startDate and endDate = $endDate <br>";
         $payload['endpoints'] = $endpoints = Configure::read("endpoints");   
         
         if ($typeOfToken == WIN_ACCESS_TOKEN) {
-            $payload['refresh_token'] = $this->User->api_getNewToken($userData['id']);
+            $payload['refresh_token'] = $this->User->api_getNewToken($userData['id'], $userData['Investor']['id']);
             $payload['account_display_name'] = $userData['Investor']['investor_name'] . " " . $userData['Investor']['investor_surname']; 
         } 
         else {      // type = WIN_REFRESH_TOKEN
