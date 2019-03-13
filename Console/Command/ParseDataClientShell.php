@@ -408,8 +408,8 @@ class ParseDataClientShell extends GearmanClientShell {
                 echo " Memory usage at start of $dateKey " . memory_get_usage() . " *-*-*-*-*-*-*-*\n";
 
 
-                // Copy the last userinvestmentdata for any missing dates in the transaction records sequence
-                if ($platformData['actionOrigin'] == WIN_ACTION_ORIGIN_REGULAR_UPDATE && !empty($oldDateKey)) {
+                // Copy the last userinvestmentdata for any missing dates in the transaction records sequence for all actionOrigin
+                if (!empty($oldDateKey)) {
                     $date1 = new DateTime($oldDateKey);
                     $date1->modify('+1 day');
                     $actualDate = $date1->format('Y-m-d');
@@ -522,8 +522,10 @@ class ParseDataClientShell extends GearmanClientShell {
                                 $dbTable = $dataInformation[0];
                                 $dbTableField = $dataInformation[1];
                                 if (!empty($functionToCall)) {
-                                    echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n",
+                                    echo __FUNCTION__ . " " . __LINE__ . " ==> dbTable = $dbTable, transaction = $transaction and dbTableField = $dbTableField\n";
+
                                     $result = $calculationClassHandle->$functionToCall($dateTransaction[0], $database);
+                                    
                                     //update the field userinvestmentdata_cashInPlatform   
                                     $cashflowOperation = $tempResult['cashflowOperation'];
                                     if (!empty($cashflowOperation)) {
@@ -545,6 +547,7 @@ class ParseDataClientShell extends GearmanClientShell {
                                 }
                             }
                         }
+                        
                     }
                     else {
                         echo "---------> ANALYZING NEXT LOAN ------- with LoanId = " . $dateTransaction[0]['investment_loanId'] . "\n";
@@ -671,6 +674,7 @@ class ParseDataClientShell extends GearmanClientShell {
                         // load all the transaction data
                         foreach ($dateTransaction as $transactionKey => $transactionData) {                 // read one by one all transaction data of this loanId
                             echo "====> ANALYZING NEW TRANSACTION transactionKey = $transactionKey transactionData = \n";
+                            unlink($conceptChars);
                             if (isset($transactionData['conceptChars'])) {
                                 $conceptChars = explode(",", $transactionData['conceptChars']);
 
@@ -755,7 +759,7 @@ class ParseDataClientShell extends GearmanClientShell {
 //echo __FILE__ . " " . __LINE__ . " new version of Investment data printed\n";
                                 }
                             }
-
+                            unlink($transactionData['conceptChars']);
 
                             echo __LINE__ . " Memory usage before transactionData of $dateKey " . memory_get_usage() . " *-*-*-*-*-*-*-*\n";
                             foreach ($transactionData as $transactionDataKey => $transaction) {     // read all transaction concepts
@@ -1027,25 +1031,21 @@ class ParseDataClientShell extends GearmanClientShell {
                             }
                         }
                     }
-                    $internalVariablesToHandle = array(10001,
-                        10006, 10007, 10008,
-                        10009, 10010, 10011,
-                        10012, 10013, 10016,
-                        10017, 10018, 10019,
-                        10020, 10021, 10022,
-                        10023, 10024, 10025,
-                        10026, 10027, 10028,
-                        10029);
+                    $internalVariablesToHandle = array(
+                        10001, 10003, 10006, 10007, 10008, 10009, 10010,
+                        10011, 10012, 10013, 10016, 10017, 10018, 10019, 10020, 
+                        10021, 10022, 10023, 10024, 10025, 10026, 10027, 10028, 10029,
+                        10031, 10032, 10033, 10034);
                     foreach ($internalVariablesToHandle as $keyItem => $item) {
                         $varName = explode(".", $this->variablesConfig[$item]['databaseName']);
                         $functionToCall = $this->variablesConfig[$item]['function'];
+
                         $result = $calculationClassHandle->$functionToCall($transactionData, $database);
                         echo __FUNCTION__ . " " . __LINE__ . " Var = $item, Function to Call = $functionToCall and Executing Calc. specific variables=>: orig. amount = " . $database[$varName[0]][$varName[1]] . " and new result = $result" . "\n";
-
                         if ($this->variablesConfig[$item]["charAcc"] == WIN_FLOWDATA_VARIABLE_ACCUMULATIVE) {
-                            if (!isset($database[$varName[0]][$varName[1]])) {
-                                $database[$dbTable][$transactionDataKey] = 0;
-                            }
+                           /*if (!isset($database[$varName[0]][$varName[1]])) {     //If is accumulative we shouldn't reset the variable.
+                                    $database[$dbTable][$transactionDataKey] = 0;
+                            }*/
                             $database[$varName[0]][$varName[1]] = bcadd($database[$varName[0]][$varName[1]], $result, 16);
                         }
                         else {

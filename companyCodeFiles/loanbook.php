@@ -118,20 +118,23 @@ class loanbook extends p2pCompany {
                         "input2" => "#current.original_concept",
                         "input3" => [
                             0 => ["Efectivo-Provisión de Fondos" => "Cash_deposit"],
-                            1 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
-                            2 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_verification"],
-                            3 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
-                            4 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
-                            5 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
-                            6 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
-                            7 => ["Compensación-Compensación por incidencia administrativa" => "Compensation"],
+                            1 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
+                            2 => ["Efectivo-Retirada de Fondos" => "Cash_withdrawal"],
+                            3 => ["Operación Marketplace-Participación en préstamo" => "Primary_market_investment_active_verification"],
+                            4 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
+                            5 => ["Operación Marketplace-Pago de capital" => "Capital_repayment"],
+                            6 => ["Intereses-Pago Intereses Brutos" => "Regular_gross_interest_income"],
+                            7 => ["Compensación-Compensación por incidencia administrativa" => "Commission_income"],
                             8 => ["Comisión-Comisión pago por tarjeta" => "Bank_charges"],
-                            9 => ["Operación Marketplace-Participación en pagaré" => "Primary_market_investment_active_verification"],
-                            10 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
-                            11 => ["Efectivo-Provisión de Fondos (por TPV)" => "Cash_deposit"],
-                            12 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
-                            13 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"],
-                            14 => ["Impuestos-Retención de Intereses (AEAT)" => "Tax_income_withholding_tax"]
+                            9 => ["Impuestos-Retención de Intereses (IRPF)" => "Tax_income_withholding_tax"],
+                            
+                            10 => ["Reservado-Participación en préstamo" => "Disinvestment_primary_market"], //When is positive
+                            11 => ["Reservado-Participación en préstamo" => "Primary_market_investment_preactive"],    //When is negative
+                            12 => ["Reservado-Participación en pagaré" => "Disinvestment_primary_market"],
+                            13 => ["Reservado-Participación en pagaré" => "Primary_market_investment_preactive"],
+                            
+                            14 => ["Intereses-Intereses de compensación por demora" => "Delayed_interest_income"],
+                            15 => ["Impuestos-Retención de Intereses (AEAT)" => "Tax_income_withholding_tax"]
                         ]
                     ],
                     "functionName" => "getComplexTransactionDetail",
@@ -771,6 +774,7 @@ class loanbook extends p2pCompany {
                 //echo $str;
                 libxml_use_internal_errors(true);
                 $dom->loadHTML($str);
+
                 $dom->preserveWhiteSpace = false;
 
                 $forms = $dom->getElementsByTagName('form');
@@ -818,7 +822,7 @@ class loanbook extends p2pCompany {
                     }
                     $index = 0;
                     foreach ($as as $a) {
-                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                        if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                             $this->mainPortalPage = $str;
                             $resultMiLoanbook = true;
                             break 2;
@@ -1214,6 +1218,7 @@ class loanbook extends p2pCompany {
                 if (!$this->hasElements) {
                     return $this->getError(__LINE__, __FILE__, WIN_ERROR_FLOW_STRUCTURE);
                 }
+
                 foreach ($uls as $ul) {
                     $as = $ul->getElementsByTagName('a');
                     $this->verifyNodeHasElements($as);
@@ -1222,7 +1227,7 @@ class loanbook extends p2pCompany {
                     }
                     $index = 0;
                     foreach ($as as $a) {
-                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                        if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                             $this->mainPortalPage = $str;
                             $resultMiLoanbook = true;
                             break 2;
@@ -1230,6 +1235,7 @@ class loanbook extends p2pCompany {
                         $index++;
                     }
                 }
+
                 if (!$resultMiLoanbook) {   // Error while logging in
                     echo __FILE__ . " " . __LINE__ . "ERROR WHILE LOGGING IN<br>";
                     $tracings = "Tracing:\n";
@@ -1364,18 +1370,16 @@ class loanbook extends p2pCompany {
                 $this->getCompanyWebpageMultiCurl($this->tempUrl['dummy']);
                 break;
             case 7:
-                if (empty($this->tempUrl['InvesmentUrl'])) {
-                    $this->tempUrl['InvesmentUrl'] = array_shift($this->urlSequence);
-                }
-                echo 'LOAN ID' . $this->UserLoansId[$this->j - 1];
-                $url = $this->tempUrl['InvesmentUrl'] . $this->UserLoansId[$this->j - 1];
+                if (empty($this->tempUrl['InvestmentUrl'])) {
+                    $this->tempUrl['InvestmentUrl'] = array_shift($this->urlSequence);
+                }        
+                echo 'LOAN ID' . $this->UserLoansId[$this->j];
+                $url = $this->tempUrl['InvestmentUrl'] . $this->UserLoansId[$this->j];
                 $this->j++;
                 $this->idForSwitch++;
                 $this->getCompanyWebpageMultiCurl($url);
                 break;
             case 8:
-                //echo $str;
-
                 $topRevision = false;
                 $tableRevision = false;
                 $dom = new DOMDocument;
@@ -1585,7 +1589,7 @@ class loanbook extends p2pCompany {
                     }
                     $index = 0;
                     foreach ($as as $a) {
-                        if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                        if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                             $this->mainPortalPage = $str;
                             $resultMiLoanbook = true;
                             break 2;
@@ -1711,7 +1715,7 @@ class loanbook extends p2pCompany {
             $as = $ul->getElementsByTagName('a');
             $index = 0;
             foreach ($as as $a) {
-                if (strcasecmp(trim($a->nodeValue), "RESUMEN") == 0) {
+                if (strcasecmp(trim($a->nodeValue), "Mi perfil") == 0) {
                     $this->mainPortalPage = $str;
                     return true;
                     break 2;

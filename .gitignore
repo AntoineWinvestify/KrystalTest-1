@@ -8,7 +8,14 @@
 /companyCodeFiles/cookies
 /companyCodeFiles/logWarning
 /tmp
-/Config
+/Config/Schema
+/Config/database.php
+/Config/database.php.default
+/Config/email.php
+/Config/email.php.default
+/Config/local
+/Config/server
+/Config/cookies.ctp
 /webroot/files
 /Selenium-Test
 /files

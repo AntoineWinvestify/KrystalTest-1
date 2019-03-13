@@ -97,6 +97,7 @@ class Dashboardoverviewdata extends AppModel {
             'fields' => ['id', 'date',
                 "$field as value"
             ],
+            'order' => 'date ASC',
             'recursive' => -1,
         ]);
         return $result;

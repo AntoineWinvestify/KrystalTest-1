@@ -118,7 +118,6 @@ class ConsolidationClientShell extends GearmanClientShell {
         $this->GearmanClient->setExceptionCallback(array($this, 'verifyExceptionTask'));
         $this->GearmanClient->setFailCallback(array($this, 'verifyFailTask'));
         $this->GearmanClient->setCompleteCallback(array($this, 'verifyCompleteTask'));
-
         $this->flowName = "GEARMAN_FLOW4";
         $inActivityCounter = 0;
         $workerFunction = "consolidation";
@@ -310,7 +309,7 @@ class ConsolidationClientShell extends GearmanClientShell {
         }
 
         //After save all the service, we change the lastAccess of the account as the date of the flow1 started
-        foreach ($this->userResult as $queueId => $userResult) {
+        /*foreach ($this->userResult as $queueId => $userResult) {
             $date = $dateSend->format('Ymd');
             $lastAccess = date("Y-m-d", strtotime($date));
             foreach ($this->queueInfo[$queueId]['companiesInFlow'] as $linkaccountId) {
@@ -318,7 +317,7 @@ class ConsolidationClientShell extends GearmanClientShell {
                 $this->Linkedaccount->saveField('linkedaccount_lastAccessed', $lastAccess);
                 $this->Linkedaccount->saveField('linkedaccount_linkingProcess', WIN_LINKING_NOTHING_IN_PROCESS);
             }
-        }
+        }*/
     }
 
     /**

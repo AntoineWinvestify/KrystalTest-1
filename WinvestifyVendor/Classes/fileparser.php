@@ -484,8 +484,36 @@ class Fileparser {
                 "account" => "PL",
                 "type" => "payment_secondaryMarketSell",
             ],*/
-
-
+            50 =>[
+                "detail" => "Late_payment_fee_cost",
+                "transactionType" => WIN_CONCEPT_TYPE_COST,
+                "account" => "PL",
+                "type" => "payment_latePaymentFeeCost",
+            ],
+            51 => [
+                "detail" => "Commission_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_commissionIncome"    
+            ],
+            52 => [
+                "detail" => "Principal_repayment_guarantee",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_principal_repayment_guarantee"    
+                ],
+            53 => [
+                "detail" => "Interest_income_guarantee",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_interest_income_guarantee"    
+                ],
+            54 => [
+                "detail" => "Write-off_income",
+                "transactionType" => WIN_CONCEPT_TYPE_INCOME,
+                "account" => "PL",
+                "type" => "payment_writeoff_income"    
+                ],
         
             105 => [
                 "detail" => "dummy_concept",    // This is a dummy concept

@@ -55,8 +55,8 @@ class dashboardConfigTest extends CakeTestCase {
                     $functionExists = method_exists($this->formatter, $function);
                     $this->assertTrue($functionExists, "Formatter function in $key not exists");
                 }
-                
-                if(!empty($config[2]['xAxis'])){
+
+                if (!empty($config[2]['xAxis'])) {
                     $this->assertContains($config[2]['xAxis'], array('currency', '%', ''), "xAxis type not permited in $key");
                 }
             }
@@ -65,27 +65,31 @@ class dashboardConfigTest extends CakeTestCase {
 
     public function testMainDataConfig() {
         $dashboardConfig = Configure::read('DashboardMainData');
-        foreach ($dashboardConfig as $key => $config) {
-            $this->assertArrayHasKey('display_name', $config, "display_name not detected in $key");
-            $this->assertArrayHasKey('tooltip', $config, "tooltip not detected in $key");
-            $this->assertInternalType('int', $config['tooltip'], 'Tooltip not defined in constants or not an int');
-            if (!empty($config['icon'])) {
-                $this->assertArrayHasKey('graphLinksParams', $config, "$key have icon but not graphLinksParams");
-            }
-            if (!empty($config['graphLinksParams'])) {
-                foreach ($config['graphLinksParams'] as $link) {
-                    $this->assertArrayHasKey('link', $link, "link missing in $key");
+
+        foreach ($dashboardConfig as $blockKey => $dashboardConfigData) {
+            $this->assertArrayHasKey('display_name', $dashboardConfigData, "display_name not detected in $blockKey");
+            foreach ($dashboardConfigData['data'] as $key => $config) {
+                $this->assertArrayHasKey('display_name', $config, "display_name not detected in $key");
+                $this->assertArrayHasKey('tooltip', $config, "tooltip not detected in $key");
+                $this->assertInternalType('int', $config['tooltip'], 'Tooltip not defined in constants or not an int');
+                if (!empty($config['icon'])) {
+                    $this->assertArrayHasKey('graphLinksParams', $config, "$key have icon but not graphLinksParams");
                 }
-            }
-            if (!empty($config['value'])) {
-                $this->assertArrayHasKey('model', $config['value'], "model  not detected in value of $key");
-                $this->assertArrayHasKey('field', $config['value'], "field not detected in value of $key");
-                $model = $config['value']['model'];
-                $this->Model = ClassRegistry::init($model);
-                $modelExists = class_exists($model);
-                $this->assertTrue($modelExists, "Search class in $key not exists");            
-                if (!empty($config['value']['type'])) {
-                    $this->assertContains($config['value']['type'], array('currency', '%'), "Value type not permited in $key");
+                if (!empty($config['graphLinksParams'])) {
+                    foreach ($config['graphLinksParams'] as $link) {
+                        $this->assertArrayHasKey('link', $link, "link missing in $key");
+                    }
+                }
+                if (!empty($config['value'])) {
+                    $this->assertArrayHasKey('model', $config['value'], "model  not detected in value of $key");
+                    $this->assertArrayHasKey('field', $config['value'], "field not detected in value of $key");
+                    $model = $config['value']['model'];
+                    $this->Model = ClassRegistry::init($model);
+                    $modelExists = class_exists($model);
+                    $this->assertTrue($modelExists, "Search class in $key not exists");
+                    if (!empty($config['value']['type'])) {
+                        $this->assertContains($config['value']['type'], array('currency', 'percent', ''), "Value type not permited in $key");
+                    }
                 }
             }
         }

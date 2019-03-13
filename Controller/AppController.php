@@ -526,7 +526,7 @@ class AppController extends Controller {
      * @param array $validationErrors This is an array with all the error messages per variable 
      * @return array 
      */   
-    public function createErrorFormat($errorName, $errorMessage, $validationErrors){      
+    public function createErrorFormat($errorName, $errorMessage, $validationErrors = null){      
         if (!empty($validationErrors)) {
             foreach ($validationErrors as $key => $item) {
                 $tempArray['field'] = $key;
@@ -673,11 +673,10 @@ class AppController extends Controller {
                 $link['method'] = 'DELETE';
                 break;
             case 'monitor':
-                $link['method'] = 'GET';
-                break;
             case 'self':
-                $link['method'] = 'GET';
             case 'list':
+            case 'defaulted_list':
+            case 'active_list':    
                 $link['method'] = 'GET';
                 break;
         }

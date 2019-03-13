@@ -26,7 +26,6 @@
  */
 class Globaldashboard extends AppModel {
 
-    var $uses = array('Dashboardoverviewdata', 'Tooltip', 'Globaldashboard');
     var $name = 'Globaldashboard';
     var $useTable = "globaldashboards";
     public $hasMany = array(
@@ -38,10 +37,16 @@ class Globaldashboard extends AppModel {
     public $belongsTo = array(
         'Investor' => array(
             'className' => 'Investor',
-            'foreignKey' =>  'investor_id'
+            'foreignKey' => 'investor_id'
         )
     );
-    
+    public $hasOne = array(
+        'Globaldashboarddelay' => array(
+            'className' => 'Globaldashboarddelay',
+            'foreignKey' => 'globaldashboard_id',
+        ),
+    );
+
     /**
      * 
      * 
@@ -49,210 +54,219 @@ class Globaldashboard extends AppModel {
      * 
      * 
      */
-    
-    
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_activeInvestments"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readActiveInvestmentsGraphData($investorId, $period) {
+    public function readActiveInvestmentsGraphData($globalDashboardId, $period) {
         $field = 'globaldashboard_numberActiveInvestments';
-        return $this->genericGraphSearch($investorId, $period, $field);
+        return $this->genericGraphSearch($globalDashboardId, $period, $field);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_totalNetDeposits"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNetDepositsGraphData($investorId, $period) {
+    public function readNetDepositsGraphData($globalDashboardId, $period) {
         $field = 'globaldashboard_totalNetDeposits';
-        return $this->genericGraphSearch($investorId, $period, $field);   
+        return $this->genericGraphSearch($globalDashboardId, $period, $field);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_cashDrag"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readCashDragGraphData($investorId, $period) {
+    public function readCashDragGraphData($globalDashboardId, $period) {
         $field = 'globaldashboard_cashDrag';
-        return $this->genericGraphSearch($investorId, $period, $field);   
+        return $this->genericGraphSearch($globalDashboardId, $period, $field);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_outstandingPrincipal"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readInvestedAssetsGraphData($investorId, $period) {
+    public function readInvestedAssetsGraphData($globalDashboardId, $period) {
         $field = 'globaldashboard_outstandingPrincipal';
-        return $this->genericGraphSearch($investorId, $period, $field);   
+        return $this->genericGraphSearch($globalDashboardId, $period, $field);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_reservedAssets"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readReservedFundsGraphData($investorId, $period) {
+    public function readReservedFundsGraphData($globalDashboardId, $period) {
         $field = 'globaldashboard_reservedAssets';
-        return $this->genericGraphSearch($investorId, $period, $field);   
+        return $this->genericGraphSearch($globalDashboardId, $period, $field);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_cashInPlatform"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readCashGraphData($investorId, $period) {
+    public function readCashGraphData($globalDashboardId, $period) {
         $field = 'globaldashboard_cashInPlatform';
-        return $this->genericGraphSearch($investorId, $period, $field);   
+        return $this->genericGraphSearch($globalDashboardId, $period, $field);
     }
 
     /**
      * Read the historical data of the datum "globaldashboard_netAnnualReturnPastYear"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNarPastYearGraphData($investorId, $period) {
-        $field = 'globaldashboard_netAnnualReturnPastYear';
-        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
+    public function readNarPastYearGraphData($globalDashboardId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'dashboardoverviewdata_netAnnualReturnPastYear';
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_netAnnualReturnPast12Months"
      * 
-     * @param int  $investorId The object reference for the linked account             //Global historical not implemented
-     * @param string $period  Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNarLast365daysMultiGraphData($investorId, $period) {
-        $field = 'globaldashboard_netAnnualReturnPast12Months';
-        $data['Dashboard'] = $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
-        return $data;
+    public function readNarLast365daysGraphData($globalDashboardId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'dashboardoverviewdata_netAnnualReturnPast12Months';
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_netAnnualTotalFundsReturn"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNarTotalFundsGraphData($investorId, $period) {
-        $field = 'globaldashboard_netAnnualTotalFundsReturn';
-        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
+    public function readNarTotalFundsGraphData($globalDashboardId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'dashboardoverviewdata_netAnnualTotalFundsReturn';
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
     }
-    
+
     /**
      * Read the historical data of the datum "globaldashboard_netReturnPast12Months"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNetEarningsLast365daysGraphData($investorId, $period) {
-        $field = 'globaldashboard_netReturnPast12Months';
-        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
+    public function readNetEarningsLast365daysGraphData($globalDashboardId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'dashboardoverviewdata_netReturnPast12Months';
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
     }
 
     /**
      * Read the historical data of the datum "globaldashboard_netReturnPastYear"
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period  Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNetEarningsPastYearGraphData($investorId, $period) {
-        $field = 'globaldashboard_netReturnPastYear';
-        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
+    public function readNetEarningsPastYearGraphData($globalDashboardId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'dashboardoverviewdata_netReturnPastYear';
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
     }
 
     /**
      * Read the historical data of the datum "globaldashboard_netTotal"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period  Time period. For now can be "year" or "all"
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                    Time period. For now can be "year" or "all"
+     * @return array
      */
-    public function readNetEarningsTotalGraphData($investorId, $period) {
-        $field = 'globaldashboard_netTotal';
-        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);   
-    }    
-    
+    public function readNetEarningsTotalGraphData($globalDashboardId, $period) {
+        $this->Dashboardoverviewdata = ClassRegistry::init('Dashboardoverviewdata');
+        $field = 'dashboardoverviewdata_netTotal';
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        return $this->Dashboardoverviewdata->genericGraphSearch($investorId, $period, $field, true);
+    }
+
     /**
      * Read the datum "globaldashboard_current"      //This field is not implemented yet
      * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period   //Not used
-     * @return boolean
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                   //Not used
+     * @return array
      */
-    public function readCurrentGraphData($investorId, $period) {
-        $data = $this->getData(['investor_id' => $investorId], ['globaldashboard_current'], 'Date DESC', null, 'first');
-        return $data['Globaldashboard']['globaldashboard_current'];
-    }   
-    /**
-     * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
-     * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period   //Not used
-     * @return boolean
-     */
-    public function readExposureGraphData($investorId, $period) {
-        $data = $this->getData(['investor_id' => $investorId], ['globaldashboard_exposure'], 'Date DESC', null, 'first');
-        return $data['Globaldashboard']['globaldashboard_exposure'];
-    }   
-    /**
-     * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
-     * 
-     * @param int  $investorId The object reference for the linked account
-     * @param string $period  //Not used
-     * @return boolean
-     */
-    public function readPaymentDelayGraphData($investorId, $period) {
-        
-
-        $data['1-7'] = $this->getData(['investor_id' => $investorId], ['globaldashboard_delay_1-7'], 'Date DESC', null, 'first');
-        $data['8-30'] = $this->getData(['investor_id' => $investorId], ['globaldashboard_delay_8-30'], 'Date DESC', null, 'first');
-        $data['31-60'] = $this->getData(['investor_id' => $investorId], ['globaldashboard_delay_31-60'], 'Date DESC', null, 'first');
-        $data['61-90'] = $this->getData(['investor_id' => $investorId], ['globaldashboard_delay_61-90'], 'Date DESC', null, 'first');
-        $data['>90'] = $this->getData(['investor_id' => $investorId], ['globaldashboard_delay_>90'], 'Date DESC', null, 'first');
-
+    public function readCurrentTotalGraphData($globalDashboardId, $period) {
+        $this->Globaldashboarddelay = ClassRegistry::init('Globaldashboarddelay');
+        $data['data'] = $this->Globaldashboarddelay->getData(['globaldashboard_id' => $globalDashboardId], ['globaldashboarddelay_currentOutstanding'], null, null, 'first');
+        $data['tooltip'] = array(GLOBALDASHBOARD_CURRENT);
         return $data;
-    }       
-    
-    
-    
-    
-    
+    }
+
+    /**
+     * Read the datum "globaldashboard_exposure"      //This field is not implemented yet
+     * 
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                   //Not used
+     * @return array
+     */
+    public function readExposureGraphData($globalDashboardId, $period) {
+        $data = $this->getData(['investor_id' => $globalDashboardId], ['globaldashboard_exposure'], 'Date DESC', null, 'first');
+        return $data['Globaldashboard']['globaldashboard_exposure'];
+    }
+
+    /**
+     * Read the data of the delay ranged based on outstanding
+     * 
+     * @param int  $globalDashboardId The object reference for the globaldashboard
+     * @param string $period                                                   //Not used
+     * @return array
+     */
+    public function readPaymentDelayGraphData($globalDashboardId, $period) {
+
+        $delayRanges['data'] = $this->Globaldashboarddelay->getData(array('globaldashboard_id' => $globalDashboardId), array('Globaldashboarddelay.globaldashboarddelay_delay1-7Outstanding', 'Globaldashboarddelay.globaldashboarddelay_delay8-30Outstanding',
+            'Globaldashboarddelay.globaldashboarddelay_delay31-60Outstanding', 'Globaldashboarddelay.globaldashboarddelay_delay61-90Outstanding',
+            'Globaldashboarddelay.globaldashboarddelay_delay>90Outstanding', 'Globaldashboarddelay.globaldashboarddelay_currentOutstanding',
+            'Globaldashboarddelay.globaldashboarddelay_outstandingDebts'), null, null, 'first');
+
+        $delayRanges['tooltip'] = array(GLOBALDASHBOARD_PAYMENT_DELAY);
+        return $delayRanges;
+    }
+
     /**
      * Generic search for a field to use in the graph of the api.
      * 
-     * @param int $investorId
+     * @param int  $globalDashboardId The object reference for the globaldashboard
      * @param string $period  Time period. For now can be "year" or "all"
      * @param string $field
-     * @return boolean
+     * @return array
      */
-    public function genericGraphSearch($investorId, $period, $field){
-        $conditions = ['investor_id' => $investorId];
+    public function genericGraphSearch($globalDashboardId, $period, $field) {
 
+        $investorId = $this->getData(array('id' => $globalDashboardId), 'investor_id', null, null, 'first')['Globaldashboard']['investor_id'];
+        $conditions = ['investor_id' => $investorId];
         switch ($period['period']) {
             case "all":
                 break;
@@ -269,6 +283,7 @@ class Globaldashboard extends AppModel {
             'fields' => ['id', 'date',
                 "$field as value"
             ],
+            'order' => 'date ASC',
             'recursive' => -1,
         ]);
         return $result;

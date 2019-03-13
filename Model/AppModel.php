@@ -52,6 +52,7 @@ class AppModel extends Model {
      * @var array
      */
     private $apiVariableConfigArray = [ //'investor_DNI' => 'investor_D_N_I',
+                                'Linkedaccount' => 'linkedaccount',
                                 'investor_dateOfBirth' => 'investor_date_of_birth',
                                 'investor_city' => 'investor_city',  // ONLY translation shall be allowed, this is really a configuration error
                                 'investor_approvalCode' => 'approval_code',
@@ -67,14 +68,13 @@ class AppModel extends Model {
                                 'usertoken_refreshToken' => 'refresh_token',
                                 'linkedaccount_accountIdentity' => 'linkedaccount_identity',
                                 'linkedaccount_accountDisplayName' => 'linkedaccount_platform_display_name',
-                                'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
                                 'linkedaccount_apiStatus' => 'linkedaccount_status',
                                 'linkedaccount_visualStatus' => 'linkedaccount_visual_state',
                                 'linkedaccount_status' => 'linkedaccount_status',      
                                 'linkedaccount_currencyCode' => 'linkedaccount_currency_code',       
                                 'accountowner_username' => 'linkedaccount_username',
                                 'accountowner_password' => 'linkedaccount_password',
-                                'accountCheck'  => 'linkedaccount_linkingstatus',
+                                'accountCheck'  => 'linkedaccount_linking_status',
                                 'requireNewAccessToken'=> 'require_new_access_token',
                                 'pollingresource_newValueExists' => 'pollingresource_new_value_exists',
                                 'pollingresource_userIdentification' => 'pollingresource_investor_id',
@@ -274,7 +274,7 @@ class AppModel extends Model {
      * @param  int   $limit  Limit table result   ---> 1,
      * @return array         data from the table
      */
-    public function getData($filter = null, $field = null, $order = null, $limit = null, $type = "all"){
+    public function getData($filter = null, $field = null, $order = null, $limit = null, $type = "all", $recursive = -1){
 
        
         $resultData = $this->find($type, array("recursive" => -1,
@@ -282,6 +282,7 @@ class AppModel extends Model {
             "fields" => $field,
             "order" => $order,
             "limit" => $limit,
+            "recursive" => $recursive,
         ));
 
         return $resultData;

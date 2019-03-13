@@ -191,17 +191,14 @@ class UserDataShell extends AppShell {
         if (isset($resultData['investment']['investment_priceInSecondaryMarket'])) {
             $result = bcsub($result, $resultData['investment']['investment_priceInSecondaryMarket'], 16);
         }
-        if (isset($resultData['payment']['payment_currencyFluctuationNegative'])) {
-            $result = bcadd($result, $resultData['payment']['payment_currencyFluctuationNegative'], 16);
-        }
-        if (isset($resultData['payment']['payment_currencyFluctuationPositive'])) {
-            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuationPositive'], 16);
-        }
-        if (isset($resultData['payment']['payment_tempCamp'])) {
-            $result = bcadd($result, $resultData['payment']['payment_tempCamp'], 16);
+        if (isset($resultData['payment']['payment_currencyFluctuation'])) {
+            $result = bcsub($result, $resultData['payment']['payment_currencyFluctuation'], 16);
         }
         if (isset($resultData['payment']['payment_secondaryMarketSell'])) {
             $result = bcsub($result, $resultData['payment']['payment_secondaryMarketSell'], 16);
+        }
+        if (isset($resultData['payment']['payment_principalRepaymentGuarantee'])) {
+            $result = bcsub($result, $resultData['payment']['payment_principalRepaymentGuarantee'], 16);
         }
         return $result;
     }
@@ -451,6 +448,12 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
     
+    public function calculateLatePaymentFee(&$transactionData, &$resultData) {
+        return -$transactionData['amount'];
+    }
+    
+    
+    
     /**
      *  Get the amount which corresponds to the "capitalRepayment Winvestify Format" concept
      * 
@@ -489,17 +492,7 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /**
-     *  Get the amount which corresponds to the "delayedInterestIncome" concept
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string
-     */
-    public function calculatePrincipalBuyback(&$transactionData, &$resultData) {
-        echo "PRINCIPAL BUYBACK, amount =  " . $transactionData['amount'];
-        return $transactionData['amount'];
-    }
+
 
     /**
      *  Get the amount which corresponds to the "DelayedInterestIncomeBuyback" concept
@@ -536,19 +529,7 @@ class UserDataShell extends AppShell {
         return $transactionData['amount'];
     }
 
-    /**
-     *  Get the amount which corresponds to the "Regular Gross Interest Income" concept
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB
-     *  @return string      amount expressed as a string
-     */
-    public function calculateRegularGrossInterestIncome(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
-    }
-    public function calculateRegularGrossInterestCost(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
-    }  
+
     /**
      *  Calculates the number of active investments. Various investments in the same loan 
      *  are counted as 1 investment
@@ -770,16 +751,15 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     
     
     
+
+
+ 
     /**
-     *  Calculates the sum of the payment concept "LatePaymentFeeIncome" that happened during a day
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     *  @return string      accumulated amount
+     * Sum in only payment
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
      */
-    public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
-        return($resultData['payment']['payment_latePaymentFeeIncome']);    
-    }   
     public function calculateGlobalTotalDelayedInterestIncomeBuybackPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_delayedInterestIncomeBuyback']);    
     }   
@@ -789,15 +769,44 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
     public function calculateGlobalTotalLoanIncentivesAndBonusPerDay(&$transactionData, &$resultData) {
         return($resultData['payment']['payment_loanIncentivesAndBonus']);    
     }   
+    public function calculateGlobalTotalSecondaryMarketSell(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_secondaryMarketSell']);    
+    }
+    public function calculateGlobalTotalReapymentGuarantee(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_principalRepaymentGuarantee']);    
+    }
+    public function calculateGlobalTotalInterestIncomeGuarantee(&$transactionData, &$resultData) {
+        return($resultData['payment']['payment_interestIncomeGuarantee']);    
+    }
     
     
+    /**
+     * Sum in paymeny and gobalcashflow
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
+     */
     public function calculateGlobalTotalDefaultInterestIncome(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome']));   
+        return(bcadd($resultData['payment']['payment_defaultInterestIncome'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncome'], 16));   
     }
     public function calculateGlobalTotalDefaultInterestIncomeRebuy(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_defaultInterestIncomeRebuy'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncomeRebuy']));    
+        return(bcadd($resultData['payment']['payment_defaultInterestIncomeRebuy'],$resultData['globalcashflowdata']['globalcashflowdata_defaultInterestIncomeRebuy'], 16));    
     }
-    
+    public function calculateGlobalTotalRecoveries(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_loanRecoveries'],$resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'], 16));    
+    }
+    public function calculateGlobalTotaltaxVATPerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_taxVAT'],$resultData['globalcashflowdata']['globalcashflowdata_taxVat'], 16));    
+    } 
+    public function calculateGlobalTotalLatePaymentFeeIncomePerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_latePaymentFeeIncome'], $resultData['globalcashflowdata']['globalcashflowdata_latePaymentFeeIncome'], 16));    
+    }  
+    public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_commissionPaid'], $resultData['globalcashflowdata']['globalcashflowdata_commissionPaid'], 16));    
+    } 
+    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
+        return(bcadd($resultData['payment']['payment_regularGrossInterestIncome'], $resultData['globalcashflowdata']['globalcashflowdata_regularGrossInterestIncome'], 16)); 
+    }
     /**
      *  Calculates the sum of the payment concept "CapitalRepayment" that happened during a day
      * 
@@ -834,16 +843,8 @@ echo __FUNCTION__ . " " . __LINE__ . " Setting loan status to INITIAL\n";
         return($resultData['payment']['payment_interestIncomeBuyback']);
     }    
     
-    /**
-     *  Calculates the sum of the payment concept "RegularGrossInterestIncome" that happened during a day
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     *  @return string      accumulated amount
-     */
-    public function calculateGlobalTotalRegularGrossInterestIncomePerDay(&$transactionData, &$resultData) {
-        return($resultData['payment']['payment_regularGrossInterestIncome']);    
-    }
+
+ 
 
  
     /**
@@ -1184,27 +1185,11 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
         return($resultData['payment']['payment_delayedInterestIncome']);    
     } 
     
-    /**
-     *  Calculates the sum of the payment concept "Commission Paid" that happened during a day
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     *  @return string      accumulated amount
-     */
-    public function calculateGlobalTotalCommissionPaidPerDay(&$transactionData, &$resultData) {
-        return($resultData['payment']['payment_commissionPaid']);    
-    } 
+
+
     
-    /**
-     *  Calculates the sum of the payment concept "Tax VAT" that happened during a day
-     * 
-     *  @param  array       array with the current transaction data
-     *  @param  array       array with all data so far calculated and to be written to DB ( = shadow database)
-     *  @return string      accumulated amount
-     */
-    public function calculateGlobalTotaltaxVATPerDay(&$transactionData, &$resultData) {
-        return($resultData['payment']['payment_taxVAT']);    
-    } 
+
+
     
     /**  
      *  Get the amount which corresponds to the "commission paid" concept.
@@ -1294,7 +1279,7 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
      *  @return string      accumulated amount
      */
     public function calculateGlobalTotalCurrencyExchangeFeePerDay(&$transactionData, &$resultData) {
-        return(bcadd($resultData['payment']['payment_currencyExchangeFee'],$resultData['globalcashflowdata']['globalcashflowdata_currencyExchangeFee']));  
+        return(bcadd($resultData['payment']['payment_currencyExchangeFee'],$resultData['globalcashflowdata']['globalcashflowdata_currencyExchangeFee'], 16));  
     }
 
     /**
@@ -1550,27 +1535,24 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
     function calculateRecoveries(&$transactionData, &$resultData) {
         return $transactionData['amount'];
     }
-    /**
-     * 
-     * @param  array $transactionData array with the current transaction data    
-     * @param  array $resultData array with all data so far calculated and to be written to DB
-     * @return string bonus amount
-     */
-    function calculateCurrencyFluctation(&$transactionData, &$resultData) {
-        return $transactionData['amount'];
-    }
+
+    
+
+    
     
     /**
+     * Calculate cashdrag at the end of each day
      * 
-     * @param  array $transactionData array with the current transaction data    
-     * @param  array $resultData array with all data so far calculated and to be written to DB
-     * @return string bonus amount
+     * @param type $transactionData
+     * @param type $resultData
+     * @return type
      */
-    function calculatePlatformRecoveries(&$transactionData, &$resultData) {
-        //$result = $resultData['globalcashflowdata']['globalcashflowdata_platformRecoveries'];
-        //$result = bcadd($result, $transactionData['amount'], 16);
-        return $transactionData['amount'];
+    function calculateCashDrag(&$transactionData, &$resultData) {
+        $totalVolume = bcadd(bcadd($resultData['Userinvestmentdata']['userinvestmentdata_outstandingPrincipal'], $resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], 16), $resultData['Userinvestmentdata']['userinvestmentdata_reservedAssets'], 16);
+        $cashdrag = bcdiv($resultData['Userinvestmentdata']['userinvestmentdata_cashInPlatform'], $totalVolume, 16);
+        return $cashdrag;
     }
+    
     
     function calculateSecondaryMarketSell(&$transactionData, &$resultData) {
         return $transactionData['amount'];
@@ -1578,7 +1560,9 @@ echo __FUNCTION__ . " " . __LINE__  . "\n";
     function calculateGenericAmountReturn(&$transactionData, &$resultData){
         return $transactionData['amount'];
     }
- 
+    function calculateGenericNegativeAmountReturn(&$transactionData, &$resultData){
+        return -$transactionData['amount'];
+    }
 }
 
 
