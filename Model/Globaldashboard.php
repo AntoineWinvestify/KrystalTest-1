@@ -47,6 +47,32 @@ class Globaldashboard extends AppModel {
         ),
     );
 
+    
+    
+    
+   var $defaultFields = [ 
+        'investor' => ['id',            //causes problems with PATCH, is never r/w
+                        'investor_id',
+                        'modified',
+                        'created'            
+                      ],
+
+        'winAdmin' => ['id',     
+                        'investor_id',
+                        'date',
+                        'modified',
+                        'created'
+            ],              
+        'superAdmin' => ['id', 
+                        'investor_id',  
+                        'date',
+                        'modified',
+                        'created'            
+                      ],                
+    ];   
+    
+     
+    
     /**
      * 
      * 
@@ -289,4 +315,29 @@ class Globaldashboard extends AppModel {
         return $result;
     }
 
+    
+    /**
+     * Determines if the current user (by means of its $investorId) is the direct or indirect owner
+     * of the current Model. 
+     * This functionality determines if a webclient may access the data of another investor
+     * with proper R/W permissions.
+     * 
+     * @param $investorId The internal reference of the investor Object
+     * @param $id The internal reference of the Investor object to be checked
+     * @return int (WIN_ACL_INVESTOR_IS_OWNER, WIN_ACL_INVESTOR_IS_NOT_OWNER, WIN_ACL_RESOURCE_DOES_NOT_EXIST)
+     */
+    public function isOwner($investorId, $id) { 
+        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id], 
+                                                  'order' => ['Globaldashboard.id DESC'],
+                                                  'recursive' => -1]);
+      
+        if (empty($result)) {
+            return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
+        }        
+        if ($id == $investorId) {
+            return WIN_ACL_INVESTOR_IS_OWNER;
+        }
+        return WIN_ACL_INVESTOR_IS_NOT_OWNER;   
+    }    
+    
 }

@@ -418,3 +418,4 @@ Configure::write('CakePdf', array(
     ));
 
 Configure::load('p2pGestor', 'default');
+Configure::load('win_acl', 'default');

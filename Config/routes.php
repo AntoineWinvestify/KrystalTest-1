@@ -126,7 +126,8 @@
     
     Router::connect("/:service/:version/:controller/:id/*",
                 array("action" => "v1_view", 
-                        "[method]" => "GET"),
+                        "[method]" => "GET",
+                        "acl_action" => "GET_view"),
                     array("id" => "[0-9]+",
                         "service" => "api",
                         "version" => '[0-9]+\.[0-9]+')
@@ -135,7 +136,8 @@
        
     Router::connect("/:service/:version/:controller/*",
                     array("action" => "v1_index", 
-                        "[method]" => "GET"),
+                        "[method]" => "GET",
+                        "acl_action" => "GET_index"),
                     array("service" => "api", 
                           "version" => '[0-9]+\.[0-9]+' )
                     );  

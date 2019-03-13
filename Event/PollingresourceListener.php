@@ -112,9 +112,6 @@ class PollingresourceListener implements CakeEventListener {
                                                                             'recursive' => -1
                                                       ]);
         
-           // READ THE LAST NOTIFICATION ID OF THE INVESTOR AND ADD IT 
-           // AS $data['Pollingresource']['pollingresource_resourceId']        
-        
         if (empty($pollingResults)) {               //create new polling resource object
             $data['Pollingresource']['pollingresource_status'] = ACTIVE;
             $data['Pollingresource']['pollingresource_interval'] = WIN_POLLING_INTERVAL; 
@@ -136,7 +133,7 @@ class PollingresourceListener implements CakeEventListener {
  
 
     /** 
-     * Initialize the monitored Notification resource
+     * Initialize a new monitored Notification resource
      * 
      * @param CakeEvent $event
      */
@@ -153,29 +150,25 @@ class PollingresourceListener implements CakeEventListener {
         $pollingResult = $this->Pollingresource->find("first", $params = ['conditions' => $conditions,
                                                                             'recursive' => -1
                                                       ]);
-        
-           // READ THE LAST NOTIFICATION ID OF THE INVESTOR AND ADD IT 
-           // AS $data['Pollingresource']['pollingresource_resourceId']        
+             
         $this->Notification = ClassRegistry::init('Notification');
-        $conditions = ['AND' => ['pollingresource_userIdentification' => $event->data['userIdentification'],
-                                 'pollingresource_type' => $event->data['model']
+        $conditions = ['AND' => ['investor_id' => $event->data['userIdentification']
                                 ],
                        'OR' => [
-                                ['pollingresource_status' => WAITING_FOR_VISUALIZATION ],
-                                ['pollingresource_status' => READY_FOR_VISUALIZATION ],
-                                ['pollingresource_status' => READ_BY_USER ]
+                                ['notification_status' => WAITING_FOR_VISUALIZATION ],
+                                ['notification_status' => READY_FOR_VISUALIZATION ],
+                                ['notification_status' => READ_BY_USER ]
                                ]
                       ];
         $NotificationResult = $this->Notification->find("first", $params = ['conditions' => $conditions,
                                                                             'recursive' => -1,
                                                                             'order' => array('Notification.id DESC'),
-            
                                                       ]); 
 
         $data['Pollingresource']['pollingresource_resourceId'] = $NotificationResult['Notification']['id'];
         $data['Pollingresource']['pollingresource_newValueExists'] = true; 
         
-        if (empty($pollingResults)) {               //create new polling resource object
+        if (empty($pollingResults)) {                                           //create new polling resource object
             $data['Pollingresource']['pollingresource_status'] = ACTIVE;
             $data['Pollingresource']['pollingresource_interval'] = WIN_POLLING_INTERVAL; 
             $data['Pollingresource']['pollingresource_userIdentification'] = $event->data['userIdentification'];

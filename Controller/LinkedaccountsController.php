@@ -144,9 +144,9 @@ class LinkedaccountsController extends AppController {
      */
     public function v1_edit() {
         $id = $this->request->params['id'];
-        $RequestData = $this->request->data;
-        $this->Linkedaccount->apiVariableNameInAdapter($RequestData);
-        $newPass = $RequestData['accountowner_password'];
+        $requestData = $this->request->data;
+        $this->Linkedaccount->apiVariableNameInAdapter($requestData);
+        $newPass = $requestData['accountowner_password'];
         $data = $this->Linkedaccount->getData(array('Linkedaccount.id' => $id), array('Linkedaccount.accountowner_id'), null, null, 'first');
         $accountownerId = $data['Linkedaccount']['accountowner_id'];
         $returnData = $this->Accountowner->api_changeAccountPassword($this->investorId, $accountownerId, $newPass);

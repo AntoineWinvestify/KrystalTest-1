@@ -54,61 +54,60 @@ class Linkedaccount extends AppModel {
         )
     );
 
- /*   
-   var $defaultFields = [ 
+
+    var $defaultFields = [ 
         'investor' => ['id',            //causes problems with PATCH, is never r/w
-                        'investor_name', 
-                        'investor_surname',
-                        'investor_DNI',
-                        'investor_dateOfBirth',
-                        'investor_telephone',
-                        'investor_email',
-                        'investor_address1', 
-                        'investor_address2', 
-                        'investor_postCode',
-                        'investor_city',
-                        'investor_country', 
-                        'investor_language',
+                        'company_id', 
+                        'investor_id',
+                        'accountowner_username',
+                        'accountowner_linkedAccountCounter',
+                        'accountowner_id',
+                        'linkedaccount_status', 
+                        'linkedaccount_alias', 
+                        'linkedaccount_accountDisplayName',
+                        'linkedaccount_currency',
+                        'linkedaccount_visualStatus', 
+                        'linkedaccount_links'
                       ],
 
         'winAdmin' => ['id', 
-                        'investor_identity',
-                        'investor_name', 
-                        'investor_surname',
-                        'investor_DNI',
-                        'investor_dateOfBirth',
-                        'investor_telephone',
-                        'investor_email',
-                        'investor_address1', 
-                        'investor_address2', 
-                        'investor_postCode',
-                        'investor_city',
-                        'investor_country', 
-                        'investor_language',
-                        'investor_accredited',            
+                        'company_id', 
+                        'investor_id',
+                        'accountowner_username',
+                        'accountowner_linkedAccountCounter',
+                        'accountowner_id',
+                        'linkedaccount_status', 
+                        'linkedaccount_statusExtended', 
+                        'linkedaccount_statusExtendedOld',
+                        'linkedaccount_alias', 
+                        'linkedaccount_accountDisplayName',
+                        'linkedaccount_accountIdentity',
+                        'linkedaccount_currency',
+                        'linkedaccount_visualStatus',    
+                        'linkedaccount_links',
                         'modified',
                         'created'
             ],              
         'superAdmin' => ['id', 
-                        'investor_identity',
-                        'investor_name', 
-                        'investor_surname',
-                        'investor_DNI',
-                        'investor_dateOfBirth',
-                        'investor_telephone',
-                        'investor_email',
-                        'investor_address1', 
-                        'investor_address2', 
-                        'investor_postCode',
-                        'investor_city',
-                        'investor_country', 
-                        'investor_language',
-                        'investor_accredited',
+                        'company_id', 
+                        'investor_id',
+                        'accountowner_username',
+                        'accountowner_linkedAccountCounter',
+                        'accountowner_id',
+                        'linkedaccount_status', 
+                        'linkedaccount_statusExtended', 
+                        'linkedaccount_statusExtendedOld',
+                        'linkedaccount_alias', 
+                        'linkedaccount_accountDisplayName',
+                        'linkedaccount_accountIdentity',
+                        'linkedaccount_currency',
+                        'linkedaccount_visualStatus',
+                        'linkedaccount_links',
                         'modified',
                         'created'            
                       ],                
     ];  
- */   
+ 
     
     
     
@@ -495,7 +494,7 @@ class Linkedaccount extends AppModel {
     /**
      * Get the investor id given by the linkedaccount id
      * 
-     * @param int $id
+     * @param int $id The id of the linkedaccount
      * @return int
      */
     public function getInvestorFromLinkedaccount($id) {
@@ -745,22 +744,21 @@ class Linkedaccount extends AppModel {
     
     
     
-    /** NOT FINISHED
+    /** NOT TESTED
      * Determines if the current user (by means of its $investorId) is the direct or indirect owner
      * of the current Model. 
-     * This functionality determines if a webclient may access the data of another webclient
+     * This functionality determines if a webclient may access the data of another investor
      * with proper R/W permissions.
      * 
      * @param $investorId The internal reference of the investor Object
-     * @param $id The internal reference of the Investor object to be checked
+     * @param $id The internal reference of the Linkedaccount object to be checked
      * @return int (WIN_ACL_INVESTOR_IS_OWNER, WIN_ACL_INVESTOR_IS_NOT_OWNER, WIN_ACL_RESOURCE_DOES_NOT_EXIST)
      */
     public function isOwner($investorId, $id) { 
-        $result = $this->find("first", $params = ['conditions' => [ 'id' => $id],   
-                                                  'fields' => ['pollingresource_useridentification'],
-                                                  'recursive' => -1]);
-      
-        if (empty($result)) {
+        
+        $realOwner = getInvestorFromLinkedaccount($id);       
+
+        if (empty($realOwner)) {
             return WIN_ACL_RESOURCE_DOES_NOT_EXIST;
         }        
         if ($id == $investorId) {
@@ -770,7 +768,7 @@ class Linkedaccount extends AppModel {
     }
     
     
-    /** NOT FINISHED
+    /** NOT TESTED
      * Reads the list of defaultFields to read in case the webclient has not indicated any fields
      * in its GET request
      * 
@@ -781,11 +779,5 @@ class Linkedaccount extends AppModel {
         return $this->defaultFields[$roleName];        
     }   
     
-        
-    
-    
-    
-    
-    
-    
+
 }

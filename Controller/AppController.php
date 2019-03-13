@@ -757,11 +757,9 @@ class AppController extends Controller {
             echo "accessGranted = $accessGranted  [1 = yes, 2 = no]<br>"; 
             var_dump ($this->listOfFields);
         }
-        $acl_tree_array = Configure::read('acl_tree_array');
-
-        $level0_item = $acl_tree_array;                                         // top level
-        
-        foreach ($level0_item  as $level1_item) {          
+        $level0_item = Configure::read('acl_tree_array');                                       // top level
+ 
+        foreach ($level0_item as $level1_item) {          
             if ($level1_item['category_name'] == $model ) {                     // Model
                 if (!empty($level1_item['actions'])) {
 
@@ -1009,17 +1007,17 @@ class AppController extends Controller {
         
         $acl_referenceVariablePermissions = Configure::read('acl_referenceVariablePermissions');         
      
-     //   echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
-  //      $this->print_r2($fields); 
+//echo __FUNCTION__ . " " . __LINE__ . " property = $property, model = $model and role = $roleName<br>";
+ //       $this->print_r2($fields); 
         $referenceRolePermissions = $acl_referenceVariablePermissions[$model][$roleName];
 //var_dump($referenceRolePermissions);             
         foreach ($fields as $item) {          
             if (strpos ($referenceRolePermissions[$item], $property) === false) {
-  //              echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
+ //               echo __FUNCTION__ . " " . __LINE__ . " Returning WIN_ACL_ANALYSIS_ERROR<br>"; 
                 return WIN_ACL_ANALYSIS_ERROR;
             } 
         }
-    //    echo __FUNCTION__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
+//        echo __FUNCTION__ . " " . __LINE__ . " Returning  WIN_ACL_GRANT_ACCESS<br>"; 
         return WIN_ACL_GRANT_ACCESS; 
     }    
       

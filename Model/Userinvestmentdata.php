@@ -56,7 +56,7 @@ class Userinvestmentdata extends AppModel {
     /**
      * Get data of the last linked accounts investments of an investor.
      * 
-     * @param string $investorId             investor database id.
+     * @param string $investorId investor database id.
      * @return array Last Userinvestmentdata rows for the linked accounts
      */
     public function getLastInvestment($investorId) {

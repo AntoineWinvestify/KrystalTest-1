@@ -203,7 +203,7 @@ class Notification extends AppModel
     /** 
      * Determines if the current user (by means of its $investorId) is the direct or indirect owner
      * of the current Model. 
-     * This functionality determines if a webclient may access the data of another webclient
+     * This functionality determines if a webclient may access the data of another investor
      * with proper R/W permissions.
      * 
      * @param $investorId The internal reference of the investor Object
