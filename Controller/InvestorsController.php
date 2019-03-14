@@ -568,12 +568,7 @@ function linkAccount() {
      */
     public function v1_add() { 
         $this->checkAcl();  
-        
- //       $this->AppModel = ClassRegistry::init('AppModel');
- //       $data = $this->request->data;                                           // holds all the new investor data
- //       $newData = $data['data'];
- 
- //       $this->AppModel->apiVariableNameInAdapter($newData);    
+  
         $result = $this->Investor->api_addInvestor($this->fieldsToWrite['data']);
         
         if (empty($result)) {
