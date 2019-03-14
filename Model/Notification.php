@@ -239,7 +239,7 @@ class Notification extends AppModel
      * @param $id The internal reference of the Notification object to be checked
      * @return boolean   
      */
-    public function api_NotificationRead($id) {
+    public function api_notificationRead($id) {
         $this->id = $id;
         $this->saveField('notification_status', READ_BY_USER, $validate = true);
         return true;

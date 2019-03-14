@@ -713,7 +713,8 @@ class Linkedaccount extends AppModel {
     }
 
     /**
-     * Add a new linkaccount for an investor. If accountOwner(same company and credentials) exited before, link the new linkedaccount with it, if not, create a new account owner.
+     * Add a new linkaccount for an investor. If accountOwner(same company and credentials) exited before, 
+     * link the new linkedaccount with it, if not, create a new account owner.
      * 
      * @param int $investorId  Id from investor.
      * @param int $companyId   Company from the accountOwner
@@ -721,7 +722,8 @@ class Linkedaccount extends AppModel {
      * @param string $password Username and password are the credentials to login in the pfp site.
      * @param string $identity Identity  from the linkedaccount, necessary for multiaccounts.
      * @param string $displayName How we will show the linkedaccount name to the user.
-     * @param string $currency Currency from the linkedaccouts(In mintos, different linkedaccount from the same accountOwner will have different currency).
+     * @param string $currency Currency from the linkedaccouts(In mintos, different linkedaccount 
+     *          from the same accountOwner will have different currency).
      * @return boolean
      */
     public function api_addLinkedaccount($investorId, $companyId, $username, $password, $identity, $displayName, $currency = 'EUR') {

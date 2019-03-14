@@ -227,9 +227,9 @@ function readNotificationContent() {
         $this->checkAcl();  
         
         $id = $this->request->params['id'];
-        $results = $this->Notification->api_NotificationRead($id);
-         if (empty($results)) {
-            $formattedError = $this->createErrorFormat('CANNOT_CHANGE_NOTIFICATION_STATUS', 
+        $result = $this->Notification->api_notificationRead($id);
+         if ($result == false) {
+            $formattedError = $this->createErrorFormat('CANNOT_CHANGE_STATUS_OF_NOTIFICATION', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
             $this->response->statusCode(400);                                    
