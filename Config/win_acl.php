@@ -1028,10 +1028,18 @@ $config['acl_referenceVariablePermissions'] = [
                 'investor' =>                   // Linkedaccount permissions for role 'investor'
                     ['id' => 'R', 
         //            'accountowner_id' => 'R',
+                    'company_id' => 'R', 
+                    'investor_id' => 'R',
+                    'accountowner_username' => 'R',
+                    'accountowner_password' => 'W',
+                    'accountowner_linkedAccountCounter' => 'R',
+                    'accountowner_id' => 'R',
+                    'linkedaccount_status' => 'R',
+                    'linkedaccount_alias' => 'R',
                     'linkedaccount_accountDisplayName' => 'R',
                     'linkedaccount_currency' => 'R',
-                    'linkedaccount_visualStatus' => 'R',
-           //         'linkedaccount_companyId'
+                    'linkedaccount_visualStatus' => 'R', 
+                    'linkedaccount_links' => 'R',                           
                   ],
                 'winAdmin' =>                    // Linkedaccount permissions for role winAdmin'. 
                     ['id' => 'R', 

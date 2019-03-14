@@ -106,6 +106,7 @@ class AppController extends Controller {
     protected $filterConditionQueryParms;       // Query parms converted to MySQL filterconditions
     protected $listOfWriteFields;               // the list of variables which will be written during a
                                                 // PUT or PATCH message. Note this is NOT the contents of the fields
+    protected $fieldsToWrite;                   // The fields to be written to the database
     protected $action;                          // The 'action' of a POST operation
     protected $investorId;                      // The investorId as obtained in the JWT
     protected $roleName;                        // The name of the role assigned to the user. Obtainted from JWT
@@ -603,6 +604,9 @@ class AppController extends Controller {
                 $this->AppModel->apiVariableNameInAdapter($newData);
                 $this->listOfWriteFields = array_keys($newData); 
                 
+                $this->fieldsToWrite = $this->request->data;
+                $this->AppModel->apiVariableNameInAdapter($this->fieldsToWrite['data']);
+                
         }
     
         if (Configure::read('debug')) {
@@ -625,6 +629,9 @@ class AppController extends Controller {
                 if (!empty($this->request->data)) {
                     echo "request->data = \n<br>";
                     var_dump($this->request->data);
+                    
+                    echo "the fields to write in normalized format =\n<br>";
+                    var_dump($this->fieldsToWrite);                   
                 }  
         }    
         return true;

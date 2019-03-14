@@ -154,7 +154,8 @@
     
     Router::connect("/:service/:version/:controller/login",
                     array("action" => "v1_login", 
-                        "[method]" => "POST"),
+                        "[method]" => "POST",
+                        "acl_action" => "POST_public"),
                     array(
                         "service" => "api",
                         "version" => '[0-9]+\.[0-9]+')

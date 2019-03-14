@@ -423,7 +423,7 @@ function linkAccount() {
 
     
     
-    /** THIS METHOD SHALL NOT BE ACCESIBLE TO INVESTOR PROFILE. DEFINE USING CONFIG DATA
+    /** 
      * This methods terminates the HTTP GET.
      * Format GET /api/1.0/investors.json&_fields=x,y,z
      * Example GET /api/1.0/investors.json&investor_country=SPAIN&_fields=investor_name,investor_surname
@@ -432,17 +432,7 @@ function linkAccount() {
      */
     public function v1_index() {
         $this->checkAcl();
-/*        
-        if (empty($this->listOfFields)) {
-            $this->listOfFields =   ['Investor.investor_name', 'Investor.investor_surname',      
-                                     'Investor.investor_DNI', 'Investor.investor_dateOfBirth', 
-                                     'Investor.investor_address1',  'Investor.investor_address2',
-                                     'Investor.investor_city',  'Investor.investor_telephone',
-                                     'Investor.investor_postCode',  'Investor.investor_email',
-                                     'Investor.investor_country', 'Investor.investor_language'
-                                    ];
-        }
- */       
+       
         foreach ($this->listOfFields as $field) {
             $tempField = explode("_", $field);
 
@@ -539,13 +529,9 @@ function linkAccount() {
         $this->checkAcl();
 
         if (!empty($this->request->data)) {
-            $dataNew = $this->request->data['data'];
-            $dataNew['id'] = $this->request->params['id']; 
-
-            $this->Investor->apiVariableNameInAdapter($dataNew);
-            $result = $this->Investor->save($dataNew, $validate = true);
+            $this->fieldsToWrite['data']['id'] = $this->request->params['id']; 
+            $result = $this->Investor->save($this->fieldsToWrite['data'], $validate = true);
         }
-
         if (empty($result)) {
             $validationErrors = $this->Investor->validationErrors;
             $this->Investor->apiVariableNameOutAdapter($validationErrors);
@@ -581,17 +567,14 @@ function linkAccount() {
      * @return mixed false or the database identifier of the new 'Investor' object
      */
     public function v1_add() { 
- 
-        if ($this->roleName <> "superAdmin") {        
-            throw new UnauthorizedException('You are not authorized to access the requested resource');      
-        }   
+        $this->checkAcl();  
         
-        $this->AppModel = ClassRegistry::init('AppModel');
-        $data = $this->request->data;                                           // holds all the new investor data
-        $newData = $data['data'];
+ //       $this->AppModel = ClassRegistry::init('AppModel');
+ //       $data = $this->request->data;                                           // holds all the new investor data
+ //       $newData = $data['data'];
  
-        $this->AppModel->apiVariableNameInAdapter($newData);    
-        $result = $this->Investor->api_addInvestor($newData);
+ //       $this->AppModel->apiVariableNameInAdapter($newData);    
+        $result = $this->Investor->api_addInvestor($this->fieldsToWrite['data']);
         
         if (empty($result)) {
             $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
@@ -626,25 +609,17 @@ function linkAccount() {
      * @throws UnauthorizedException
      */
     public function v1_delete($id) { 
-/*
-        if ($this->roleName <> "superAdmin") {        
-            throw new UnauthorizedException('You are not authorized to access the requested resource');      
-        }  
- */       
+      
         $id = $this->request->params['id'];
         $result = $this->Investor->api_deleteInvestor($id);
         
-        if (empty($result)) {
-            $validationErrors = $this->Investor->validationErrors;              // Cannot retrieve all validation errors
-            $this->Investor->apiVariableNameOutAdapter($validationErrors);
-
+        if ($result == false) {
             $formattedError = $this->createErrorFormat('CANNOT_DELETE_INVESTOR_OBJECT', 
                                                         "The system encountered an undefined error, try again later on");
             $resultJson = json_encode($formattedError);
             $this->response->statusCode(400);                                    
         }
-        else { // create the links
-            $this->response->statusCode(200);
+        else { 
             $return['feedback_message_user'] = "Account has been deleted";
             $resultJson = json_encode($return);
         }
